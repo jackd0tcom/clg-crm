@@ -17,6 +17,23 @@ export default {
       console.log(err);
     }
   },
+  newStory: async (req, res) => {
+    try {
+      console.log("newStory");
+      if (req.session.user) {
+        const userId = req.session.user.userId;
+        const newStory = await Story.create({
+          userId,
+          title: req.body.storyTitle,
+          content: req.body.storyContent,
+        });
+        res.send(newStory);
+        console.log(newStory);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  },
   getStory: async (req, res) => {
     try {
       console.log("getStory");

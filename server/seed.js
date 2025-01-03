@@ -21,21 +21,21 @@ const users = [
 
 const stories = [
   {
-    userId: users[0].userId, // Alice's userId
+    userId: 1, // Alice's userId
     title: "A Mysterious Journey",
     content:
       "In the quiet town of Eldore, the moonlight shone brightly, casting eerie shadows on the cobblestone streets...",
   },
   // Stories for Bob
   {
-    userId: users[1].userId, // Bob's userId
+    userId: 2, // Bob's userId
     title: "The Lost Treasure",
     content:
       "Bob had always dreamed of finding a hidden treasure, but he never expected to stumble upon it in the most unlikely of places...",
   },
   // Stories for Charlie
   {
-    userId: users[2].userId, // Charlie's userId
+    userId: 3, // Charlie's userId
     title: "A Glimpse of Eternity",
     content:
       "Charlie had always felt out of place in the world, until one fateful day when he saw a strange light in the sky...",

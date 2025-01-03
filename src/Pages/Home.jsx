@@ -23,7 +23,6 @@ const Home = () => {
     </section>
   ) : (
     <>
-      <Nav />
       <Writer />
     </>
   );

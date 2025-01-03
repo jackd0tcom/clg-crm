@@ -8,6 +8,8 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import Landing from "./Pages/Landing.jsx";
 import Writer from "./Elements/Writer.jsx";
+import StoriesList from "./Elements/StoriesList.jsx";
+import Nav from "./Elements/Nav.jsx";
 
 function App() {
   const userId = useSelector((state) => state.userId);
@@ -21,6 +23,7 @@ function App() {
   }, []);
   return (
     <>
+      <Nav />
       <Routes>
         <Route index element={<Home />} />
         <Route
@@ -28,6 +31,8 @@ function App() {
           element={userId ? <Navigate to="/" /> : <Landing />}
         />
         <Route path="/write" element={<Writer />} />
+        <Route path="/write/:storyId" element={<Writer />} />
+        <Route path="/stories" element={<StoriesList />} />
       </Routes>
     </>
   );

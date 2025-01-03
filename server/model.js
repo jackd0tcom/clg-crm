@@ -51,6 +51,7 @@ Story.init(
   {
     modelName: "story",
     sequelize: db,
+    timestamps: true,
   }
 );
 

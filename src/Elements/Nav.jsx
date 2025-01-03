@@ -21,9 +21,27 @@ const Nav = () => {
 
   return (
     <nav className="nav-bar">
-      <h1>Writer</h1>
+      <button
+        onClick={() => {
+          navigate("/");
+        }}
+      >
+        Writer
+      </button>
       <div className="nav-buttons">
-        <button onClick={logout}>Log Out</button>
+        {!userId ? (
+          <button
+            onClick={() => {
+              navigate("/login");
+            }}
+          >
+            Log In
+          </button>
+        ) : (
+          <button onClick={logout}>Log Out</button>
+        )}
+        <button onClick={() => navigate("/stories")}>Stories</button>
+        <button onClick={() => navigate("/write")}>New Story</button>
         <button>Profile</button>
       </div>
     </nav>

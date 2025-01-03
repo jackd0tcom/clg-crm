@@ -3,7 +3,7 @@ import ViteExpress from "vite-express";
 import session from "express-session";
 import authCtrl from "./controllers/authCtrl.js";
 import storyCtrl from "./controllers/storyCtrl.js";
-const { saveStory, getStory, getAllStories, deleteStory } = storyCtrl;
+const { saveStory, getStory, getAllStories, deleteStory, newStory } = storyCtrl;
 const { register, login, checkUser, logout, updateUser } = authCtrl;
 
 const app = express();
@@ -39,6 +39,7 @@ app.delete("/api/logout", logout);
 // app.put("/api/updateUser", updateUser);
 
 app.post("/api/saveStory", saveStory);
+app.post("/api/newStory", newStory);
 app.get("/api/getStory", getStory);
 app.get("/api/getAllStories", getAllStories);
 app.delete("/api/deleteStory", deleteStory);
