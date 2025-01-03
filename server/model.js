@@ -2,7 +2,7 @@ import { DataTypes, Model } from "sequelize";
 import url from "url";
 import connectToDb from "./db.js";
 
-const db = await connectToDb("postgresql:///users");
+const db = await connectToDb("postgresql:///story-db");
 
 class User extends Model {}
 User.init(

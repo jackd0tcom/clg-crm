@@ -5,13 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon server/index.js -w server/index.js -w src",
-    "initdb": "dropdb --if-exists stories && createdb stories",
-    "seed": "node server/model.js",
+    "initdb": "dropdb --if-exists story-db && createdb story-db",
+    "seed": "node server/model.js && node server/seed.js",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
+    "axios": "^1.7.9",
     "bcryptjs": "^2.4.3",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
@@ -20,7 +21,9 @@
     "pg": "^8.13.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-redux": "^9.2.0",
     "react-router": "^7.1.1",
+    "react-router-dom": "^7.1.1",
     "sequelize": "^6.37.5",
     "vite-express": "^0.20.0"
   },

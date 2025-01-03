@@ -16,6 +16,10 @@ export default {
         const salt = bcrypt.genSaltSync(10);
         const hash = bcrypt.hashSync(password, salt);
 
+        const newUser = await User.create({
+          username,
+          password: hash,
+        });
         req.session.user = {
           userId: newUser.userId,
           username: newUser.username,
@@ -79,6 +83,7 @@ export default {
     req.session.destroy();
     res.status(200).send("there is no user on the session boi");
   },
+
   //   updateUser: async (req, res) => {
   //     try {
   //       console.log("updateUser");
