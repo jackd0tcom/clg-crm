@@ -7,10 +7,11 @@ import { useEffect } from "react";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import Landing from "./Pages/Landing.jsx";
+import Writer from "./Elements/Writer.jsx";
 
 function App() {
   const userId = useSelector((state) => state.userId);
-  const dispatch = useDispatch;
+  const dispatch = useDispatch();
 
   useEffect(() => {
     axios
@@ -26,6 +27,7 @@ function App() {
           path="/login"
           element={userId ? <Navigate to="/" /> : <Landing />}
         />
+        <Route path="/write" element={<Writer />} />
       </Routes>
     </>
   );

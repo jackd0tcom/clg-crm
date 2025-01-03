@@ -6,8 +6,8 @@ const db = await connectToDB("postgresql:///story-db");
 
 const users = [
   {
-    username: "alice",
-    password: bcrypt.hashSync("password123", 10), // Example password
+    username: "jack",
+    password: bcrypt.hashSync("jack", 10), // Example password
   },
   {
     username: "bob",

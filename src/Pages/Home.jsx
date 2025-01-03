@@ -1,21 +1,32 @@
 import React from "react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useState } from "react";
-import { useEffect } from "react";
+import Writer from "../Elements/Writer";
+import Nav from "../Elements/Nav.jsx";
 
 const Home = () => {
   const userId = useSelector((state) => state.userId);
+
   const navigate = useNavigate();
   return !userId ? (
-    <div>
-      <h1>Welcome</h1>
-      <button>Login</button>
-    </div>
+    <section>
+      <div>
+        <h2>Welcome to</h2>
+        <h1>Writer</h1>
+
+        <div>
+          <p>Start writing</p>
+        </div>
+        <button onClick={() => navigate("/login")}>Get Started</button>
+      </div>
+    </section>
   ) : (
     <>
-      <h1>Welcome</h1>
-      <div>Welcome</div>
+      <Nav />
+      <Writer />
     </>
   );
 };
+
+export default Home;
