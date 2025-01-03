@@ -29,27 +29,31 @@ const StoriesList = () => {
   return (
     <>
       <h1>My Stories</h1>
-      <button
-        onClick={() => {
-          console.log(stories);
-        }}
-      >
-        Log Stories
-      </button>
       <div className="stories-list-wrapper">
         {stories.length > 0 ? (
-          stories.map((story, index) => (
-            <Link key={story.storyId} to={`/write/${story.storyId}`}>
-              <div className="story-container" key={story.storyId}>
-                <h3 className="story-list-story-title">{story.title}</h3>{" "}
-                <p>{story.content}</p>
-                <p className="updated-at">
-                  Last Updated:{" "}
-                  {format(new Date(story.updatedAt), "MMMM dd, yyyy h:mm a")}
-                </p>
-              </div>
-            </Link>
-          ))
+          stories.map((story, index) => {
+            let array = story.content.split(" ");
+            let excerpt = "";
+            if (array.length > 14) {
+              excerpt = array.splice(0, 14).join(" ") + "...";
+            } else excerpt = array.join(" ") + "...";
+            return (
+              <Link
+                className="story-container"
+                key={story.storyId}
+                to={`/write/${story.storyId}`}
+              >
+                <div key={story.storyId}>
+                  <h3 className="story-list-story-title">{story.title}</h3>{" "}
+                  <p>{excerpt}</p>
+                  <p className="updated-at">
+                    Last Updated:{" "}
+                    {format(new Date(story.updatedAt), "MMMM dd, yyyy h:mm a")}
+                  </p>
+                </div>
+              </Link>
+            );
+          })
         ) : (
           <button
             onClick={() => {

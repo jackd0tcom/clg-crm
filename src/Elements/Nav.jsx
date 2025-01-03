@@ -38,11 +38,13 @@ const Nav = () => {
             Log In
           </button>
         ) : (
-          <button onClick={logout}>Log Out</button>
+          <>
+            <button onClick={logout}>Log Out</button>
+            <button onClick={() => navigate("/stories")}>Stories</button>
+            <button onClick={() => navigate("/write")}>New Story</button>
+            <button>Profile</button>
+          </>
         )}
-        <button onClick={() => navigate("/stories")}>Stories</button>
-        <button onClick={() => navigate("/write")}>New Story</button>
-        <button>Profile</button>
       </div>
     </nav>
   );

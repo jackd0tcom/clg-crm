@@ -1,25 +1,31 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const Writer = () => {
   const [storyContent, SetStoryContent] = useState("");
   const [storyTitle, SetStoryTitle] = useState("");
   const [storyIdState, SetStoryIdState] = useState(0);
-  const { storyId } = useParams;
+  const { storyId } = useParams();
+  const userId = useSelector((state) => state.userId);
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchStory() {
       try {
-        if (storyId) {
-          console.log(storyId);
-          SetStoryIdState(storyId);
-          axios.get("/api/getStory", { storyId }).then((res) => {
-            SetStoryContent(res.data.storyContent);
-            SetStoryTitle(res.data.storyTitle);
-            SetStoryIdState(res.data.storyId);
-          });
-        }
+        if (userId) {
+          if (storyId) {
+            await axios.post("/api/getStory", { storyId }).then((res) => {
+              if (res.data.userId === userId) {
+                SetStoryContent(res.data.content);
+                SetStoryTitle(res.data.title);
+                SetStoryIdState(res.data.storyId);
+              } else navigate("/restricted");
+            });
+          }
+        } else navigate("/login");
       } catch (error) {
         console.log(error);
       }
@@ -53,13 +59,14 @@ const Writer = () => {
           Story Id
         </button>
         <form className="writer-wrapper" onSubmit={(e) => save(e)}>
-          <input
-            type="text"
+          <textarea
+            className="story-title"
             name="storyTitle"
             id="storyTitle"
             value={storyTitle}
+            placeholder="Title"
             onChange={(e) => SetStoryTitle(e.target.value)}
-          />
+          ></textarea>
           <textarea
             name=""
             id=""

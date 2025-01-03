@@ -22,11 +22,6 @@ const Login = ({
 
   return (
     <>
-      <nav>
-        <a onClick={() => navigate("/")} className="header-link">
-          Writer
-        </a>
-      </nav>
       <section>
         <div>
           <h1>Login</h1>

@@ -40,7 +40,7 @@ app.delete("/api/logout", logout);
 
 app.post("/api/saveStory", saveStory);
 app.post("/api/newStory", newStory);
-app.get("/api/getStory", getStory);
+app.post("/api/getStory", getStory);
 app.get("/api/getAllStories", getAllStories);
 app.delete("/api/deleteStory", deleteStory);
 

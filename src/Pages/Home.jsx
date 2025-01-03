@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useState } from "react";
 import Writer from "../Elements/Writer";
+import StoriesList from "../Elements/StoriesList.jsx";
 import Nav from "../Elements/Nav.jsx";
 
 const Home = () => {
@@ -23,7 +24,7 @@ const Home = () => {
     </section>
   ) : (
     <>
-      <Writer />
+      <StoriesList />
     </>
   );
 };
