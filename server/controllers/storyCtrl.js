@@ -13,8 +13,10 @@ export default {
           content: storyContent,
         });
       }
+      res.status(200).send("Saved Story Successfully");
     } catch (err) {
       console.log(err);
+      res.status(500).send("Failed to Save Story");
     }
   },
   newStory: async (req, res) => {
