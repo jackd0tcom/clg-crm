@@ -116,3 +116,11 @@ textarea {
   width: 25%;
   margin-top: 30px;
 }
+.new-story-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  column-gap: 2rem;
+  row-gap: 2rem;
+  margin: 4rem;
+}

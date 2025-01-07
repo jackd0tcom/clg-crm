@@ -49,9 +49,6 @@ export default {
 
       if (foundUser) {
         const loggedIn = bcrypt.compareSync(password, foundUser.password);
-        const userStories = await Story.findAll({
-          where: { userId: foundUser.userId },
-        });
         if (loggedIn) {
           req.session.user = {
             userId: foundUser.userId,

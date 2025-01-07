@@ -41,7 +41,7 @@ const Nav = () => {
           <>
             <button onClick={logout}>Log Out</button>
             <button onClick={() => navigate("/stories")}>Stories</button>
-            <button onClick={() => navigate("/write")}>New Story</button>
+            <button onClick={() => navigate("/new-story")}>New Story</button>
             <button>Profile</button>
           </>
         )}

@@ -11,6 +11,7 @@ import Writer from "./Elements/Writer.jsx";
 import StoriesList from "./Elements/StoriesList.jsx";
 import Nav from "./Elements/Nav.jsx";
 import Restricted from "./Pages/Restricted.jsx";
+import NewStory from "./Pages/NewStory.jsx";
 
 function App() {
   const userId = useSelector((state) => state.userId);
@@ -18,10 +19,10 @@ function App() {
 
   useEffect(() => {
     axios
-      .get("api/checkUser")
+      .get("/api/checkUser")
       .then((res) => dispatch({ type: "LOGIN", payload: res.data.userId }))
       .catch((err) => console.log(err));
-  }, []);
+  }, [userId]);
   return (
     <>
       <Nav />
@@ -31,6 +32,7 @@ function App() {
           path="/login"
           element={userId ? <Navigate to="/" /> : <Landing />}
         />
+        <Route path="/new-story" element={<NewStory />} />
         <Route path="/write" element={<Writer />} />
         <Route path="/write/:storyId" element={<Writer />} />
         <Route path="/stories" element={<StoriesList />} />

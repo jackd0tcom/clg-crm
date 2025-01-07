@@ -15,7 +15,7 @@ app.use(
   session({
     saveUninitialized: true,
     resave: false,
-    secret: "as;ldfkjas;dlkjfgasdfl;jkghjsd;kl",
+    secret: "bigtime",
     cookie: {
       maxAge: 1000 * 60 * 60 * 48,
     },
