@@ -12,6 +12,7 @@ import StoriesList from "./Elements/StoriesList.jsx";
 import Nav from "./Elements/Nav.jsx";
 import Restricted from "./Pages/Restricted.jsx";
 import NewStory from "./Pages/NewStory.jsx";
+import Profile from "./Pages/Profile.jsx";
 
 function App() {
   const userId = useSelector((state) => state.userId);
@@ -37,6 +38,11 @@ function App() {
         <Route path="/write/:storyId" element={<Writer />} />
         <Route path="/stories" element={<StoriesList />} />
         <Route path="/restricted" element={<Restricted />} />
+        <Route
+          path="/profile"
+          element={!userId ? <Navigate to="/login" /> : <Profile />}
+        />
+        <Route path="/profile/:userIdParams" element={<Profile />} />
       </Routes>
     </>
   );

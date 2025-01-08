@@ -134,3 +134,24 @@ textarea {
   row-gap: 2rem;
   margin: 4rem;
 }
+
+/* Profile */
+
+.profile-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  row-gap: 2rem;
+}
+.profile-title-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.profile-pic {
+  background-image: url("/src/assets/profile-pic.png");
+  height: 100px;
+  width: 100px;
+  background-repeat: no-repeat;
+  background-size: cover;
+}

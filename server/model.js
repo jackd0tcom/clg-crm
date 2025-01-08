@@ -20,10 +20,23 @@ User.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    firstName: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    lastName: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    userBio: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
   },
   {
     modelName: "users",
     sequelize: db,
+    timestamps: true,
   }
 );
 
@@ -55,8 +68,46 @@ Story.init(
   }
 );
 
+class Friend extends Model {}
+Friend.init(
+  {
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: User,
+        key: "userId",
+      },
+    },
+    friendId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: User,
+        key: "userId",
+      },
+    },
+    status: {
+      type: DataTypes.ENUM("requested", "accepted", "blocked"),
+      defaultValue: "requested",
+    },
+  },
+  {
+    modelName: "friend",
+    sequelize: db,
+    timestamps: true,
+  }
+);
+
 User.hasMany(Story, { foreignKey: "userId" });
 Story.belongsTo(User, { foreignKey: "userId" });
+
+User.belongsToMany(User, {
+  through: Friend,
+  as: "friends",
+  foreignKey: "userId",
+  otherKey: "friendId",
+});
 
 if (process.argv[1] === url.fileURLToPath(import.meta.url)) {
   console.log("Syncing database...");
@@ -65,4 +116,4 @@ if (process.argv[1] === url.fileURLToPath(import.meta.url)) {
   console.log("Finished syncing database!");
 }
 
-export { User, Story };
+export { User, Story, Friend };

@@ -1,5 +1,5 @@
 import connectToDB from "./db.js";
-import { User, Story } from "./model.js";
+import { User, Story, Friend } from "./model.js";
 import bcrypt from "bcryptjs";
 
 const db = await connectToDB("postgresql:///story-db");
@@ -8,14 +8,23 @@ const users = [
   {
     username: "jack",
     password: bcrypt.hashSync("jack", 10), // Example password
+    firstName: "jack",
+    lastName: "b",
+    userBio: "jacks bio",
   },
   {
-    username: "bob",
-    password: bcrypt.hashSync("password456", 10), // Example password
+    username: "han",
+    password: bcrypt.hashSync("han", 10),
+    firstName: "hannah",
+    lastName: "b",
+    userBio: "hannah's bio",
   },
   {
-    username: "charlie",
-    password: bcrypt.hashSync("password789", 10), // Example password
+    username: "ebot9",
+    password: bcrypt.hashSync("ebot9", 10),
+    firstName: "ethan",
+    lastName: "g",
+    userBio: "ethan's bio",
   },
 ];
 
@@ -42,9 +51,16 @@ const stories = [
   },
 ];
 
+const friends = [
+  { userId: 1, friendId: 2, status: "accepted" },
+  { userId: 2, friendId: 3, status: "accepted" },
+  { userId: 1, friendId: 3, status: "accepted" },
+];
+
 await db.sync({ force: true }).then(async () => {
   await User.bulkCreate(users);
-  const newMovies = await Story.bulkCreate(stories);
+  await Story.bulkCreate(stories);
+  await Friend.bulkCreate(friends);
   console.log("db reset and seeded");
 });
 

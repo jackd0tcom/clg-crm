@@ -3,6 +3,8 @@ import ViteExpress from "vite-express";
 import session from "express-session";
 import authCtrl from "./controllers/authCtrl.js";
 import storyCtrl from "./controllers/storyCtrl.js";
+import userCtrl from "./controllers/userCtrl.js";
+const { getUser, getFriends } = userCtrl;
 const { saveStory, getStory, getAllStories, deleteStory, newStory } = storyCtrl;
 const { register, login, checkUser, logout, updateUser } = authCtrl;
 
@@ -37,6 +39,10 @@ app.post("/api/login", login);
 app.get("/api/checkUser", checkUser);
 app.delete("/api/logout", logout);
 // app.put("/api/updateUser", updateUser);
+
+// user endpoints
+app.get("/api/getUser/:userId", getUser);
+app.get("/api/getFriends", getFriends);
 
 app.post("/api/saveStory", saveStory);
 app.post("/api/newStory", newStory);
