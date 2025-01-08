@@ -6,41 +6,45 @@ import { useSelector } from "react-redux";
 import Loader from "./Loader";
 import WriterBody from "./WriterBody";
 import WriterTitle from "./WriterTitle";
+import Restricted from "../Pages/Restricted";
 
 const Writer = () => {
   const userId = useSelector((state) => state.userId);
   const [storyContent, SetStoryContent] = useState("");
+  const [allowedUsers, setAllowedUsers] = useState([]);
   const [storyTitle, SetStoryTitle] = useState("");
-  const [savedStatus, setSavedStatus] = useState("Push Save");
+  const [savedStatus, setSavedStatus] = useState("Saved");
   const [changeCount, setChangeCount] = useState(0);
   const [isSaved, setIsSaved] = useState(false);
   const debounceTimer = useRef(null);
   const { storyId } = useParams();
-  const [storyIdState, SetStoryIdState] = useState(() => Number(storyId) || 0);
+  const [storyIdState, SetStoryIdState] = useState(storyId);
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function fetchStory() {
       try {
-        if (storyId) {
-          await axios.post("/api/getStory", { storyId }).then((res) => {
-            if (res.data.userId === userId) {
-              console.log(res.data);
-              SetStoryContent(res.data.content);
-              SetStoryTitle(res.data.title);
-              SetStoryIdState(res.data.storyId);
-            }
-          });
-        }
+        await axios.post("/api/getStory", { storyId }).then((res) => {
+          if (res.data.userId === userId) {
+            console.log(res.data);
+            console.log(userId);
+            allowedUsers.push(userId);
+            SetStoryContent(res.data.content);
+            SetStoryTitle(res.data.title);
+            SetStoryIdState(res.data.storyId);
+          }
+        });
       } catch (error) {
         console.log(error);
       } finally {
-        setIsLoading(false);
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 750);
       }
     }
     fetchStory();
-  }, [storyId]);
+  }, [userId]);
 
   useEffect(() => {
     if (changeCount >= 200) {
@@ -139,33 +143,37 @@ const Writer = () => {
     return <Loader />;
   }
 
-  return (
-    <div>
-      <button
-        onClick={() => {
-          console.log(storyIdState, userId);
-        }}
-      >
-        Story Id
-      </button>
-      <form className="writer-wrapper" onSubmit={save}>
-        <div className="story-title-wrapper">
-          <WriterTitle
-            storyTitle={storyTitle}
-            handleTitleChange={handleTitleChange}
+  if (allowedUsers.includes(userId)) {
+    return (
+      <div>
+        <button
+          onClick={() => {
+            console.log(storyIdState, userId, allowedUsers);
+          }}
+        >
+          Story Id
+        </button>
+        <form className="writer-wrapper" onSubmit={save}>
+          <div className="story-title-wrapper">
+            <WriterTitle
+              storyTitle={storyTitle}
+              handleTitleChange={handleTitleChange}
+            />
+            <p className="saved-status">{savedStatus}</p>
+          </div>
+          <WriterBody
+            storyContent={storyContent}
+            handleContentChange={handleContentChange}
           />
-          <p className="saved-status">{savedStatus}</p>
-        </div>
-        <WriterBody
-          storyContent={storyContent}
-          handleContentChange={handleContentChange}
-        />
-        <div className="save-button-wrapper">
-          <button>Save</button>
-        </div>
-      </form>
-    </div>
-  );
+          <div className="save-button-wrapper">
+            <button>Save</button>
+          </div>
+        </form>
+      </div>
+    );
+  } else {
+    return <Restricted />;
+  }
 };
 
 export default Writer;

@@ -40,48 +40,50 @@ const StoriesList = () => {
   return (
     <>
       <h1>My Stories</h1>
-      <div className="stories-list-wrapper">
-        {stories.length > 0 ? (
-          stories.map((story, index) => {
-            let array = story.content.split(" ");
-            let excerpt = "";
-            if (array.length > 14) {
-              excerpt = array.splice(0, 14).join(" ") + "...";
-            } else excerpt = array.join(" ") + "...";
-            return (
-              <>
-                <Link
-                  className="story-container"
-                  key={story.storyId}
-                  to={`/write/${story.storyId}`}
-                >
-                  <div key={story.storyId}>
-                    <h3 className="story-list-story-title">{story.title}</h3>{" "}
-                    <p>{excerpt}</p>
-                    <p className="updated-at">
-                      Last Updated:{" "}
-                      {format(
-                        new Date(story.updatedAt),
-                        "MMMM dd, yyyy h:mm a"
-                      )}
-                    </p>
-                  </div>
-                </Link>
-                <button onClick={() => handleDelete(story.storyId)}>
-                  Delete
-                </button>
-              </>
-            );
-          })
-        ) : (
-          <button
-            onClick={() => {
-              navigate("/write");
-            }}
-          >
-            Start your first story
-          </button>
-        )}
+      <div className="stories-list-container">
+        <div className="stories-list-wrapper">
+          {stories.length > 0 ? (
+            stories.map((story, index) => {
+              let array = story.content.split(" ");
+              let excerpt = "";
+              if (array.length > 14) {
+                excerpt = array.splice(0, 14).join(" ") + "...";
+              } else excerpt = array.join(" ") + "...";
+              return (
+                <div className="story-wrapper" key={story.storyId}>
+                  <Link
+                    className="story-container"
+                    key={story.storyId}
+                    to={`/write/${story.storyId}`}
+                  >
+                    <div key={story.storyId}>
+                      <h3 className="story-list-story-title">{story.title}</h3>{" "}
+                      <p>{excerpt}</p>
+                      <p className="updated-at">
+                        Last Updated:{" "}
+                        {format(
+                          new Date(story.updatedAt),
+                          "MMMM dd, yyyy h:mm a"
+                        )}
+                      </p>
+                    </div>
+                  </Link>
+                  <button onClick={() => handleDelete(story.storyId)}>
+                    Delete
+                  </button>
+                </div>
+              );
+            })
+          ) : (
+            <button
+              onClick={() => {
+                navigate("/new-story");
+              }}
+            >
+              Start your first story
+            </button>
+          )}
+        </div>
       </div>
     </>
   );
