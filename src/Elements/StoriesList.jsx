@@ -26,6 +26,17 @@ const StoriesList = () => {
     fetchData();
   }, [userId, navigate]);
 
+  const handleDelete = (id) => {
+    console.log(id);
+    try {
+      axios
+        .delete(`/api/deleteStory/${id}`)
+        .then((res) => setStories(res.data));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <>
       <h1>My Stories</h1>
@@ -38,20 +49,28 @@ const StoriesList = () => {
               excerpt = array.splice(0, 14).join(" ") + "...";
             } else excerpt = array.join(" ") + "...";
             return (
-              <Link
-                className="story-container"
-                key={story.storyId}
-                to={`/write/${story.storyId}`}
-              >
-                <div key={story.storyId}>
-                  <h3 className="story-list-story-title">{story.title}</h3>{" "}
-                  <p>{excerpt}</p>
-                  <p className="updated-at">
-                    Last Updated:{" "}
-                    {format(new Date(story.updatedAt), "MMMM dd, yyyy h:mm a")}
-                  </p>
-                </div>
-              </Link>
+              <>
+                <Link
+                  className="story-container"
+                  key={story.storyId}
+                  to={`/write/${story.storyId}`}
+                >
+                  <div key={story.storyId}>
+                    <h3 className="story-list-story-title">{story.title}</h3>{" "}
+                    <p>{excerpt}</p>
+                    <p className="updated-at">
+                      Last Updated:{" "}
+                      {format(
+                        new Date(story.updatedAt),
+                        "MMMM dd, yyyy h:mm a"
+                      )}
+                    </p>
+                  </div>
+                </Link>
+                <button onClick={() => handleDelete(story.storyId)}>
+                  Delete
+                </button>
+              </>
             );
           })
         ) : (

@@ -42,6 +42,6 @@ app.post("/api/saveStory", saveStory);
 app.post("/api/newStory", newStory);
 app.post("/api/getStory", getStory);
 app.get("/api/getAllStories", getAllStories);
-app.delete("/api/deleteStory", deleteStory);
+app.delete("/api/deleteStory/:storyId", deleteStory);
 
 ViteExpress.listen(app, PORT, () => console.log(`${PORT} chance baby`));

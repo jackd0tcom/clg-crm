@@ -67,8 +67,10 @@ export default {
     try {
       console.log("delete");
       if (req.session.user) {
-        const { storyId } = req.body;
+        const { storyId } = req.params;
         await Story.destroy({ where: { storyId } });
+        const userId = req.session.user.userId;
+        console.log(userId);
         const newStories = await Story.findAll({ where: { userId } });
         res.send(newStories);
       }
