@@ -77,8 +77,11 @@ textarea {
   max-height: 100%;
 }
 
+/* Stories List */
+
 .stories-list-container {
   display: flex;
+  flex-direction: column;
   justify-content: center;
 }
 
@@ -97,10 +100,9 @@ textarea {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  width: 100%;
   padding: 20px;
-  width: 40%;
   border: 1px solid grey;
-  min-height: 20vh;
 }
 .updated-at {
   color: grey;
@@ -135,6 +137,10 @@ textarea {
   margin: 4rem;
 }
 
+.friend-stories-wrapper {
+  margin-top: 4rem;
+}
+
 /* Profile */
 
 .profile-wrapper {
@@ -155,3 +161,5 @@ textarea {
   background-repeat: no-repeat;
   background-size: cover;
 }
+
+/* Homepage */

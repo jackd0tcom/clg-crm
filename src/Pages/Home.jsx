@@ -2,9 +2,8 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useState } from "react";
-import Writer from "../Elements/Writer";
 import StoriesList from "../Elements/StoriesList.jsx";
-import Nav from "../Elements/Nav.jsx";
+import FriendStoryList from "../Elements/FriendStoryList.jsx";
 
 const Home = () => {
   const userId = useSelector((state) => state.userId);
@@ -23,9 +22,16 @@ const Home = () => {
       </div>
     </section>
   ) : (
-    <>
-      <StoriesList />
-    </>
+    <div className="home-container">
+      <h1>Write & Pass</h1>
+      <div className="write-cta-container">
+        <button onClick={() => navigate("/new-story")}>
+          Start A New Story
+        </button>
+      </div>
+      <h3>See what your friends are up to...</h3>
+      <FriendStoryList />
+    </div>
   );
 };
 

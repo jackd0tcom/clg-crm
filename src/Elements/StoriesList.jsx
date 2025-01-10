@@ -3,6 +3,7 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import StoryCard from "./StoryCard";
+import FriendStoryList from "./FriendStoryList";
 
 const StoriesList = () => {
   const [stories, setStories] = useState([]);
@@ -10,7 +11,6 @@ const StoriesList = () => {
   const userId = useSelector((state) => state.userId);
   const [deleteId, setDeleteId] = useState(null);
   const [deleteTitle, setDeleteTitle] = useState(null);
-  const [friendStories, setFriendStories] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -20,13 +20,10 @@ const StoriesList = () => {
 
     async function fetchData() {
       try {
-        const [storiesResponse, friendsResponse] = await Promise.all([
+        const [storiesResponse] = await Promise.all([
           axios.get("/api/getAllStories"),
-          axios.get("/api/getFriendStories"),
         ]);
         setStories(storiesResponse.data);
-        setFriendStories(friendsResponse.data);
-        console.log(storiesResponse.data, friendsResponse.data);
       } catch (error) {
         console.error("Error fetching stories:", error);
       }
@@ -35,7 +32,6 @@ const StoriesList = () => {
   }, [userId, navigate]);
 
   const handleDelete = (id) => {
-    console.log(id);
     try {
       axios.delete(`/api/deleteStory/${id}`).then((res) => {
         setStories(res.data);
@@ -79,12 +75,13 @@ const StoriesList = () => {
               return (
                 <StoryCard
                   id={story.storyId}
-                  title={story.storyTitle}
+                  title={story.title}
                   excerpt={excerpt}
                   updatedAt={story.updatedAt}
                   setDeleteId={setDeleteId}
                   setDeleteTitle={setDeleteTitle}
                   setIsConfirmed={setIsConfirmed}
+                  userId={userId}
                 />
               );
             })
@@ -97,12 +94,10 @@ const StoriesList = () => {
               Start your first story
             </button>
           )}
-          {friendStories.map((friend) => {
-            console.log(friend);
-            friend.stories.forEach((story) => {
-              return <h1>yup</h1>;
-            });
-          })}
+        </div>
+        <div className="friend-stories-wrapper">
+          <h2>Friend's Stories</h2>
+          <FriendStoryList />
         </div>
       </div>
     </>

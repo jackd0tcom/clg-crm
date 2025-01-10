@@ -1,16 +1,7 @@
 import { Link } from "react-router";
 import { format } from "date-fns";
 
-const StoryCard = ({
-  excerpt,
-  id,
-  title,
-  updatedAt,
-  setDeleteId,
-  setDeleteTitle,
-  setIsConfirmed,
-  userId,
-}) => {
+const FriendStoryCard = ({ excerpt, id, title, updatedAt, userId }) => {
   return (
     <div className="story-wrapper" key={id}>
       <Link className="story-container" to={`/write/${id}`}>
@@ -38,4 +29,4 @@ const StoryCard = ({
   );
 };
 
-export default StoryCard;
+export default FriendStoryCard;
