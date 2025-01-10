@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
-import { useNavigate, Link } from "react-router";
-import { format } from "date-fns";
+import { useNavigate } from "react-router";
+import StoryCard from "./StoryCard";
 
 const StoriesList = () => {
   const [stories, setStories] = useState([]);
+  const [isConfirmed, setIsConfirmed] = useState(true);
   const userId = useSelector((state) => state.userId);
+  const [deleteId, setDeleteId] = useState(null);
+  const [deleteTitle, setDeleteTitle] = useState(null);
+  const [friendStories, setFriendStories] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -16,9 +20,13 @@ const StoriesList = () => {
 
     async function fetchData() {
       try {
-        const response = await axios.get("/api/getAllStories");
-        console.log(response.data);
-        setStories(response.data);
+        const [storiesResponse, friendsResponse] = await Promise.all([
+          axios.get("/api/getAllStories"),
+          axios.get("/api/getFriendStories"),
+        ]);
+        setStories(storiesResponse.data);
+        setFriendStories(friendsResponse.data);
+        console.log(storiesResponse.data, friendsResponse.data);
       } catch (error) {
         console.error("Error fetching stories:", error);
       }
@@ -29,13 +37,32 @@ const StoriesList = () => {
   const handleDelete = (id) => {
     console.log(id);
     try {
-      axios
-        .delete(`/api/deleteStory/${id}`)
-        .then((res) => setStories(res.data));
+      axios.delete(`/api/deleteStory/${id}`).then((res) => {
+        setStories(res.data);
+        setIsConfirmed(true);
+        setDeleteId(null);
+        setDeleteTitle(null);
+      });
     } catch (error) {
       console.log(error);
     }
   };
+
+  if (!isConfirmed) {
+    return (
+      <>
+        <h2>Are you sure you want to delete {deleteTitle}?</h2>
+        <button
+          onClick={() => {
+            handleDelete(deleteId);
+          }}
+        >
+          Delete it
+        </button>
+        <button onClick={() => setIsConfirmed(true)}>Cancel</button>
+      </>
+    );
+  }
 
   return (
     <>
@@ -50,28 +77,15 @@ const StoriesList = () => {
                 excerpt = array.splice(0, 14).join(" ") + "...";
               } else excerpt = array.join(" ") + "...";
               return (
-                <div className="story-wrapper" key={story.storyId}>
-                  <Link
-                    className="story-container"
-                    key={story.storyId}
-                    to={`/write/${story.storyId}`}
-                  >
-                    <div key={story.storyId}>
-                      <h3 className="story-list-story-title">{story.title}</h3>{" "}
-                      <p>{excerpt}</p>
-                      <p className="updated-at">
-                        Last Updated:{" "}
-                        {format(
-                          new Date(story.updatedAt),
-                          "MMMM dd, yyyy h:mm a"
-                        )}
-                      </p>
-                    </div>
-                  </Link>
-                  <button onClick={() => handleDelete(story.storyId)}>
-                    Delete
-                  </button>
-                </div>
+                <StoryCard
+                  id={story.storyId}
+                  title={story.storyTitle}
+                  excerpt={excerpt}
+                  updatedAt={story.updatedAt}
+                  setDeleteId={setDeleteId}
+                  setDeleteTitle={setDeleteTitle}
+                  setIsConfirmed={setIsConfirmed}
+                />
               );
             })
           ) : (
@@ -83,6 +97,12 @@ const StoriesList = () => {
               Start your first story
             </button>
           )}
+          {friendStories.map((friend) => {
+            console.log(friend);
+            friend.stories.forEach((story) => {
+              return <h1>yup</h1>;
+            });
+          })}
         </div>
       </div>
     </>

@@ -78,4 +78,27 @@ export default {
       console.log(error);
     }
   },
+  getAllFriendStories: async (req, res) => {
+    try {
+      console.log("getAllStories");
+      if (req.session.user) {
+        const { friends } = req.session.user;
+        const stories = await Promise.all(
+          friends.map(async (friend) => {
+            const friendsStories = await Story.findAll({
+              where: { userId: friend.friendId },
+            });
+            return {
+              friend: friend,
+              stories: friendsStories,
+            };
+          })
+        );
+
+        res.send(stories.flat());
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  },
 };

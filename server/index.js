@@ -5,7 +5,14 @@ import authCtrl from "./controllers/authCtrl.js";
 import storyCtrl from "./controllers/storyCtrl.js";
 import userCtrl from "./controllers/userCtrl.js";
 const { getUser, getFriends } = userCtrl;
-const { saveStory, getStory, getAllStories, deleteStory, newStory } = storyCtrl;
+const {
+  saveStory,
+  getStory,
+  getAllStories,
+  deleteStory,
+  newStory,
+  getAllFriendStories,
+} = storyCtrl;
 const { register, login, checkUser, logout, updateUser } = authCtrl;
 
 const app = express();
@@ -49,5 +56,6 @@ app.post("/api/newStory", newStory);
 app.post("/api/getStory", getStory);
 app.get("/api/getAllStories", getAllStories);
 app.delete("/api/deleteStory/:storyId", deleteStory);
+app.get("/api/getFriendStories", getAllFriendStories);
 
 ViteExpress.listen(app, PORT, () => console.log(`${PORT} chance baby`));

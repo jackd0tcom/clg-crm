@@ -1,4 +1,4 @@
-import { User, Story } from "../model.js";
+import { User, Story, Friend } from "../model.js";
 import bcrypt from "bcryptjs";
 
 export default {
@@ -46,6 +46,17 @@ export default {
       const { username, password } = req.body;
 
       const foundUser = await User.findOne({ where: { username } });
+      const friendData = await User.findByPk(foundUser.userId, {
+        include: {
+          model: User,
+          as: "friends",
+          through: { attributes: ["status"] },
+        },
+      });
+
+      const friends = friendData.friends.map((friend) => {
+        return { friendId: friend.userId, friendUsername: friend.username };
+      });
 
       if (foundUser) {
         const loggedIn = bcrypt.compareSync(password, foundUser.password);
@@ -53,6 +64,7 @@ export default {
           req.session.user = {
             userId: foundUser.userId,
             username: foundUser.username,
+            friends: friends,
           };
           res.send(req.session.user);
           console.log("logged in successfully!");

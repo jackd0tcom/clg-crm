@@ -51,12 +51,12 @@ const Writer = () => {
       autoSave();
       setChangeCount(0);
     }
-    const handleBeforeUnload = () => autoSave();
-    window.addEventListener("beforeunload", handleBeforeUnload);
+    // const handleBeforeUnload = () => autoSave();
+    // window.addEventListener("beforeunload", handleBeforeUnload);
 
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
+    // return () => {
+    //   window.removeEventListener("beforeunload", handleBeforeUnload);
+    // };
   }, [changeCount]);
 
   async function autoSave() {
@@ -148,7 +148,13 @@ const Writer = () => {
       <div>
         <button
           onClick={() => {
-            console.log(storyIdState, userId, allowedUsers);
+            console.log(
+              storyIdState,
+              userId,
+              allowedUsers,
+              storyContent,
+              storyTitle
+            );
           }}
         >
           Story Id
