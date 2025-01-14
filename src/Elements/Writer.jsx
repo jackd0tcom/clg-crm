@@ -28,7 +28,6 @@ const Writer = () => {
         await axios.post("/api/getStory", { storyId }).then((res) => {
           if (res.data.userId === userId) {
             console.log(res.data);
-            console.log(userId);
             allowedUsers.push(userId);
             SetStoryContent(res.data.content);
             SetStoryTitle(res.data.title);

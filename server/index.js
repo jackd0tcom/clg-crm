@@ -12,9 +12,11 @@ const {
   deleteStory,
   newStory,
   getAllFriendStories,
+  getTopStories,
 } = storyCtrl;
 const { register, login, checkUser, logout, updateUser } = authCtrl;
 
+// Express setup
 const app = express();
 const PORT = 5050;
 
@@ -39,7 +41,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// Endpoints here!
+// Endpoints
 // auth endpoints
 app.post("/api/register", register);
 app.post("/api/login", login);
@@ -57,5 +59,6 @@ app.post("/api/getStory", getStory);
 app.get("/api/getAllStories", getAllStories);
 app.delete("/api/deleteStory/:storyId", deleteStory);
 app.get("/api/getFriendStories", getAllFriendStories);
+app.get("/api/getTopStories", getTopStories);
 
 ViteExpress.listen(app, PORT, () => console.log(`${PORT} chance baby`));

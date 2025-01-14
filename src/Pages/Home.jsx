@@ -5,6 +5,7 @@ import { useState } from "react";
 import StoriesList from "../Elements/StoriesList.jsx";
 import FriendStoryList from "../Elements/FriendStoryList.jsx";
 import LastStory from "../Elements/LastStory.jsx";
+import TopStories from "../Elements/TopStories.jsx";
 
 const Home = () => {
   const userId = useSelector((state) => state.userId);
@@ -33,6 +34,7 @@ const Home = () => {
       <LastStory userId={userId} />
       <h3>See what your friends are up to...</h3>
       <FriendStoryList />
+      <TopStories />
     </div>
   );
 };

@@ -101,4 +101,13 @@ export default {
       console.log(error);
     }
   },
+  getTopStories: async (req, res) => {
+    try {
+      console.log("getTopStories");
+      const list = await Story.findAll({ limit: 20 });
+      res.send(200, list);
+    } catch (error) {
+      console.log(error);
+    }
+  },
 };
