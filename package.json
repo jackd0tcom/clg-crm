@@ -29,6 +29,7 @@
     "redux": "^5.0.1",
     "redux-persist": "^6.0.0",
     "sequelize": "^6.37.5",
+    "socket.io": "^4.8.1",
     "vite-express": "^0.20.0"
   },
   "devDependencies": {

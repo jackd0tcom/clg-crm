@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { useState } from "react";
 import StoriesList from "../Elements/StoriesList.jsx";
 import FriendStoryList from "../Elements/FriendStoryList.jsx";
+import LastStory from "../Elements/LastStory.jsx";
 
 const Home = () => {
   const userId = useSelector((state) => state.userId);
@@ -29,6 +30,7 @@ const Home = () => {
           Start A New Story
         </button>
       </div>
+      <LastStory userId={userId} />
       <h3>See what your friends are up to...</h3>
       <FriendStoryList />
     </div>

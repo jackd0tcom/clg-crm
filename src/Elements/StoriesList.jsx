@@ -23,7 +23,12 @@ const StoriesList = () => {
         const [storiesResponse] = await Promise.all([
           axios.get("/api/getAllStories"),
         ]);
-        setStories(storiesResponse.data);
+
+        const sortedStories = storiesResponse.data.sort((a, b) => {
+          return new Date(b.updatedAt) - new Date(a.updatedAt);
+        });
+
+        setStories(sortedStories);
       } catch (error) {
         console.error("Error fetching stories:", error);
       }
@@ -34,7 +39,10 @@ const StoriesList = () => {
   const handleDelete = (id) => {
     try {
       axios.delete(`/api/deleteStory/${id}`).then((res) => {
-        setStories(res.data);
+        const sortedStories = res.data.sort((a, b) => {
+          return new Date(b.updatedAt) - new Date(a.updatedAt);
+        });
+        setStories(sortedStories);
         setIsConfirmed(true);
         setDeleteId(null);
         setDeleteTitle(null);

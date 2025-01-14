@@ -163,3 +163,11 @@ textarea {
 }
 
 /* Homepage */
+.write-cta-container {
+  padding: 4rem;
+  border: 1px solid grey;
+  margin: 4rem;
+}
+.latest-story-container {
+  margin: 4rem;
+}
