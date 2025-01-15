@@ -33,8 +33,8 @@ const FriendStoryList = () => {
                 : array.join(" ") + "...";
             return (
               <FriendStoryCard
-                key={story.id}
-                id={story.id}
+                key={story.storyId}
+                id={story.storyId}
                 title={story.title}
                 excerpt={excerpt}
                 updatedAt={story.updatedAt}

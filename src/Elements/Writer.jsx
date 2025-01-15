@@ -21,7 +21,8 @@ const Writer = () => {
   const [storyIdState, SetStoryIdState] = useState(storyId);
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
-  const [publishedStatus, setPublishedStatus] = useState("");
+  const [publishedStatus, setPublishedStatus] = useState("Private");
+  const [isPublished, setIsPublished] = useState(false);
 
   useEffect(() => {
     async function fetchStory() {
@@ -34,6 +35,7 @@ const Writer = () => {
             SetStoryTitle(res.data.title);
             SetStoryIdState(res.data.storyId);
             setPublishedStatus(res.data.isPublished ? "Published" : "Private");
+            setIsPublished(res.data.isPublished);
           }
         });
       } catch (error) {
@@ -84,6 +86,7 @@ const Writer = () => {
   }
 
   const handleTitleChange = (e) => {
+    setIsPublished(false);
     SetStoryTitle(e.target.value);
     setChangeCount((prev) => prev + 1);
 
@@ -96,6 +99,7 @@ const Writer = () => {
   };
 
   const handleContentChange = (e) => {
+    setIsPublished(false);
     SetStoryContent(e.target.value);
     setChangeCount((prev) => prev + 1);
 
@@ -149,6 +153,7 @@ const Writer = () => {
       if (res.status === 200) {
         setTimeout(() => {
           setPublishedStatus("Published");
+          setIsPublished(true);
         }, 500);
       }
     } catch (error) {
@@ -181,7 +186,11 @@ const Writer = () => {
             <button>Save</button>
           </div>
         </form>
-        <button onClick={() => handlePublish()}>Publish</button>
+        {isPublished ? (
+          <button disabled>Publish</button>
+        ) : (
+          <button onClick={() => handlePublish()}>Publish</button>
+        )}
       </div>
     );
   } else {

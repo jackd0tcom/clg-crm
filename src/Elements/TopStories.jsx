@@ -36,7 +36,8 @@ const TopStories = () => {
         return (
           <FriendStoryCard
             excerpt={excerpt}
-            id={story.userId}
+            id={story.storyId}
+            userId={story.userId}
             title={story.title}
             updatedAt={story.updatedAt}
             likes={story.likes}

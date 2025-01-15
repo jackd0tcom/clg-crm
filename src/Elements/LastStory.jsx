@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { parseISO, max } from "date-fns";
 import FriendStoryCard from "./FriendStoryCard";
+import StoryCard from "./StoryCard";
 import { useSelector } from "react-redux";
 
 const LastStory = ({ userId }) => {
@@ -33,7 +34,6 @@ const LastStory = ({ userId }) => {
         (story) => parseISO(story.updatedAt).getTime() === latestDate.getTime()
       );
       setLatest(latestStory || null);
-      console.log(latestStory);
     }
   }, [dates, storyList]);
 
@@ -42,7 +42,7 @@ const LastStory = ({ userId }) => {
       <h2>Pick up where you left off...</h2>
       {latest && (
         <FriendStoryCard
-          id={latest.id}
+          id={latest.storyId}
           title={latest.title}
           excerpt={latest.content}
           updatedAt={latest.updatedAt}

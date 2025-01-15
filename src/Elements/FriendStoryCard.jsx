@@ -12,7 +12,7 @@ const FriendStoryCard = ({
 }) => {
   return (
     <div className="story-wrapper" key={id}>
-      <Link className="story-container" to={`/write/${id}`}>
+      <Link className="story-container" to={`/read/${id}`}>
         <div key={id}>
           <h3 className="story-list-story-title">{title}</h3>
           <h4>By: {username}</h4>
@@ -23,19 +23,6 @@ const FriendStoryCard = ({
           <p>Likes: {likes}</p>
         </div>
       </Link>
-      {userId === id ? (
-        <button
-          onClick={() => {
-            setDeleteId(story.storyId);
-            setDeleteTitle(story.title);
-            setIsConfirmed(false);
-          }}
-        >
-          Delete
-        </button>
-      ) : (
-        ""
-      )}
     </div>
   );
 };
