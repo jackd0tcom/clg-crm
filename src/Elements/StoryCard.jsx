@@ -10,6 +10,7 @@ const StoryCard = ({
   setDeleteTitle,
   setIsConfirmed,
   userId,
+  isPublished,
 }) => {
   return (
     <div className="story-wrapper" key={id}>
@@ -19,21 +20,18 @@ const StoryCard = ({
           <p className="updated-at">
             Last Updated: {format(new Date(updatedAt), "MMMM dd, yyyy h:mm a")}
           </p>
+          {isPublished ? <p>Published</p> : <p>Private</p>}
         </div>
       </Link>
-      {userId === id ? (
-        <button
-          onClick={() => {
-            setDeleteId(story.storyId);
-            setDeleteTitle(story.title);
-            setIsConfirmed(false);
-          }}
-        >
-          Delete
-        </button>
-      ) : (
-        ""
-      )}
+      <button
+        onClick={() => {
+          setDeleteId(id);
+          setDeleteTitle(title);
+          setIsConfirmed(false);
+        }}
+      >
+        Delete
+      </button>
     </div>
   );
 };

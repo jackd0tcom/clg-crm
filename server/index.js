@@ -13,6 +13,7 @@ const {
   newStory,
   getAllFriendStories,
   getTopStories,
+  publishStory,
 } = storyCtrl;
 const { register, login, checkUser, logout, updateUser } = authCtrl;
 
@@ -60,5 +61,6 @@ app.get("/api/getAllStories", getAllStories);
 app.delete("/api/deleteStory/:storyId", deleteStory);
 app.get("/api/getFriendStories", getAllFriendStories);
 app.get("/api/getTopStories", getTopStories);
+app.post("/api/publishStory", publishStory);
 
 ViteExpress.listen(app, PORT, () => console.log(`${PORT} chance baby`));

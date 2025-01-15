@@ -90,6 +90,7 @@ const StoriesList = () => {
                   setDeleteTitle={setDeleteTitle}
                   setIsConfirmed={setIsConfirmed}
                   userId={userId}
+                  isPublished={story.isPublished}
                 />
               );
             })

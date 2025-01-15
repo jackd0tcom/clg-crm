@@ -24,7 +24,6 @@ const FriendStoryList = () => {
   return storyList.map((friend) => {
     return (
       <div key={friend.friend.friendId} className="friend-stories">
-        <h2>{friend.friend.friendUsername}'s Stories</h2>
         <div className="stories-container">
           {friend.stories.map((story) => {
             let array = story.content.split(" ");
@@ -40,6 +39,8 @@ const FriendStoryList = () => {
                 excerpt={excerpt}
                 updatedAt={story.updatedAt}
                 userId={userId}
+                likes={story.likes}
+                username={story.username}
               />
             );
           })}

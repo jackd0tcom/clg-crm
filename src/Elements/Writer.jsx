@@ -21,6 +21,7 @@ const Writer = () => {
   const [storyIdState, SetStoryIdState] = useState(storyId);
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
+  const [publishedStatus, setPublishedStatus] = useState("");
 
   useEffect(() => {
     async function fetchStory() {
@@ -32,6 +33,7 @@ const Writer = () => {
             SetStoryContent(res.data.content);
             SetStoryTitle(res.data.title);
             SetStoryIdState(res.data.storyId);
+            setPublishedStatus(res.data.isPublished ? "Published" : "Private");
           }
         });
       } catch (error) {
@@ -138,6 +140,23 @@ const Writer = () => {
     }
   };
 
+  async function handlePublish() {
+    try {
+      setPublishedStatus("Publishing...");
+      const res = await axios.post("/api/publishStory", {
+        storyId: storyIdState,
+      });
+      if (res.status === 200) {
+        setTimeout(() => {
+          setPublishedStatus("Published");
+        }, 500);
+      }
+    } catch (error) {
+      console.log(error);
+      setPublishedStatus("Error Publishing. Try again");
+    }
+  }
+
   if (isLoading) {
     return <Loader />;
   }
@@ -145,21 +164,9 @@ const Writer = () => {
   if (allowedUsers.includes(userId)) {
     return (
       <div>
-        <button
-          onClick={() => {
-            console.log(
-              storyIdState,
-              userId,
-              allowedUsers,
-              storyContent,
-              storyTitle
-            );
-          }}
-        >
-          Story Id
-        </button>
         <form className="writer-wrapper" onSubmit={save}>
           <div className="story-title-wrapper">
+            <p>{publishedStatus}</p>
             <WriterTitle
               storyTitle={storyTitle}
               handleTitleChange={handleTitleChange}
@@ -174,6 +181,7 @@ const Writer = () => {
             <button>Save</button>
           </div>
         </form>
+        <button onClick={() => handlePublish()}>Publish</button>
       </div>
     );
   } else {

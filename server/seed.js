@@ -32,22 +32,31 @@ const stories = [
   {
     userId: 1, // Alice's userId
     title: "A Mysterious Journey",
+    author: "jack",
     content:
       "In the quiet town of Eldore, the moonlight shone brightly, casting eerie shadows on the cobblestone streets...",
+    likes: 1,
+    isPublished: true,
   },
   // Stories for Bob
   {
     userId: 2, // Bob's userId
     title: "The Lost Treasure",
+    author: "han",
     content:
       "Bob had always dreamed of finding a hidden treasure, but he never expected to stumble upon it in the most unlikely of places...",
+    likes: 2,
+    isPublished: true,
   },
   // Stories for Charlie
   {
     userId: 3, // Charlie's userId
     title: "A Glimpse of Eternity",
+    author: "ebot9",
     content:
       "Charlie had always felt out of place in the world, until one fateful day when he saw a strange light in the sky...",
+    likes: 3,
+    isPublished: true,
   },
 ];
 

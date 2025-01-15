@@ -48,6 +48,10 @@ Story.init(
       primaryKey: true,
       autoIncrement: true,
     },
+    author: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
     userId: {
       type: DataTypes.INTEGER,
     },
@@ -59,6 +63,15 @@ Story.init(
     content: {
       type: DataTypes.TEXT,
       allowNull: false,
+    },
+    likes: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
+    isPublished: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
     },
   },
   {
