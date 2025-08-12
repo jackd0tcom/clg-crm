@@ -63,4 +63,6 @@ app.get("/api/getFriendStories", getAllFriendStories);
 app.get("/api/getTopStories", getTopStories);
 app.post("/api/publishStory", publishStory);
 
-ViteExpress.listen(app, PORT, () => console.log(`${PORT} chance baby`));
+ViteExpress.listen(app, PORT, () =>
+  console.log(`http://localhost:${PORT} chance baby`)
+);

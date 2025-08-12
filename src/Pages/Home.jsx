@@ -15,11 +15,7 @@ const Home = () => {
     <section>
       <div>
         <h2>Welcome to</h2>
-        <h1>Writer</h1>
-
-        <div>
-          <p>Start writing</p>
-        </div>
+        <h1>CLG</h1>
         <button onClick={() => navigate("/login")}>Get Started</button>
       </div>
     </section>

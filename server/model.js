@@ -28,9 +28,9 @@ User.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    userBio: {
+    role: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: false,
     },
   },
   {

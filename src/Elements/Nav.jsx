@@ -26,7 +26,7 @@ const Nav = () => {
           navigate("/");
         }}
       >
-        Writer
+        CLG
       </button>
       <div className="nav-buttons">
         {!userId ? (
