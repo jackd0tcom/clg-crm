@@ -1,76 +1,295 @@
 import connectToDB from "./db.js";
-import { User, Story, Friend } from "./model.js";
+import { User, Task, Case, Comment, ActivityLog, Notification } from "./model.js";
 import bcrypt from "bcryptjs";
 
 const db = await connectToDB("postgresql:///story-db");
 
 const users = [
   {
-    username: "jack",
-    password: bcrypt.hashSync("jack", 10), // Example password
-    firstName: "jack",
-    lastName: "b",
-    userBio: "jacks bio",
+    username: "admin_sarah",
+    password: bcrypt.hashSync("admin123", 10),
+    firstName: "Sarah",
+    lastName: "Johnson",
+    role: "admin",
   },
   {
-    username: "han",
-    password: bcrypt.hashSync("han", 10),
-    firstName: "hannah",
-    lastName: "b",
-    userBio: "hannah's bio",
+    username: "meg_attorney",
+    password: bcrypt.hashSync("meg456", 10),
+    firstName: "Meg",
+    lastName: "Williams",
+    role: "team_member",
   },
   {
-    username: "ebot9",
-    password: bcrypt.hashSync("ebot9", 10),
-    firstName: "ethan",
-    lastName: "g",
-    userBio: "ethan's bio",
+    username: "jenn_paralegal",
+    password: bcrypt.hashSync("jenn789", 10),
+    firstName: "Jenn",
+    lastName: "Davis",
+    role: "team_member",
+  },
+  {
+    username: "mike_partner",
+    password: bcrypt.hashSync("mike321", 10),
+    firstName: "Mike",
+    lastName: "Thompson",
+    role: "admin",
+  },
+  {
+    username: "lisa_associate",
+    password: bcrypt.hashSync("lisa654", 10),
+    firstName: "Lisa",
+    lastName: "Rodriguez",
+    role: "team_member",
   },
 ];
 
-const stories = [
+// Create cases
+const cases = [
   {
-    userId: 1, // Alice's userId
-    title: "A Mysterious Journey",
-    author: "jack",
-    content:
-      "In the quiet town of Eldore, the moonlight shone brightly, casting eerie shadows on the cobblestone streets...",
-    likes: 1,
-    isPublished: true,
+    ownerId: 1, // Sarah Johnson
+    title: "Smith Divorce Settlement",
+    clientName: "John & Mary Smith",
+    notes: "High-conflict divorce case, assets include family business and real estate holdings",
+    practiceArea: "divorce",
+    phase: "negotiation",
+    priority: "high",
+    status: "in progress",
   },
-  // Stories for Bob
   {
-    userId: 2, // Bob's userId
-    title: "The Lost Treasure",
-    author: "han",
-    content:
-      "Bob had always dreamed of finding a hidden treasure, but he never expected to stumble upon it in the most unlikely of places...",
-    likes: 2,
-    isPublished: true,
+    ownerId: 2, // Meg Williams
+    title: "Downtown Real Estate Development",
+    clientName: "Urban Development Corp",
+    notes: "Zoning issues for mixed-use development project",
+    practiceArea: "real estate",
+    phase: "litigation",
+    priority: "urgent",
+    status: "in progress",
   },
-  // Stories for Charlie
   {
-    userId: 3, // Charlie's userId
-    title: "A Glimpse of Eternity",
-    author: "ebot9",
-    content:
-      "Charlie had always felt out of place in the world, until one fateful day when he saw a strange light in the sky...",
-    likes: 3,
-    isPublished: true,
+    ownerId: 3, // Jenn Davis
+    title: "Custody Battle - Johnson Family",
+    clientName: "Amanda Johnson",
+    notes: "Custody dispute involving relocation and school district changes",
+    practiceArea: "custody",
+    phase: "investigation",
+    priority: "normal",
+    status: "in progress",
+  },
+  {
+    ownerId: 4, // Mike Thompson
+    title: "Personal Injury - Car Accident",
+    clientName: "Robert Chen",
+    notes: "Multi-vehicle accident with severe injuries, insurance company dispute",
+    practiceArea: "personal injury",
+    phase: "settlement",
+    priority: "high",
+    status: "in progress",
+  },
+  {
+    ownerId: 1, // Sarah Johnson
+    title: "Corporate Merger - TechStart Inc",
+    clientName: "TechStart Inc",
+    notes: "Merger with competitor, due diligence and contract negotiations",
+    practiceArea: "corporate",
+    phase: "negotiation",
+    priority: "normal",
+    status: "not started",
   },
 ];
 
-const friends = [
-  { userId: 1, friendId: 2, status: "accepted" },
-  { userId: 2, friendId: 3, status: "accepted" },
-  { userId: 1, friendId: 3, status: "accepted" },
+// Create tasks
+const tasks = [
+  {
+    ownerId: 1, // Sarah Johnson
+    title: "Review financial disclosure documents",
+    notes: "Need to analyze Smith family business financials for equitable distribution",
+    caseId: 1,
+    dueDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days from now
+    priority: "high",
+    status: "in progress",
+  },
+  {
+    ownerId: 2, // Meg Williams
+    title: "File motion for summary judgment",
+    notes: "Prepare and file motion based on recent zoning ordinance changes",
+    caseId: 2,
+    dueDate: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // 1 day from now
+    priority: "urgent",
+    status: "not started",
+  },
+  {
+    ownerId: 3, // Jenn Davis
+    title: "Interview child's teacher and counselor",
+    notes: "Gather information about child's academic and emotional well-being",
+    caseId: 3,
+    dueDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // 5 days from now
+    priority: "normal",
+    status: "not started",
+  },
+  {
+    ownerId: 4, // Mike Thompson
+    title: "Negotiate with insurance adjuster",
+    notes: "Discuss settlement offer and medical expenses coverage",
+    caseId: 4,
+    dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), // 2 days from now
+    priority: "high",
+    status: "in progress",
+  },
+  {
+    ownerId: 1, // Sarah Johnson
+    title: "Prepare merger agreement draft",
+    notes: "Initial draft of merger terms and conditions",
+    caseId: 5,
+    dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
+    priority: "normal",
+    status: "not started",
+  },
+  {
+    ownerId: 2, // Meg Williams
+    title: "Research recent zoning precedents",
+    notes: "Find similar cases that support our development proposal",
+    caseId: 2,
+    dueDate: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000), // 4 days from now
+    priority: "normal",
+    status: "in progress",
+  },
 ];
 
+// Create comments
+const comments = [
+  {
+    authorId: 1, // Sarah Johnson
+    taskId: 1,
+    content: "Financial documents received from client. Need to verify authenticity of business valuations.",
+    isInternal: true,
+  },
+  {
+    authorId: 2, // Meg Williams
+    taskId: 1,
+    content: "I'll review the business valuation reports tomorrow. Sarah, can you forward the tax returns?",
+    isInternal: true,
+  },
+  {
+    authorId: 3, // Jenn Davis
+    caseId: 3,
+    content: "Client mentioned concerns about child's relationship with father. Need to document this for custody evaluation.",
+    isInternal: true,
+  },
+  {
+    authorId: 4, // Mike Thompson
+    taskId: 4,
+    content: "Insurance company offered $50K settlement. Client wants to counter with $150K based on medical bills and lost wages.",
+    isInternal: true,
+  },
+  {
+    authorId: 5, // Lisa Rodriguez
+    caseId: 2,
+    content: "Zoning board meeting scheduled for next Thursday. Need to prepare presentation materials.",
+    isInternal: true,
+  },
+];
+
+// Create activity logs
+const activityLogs = [
+  {
+    authorId: 1, // Sarah Johnson
+    readerId: 2, // Meg Williams
+    objectType: "task",
+    objectId: 1,
+    action: "task_created",
+    details: "Created task: Review financial disclosure documents",
+  },
+  {
+    authorId: 2, // Meg Williams
+    readerId: 1, // Sarah Johnson
+    objectType: "task",
+    objectId: 1,
+    action: "status_updated",
+    details: "Updated task status to 'in progress'",
+  },
+  {
+    authorId: 3, // Jenn Davis
+    readerId: 4, // Mike Thompson
+    objectType: "case",
+    objectId: 3,
+    action: "case_assigned",
+    details: "Assigned custody case to Jenn Davis",
+  },
+  {
+    authorId: 4, // Mike Thompson
+    readerId: 1, // Sarah Johnson
+    objectType: "task",
+    objectId: 4,
+    action: "priority_changed",
+    details: "Changed task priority from 'normal' to 'high'",
+  },
+  {
+    authorId: 5, // Lisa Rodriguez
+    readerId: 2, // Meg Williams
+    objectType: "case",
+    objectId: 2,
+    action: "comment_added",
+    details: "Added comment about zoning board meeting",
+  },
+];
+
+// Create notifications
+const notifications = [
+  {
+    userId: 2, // Meg Williams
+    type: "task_assigned",
+    message: "You have been assigned to: File motion for summary judgment",
+    isRead: false,
+    relatedId: 2,
+    relatedType: "task",
+  },
+  {
+    userId: 3, // Jenn Davis
+    type: "task_overdue",
+    message: "Task 'Interview child's teacher and counselor' is due in 2 days",
+    isRead: false,
+    relatedId: 3,
+    relatedType: "task",
+  },
+  {
+    userId: 1, // Sarah Johnson
+    type: "case_update",
+    message: "Case 'Smith Divorce Settlement' has new activity",
+    isRead: false,
+    relatedId: 1,
+    relatedType: "case",
+  },
+  {
+    userId: 4, // Mike Thompson
+    type: "comment",
+    message: "New comment on task: Negotiate with insurance adjuster",
+    isRead: false,
+    relatedId: 4,
+    relatedType: "task",
+  },
+];
+
+// Sync database and seed data
 await db.sync({ force: true }).then(async () => {
-  await User.bulkCreate(users);
-  await Story.bulkCreate(stories);
-  await Friend.bulkCreate(friends);
-  console.log("db reset and seeded");
+  console.log("Creating users...");
+  const createdUsers = await User.bulkCreate(users);
+  
+  console.log("Creating cases...");
+  const createdCases = await Case.bulkCreate(cases);
+  
+  console.log("Creating tasks...");
+  const createdTasks = await Task.bulkCreate(tasks);
+  
+  console.log("Creating comments...");
+  await Comment.bulkCreate(comments);
+  
+  console.log("Creating activity logs...");
+  await ActivityLog.bulkCreate(activityLogs);
+  
+  console.log("Creating notifications...");
+  await Notification.bulkCreate(notifications);
+  
+  console.log("Database reset and seeded successfully!");
+  console.log(`Created ${createdUsers.length} users, ${createdCases.length} cases, and ${createdTasks.length} tasks`);
 });
 
 await db.close();

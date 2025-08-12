@@ -29,98 +29,343 @@ User.init(
       allowNull: false,
     },
     role: {
-      type: DataTypes.STRING,
+      type: DataTypes.ENUM("admin", "team_member"),
       allowNull: false,
     },
   },
   {
-    modelName: "users",
+    modelName: "user",
     sequelize: db,
     timestamps: true,
   }
 );
 
-class Story extends Model {}
-Story.init(
+class Task extends Model {}
+Task.init(
   {
-    storyId: {
+    taskId: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
-    author: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    userId: {
+    ownerId: {
       type: DataTypes.INTEGER,
+      allowNull: false,
     },
     title: {
       type: DataTypes.STRING,
       allowNull: false,
-      defaultValue: "Title",
+    },
+    notes: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    caseId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    dueDate: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    priority: {
+      type: DataTypes.ENUM("low", "normal", "high", "urgent"),
+      defaultValue: "normal",
+    },
+    status: {
+      type: DataTypes.ENUM(
+        "not started",
+        "in progress",
+        "blocked",
+        "completed"
+      ),
+      defaultValue: "not started",
+    },
+  },
+  {
+    modelName: "Task",
+    sequelize: db,
+    timestamps: true,
+  }
+);
+
+class Case extends Model {}
+Case.init(
+  {
+    caseId: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    ownerId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    title: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    clientName: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    notes: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    practiceArea: {
+      type: DataTypes.ENUM(
+        "divorce",
+        "real estate",
+        "custody",
+        "personal injury",
+        "criminal",
+        "corporate"
+      ),
+      allowNull: false,
+    },
+    phase: {
+      type: DataTypes.ENUM(
+        "intake",
+        "investigation",
+        "negotiation",
+        "litigation",
+        "settlement",
+        "closed"
+      ),
+      defaultValue: "intake",
+    },
+    priority: {
+      type: DataTypes.ENUM("low", "normal", "high", "urgent"),
+      defaultValue: "normal",
+    },
+    status: {
+      type: DataTypes.ENUM(
+        "not started",
+        "in progress",
+        "blocked",
+        "completed",
+        "closed"
+      ),
+      defaultValue: "not started",
+    },
+  },
+  {
+    modelName: "Case",
+    sequelize: db,
+    timestamps: true,
+  }
+);
+
+class ActivityLog extends Model {}
+ActivityLog.init(
+  {
+    activityId: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    authorId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: User,
+        key: "userId",
+      },
+    },
+    readerId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: User,
+        key: "userId",
+      },
+    },
+    objectType: {
+      type: DataTypes.ENUM("task", "case", "comment"),
+      allowNull: false,
+    },
+    objectId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    action: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    details: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+  },
+  {
+    modelName: "ActivityLog",
+    sequelize: db,
+    timestamps: true,
+  }
+);
+
+class Comment extends Model {}
+Comment.init(
+  {
+    commentId: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    authorId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: { model: User, key: "userId" },
+    },
+    taskId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: { model: Task, key: "taskId" },
+    },
+    caseId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: { model: Case, key: "caseId" },
     },
     content: {
       type: DataTypes.TEXT,
       allowNull: false,
     },
-    likes: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      defaultValue: 0,
-    },
-    isPublished: {
+    isInternal: {
       type: DataTypes.BOOLEAN,
-      defaultValue: false,
+      defaultValue: true,
     },
   },
   {
-    modelName: "story",
+    modelName: "Comment",
     sequelize: db,
     timestamps: true,
   }
 );
 
-class Friend extends Model {}
-Friend.init(
+class Notification extends Model {}
+Notification.init(
   {
+    notificationId: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
     userId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      references: {
-        model: User,
-        key: "userId",
-      },
+      references: { model: User, key: "userId" },
     },
-    friendId: {
-      type: DataTypes.INTEGER,
+    type: {
+      type: DataTypes.ENUM(
+        "task_assigned",
+        "task_overdue",
+        "case_update",
+        "comment",
+        "status_change"
+      ),
       allowNull: false,
-      references: {
-        model: User,
-        key: "userId",
-      },
     },
-    status: {
-      type: DataTypes.ENUM("requested", "accepted", "blocked"),
-      defaultValue: "requested",
+    message: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
+    isRead: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    relatedId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    relatedType: {
+      type: DataTypes.ENUM("task", "case", "comment"),
+      allowNull: true,
     },
   },
   {
-    modelName: "friend",
+    modelName: "Notification",
     sequelize: db,
     timestamps: true,
   }
 );
 
-User.hasMany(Story, { foreignKey: "userId" });
-Story.belongsTo(User, { foreignKey: "userId" });
+class TaskAssignees extends Model {}
+TaskAssignees.init(
+  {
+    taskId: {
+      type: DataTypes.INTEGER,
+      references: { model: Task, key: "taskId" },
+    },
+    userId: {
+      type: DataTypes.INTEGER,
+      references: { model: User, key: "userId" },
+    },
+  },
+  {
+    modelName: "TaskAssignees",
+    sequelize: db,
+    timestamps: true,
+  }
+);
 
-User.belongsToMany(User, {
-  through: Friend,
-  as: "friends",
-  foreignKey: "userId",
-  otherKey: "friendId",
-});
+class CaseAssignees extends Model {}
+CaseAssignees.init(
+  {
+    caseId: {
+      type: DataTypes.INTEGER,
+      references: { model: Case, key: "caseId" },
+    },
+    userId: {
+      type: DataTypes.INTEGER,
+      references: { model: User, key: "userId" },
+    },
+  },
+  {
+    modelName: "CaseAssignees",
+    sequelize: db,
+    timestamps: true,
+  }
+);
+
+// Many-to-many relationships for assignees
+Task.belongsToMany(User, { through: TaskAssignees, as: "assignees" });
+User.belongsToMany(Task, { through: TaskAssignees, as: "assignedTasks" });
+
+Case.belongsToMany(User, { through: CaseAssignees, as: "assignees" });
+User.belongsToMany(Case, { through: CaseAssignees, as: "assignedCases" });
+
+// One-to-many relationships for ownership
+User.hasMany(Task, { foreignKey: "ownerId", as: "ownedTasks" });
+Task.belongsTo(User, { as: "owner", foreignKey: "ownerId" });
+
+User.hasMany(Case, { foreignKey: "ownerId", as: "ownedCases" });
+Case.belongsTo(User, { as: "owner", foreignKey: "ownerId" });
+
+// Case-Task relationships
+Case.hasMany(Task, { foreignKey: "caseId" });
+Task.belongsTo(Case, { foreignKey: "caseId" });
+
+// Comment relationships
+User.hasMany(Comment, { foreignKey: "authorId", as: "comments" });
+Comment.belongsTo(User, { as: "author", foreignKey: "authorId" });
+
+Task.hasMany(Comment, { foreignKey: "taskId" });
+Comment.belongsTo(Task, { foreignKey: "taskId" });
+
+Case.hasMany(Comment, { foreignKey: "caseId" });
+Comment.belongsTo(Case, { foreignKey: "caseId" });
+
+// Notification relationships
+User.hasMany(Notification, { foreignKey: "userId" });
+Notification.belongsTo(User, { foreignKey: "userId" });
+
+// Activity log relationships
+User.hasMany(ActivityLog, { foreignKey: "authorId", as: "authoredActivities" });
+User.hasMany(ActivityLog, { foreignKey: "readerId", as: "readActivities" });
+ActivityLog.belongsTo(User, { as: "author", foreignKey: "authorId" });
+ActivityLog.belongsTo(User, { as: "reader", foreignKey: "readerId" });
 
 if (process.argv[1] === url.fileURLToPath(import.meta.url)) {
   console.log("Syncing database...");
@@ -129,4 +374,4 @@ if (process.argv[1] === url.fileURLToPath(import.meta.url)) {
   console.log("Finished syncing database!");
 }
 
-export { User, Story, Friend };
+export { User, Task, Case, ActivityLog, Comment, Notification };
