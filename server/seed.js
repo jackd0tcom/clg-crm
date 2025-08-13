@@ -1,15 +1,25 @@
 import connectToDB from "./db.js";
-import { User, Task, Case, Comment, ActivityLog, Notification } from "./model.js";
+import {
+  User,
+  Task,
+  Case,
+  Comment,
+  ActivityLog,
+  Notification,
+  CaseAssignees,
+  TaskAssignees,
+  ActivityReaders,
+} from "./model.js";
 import bcrypt from "bcryptjs";
 
-const db = await connectToDB("postgresql:///story-db");
+const db = await connectToDB("postgresql:///clg-db");
 
 const users = [
   {
-    username: "admin_sarah",
-    password: bcrypt.hashSync("admin123", 10),
-    firstName: "Sarah",
-    lastName: "Johnson",
+    username: "admin",
+    password: bcrypt.hashSync("1234", 10),
+    firstName: "Jack",
+    lastName: "Ball",
     role: "admin",
   },
   {
@@ -48,7 +58,8 @@ const cases = [
     ownerId: 1, // Sarah Johnson
     title: "Smith Divorce Settlement",
     clientName: "John & Mary Smith",
-    notes: "High-conflict divorce case, assets include family business and real estate holdings",
+    notes:
+      "High-conflict divorce case, assets include family business and real estate holdings",
     practiceArea: "divorce",
     phase: "negotiation",
     priority: "high",
@@ -78,7 +89,8 @@ const cases = [
     ownerId: 4, // Mike Thompson
     title: "Personal Injury - Car Accident",
     clientName: "Robert Chen",
-    notes: "Multi-vehicle accident with severe injuries, insurance company dispute",
+    notes:
+      "Multi-vehicle accident with severe injuries, insurance company dispute",
     practiceArea: "personal injury",
     phase: "settlement",
     priority: "high",
@@ -101,7 +113,8 @@ const tasks = [
   {
     ownerId: 1, // Sarah Johnson
     title: "Review financial disclosure documents",
-    notes: "Need to analyze Smith family business financials for equitable distribution",
+    notes:
+      "Need to analyze Smith family business financials for equitable distribution",
     caseId: 1,
     dueDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days from now
     priority: "high",
@@ -159,31 +172,36 @@ const comments = [
   {
     authorId: 1, // Sarah Johnson
     taskId: 1,
-    content: "Financial documents received from client. Need to verify authenticity of business valuations.",
+    content:
+      "Financial documents received from client. Need to verify authenticity of business valuations.",
     isInternal: true,
   },
   {
     authorId: 2, // Meg Williams
     taskId: 1,
-    content: "I'll review the business valuation reports tomorrow. Sarah, can you forward the tax returns?",
+    content:
+      "I'll review the business valuation reports tomorrow. Sarah, can you forward the tax returns?",
     isInternal: true,
   },
   {
     authorId: 3, // Jenn Davis
     caseId: 3,
-    content: "Client mentioned concerns about child's relationship with father. Need to document this for custody evaluation.",
+    content:
+      "Client mentioned concerns about child's relationship with father. Need to document this for custody evaluation.",
     isInternal: true,
   },
   {
     authorId: 4, // Mike Thompson
     taskId: 4,
-    content: "Insurance company offered $50K settlement. Client wants to counter with $150K based on medical bills and lost wages.",
+    content:
+      "Insurance company offered $50K settlement. Client wants to counter with $150K based on medical bills and lost wages.",
     isInternal: true,
   },
   {
     authorId: 5, // Lisa Rodriguez
     caseId: 2,
-    content: "Zoning board meeting scheduled for next Thursday. Need to prepare presentation materials.",
+    content:
+      "Zoning board meeting scheduled for next Thursday. Need to prepare presentation materials.",
     isInternal: true,
   },
 ];
@@ -192,7 +210,6 @@ const comments = [
 const activityLogs = [
   {
     authorId: 1, // Sarah Johnson
-    readerId: 2, // Meg Williams
     objectType: "task",
     objectId: 1,
     action: "task_created",
@@ -200,7 +217,6 @@ const activityLogs = [
   },
   {
     authorId: 2, // Meg Williams
-    readerId: 1, // Sarah Johnson
     objectType: "task",
     objectId: 1,
     action: "status_updated",
@@ -208,7 +224,6 @@ const activityLogs = [
   },
   {
     authorId: 3, // Jenn Davis
-    readerId: 4, // Mike Thompson
     objectType: "case",
     objectId: 3,
     action: "case_assigned",
@@ -216,7 +231,6 @@ const activityLogs = [
   },
   {
     authorId: 4, // Mike Thompson
-    readerId: 1, // Sarah Johnson
     objectType: "task",
     objectId: 4,
     action: "priority_changed",
@@ -224,7 +238,6 @@ const activityLogs = [
   },
   {
     authorId: 5, // Lisa Rodriguez
-    readerId: 2, // Meg Williams
     objectType: "case",
     objectId: 2,
     action: "comment_added",
@@ -268,6 +281,46 @@ const notifications = [
   },
 ];
 
+// Create activity readers (many-to-many relationships)
+const activityReaders = [
+  // Activity 1: Task created - both Meg and Jenn should see it (they're assigned to the case)
+  { activityId: 1, userId: 2 }, // Meg Williams
+  { activityId: 1, userId: 3 }, // Jenn Davis
+  
+  // Activity 2: Status updated - Sarah (task owner) should see it
+  { activityId: 2, userId: 1 }, // Sarah Johnson
+  
+  // Activity 3: Case assigned - Jack (case owner) and Mike (partner) should see it
+  { activityId: 3, userId: 1 }, // Jack
+  { activityId: 3, userId: 4 }, // Mike Thompson
+  
+  // Activity 4: Priority changed - Sarah (task owner) should see it
+  { activityId: 4, userId: 1 }, // Sarah Johnson
+  
+  // Activity 5: Comment added - Meg (case owner) should see it
+  { activityId: 5, userId: 2 }, // Meg Williams
+];
+
+// Create case assignments (many-to-many relationships)
+const caseAssignments = [
+  { caseId: 1, userId: 2 },
+  { caseId: 1, userId: 3 },
+  { caseId: 2, userId: 5 },
+  { caseId: 3, userId: 1 },
+  { caseId: 4, userId: 2 },
+  { caseId: 5, userId: 3 },
+];
+
+// Create task assignments (many-to-many relationships)
+const taskAssignments = [
+  { taskId: 1, userId: 2 },
+  { taskId: 1, userId: 3 },
+  { taskId: 2, userId: 5 },
+  { taskId: 3, userId: 1 },
+  { taskId: 4, userId: 2 },
+  { taskId: 6, userId: 3 },
+];
+
 // Sync database and seed data
 await db.sync({ force: true }).then(async () => {
   console.log("Creating users...");
@@ -288,8 +341,18 @@ await db.sync({ force: true }).then(async () => {
   console.log("Creating notifications...");
   await Notification.bulkCreate(notifications);
   
+  console.log("Creating case assignments...");
+  await CaseAssignees.bulkCreate(caseAssignments);
+  
+  console.log("Creating task assignments...");
+  await TaskAssignees.bulkCreate(taskAssignments);
+  
+  console.log("Creating activity readers...");
+  await ActivityReaders.bulkCreate(activityReaders);
+  
   console.log("Database reset and seeded successfully!");
   console.log(`Created ${createdUsers.length} users, ${createdCases.length} cases, and ${createdTasks.length} tasks`);
+  console.log(`Created ${caseAssignments.length} case assignments, ${taskAssignments.length} task assignments, and ${activityReaders.length} activity readers`);
 });
 
 await db.close();

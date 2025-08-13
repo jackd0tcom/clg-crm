@@ -2,20 +2,16 @@ import express from "express";
 import ViteExpress from "vite-express";
 import session from "express-session";
 import authCtrl from "./controllers/authCtrl.js";
-import storyCtrl from "./controllers/storyCtrl.js";
+import caseCtrl from "./controllers/caseCtrl.js";
+import taskCtrl from "./controllers/taskCtrl.js";
 import userCtrl from "./controllers/userCtrl.js";
-const { getUser, getFriends } = userCtrl;
-const {
-  saveStory,
-  getStory,
-  getAllStories,
-  deleteStory,
-  newStory,
-  getAllFriendStories,
-  getTopStories,
-  publishStory,
-} = storyCtrl;
+import activityCtrl from "./controllers/activityCtrl.js";
+const { getUser } = userCtrl;
+const { getCases, saveCase, newCase, getCase } = caseCtrl;
+const { getAllTasks, getTasksByCase, newTask, saveTask, getTask } = taskCtrl;
 const { register, login, checkUser, logout, updateUser } = authCtrl;
+const { getUserActivities, getCaseActivities, createActivity, markAsRead } =
+  activityCtrl;
 
 // Express setup
 const app = express();
@@ -52,16 +48,25 @@ app.delete("/api/logout", logout);
 
 // user endpoints
 app.get("/api/getUser/:userId", getUser);
-app.get("/api/getFriends", getFriends);
 
-app.post("/api/saveStory", saveStory);
-app.post("/api/newStory", newStory);
-app.post("/api/getStory", getStory);
-app.get("/api/getAllStories", getAllStories);
-app.delete("/api/deleteStory/:storyId", deleteStory);
-app.get("/api/getFriendStories", getAllFriendStories);
-app.get("/api/getTopStories", getTopStories);
-app.post("/api/publishStory", publishStory);
+// case endpoints
+app.get("/api/getCases", getCases);
+app.get("/api/getCase", getCase);
+app.post("/api/newCase", newCase);
+app.post("/api/saveCase", saveCase);
+
+// task endpoints
+app.get("/api/getAllTasks", getAllTasks);
+app.post("/api/getTasksByCase", getTasksByCase);
+app.post("/api/newTask", newTask);
+app.post("/api/saveTask", saveTask);
+app.get("/api/getTask", getTask);
+
+// activity endpoints
+app.get("/api/getUserActivities", getUserActivities);
+app.get("/api/getCaseActivities", getCaseActivities);
+app.post("/api/createActivity", createActivity);
+app.post("/api/markAsRead", markAsRead);
 
 ViteExpress.listen(app, PORT, () =>
   console.log(`http://localhost:${PORT} chance baby`)

@@ -2,7 +2,7 @@ import { DataTypes, Model } from "sequelize";
 import url from "url";
 import connectToDb from "./db.js";
 
-const db = await connectToDb("postgresql:///story-db");
+const db = await connectToDb("postgresql:///clg-db");
 
 class User extends Model {}
 User.init(
@@ -168,18 +168,6 @@ ActivityLog.init(
     authorId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      references: {
-        model: User,
-        key: "userId",
-      },
-    },
-    readerId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: User,
-        key: "userId",
-      },
     },
     objectType: {
       type: DataTypes.ENUM("task", "case", "comment"),
@@ -205,6 +193,30 @@ ActivityLog.init(
   }
 );
 
+// New junction table for multiple readers per activity
+class ActivityReaders extends Model {}
+ActivityReaders.init(
+  {
+    activityId: {
+      type: DataTypes.INTEGER,
+      references: { model: ActivityLog, key: "activityId" },
+    },
+    userId: {
+      type: DataTypes.INTEGER,
+      references: { model: User, key: "userId" },
+    },
+    isRead: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+  },
+  {
+    modelName: "ActivityReaders",
+    sequelize: db,
+    timestamps: true,
+  }
+);
+
 class Comment extends Model {}
 Comment.init(
   {
@@ -216,17 +228,14 @@ Comment.init(
     authorId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      references: { model: User, key: "userId" },
     },
     taskId: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      references: { model: Task, key: "taskId" },
     },
     caseId: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      references: { model: Case, key: "caseId" },
     },
     content: {
       type: DataTypes.TEXT,
@@ -255,7 +264,6 @@ Notification.init(
     userId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      references: { model: User, key: "userId" },
     },
     type: {
       type: DataTypes.ENUM(
@@ -330,11 +338,31 @@ CaseAssignees.init(
 );
 
 // Many-to-many relationships for assignees
-Task.belongsToMany(User, { through: TaskAssignees, as: "assignees" });
-User.belongsToMany(Task, { through: TaskAssignees, as: "assignedTasks" });
+Task.belongsToMany(User, {
+  through: TaskAssignees,
+  as: "assignees",
+  foreignKey: "taskId",
+  otherKey: "userId",
+});
+User.belongsToMany(Task, {
+  through: TaskAssignees,
+  as: "assignedTasks",
+  foreignKey: "userId",
+  otherKey: "taskId",
+});
 
-Case.belongsToMany(User, { through: CaseAssignees, as: "assignees" });
-User.belongsToMany(Case, { through: CaseAssignees, as: "assignedCases" });
+Case.belongsToMany(User, {
+  through: CaseAssignees,
+  as: "assignees",
+  foreignKey: "caseId",
+  otherKey: "userId",
+});
+User.belongsToMany(Case, {
+  through: CaseAssignees,
+  as: "assignedCases",
+  foreignKey: "userId",
+  otherKey: "caseId",
+});
 
 // One-to-many relationships for ownership
 User.hasMany(Task, { foreignKey: "ownerId", as: "ownedTasks" });
@@ -363,9 +391,21 @@ Notification.belongsTo(User, { foreignKey: "userId" });
 
 // Activity log relationships
 User.hasMany(ActivityLog, { foreignKey: "authorId", as: "authoredActivities" });
-User.hasMany(ActivityLog, { foreignKey: "readerId", as: "readActivities" });
 ActivityLog.belongsTo(User, { as: "author", foreignKey: "authorId" });
-ActivityLog.belongsTo(User, { as: "reader", foreignKey: "readerId" });
+
+// Many-to-many for readers
+ActivityLog.belongsToMany(User, { 
+  through: ActivityReaders, 
+  as: "readers",
+  foreignKey: "activityId",
+  otherKey: "userId"
+});
+User.belongsToMany(ActivityLog, { 
+  through: ActivityReaders, 
+  as: "readActivities",
+  foreignKey: "userId",
+  otherKey: "activityId"
+});
 
 if (process.argv[1] === url.fileURLToPath(import.meta.url)) {
   console.log("Syncing database...");
@@ -374,4 +414,14 @@ if (process.argv[1] === url.fileURLToPath(import.meta.url)) {
   console.log("Finished syncing database!");
 }
 
-export { User, Task, Case, ActivityLog, Comment, Notification };
+export {
+  User,
+  Task,
+  Case,
+  ActivityLog,
+  Comment,
+  Notification,
+  CaseAssignees,
+  TaskAssignees,
+  ActivityReaders,
+};

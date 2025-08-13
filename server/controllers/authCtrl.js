@@ -1,11 +1,11 @@
-import { User, Story, Friend } from "../model.js";
+import { User } from "../model.js";
 import bcrypt from "bcryptjs";
 
 export default {
   register: async (req, res) => {
     try {
       console.log("register");
-      const { username, password } = req.body;
+      const { username, password, firstName, lastName, role } = req.body;
 
       const foundUser = await User.findOne({ where: { username } });
 
@@ -19,10 +19,16 @@ export default {
         const newUser = await User.create({
           username,
           password: hash,
+          firstName,
+          lastName,
+          role,
         });
         req.session.user = {
           userId: newUser.userId,
           username: newUser.username,
+          firstName: firstName,
+          lastName: lastName,
+          role: role,
         };
 
         res.status(200).send(req.session.user);
@@ -46,25 +52,15 @@ export default {
       const { username, password } = req.body;
 
       const foundUser = await User.findOne({ where: { username } });
-      const friendData = await User.findByPk(foundUser.userId, {
-        include: {
-          model: User,
-          as: "friends",
-          through: { attributes: ["status"] },
-        },
-      });
-
-      const friends = friendData.friends.map((friend) => {
-        return { friendId: friend.userId, friendUsername: friend.username };
-      });
-
       if (foundUser) {
         const loggedIn = bcrypt.compareSync(password, foundUser.password);
         if (loggedIn) {
           req.session.user = {
             userId: foundUser.userId,
             username: foundUser.username,
-            friends: friends,
+            firstName: foundUser.firstName,
+            lastName: foundUser.lastName,
+            role: foundUser.role,
           };
           res.send(req.session.user);
           console.log("logged in successfully!");
