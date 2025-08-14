@@ -6,45 +6,49 @@ import { useEffect } from "react";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import Landing from "./Pages/Landing.jsx";
-import Writer from "./Elements/Writer.jsx";
-import StoriesList from "./Elements/StoriesList.jsx";
 import Nav from "./Elements/Nav.jsx";
-import Restricted from "./Pages/Restricted.jsx";
-import NewStory from "./Pages/NewStory.jsx";
 import Profile from "./Pages/Profile.jsx";
-import Reader from "./Elements/Reader.jsx";
+import Case from "./Pages/Case.jsx";
+import CaseList from "./Pages/CaseList.jsx";
+import { formatDate } from "./helpers/helperFunctions.js";
 
 function App() {
-  const userId = useSelector((state) => state.userId);
+  const isAuthenticated = useSelector((state) => state.isAuthenticated);
   const dispatch = useDispatch();
 
   useEffect(() => {
     axios
       .get("/api/checkUser")
-      .then((res) => dispatch({ type: "LOGIN", payload: res.data.userId }))
+      .then((res) => dispatch({ type: "LOGIN", payload: res.data }))
       .catch((err) => console.log(err));
-  }, [userId]);
+  }, [isAuthenticated]);
   return (
     <>
-      <Nav />
-      <Routes>
-        <Route index element={<Home />} />
-        <Route
-          path="/login"
-          element={userId ? <Navigate to="/" /> : <Landing />}
-        />
-        <Route path="/new-story" element={<NewStory />} />
-        <Route path="/write" element={<Writer />} />
-        <Route path="/write/:storyId" element={<Writer />} />
-        <Route path="/read/:storyId" element={<Reader />} />
-        <Route path="/stories" element={<StoriesList />} />
-        <Route path="/restricted" element={<Restricted />} />
-        <Route
-          path="/profile"
-          element={!userId ? <Navigate to="/login" /> : <Profile />}
-        />
-        <Route path="/profile/:userIdParams" element={<Profile />} />
-      </Routes>
+      <div className="app-wrapper">
+        <Nav />
+        <div className="page-wrapper">
+          <Routes>
+            <Route index element={<Home />} />
+            <Route
+              path="/login"
+              element={isAuthenticated ? <Navigate to="/" /> : <Landing />}
+            />
+            <Route path="/case/:caseId" element={<Case />} />
+            <Route path="/cases" element={<CaseList />} />
+            {/* <Route path="/write/:storyId" element={<Writer />} /> */}
+            {/* <Route path="/read/:storyId" element={<Reader />} /> */}
+            {/* <Route path="/stories" element={<StoriesList />} /> */}
+            {/* <Route path="/restricted" element={<Restricted />} /> */}
+            <Route
+              path="/profile"
+              element={
+                !isAuthenticated ? <Navigate to="/login" /> : <Profile />
+              }
+            />
+            <Route path="/profile/:userIdParams" element={<Profile />} />
+          </Routes>
+        </div>
+      </div>
     </>
   );
 }

@@ -60,6 +60,7 @@ export default {
             username: foundUser.username,
             firstName: foundUser.firstName,
             lastName: foundUser.lastName,
+            profilePic: foundUser.profilePic,
             role: foundUser.role,
           };
           res.send(req.session.user);

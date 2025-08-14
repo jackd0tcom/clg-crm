@@ -29,7 +29,7 @@ const Landing = () => {
       )
       .then((res) => {
         console.log(res.data);
-        dispatch({ type: "LOGIN", payload: res.data.userId });
+        dispatch({ type: "LOGIN", payload: res.data });
       })
       .catch((err) => {
         console.log(err);

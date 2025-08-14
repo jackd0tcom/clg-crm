@@ -44,9 +44,10 @@ export default {
         return res.status(401).send("User not authenticated");
       }
 
-      const { caseId } = req.body;
+      const { caseId } = req.params;
       const { userId } = req.session.user;
 
+      // Get all activities for the case
       const activities = await ActivityLog.findAll({
         where: {
           objectType: "case",
@@ -56,20 +57,31 @@ export default {
           {
             model: User,
             as: "author",
-            attributes: ["userId", "username", "firstName", "lastName"],
+            attributes: [
+              "userId",
+              "username",
+              "firstName",
+              "lastName",
+              "profilePic",
+            ],
           },
           {
             model: User,
             as: "readers",
-            where: { userId }, // Only get activities where current user is a reader
-            through: { attributes: ["isRead"] },
-            attributes: ["userId", "username", "firstName", "lastName"],
+            attributes: [
+              "userId",
+              "username",
+              "firstName",
+              "lastName",
+              "profilePic",
+            ],
+            required: false, // This makes it a LEFT JOIN
           },
         ],
         order: [["createdAt", "DESC"]],
       });
 
-      res.json(activities);
+      res.status(200).json(activities);
     } catch (error) {
       console.log(error);
       res.status(500).send("Error fetching case activities");

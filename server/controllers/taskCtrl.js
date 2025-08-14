@@ -49,9 +49,10 @@ export default {
   },
   getTasksByCase: async (req, res) => {
     try {
-      console.log("getTasks");
+      console.log("getTasksByCase");
       if (req.session.user) {
-        const { caseId } = req.body;
+        const { caseId } = req.params;
+        console.log(caseId);
         const tasks = await Task.findAll({
           where: { caseId },
         });

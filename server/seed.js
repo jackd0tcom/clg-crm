@@ -230,6 +230,34 @@ const activityLogs = [
     details: "Assigned custody case to Jenn Davis",
   },
   {
+    authorId: 3, // Jenn Davis
+    objectType: "case",
+    objectId: 1,
+    action: "phase_updated",
+    details: "changed case phase to negotiation",
+  },
+  {
+    authorId: 2,
+    objectType: "case",
+    objectId: 1,
+    action: "phase_updated",
+    details: "changed case phase to litigation",
+  },
+  {
+    authorId: 1,
+    objectType: "case",
+    objectId: 1,
+    action: "priority_update",
+    details: "changed case priority to high",
+  },
+  {
+    authorId: 3, // Jenn Davis
+    objectType: "case",
+    objectId: 1,
+    action: "case_created",
+    details: "Case opened by George Clause",
+  },
+  {
     authorId: 4, // Mike Thompson
     objectType: "task",
     objectId: 4,
@@ -286,17 +314,17 @@ const activityReaders = [
   // Activity 1: Task created - both Meg and Jenn should see it (they're assigned to the case)
   { activityId: 1, userId: 2 }, // Meg Williams
   { activityId: 1, userId: 3 }, // Jenn Davis
-  
+
   // Activity 2: Status updated - Sarah (task owner) should see it
   { activityId: 2, userId: 1 }, // Sarah Johnson
-  
+
   // Activity 3: Case assigned - Jack (case owner) and Mike (partner) should see it
   { activityId: 3, userId: 1 }, // Jack
   { activityId: 3, userId: 4 }, // Mike Thompson
-  
+
   // Activity 4: Priority changed - Sarah (task owner) should see it
   { activityId: 4, userId: 1 }, // Sarah Johnson
-  
+
   // Activity 5: Comment added - Meg (case owner) should see it
   { activityId: 5, userId: 2 }, // Meg Williams
 ];
@@ -325,34 +353,38 @@ const taskAssignments = [
 await db.sync({ force: true }).then(async () => {
   console.log("Creating users...");
   const createdUsers = await User.bulkCreate(users);
-  
+
   console.log("Creating cases...");
   const createdCases = await Case.bulkCreate(cases);
-  
+
   console.log("Creating tasks...");
   const createdTasks = await Task.bulkCreate(tasks);
-  
+
   console.log("Creating comments...");
   await Comment.bulkCreate(comments);
-  
+
   console.log("Creating activity logs...");
   await ActivityLog.bulkCreate(activityLogs);
-  
+
   console.log("Creating notifications...");
   await Notification.bulkCreate(notifications);
-  
+
   console.log("Creating case assignments...");
   await CaseAssignees.bulkCreate(caseAssignments);
-  
+
   console.log("Creating task assignments...");
   await TaskAssignees.bulkCreate(taskAssignments);
-  
+
   console.log("Creating activity readers...");
   await ActivityReaders.bulkCreate(activityReaders);
-  
+
   console.log("Database reset and seeded successfully!");
-  console.log(`Created ${createdUsers.length} users, ${createdCases.length} cases, and ${createdTasks.length} tasks`);
-  console.log(`Created ${caseAssignments.length} case assignments, ${taskAssignments.length} task assignments, and ${activityReaders.length} activity readers`);
+  console.log(
+    `Created ${createdUsers.length} users, ${createdCases.length} cases, and ${createdTasks.length} tasks`
+  );
+  console.log(
+    `Created ${caseAssignments.length} case assignments, ${taskAssignments.length} task assignments, and ${activityReaders.length} activity readers`
+  );
 });
 
 await db.close();

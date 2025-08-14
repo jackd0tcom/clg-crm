@@ -28,6 +28,11 @@ User.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    profilePic: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      defaultValue: "/src/assets/default-profile-pic.jpg",
+    },
     role: {
       type: DataTypes.ENUM("admin", "team_member"),
       allowNull: false,
@@ -394,17 +399,17 @@ User.hasMany(ActivityLog, { foreignKey: "authorId", as: "authoredActivities" });
 ActivityLog.belongsTo(User, { as: "author", foreignKey: "authorId" });
 
 // Many-to-many for readers
-ActivityLog.belongsToMany(User, { 
-  through: ActivityReaders, 
+ActivityLog.belongsToMany(User, {
+  through: ActivityReaders,
   as: "readers",
   foreignKey: "activityId",
-  otherKey: "userId"
+  otherKey: "userId",
 });
-User.belongsToMany(ActivityLog, { 
-  through: ActivityReaders, 
+User.belongsToMany(ActivityLog, {
+  through: ActivityReaders,
   as: "readActivities",
   foreignKey: "userId",
-  otherKey: "activityId"
+  otherKey: "activityId",
 });
 
 if (process.argv[1] === url.fileURLToPath(import.meta.url)) {

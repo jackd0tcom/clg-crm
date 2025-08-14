@@ -1,6 +1,7 @@
 import { User, Case } from "../model.js";
 import { Op } from "sequelize";
 import { CaseAssignees } from "../model.js";
+import { Task } from "../model.js";
 
 export default {
   getCases: async (req, res) => {
@@ -45,6 +46,87 @@ export default {
     } catch (error) {
       console.log(error);
       res.status(500).send("Error fetching cases");
+    }
+  },
+  getCasesWithTasks: async (req, res) => {
+    try {
+      if (!req.session.user) {
+        return res.status(401).send("User not authenticated");
+      }
+
+      const { userId } = req.session.user;
+
+      // First get the IDs of cases where the user is assigned
+      const assignedCases = await CaseAssignees.findAll({
+        where: { userId },
+        attributes: ["caseId"],
+      });
+
+      const assignedCaseIds = assignedCases.map((ac) => ac.caseId);
+
+      // Get cases where user is owner OR assigned
+      const cases = await Case.findAll({
+        where: {
+          [Op.or]: [
+            { ownerId: userId },
+            { caseId: { [Op.in]: assignedCaseIds } },
+          ],
+        },
+        include: [
+          {
+            model: User,
+            as: "owner",
+            attributes: ["userId", "username", "firstName", "lastName"],
+          },
+          {
+            model: User,
+            as: "assignees",
+            through: { attributes: [] },
+            attributes: ["userId", "username", "firstName", "lastName"],
+          },
+        ],
+        order: [["updatedAt", "DESC"]], // Most recently updated cases first
+      });
+
+      // Now get tasks for each case separately to avoid the complex nested query
+      const casesWithTasks = await Promise.all(
+        cases.map(async (caseData) => {
+          const caseJson = caseData.toJSON();
+
+          // Get up to 5 tasks for this case
+          const tasks = await Task.findAll({
+            where: { caseId: caseData.caseId },
+            include: [
+              {
+                model: User,
+                as: "owner",
+                attributes: ["username", "firstName", "lastName"],
+              },
+              {
+                model: User,
+                as: "assignees",
+                through: { attributes: [] },
+                attributes: ["username", "firstName", "lastName"],
+              },
+            ],
+            order: [
+              ["dueDate", "ASC"],
+              ["createdAt", "DESC"],
+            ],
+            limit: 5,
+          });
+
+          return {
+            ...caseJson,
+            tasks: tasks,
+          };
+        })
+      );
+
+      res.json(casesWithTasks);
+    } catch (error) {
+      console.log(error);
+      res.status(500).send("Error fetching cases with tasks");
     }
   },
   newCase: async (req, res) => {
@@ -106,10 +188,40 @@ export default {
     try {
       console.log("getCase");
       if (req.session.user) {
-        const { caseId } = req.body;
-        const foundCase = await Case.findOne({ where: { caseId } });
+        const { caseId } = req.params;
+        let foundCase = await Case.findOne({
+          where: { caseId },
+          include: [
+            {
+              model: User,
+              as: "owner",
+              attributes: [
+                "userId",
+                "username",
+                "firstName",
+                "lastName",
+                "profilePic",
+              ],
+            },
+            {
+              model: User,
+              as: "assignees",
+              through: { attributes: [] },
+              attributes: [
+                "userId",
+                "username",
+                "firstName",
+                "lastName",
+                "profilePic",
+              ],
+            },
+          ],
+        });
+        const tasks = await Task.findAll({ where: { caseId } });
 
-        res.send(foundCase);
+        const data = { ...foundCase.toJSON(), tasks: tasks };
+
+        res.send(data);
       }
     } catch (error) {
       console.log(error);
