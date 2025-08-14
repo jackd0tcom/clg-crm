@@ -11,6 +11,13 @@ export function formatDate(data) {
     month: "short",
     hour: "numeric",
     minute: "2-digit",
-    hour12: true
+    hour12: true,
+  }).format(date);
+}
+export function formatDateNoTime(data) {
+  const date = new Date(data);
+  return new Intl.DateTimeFormat("en-US", {
+    day: "numeric",
+    month: "short",
   }).format(date);
 }

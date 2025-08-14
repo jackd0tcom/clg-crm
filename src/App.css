@@ -130,6 +130,7 @@ button:hover,
 }
 .case-details-container {
   width: 50%;
+  margin: 10px 20px;
 }
 .case-activity-container {
   width: 50%;
@@ -182,21 +183,55 @@ button:hover,
   display: flex;
   justify-content: space-between;
 }
-
+.activity-log-items {
+  display: flex;
+  flex-direction: column;
+  row-gap: 10px;
+}
 .activity-log-item-p {
   display: flex;
   align-items: center;
   column-gap: 10px;
   font-size: 0.8rem;
   color: var(--grey);
-}
-.activity-item-pic-span {
-  height: 18px;
-}
-.activity-item-profile-pic {
-  width: 18px;
-  border-radius: 50%;
+  margin: 0;
 }
 .activity-log-dot {
   font-size: 5px;
+}
+
+/* Task List */
+.task-list-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+.task-list-table tr,
+td {
+  text-align: left;
+}
+.task-list-table th {
+  text-align: left;
+  font-size: 0.9rem;
+}
+.task-list-item td {
+  overflow: auto;
+  font-size: 0.9rem;
+}
+.task-title {
+  width: 45%;
+}
+.task-title-td {
+  overflow: hidden;
+}
+.task-item-assignee-photo-wrapper {
+  display: flex;
+  column-gap: 2px;
+}
+
+.task-item-assignee-photo {
+  width: 20px;
+  height: 20px;
+  background-size: cover;
+  border-radius: 50%;
 }

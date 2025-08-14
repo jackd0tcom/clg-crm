@@ -4,6 +4,8 @@ import axios from "axios";
 import { capitalize } from "../helpers/helperFunctions";
 import ProfilePic from "../Elements/ProfilePic";
 import ActivityLog from "../Elements/ActivityLog";
+import TaskList from "../Elements/TaskList";
+import { Link } from "react-router";
 
 const Case = () => {
   const { caseId } = useParams();
@@ -31,14 +33,16 @@ const Case = () => {
     <>
       <div className="case-wrapper">
         <div className="case-details-container">
-          <h1>Case</h1>
+          <Link to="/cases">
+            {" "}
+            <i className="fa-solid fa-arrow-left"></i>
+          </Link>
           <div className="case-card">
             <div className="case-header">
               <span>
-                <h2>{caseData.clientName}</h2>
-                <h3>
-                  {caseData.title} {capitalize(caseData.practiceArea)}
-                </h3>
+                <p>{capitalize(caseData.practiceArea)}</p>
+                <h2>{caseData.title}</h2>
+                <h3>{caseData.clientName}</h3>
               </span>
             </div>
             <div className="case-stats-wrapper">
@@ -66,6 +70,9 @@ const Case = () => {
           </div>
           <div className="case-view-task-wrapper">
             <h3>Tasks</h3>
+            <div className="case-view-task-list">
+              <TaskList data={caseData.tasks} />
+            </div>
           </div>
         </div>
         <div className="case-activity-container">

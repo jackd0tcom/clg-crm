@@ -217,7 +217,36 @@ export default {
             },
           ],
         });
-        const tasks = await Task.findAll({ where: { caseId } });
+        
+        // Get tasks with their assignees
+        const tasks = await Task.findAll({ 
+          where: { caseId },
+          include: [
+            {
+              model: User,
+              as: "assignees",
+              through: { attributes: [] },
+              attributes: [
+                "userId",
+                "username",
+                "firstName",
+                "lastName",
+                "profilePic",
+              ],
+            },
+            {
+              model: User,
+              as: "owner",
+              attributes: [
+                "userId",
+                "username",
+                "firstName",
+                "lastName",
+                "profilePic",
+              ],
+            }
+          ]
+        });
 
         const data = { ...foundCase.toJSON(), tasks: tasks };
 
