@@ -63,7 +63,6 @@ const cases = [
     practiceArea: "divorce",
     phase: "negotiation",
     priority: "high",
-    status: "in progress",
   },
   {
     ownerId: 2, // Meg Williams
@@ -73,7 +72,6 @@ const cases = [
     practiceArea: "real estate",
     phase: "litigation",
     priority: "urgent",
-    status: "in progress",
   },
   {
     ownerId: 3, // Jenn Davis
@@ -83,7 +81,6 @@ const cases = [
     practiceArea: "custody",
     phase: "investigation",
     priority: "normal",
-    status: "in progress",
   },
   {
     ownerId: 4, // Mike Thompson
@@ -94,7 +91,6 @@ const cases = [
     practiceArea: "personal injury",
     phase: "settlement",
     priority: "high",
-    status: "in progress",
   },
   {
     ownerId: 1, // Sarah Johnson
@@ -104,7 +100,6 @@ const cases = [
     practiceArea: "corporate",
     phase: "negotiation",
     priority: "normal",
-    status: "not started",
   },
 ];
 

@@ -6,11 +6,18 @@ import ProfilePic from "../Elements/ProfilePic";
 import ActivityLog from "../Elements/ActivityLog";
 import TaskList from "../Elements/TaskList";
 import { Link } from "react-router";
+import Notes from "../Elements/Notes";
+import PhaseToggle from "../Elements/PhaseToggle";
+import PriorityToggle from "../Elements/PriorityToggle";
 
 const Case = () => {
   const { caseId } = useParams();
   const [caseData, setCaseData] = useState();
   const [activityData, setActivityData] = useState();
+  const [phase, setPhase] = useState("");
+  const [priority, setPriority] = useState("");
+  const [notes, setNotes] = useState();
+  const [count, setCount] = useState(0);
 
   useEffect(() => {
     async function getData() {
@@ -21,13 +28,47 @@ const Case = () => {
         );
         setCaseData(caseResponse.data);
         setActivityData(activityResponse.data);
-        console.log(caseResponse.data, activityResponse.data);
+        setPhase(caseResponse.data.phase);
+        setPriority(caseResponse.data.priority);
+        setNotes(caseResponse.data.notes);
       } catch (error) {
         console.log(error);
       }
     }
     getData();
   }, []);
+
+  const handleUpdatePhase = (phase) => {
+    try {
+      axios.post("/api/updateCasePhase", { caseId, phase }).then((res) => {
+        console.log(res);
+      });
+    } catch (error) {}
+  };
+  const handleUpdatePriority = (priority) => {
+    try {
+      axios
+        .post("/api/updateCasePriority", { caseId, priority })
+        .then((res) => {
+          console.log(res);
+        });
+    } catch (error) {}
+  };
+
+  const updateNotes = () => {
+    try {
+      axios.post("/api/updateCaseNotes", { caseId, notes }).then((res) => {
+        console.log(res);
+        setCount(0);
+      });
+    } catch (error) {}
+  };
+  const handleUpdateNotes = (notes) => {
+    setNotes(notes);
+    if (count >= 75) {
+      updateNotes();
+    }
+  };
 
   return caseData ? (
     <>
@@ -48,24 +89,36 @@ const Case = () => {
             <div className="case-stats-wrapper">
               <div className="case-stats-container">
                 <h4>Phase</h4>
-                <h4>Status</h4>
                 <h4>Assignees</h4>
                 <h4>Priority</h4>
               </div>
               <div className="case-stats-container">
-                <h4>{capitalize(caseData.phase)}</h4>
-                <h4>{capitalize(caseData.status)}</h4>
+                <PhaseToggle
+                  value={phase}
+                  onHandle={handleUpdatePhase}
+                  setPhase={setPhase}
+                />
                 <div className="case-assignee-wrapper">
                   {caseData.assignees.map((nee) => {
                     return <ProfilePic key={nee.userId} user={nee} />;
                   })}
                 </div>
-                <h4>{capitalize(caseData.priority)}</h4>
+                <PriorityToggle
+                  value={priority}
+                  onHandle={handleUpdatePriority}
+                  setPriority={setPriority}
+                />
               </div>
             </div>
             <div className="case-notes">
-              <h3>Notes</h3>
-              <textarea name="" id="" value={caseData.notes}></textarea>
+              <Notes
+                value={notes}
+                onChange={handleUpdateNotes}
+                setNotes={Notes}
+                count={count}
+                setCount={setCount}
+                updateNotes={updateNotes}
+              />
             </div>
           </div>
           <div className="case-view-task-wrapper">

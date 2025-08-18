@@ -144,16 +144,6 @@ Case.init(
       type: DataTypes.ENUM("low", "normal", "high", "urgent"),
       defaultValue: "normal",
     },
-    status: {
-      type: DataTypes.ENUM(
-        "not started",
-        "in progress",
-        "blocked",
-        "completed",
-        "closed"
-      ),
-      defaultValue: "not started",
-    },
   },
   {
     modelName: "Case",

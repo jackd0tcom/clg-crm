@@ -140,8 +140,14 @@ button:hover,
   padding: 0px 20px;
 }
 .case-stats-wrapper {
-  display: flex;
-  column-gap: 5%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  max-width: 250px;
+}
+.case-stats-container {
+  display: grid;
+  grid-template-rows: 1fr 1fr 1fr;
+  align-items: center;
 }
 .case-list {
   display: grid;
@@ -206,23 +212,26 @@ button:hover,
   table-layout: fixed;
   border-collapse: collapse;
 }
-.task-list-table tr,
-td {
-  text-align: left;
-}
-.task-list-table th {
+.task-list {
   text-align: left;
   font-size: 0.9rem;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  column-gap: 20px;
+  align-items: start;
 }
-.task-list-item td {
+.task-list-head {
+  display: contents;
+}
+.task-list-item {
+  display: contents;
+}
+.task-list-item p {
   overflow: auto;
   font-size: 0.9rem;
 }
 .task-title {
   width: 45%;
-}
-.task-title-td {
-  overflow: hidden;
 }
 .task-item-assignee-photo-wrapper {
   display: flex;
@@ -234,4 +243,15 @@ td {
   height: 20px;
   background-size: cover;
   border-radius: 50%;
+}
+
+/* Notes */
+.case-notes textarea {
+  min-height: 15vh;
+}
+
+.notes-textarea {
+  width: calc(100% - 30px);
+  resize: none;
+  padding: 15px;
 }

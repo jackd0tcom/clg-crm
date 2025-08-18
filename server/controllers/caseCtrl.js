@@ -217,9 +217,9 @@ export default {
             },
           ],
         });
-        
+
         // Get tasks with their assignees
-        const tasks = await Task.findAll({ 
+        const tasks = await Task.findAll({
           where: { caseId },
           include: [
             {
@@ -244,8 +244,8 @@ export default {
                 "lastName",
                 "profilePic",
               ],
-            }
-          ]
+            },
+          ],
         });
 
         const data = { ...foundCase.toJSON(), tasks: tasks };
@@ -255,6 +255,57 @@ export default {
     } catch (error) {
       console.log(error);
       res.status(400).send(error);
+    }
+  },
+  updateCasePhase: async (req, res) => {
+    try {
+      console.log("updateCasePhase");
+      if (req.session.user) {
+        const { caseId, phase } = req.body;
+        const currentCase = await Case.findOne({ where: { caseId } });
+
+        currentCase.update({
+          phase,
+        });
+      }
+      res.status(200).send("Saved Case Phase Successfully");
+    } catch (err) {
+      console.log(err);
+      res.status(500).send("Failed to Save Case");
+    }
+  },
+  updateCasePriority: async (req, res) => {
+    try {
+      console.log("updateCasePriority");
+      if (req.session.user) {
+        const { caseId, priority } = req.body;
+        const currentCase = await Case.findOne({ where: { caseId } });
+
+        currentCase.update({
+          priority,
+        });
+      }
+      res.status(200).send("Saved Case Priority Successfully");
+    } catch (err) {
+      console.log(err);
+      res.status(500).send("Failed to Save Case Priority");
+    }
+  },
+  updateCaseNotes: async (req, res) => {
+    try {
+      console.log("updateCaseNotes");
+      if (req.session.user) {
+        const { caseId, notes } = req.body;
+        const currentCase = await Case.findOne({ where: { caseId } });
+
+        currentCase.update({
+          notes,
+        });
+      }
+      res.status(200).send("Saved Case Notes Successfully");
+    } catch (err) {
+      console.log(err);
+      res.status(500).send("Failed to Save Case notes");
     }
   },
 };

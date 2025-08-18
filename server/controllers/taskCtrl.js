@@ -126,4 +126,20 @@ export default {
       res.status(400).send(error);
     }
   },
+  updateTaskStatus: async (req, res) => {
+    try {
+      console.log("updateTaskStatus");
+      if (req.session.user) {
+        const { taskId, status } = req.body;
+        const currentTask = await Task.findOne({ where: { taskId } });
+        currentTask.update({
+          status,
+        });
+      }
+      res.status(200).send("Saved Task Status Successfully");
+    } catch (err) {
+      console.log(err);
+      res.status(500).send("Failed to update task status");
+    }
+  },
 };

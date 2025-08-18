@@ -7,8 +7,24 @@ import taskCtrl from "./controllers/taskCtrl.js";
 import userCtrl from "./controllers/userCtrl.js";
 import activityCtrl from "./controllers/activityCtrl.js";
 const { getUser } = userCtrl;
-const { getCases, saveCase, newCase, getCase, getCasesWithTasks } = caseCtrl;
-const { getAllTasks, getTasksByCase, newTask, saveTask, getTask } = taskCtrl;
+const {
+  getCases,
+  saveCase,
+  newCase,
+  getCase,
+  getCasesWithTasks,
+  updateCasePhase,
+  updateCasePriority,
+  updateCaseNotes,
+} = caseCtrl;
+const {
+  getAllTasks,
+  getTasksByCase,
+  newTask,
+  saveTask,
+  getTask,
+  updateTaskStatus,
+} = taskCtrl;
 const { register, login, checkUser, logout, updateUser } = authCtrl;
 const { getUserActivities, getCaseActivities, createActivity, markAsRead } =
   activityCtrl;
@@ -55,12 +71,16 @@ app.get("/api/getCasesWithTasks", getCasesWithTasks);
 app.get("/api/getCase/:caseId", getCase);
 app.post("/api/newCase", newCase);
 app.post("/api/saveCase", saveCase);
+app.post("/api/updateCasePhase", updateCasePhase);
+app.post("/api/updateCasePriority", updateCasePriority);
+app.post("/api/updateCaseNotes", updateCaseNotes);
 
 // task endpoints
 app.get("/api/getAllTasks", getAllTasks);
 app.get("/api/getTasksByCase/:caseId", getTasksByCase);
 app.post("/api/newTask", newTask);
 app.post("/api/saveTask", saveTask);
+app.post("/api/updateTaskStatus", updateTaskStatus);
 app.get("/api/getTask", getTask);
 
 // activity endpoints

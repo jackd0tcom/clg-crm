@@ -3,17 +3,17 @@ import TaskItem from "./TaskItem";
 const TaskList = ({ data }) => {
   return (
     <div className="task-list-wrapper">
-      <table className="task-list-table">
-        <tr>
-          <th className="task-title">Name</th>
-          <th>Status</th>
-          <th>Assignee</th>
-          <th>Due Date</th>
-        </tr>
-      </table>
-      {data.map((task) => {
-        return <TaskItem key={task.taskId} task={task} />;
-      })}
+      <div className="task-list">
+        <div className="task-list-head">
+          <p className="task-title">Name</p>
+          <p>Status</p>
+          <p>Assignee</p>
+          <p>Due Date</p>
+        </div>
+        {data.map((task) => {
+          return <TaskItem key={task.taskId} task={task} />;
+        })}
+      </div>
     </div>
   );
 };
