@@ -260,6 +260,8 @@ button:hover,
 .assignee-list-wrapper {
   display: flex;
   column-gap: 10px;
+  align-items: top;
+  position: relative;
 }
 .assignee-toggle-photo {
   width: 30px;
@@ -268,13 +270,72 @@ button:hover,
 .assignee-toggle-wrapper {
   overflow: visible;
   position: relative;
+  display: flex;
+  /* align-items: center; */
 }
 .assignee-toggle-x {
   position: absolute;
-  top: -5px;
+  top: -10px;
   left: 15px;
   z-index: 999;
   font-size: 20px;
   border-radius: 50%;
   cursor: pointer;
+}
+.assignee-toggle-name {
+  font-size: 0.75rem;
+  position: absolute;
+  /* background-color: lightblue; */
+  padding: 3px 10px;
+  left: -8px;
+  top: 30px;
+  border-radius: 10px;
+}
+.assignee-toggle-add-wrapper {
+  margin-left: 5px;
+  top: 5px;
+  position: absolute;
+  cursor: pointer;
+}
+.assignee-add-container {
+  width: 100%;
+  position: relative;
+}
+
+/* AssigneeAddToggle */
+.assignee-add-toggle-wrapper {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 0;
+  left: 10px;
+  border: 1px solid var(--light-border);
+  border-radius: 5px;
+  min-width: 120px;
+  width: 100%;
+}
+.assignee-add-toggle-wrapper p:nth-child(1) {
+  margin: 0;
+  padding: 10px 10px;
+}
+.assignee-add-toggle-item {
+  display: flex;
+  column-gap: 10px;
+  padding: 5px 10px;
+  border: 1px solid var(--light-border);
+  border-bottom: 0;
+  border-left: 0px;
+  border-right: 0px;
+  cursor: pointer;
+}
+.assignee-add-toggle-item:hover {
+  background-color: var(--light-grey);
+}
+.assignee-add-toggle-pic {
+  width: 25px;
+  height: auto;
+  border-radius: 50%;
+}
+.assignee-add-toggle-item p {
+  margin: 0;
 }

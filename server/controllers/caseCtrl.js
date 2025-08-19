@@ -310,12 +310,14 @@ export default {
   },
   addCaseAssignee: async (req, res) => {
     try {
-      console.log("updateCaseAssignee");
+      console.log("addCaseAssignee");
       if (!req.session.user) {
         return res.status(401).send("User not authenticated");
       }
 
-      const { caseId, assigneeId } = req.body;
+      const { caseId, userId } = req.body;
+
+      console.log(caseId, userId);
 
       // Validate that the case exists
       const caseExists = await Case.findByPk(caseId);
@@ -323,15 +325,31 @@ export default {
         return res.status(404).send("Case not found");
       }
 
-      await CaseAssignees.create({
-        caseId: parseInt(caseId),
-        userId: parseInt(assigneeId),
+      // Check if assignment already exists
+      const existingAssignment = await CaseAssignees.findOne({
+        where: {
+          caseId: parseInt(caseId),
+          userId: parseInt(userId),
+        },
       });
 
-      res.status(200).send("Case assignees updated successfully");
+      if (existingAssignment) {
+        return res.status(409).json({
+          message: "User is already assigned to this case",
+          assignment: existingAssignment,
+        });
+      }
+
+      // Create new assignment if it doesn't exist
+      const newAssignee = await CaseAssignees.create({
+        caseId: parseInt(caseId),
+        userId: parseInt(userId),
+      });
+
+      res.status(201).json(newAssignee);
     } catch (err) {
       console.log(err);
-      res.status(500).send("Failed to update case assignees");
+      res.status(500).send("Failed to add case assignee");
     }
   },
   removeCaseAssignee: async (req, res) => {
@@ -353,6 +371,38 @@ export default {
     } catch (err) {
       console.log(err);
       res.status(500).send("Failed to update case assignees");
+    }
+  },
+  getCaseNonAssignees: async (req, res) => {
+    try {
+      console.log("getCaseNonAssignees");
+      if (req.session.user) {
+        const { caseId } = req.params;
+        console.log(caseId);
+        const caseExists = await Case.findByPk(caseId);
+        if (!caseExists) {
+          return res.status(404).send("Case not found");
+        }
+
+        const caseAssignees = await CaseAssignees.findAll({
+          where: { caseId },
+        });
+        const assignedUserIds = caseAssignees.map((ca) => ca.dataValues.userId);
+        const excludedUserIds = [...assignedUserIds, caseExists.ownerId];
+
+        const nonAssignees = await User.findAll({
+          where: {
+            userId: {
+              [Op.notIn]: excludedUserIds,
+            },
+          },
+        });
+
+        res.send(nonAssignees);
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(400).send(error);
     }
   },
 };

@@ -6,7 +6,7 @@ import caseCtrl from "./controllers/caseCtrl.js";
 import taskCtrl from "./controllers/taskCtrl.js";
 import userCtrl from "./controllers/userCtrl.js";
 import activityCtrl from "./controllers/activityCtrl.js";
-const { getUser } = userCtrl;
+const { getUser, getUsers } = userCtrl;
 const {
   getCases,
   saveCase,
@@ -18,6 +18,7 @@ const {
   updateCaseNotes,
   addCaseAssignee,
   removeCaseAssignee,
+  getCaseNonAssignees,
 } = caseCtrl;
 const {
   getAllTasks,
@@ -66,6 +67,7 @@ app.delete("/api/logout", logout);
 
 // user endpoints
 app.get("/api/getUser/:userId", getUser);
+app.get("/api/getUsers", getUsers);
 
 // case endpoints
 app.get("/api/getCases", getCases);
@@ -78,6 +80,7 @@ app.post("/api/updateCasePriority", updateCasePriority);
 app.post("/api/updateCaseNotes", updateCaseNotes);
 app.post("/api/addCaseAssignees", addCaseAssignee);
 app.delete("/api/removeCaseAssignees", removeCaseAssignee);
+app.get("/api/getCaseNonAssignees/:caseId", getCaseNonAssignees);
 
 // task endpoints
 app.get("/api/getAllTasks", getAllTasks);

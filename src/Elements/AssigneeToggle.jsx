@@ -16,6 +16,9 @@ const AssigneeToggle = ({ assignee, handleRemove, caseId }) => {
         ></i>
       )}
       <img className="assignee-toggle-photo" src={assignee.profilePic} alt="" />
+      {isHovered && (
+        <div className="assignee-toggle-name">{assignee.firstName}</div>
+      )}
     </div>
   );
 };
