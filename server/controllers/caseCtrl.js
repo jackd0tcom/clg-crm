@@ -2,6 +2,11 @@ import { User, Case } from "../model.js";
 import { Op } from "sequelize";
 import { CaseAssignees } from "../model.js";
 import { Task } from "../model.js";
+import {
+  createActivityLog,
+  ACTIVITY_ACTIONS,
+  capitalize,
+} from "../helpers/activityHelper.js";
 
 export default {
   getCases: async (req, res) => {
@@ -260,18 +265,33 @@ export default {
   updateCasePhase: async (req, res) => {
     try {
       console.log("updateCasePhase");
-      if (req.session.user) {
-        const { caseId, phase } = req.body;
-        const currentCase = await Case.findOne({ where: { caseId } });
-
-        currentCase.update({
-          phase,
-        });
+      if (!req.session.user) {
+        return res.status(401).send("User not authenticated");
       }
+
+      const { caseId, phase } = req.body;
+      const currentCase = await Case.findOne({ where: { caseId } });
+
+      if (!currentCase) {
+        return res.status(404).send("Case not found");
+      }
+
+      const oldPhase = currentCase.phase;
+      await currentCase.update({ phase });
+
+      // Create activity log
+      await createActivityLog({
+        authorId: req.session.user.userId,
+        objectType: "case",
+        objectId: parseInt(caseId),
+        action: ACTIVITY_ACTIONS.CASE_PHASE_CHANGED,
+        details: `Changed case phase from ${oldPhase} to ${phase}`,
+      });
+
       res.status(200).send("Saved Case Phase Successfully");
     } catch (err) {
       console.log(err);
-      res.status(500).send("Failed to Save Case");
+      res.status(500).send("Failed to Save Case Phase");
     }
   },
   updateCasePriority: async (req, res) => {
@@ -280,9 +300,18 @@ export default {
       if (req.session.user) {
         const { caseId, priority } = req.body;
         const currentCase = await Case.findOne({ where: { caseId } });
+        const oldPriority = currentCase.priority;
 
         currentCase.update({
           priority,
+        });
+
+        await createActivityLog({
+          authorId: req.session.user.userId,
+          objectType: "case",
+          objectId: parseInt(caseId),
+          action: ACTIVITY_ACTIONS.CASE_PRIORITY_CHANGED,
+          details: `Changed case priority from ${oldPriority} to ${priority}`,
         });
       }
       res.status(200).send("Saved Case Priority Successfully");
@@ -346,6 +375,20 @@ export default {
         userId: parseInt(userId),
       });
 
+      // Get the assigned user's name for the activity log
+      const assignedUser = await User.findByPk(userId, {
+        attributes: ["firstName", "lastName"],
+      });
+
+      // Create activity log
+      await createActivityLog({
+        authorId: req.session.user.userId,
+        objectType: "case",
+        objectId: parseInt(caseId),
+        action: ACTIVITY_ACTIONS.CASE_ASSIGNEE_ADDED,
+        details: `Added ${assignedUser.firstName} ${assignedUser.lastName} as assignee`,
+      });
+
       res.status(201).json(newAssignee);
     } catch (err) {
       console.log(err);
@@ -365,7 +408,23 @@ export default {
         return res.status(404).send("Case not found");
       }
 
+      const oldAssignee = await User.findOne({
+        where: {
+          userId,
+        },
+      });
+
       await CaseAssignees.destroy({ where: { caseId, userId } });
+
+      console.log(oldAssignee);
+
+      await createActivityLog({
+        authorId: req.session.user.userId,
+        objectType: "case",
+        objectId: parseInt(caseId),
+        action: ACTIVITY_ACTIONS.CASE_ASSIGNEE_REMOVED,
+        details: `Removed ${oldAssignee.firstName} ${oldAssignee.lastName} as assignee`,
+      });
 
       res.status(200).send("Case assignees updated successfully");
     } catch (err) {

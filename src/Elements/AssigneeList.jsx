@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import AssigneeAddToggle from "./AssigneeAddToggle";
 
-const AssigneeList = ({ assignees, caseId, taskId }) => {
+const AssigneeList = ({ assignees, caseId, taskId, onActivityUpdate }) => {
   const [assigneeList, setAssigneeList] = useState([]);
   const [nonAssigneeList, setNonAssigneeList] = useState([]);
   const [isHovered, setIsHovered] = useState(false);
@@ -46,14 +46,19 @@ const AssigneeList = ({ assignees, caseId, taskId }) => {
         })
         .then((res) => {
           if (res.status === 200) {
-            const removedUser = assigneeList.find((user) => user.userId === userId);
-            
+            const removedUser = assigneeList.find(
+              (user) => user.userId === userId
+            );
+
             setAssigneeList((prevList) =>
               prevList.filter((nee) => nee.userId !== userId)
             );
-            
+
             if (removedUser) {
               setNonAssigneeList((prevList) => [...prevList, removedUser]);
+            }
+            if (onActivityUpdate) {
+              onActivityUpdate();
             }
           }
         });
@@ -69,9 +74,15 @@ const AssigneeList = ({ assignees, caseId, taskId }) => {
         .then((res) => {
           if (res.status === 201) {
             setAssigneeList((prevList) => [...prevList, res.data]);
-            setNonAssigneeList((prevList) => 
+            setNonAssigneeList((prevList) =>
               prevList.filter((user) => user.userId !== userId)
             );
+            setIsAdding(false);
+
+            // Refresh activity data to show new activity
+            if (onActivityUpdate) {
+              onActivityUpdate();
+            }
           }
         })
         .catch((error) => {

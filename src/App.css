@@ -218,7 +218,7 @@ button:hover,
   display: grid;
   grid-template-columns: 2fr 1fr 1fr 1fr;
   column-gap: 20px;
-  align-items: start;
+  align-items: center;
 }
 .task-list-head {
   display: contents;
@@ -229,6 +229,8 @@ button:hover,
 .task-list-item p {
   overflow: auto;
   font-size: 0.9rem;
+  white-space: nowrap;
+  scrollbar-width: none;
 }
 .task-title {
   width: 45%;

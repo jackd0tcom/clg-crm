@@ -39,10 +39,22 @@ const Case = () => {
     getData();
   }, []);
 
+  const refreshActivityData = async () => {
+    try {
+      const activityResponse = await axios.get(
+        `/api/getCaseActivities/${caseId}`
+      );
+      setActivityData(activityResponse.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const handleUpdatePhase = (phase) => {
     try {
       axios.post("/api/updateCasePhase", { caseId, phase }).then((res) => {
         console.log(res);
+        refreshActivityData();
       });
     } catch (error) {}
   };
@@ -52,6 +64,7 @@ const Case = () => {
         .post("/api/updateCasePriority", { caseId, priority })
         .then((res) => {
           console.log(res);
+          refreshActivityData();
         });
     } catch (error) {}
   };
@@ -102,6 +115,7 @@ const Case = () => {
                 <AssigneeList
                   assignees={caseData.assignees}
                   caseId={caseData.caseId}
+                  onActivityUpdate={refreshActivityData}
                 />
                 <PriorityToggle
                   value={priority}
