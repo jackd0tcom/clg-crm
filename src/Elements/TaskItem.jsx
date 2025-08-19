@@ -31,7 +31,7 @@ const TaskItem = ({ task }) => {
         onHandle={handleStatusChange}
         setStatus={setStatus}
       />
-      <p className="task-item-assignee-photo-wrapper">
+      <div className="task-item-assignee-photo-wrapper">
         {task.assignees.map((nee) => {
           return (
             <div
@@ -41,7 +41,7 @@ const TaskItem = ({ task }) => {
             ></div>
           );
         })}
-      </p>
+      </div>
       <p>{formatDateNoTime(task.dueDate)}</p>
     </div>
   );

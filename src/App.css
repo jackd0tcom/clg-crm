@@ -255,3 +255,26 @@ button:hover,
   resize: none;
   padding: 15px;
 }
+
+/* Assignee Toggle */
+.assignee-list-wrapper {
+  display: flex;
+  column-gap: 10px;
+}
+.assignee-toggle-photo {
+  width: 30px;
+  border-radius: 50%;
+}
+.assignee-toggle-wrapper {
+  overflow: visible;
+  position: relative;
+}
+.assignee-toggle-x {
+  position: absolute;
+  top: -5px;
+  left: 15px;
+  z-index: 999;
+  font-size: 20px;
+  border-radius: 50%;
+  cursor: pointer;
+}

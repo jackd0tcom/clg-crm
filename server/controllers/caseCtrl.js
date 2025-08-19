@@ -308,4 +308,51 @@ export default {
       res.status(500).send("Failed to Save Case notes");
     }
   },
+  addCaseAssignee: async (req, res) => {
+    try {
+      console.log("updateCaseAssignee");
+      if (!req.session.user) {
+        return res.status(401).send("User not authenticated");
+      }
+
+      const { caseId, assigneeId } = req.body;
+
+      // Validate that the case exists
+      const caseExists = await Case.findByPk(caseId);
+      if (!caseExists) {
+        return res.status(404).send("Case not found");
+      }
+
+      await CaseAssignees.create({
+        caseId: parseInt(caseId),
+        userId: parseInt(assigneeId),
+      });
+
+      res.status(200).send("Case assignees updated successfully");
+    } catch (err) {
+      console.log(err);
+      res.status(500).send("Failed to update case assignees");
+    }
+  },
+  removeCaseAssignee: async (req, res) => {
+    try {
+      console.log("removeCaseAssignee");
+      if (!req.session.user) {
+        return res.status(401).send("User not authenticated");
+      }
+
+      const { caseId, userId } = req.body;
+      const caseExists = await Case.findByPk(caseId);
+      if (!caseExists) {
+        return res.status(404).send("Case not found");
+      }
+
+      await CaseAssignees.destroy({ where: { caseId, userId } });
+
+      res.status(200).send("Case assignees updated successfully");
+    } catch (err) {
+      console.log(err);
+      res.status(500).send("Failed to update case assignees");
+    }
+  },
 };

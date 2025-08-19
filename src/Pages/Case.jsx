@@ -9,6 +9,7 @@ import { Link } from "react-router";
 import Notes from "../Elements/Notes";
 import PhaseToggle from "../Elements/PhaseToggle";
 import PriorityToggle from "../Elements/PriorityToggle";
+import AssigneeList from "../Elements/AssigneeList";
 
 const Case = () => {
   const { caseId } = useParams();
@@ -98,11 +99,10 @@ const Case = () => {
                   onHandle={handleUpdatePhase}
                   setPhase={setPhase}
                 />
-                <div className="case-assignee-wrapper">
-                  {caseData.assignees.map((nee) => {
-                    return <ProfilePic key={nee.userId} user={nee} />;
-                  })}
-                </div>
+                <AssigneeList
+                  assignees={caseData.assignees}
+                  caseId={caseData.caseId}
+                />
                 <PriorityToggle
                   value={priority}
                   onHandle={handleUpdatePriority}

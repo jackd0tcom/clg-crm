@@ -16,6 +16,8 @@ const {
   updateCasePhase,
   updateCasePriority,
   updateCaseNotes,
+  addCaseAssignee,
+  removeCaseAssignee,
 } = caseCtrl;
 const {
   getAllTasks,
@@ -74,6 +76,8 @@ app.post("/api/saveCase", saveCase);
 app.post("/api/updateCasePhase", updateCasePhase);
 app.post("/api/updateCasePriority", updateCasePriority);
 app.post("/api/updateCaseNotes", updateCaseNotes);
+app.post("/api/addCaseAssignees", addCaseAssignee);
+app.delete("/api/removeCaseAssignees", removeCaseAssignee);
 
 // task endpoints
 app.get("/api/getAllTasks", getAllTasks);
