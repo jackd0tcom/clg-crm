@@ -93,6 +93,13 @@ button:hover,
   border-radius: 5px;
   width: 100%;
 }
+.toggle-overlay {
+  position: absolute;
+  background-color: white;
+  z-index: 999;
+  padding: 20px;
+}
+
 /* Nav */
 .nav-bar {
   width: 15%;
@@ -138,6 +145,7 @@ button:hover,
   border-radius: 5px;
   background-color: var(--light-grey);
   padding: 0px 20px;
+  overflow: scroll;
 }
 .case-stats-wrapper {
   display: grid;
@@ -154,9 +162,15 @@ button:hover,
   grid-template-columns: 1fr 1fr 1fr;
   gap: 2rem;
 }
+.case-title-input {
+  width: 100%;
+}
 .case-assignee-wrapper {
   display: flex;
   column-gap: 5px;
+}
+.case-person-link {
+  cursor: pointer;
 }
 
 /* Case Card */
@@ -340,4 +354,34 @@ button:hover,
 }
 .assignee-add-toggle-item p {
   margin: 0;
+}
+
+/* PersonView */
+.person-view-wrapper {
+  position: absolute;
+  background-color: white;
+  border: 1px solid var(--light-border);
+  width: 33%;
+  z-index: 999;
+  padding: 20px 20px 6rem;
+}
+.person-view-close {
+  cursor: pointer;
+}
+.person-view-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 20px;
+  row-gap: 20px;
+}
+.person-input-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Practice Area toggle */
+.practice-area-item {
+  cursor: pointer;
+}
+.practice-area-toggle-wrapper {
 }

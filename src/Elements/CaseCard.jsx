@@ -8,7 +8,9 @@ const CaseCard = ({ data }) => {
       <div className="case-card-wrapper">
         <div className="case-card-head">
           <h3>{data.title}</h3>
-          <h4>{capitalize(data.practiceArea)}</h4>
+          {data.practiceAreas.map((area) => {
+            return <h4 key={area.name}>{capitalize(area.name)}</h4>;
+          })}
         </div>
         <div className="case-card-tasks">
           <h3>To Do:</h3>

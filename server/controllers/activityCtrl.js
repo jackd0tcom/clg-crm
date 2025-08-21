@@ -1,4 +1,4 @@
-import { ActivityLog, User, ActivityReaders } from "../model.js";
+import { ActivityLog, User, ActivityReaders, Person } from "../model.js";
 import { Op } from "sequelize";
 
 export default {
@@ -47,11 +47,28 @@ export default {
       const { caseId } = req.params;
       const { userId } = req.session.user;
 
-      // Get all activities for the case
+      // Get person IDs for this case
+      const people = await Person.findAll({
+        where: { caseId },
+        attributes: ["personId"],
+      });
+      const personIds = people.map(p => p.personId);
+
+      // Get all activities for the case (including person activities)
       const activities = await ActivityLog.findAll({
         where: {
-          objectType: "case",
-          objectId: caseId,
+          [Op.or]: [
+            {
+              objectType: "case",
+              objectId: caseId,
+            },
+            {
+              objectType: "person",
+              objectId: {
+                [Op.in]: personIds
+              }
+            }
+          ]
         },
         include: [
           {

@@ -45,6 +45,83 @@ User.init(
   }
 );
 
+class Person extends Model {}
+Person.init(
+  {
+    personId: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    caseId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    firstName: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    lastName: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    address: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    city: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    state: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    zip: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        isNumeric: {
+          msg: "Zip Code must be only numbers",
+        },
+        len: {
+          args: [5],
+          msg: "Zip Code length is invalid",
+        },
+      },
+    },
+    phoneNumber: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notNull: {
+          msg: "Phone number is required.",
+        },
+        isNumeric: {
+          msg: "Phone number must contain only digits.",
+        },
+        len: {
+          args: [10, 15],
+          msg: "Phone number length is invalid.",
+        },
+      },
+    },
+    dob: {
+      type: DataTypes.DATEONLY,
+      allowNull: false,
+    },
+    county: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+  },
+  {
+    modelName: "person",
+    sequelize: db,
+    timestamps: true,
+  }
+);
+
 class Task extends Model {}
 Task.init(
   {
@@ -118,17 +195,6 @@ Case.init(
       type: DataTypes.TEXT,
       allowNull: true,
     },
-    practiceArea: {
-      type: DataTypes.ENUM(
-        "divorce",
-        "real estate",
-        "custody",
-        "personal injury",
-        "criminal",
-        "corporate"
-      ),
-      allowNull: false,
-    },
     phase: {
       type: DataTypes.ENUM(
         "intake",
@@ -165,7 +231,7 @@ ActivityLog.init(
       allowNull: false,
     },
     objectType: {
-      type: DataTypes.ENUM("task", "case", "comment"),
+      type: DataTypes.ENUM("task", "case", "comment", "person"),
       allowNull: false,
     },
     objectId: {
@@ -331,6 +397,50 @@ CaseAssignees.init(
     timestamps: true,
   }
 );
+class PracticeArea extends Model {}
+PracticeArea.init(
+  {
+    practiceAreaId: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+    },
+    isActive: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+    },
+  },
+  {
+    modelName: "practiceArea",
+    sequelize: db,
+    timestamps: true,
+  }
+);
+
+// Junction table for case-practice area relationships
+class CasePracticeAreas extends Model {}
+CasePracticeAreas.init(
+  {
+    caseId: {
+      type: DataTypes.INTEGER,
+      references: { model: Case, key: "caseId" },
+    },
+    practiceAreaId: {
+      type: DataTypes.INTEGER,
+      references: { model: PracticeArea, key: "practiceAreaId" },
+    },
+  },
+  {
+    modelName: "CasePracticeAreas",
+    sequelize: db,
+    timestamps: true,
+  }
+);
 
 // Many-to-many relationships for assignees
 Task.belongsToMany(User, {
@@ -366,9 +476,29 @@ Task.belongsTo(User, { as: "owner", foreignKey: "ownerId" });
 User.hasMany(Case, { foreignKey: "ownerId", as: "ownedCases" });
 Case.belongsTo(User, { as: "owner", foreignKey: "ownerId" });
 
+Case.belongsToMany(PracticeArea, {
+  through: CasePracticeAreas,
+  as: "practiceAreas",
+  foreignKey: "caseId",
+  otherKey: "practiceAreaId",
+});
+PracticeArea.belongsToMany(Case, {
+  through: CasePracticeAreas,
+  as: "cases",
+  foreignKey: "practiceAreaId",
+  otherKey: "caseId",
+});
+// Case has many people involved
+Case.hasMany(Person, { foreignKey: "caseId", as: "people" });
+Person.belongsTo(Case, { foreignKey: "caseId" });
+
 // Case-Task relationships
 Case.hasMany(Task, { foreignKey: "caseId" });
 Task.belongsTo(Case, { foreignKey: "caseId" });
+
+// Case-Person relationships
+Case.hasMany(Person, { foreignKey: "caseId" });
+Person.belongsTo(Case, { foreignKey: "caseId" });
 
 // Comment relationships
 User.hasMany(Comment, { foreignKey: "authorId", as: "comments" });
@@ -413,10 +543,13 @@ export {
   User,
   Task,
   Case,
+  Person,
   ActivityLog,
   Comment,
   Notification,
   CaseAssignees,
   TaskAssignees,
   ActivityReaders,
+  PracticeArea,
+  CasePracticeAreas,
 };

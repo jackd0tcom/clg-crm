@@ -21,3 +21,12 @@ export function formatDateNoTime(data) {
     month: "short",
   }).format(date);
 }
+export function format(str) {
+  if (str === "dob") {
+    return "Date of Birth";
+  }
+  return str
+    .replace(/([A-Z])/g, " $1")
+    .replace(/^./, (str) => str.toUpperCase())
+    .trim();
+}

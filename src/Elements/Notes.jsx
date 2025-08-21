@@ -34,7 +34,7 @@ const Notes = ({ value, onChange, setCount, count, updateNotes }) => {
       <textarea
         onChange={(e) => {
           onChange(e.target.value);
-          setCount((count += 1));
+          setCount((prevCount) => prevCount + 1);
         }}
         name="notes"
         id=""

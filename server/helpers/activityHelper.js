@@ -3,6 +3,8 @@ import {
   ActivityReaders,
   CaseAssignees,
   TaskAssignees,
+  Person,
+  Case,
 } from "../model.js";
 
 /**
@@ -66,6 +68,22 @@ export async function createActivityLog({
         // if (task && !readerIds.includes(task.ownerId)) {
         //   readerIds.push(task.ownerId);
         // }
+      } else if (objectType === "person") {
+        // For person activities, get case assignees since people are related to cases
+        const person = await Person.findByPk(objectId);
+        if (person && person.caseId) {
+          const caseAssignees = await CaseAssignees.findAll({
+            where: { caseId: person.caseId },
+            attributes: ["userId"],
+          });
+          readerIds = caseAssignees.map((ca) => ca.userId);
+
+          // Add case owner
+          const caseData = await Case.findByPk(person.caseId);
+          if (caseData && !readerIds.includes(caseData.ownerId)) {
+            readerIds.push(caseData.ownerId);
+          }
+        }
       }
     }
 
@@ -96,6 +114,10 @@ export const ACTIVITY_ACTIONS = {
   CASE_ASSIGNEE_ADDED: "assignee_added",
   CASE_ASSIGNEE_REMOVED: "assignee_removed",
   CASE_NOTES_UPDATED: "notes_updated",
+  CASE_TITLE_UPDATED: "title_updated",
+  CASE_PRACTICE_AREAS_UPDATED: "practice_areas_updated",
+  CASE_PRACTICE_AREA_ADDED: "practice_area_added",
+  CASE_PRACTICE_AREA_REMOVED: "practice_area_removed",
 
   TASK_CREATED: "task_created",
   TASK_UPDATED: "task_updated",
@@ -104,6 +126,10 @@ export const ACTIVITY_ACTIONS = {
   TASK_ASSIGNEE_REMOVED: "task_assignee_removed",
 
   COMMENT_ADDED: "comment_added",
+
+  PERSON_CREATED: "person_created",
+  PERSON_UPDATED: "person_updated",
+  PERSON_DELETED: "person_deleted",
 };
 
 export function capitalize(str) {
@@ -111,4 +137,14 @@ export function capitalize(str) {
     .split(" ")
     .map((word) => word.slice(0, 1).toUpperCase() + word.slice(1))
     .join(" ");
+}
+
+export function format(str) {
+  if (str === "dob") {
+    return "Date of Birth";
+  }
+  return str
+    .replace(/([A-Z])/g, " $1")
+    .replace(/^./, (str) => str.toUpperCase())
+    .trim();
 }

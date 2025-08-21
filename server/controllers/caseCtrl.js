@@ -1,11 +1,12 @@
 import { User, Case } from "../model.js";
 import { Op } from "sequelize";
 import { CaseAssignees } from "../model.js";
-import { Task } from "../model.js";
+import { Task, Person, PracticeArea, CasePracticeAreas } from "../model.js";
 import {
   createActivityLog,
   ACTIVITY_ACTIONS,
   capitalize,
+  format,
 } from "../helpers/activityHelper.js";
 
 export default {
@@ -89,6 +90,12 @@ export default {
             through: { attributes: [] },
             attributes: ["userId", "username", "firstName", "lastName"],
           },
+          {
+            model: PracticeArea,
+            as: "practiceAreas",
+            through: { attributes: [] },
+            attributes: ["practiceAreaId", "name"],
+          },
         ],
         order: [["updatedAt", "DESC"]], // Most recently updated cases first
       });
@@ -150,7 +157,6 @@ export default {
           status: req.body.status,
         });
         res.send(newCase);
-        console.log(newCase);
       } else console.log("no user logged in");
     } catch (error) {
       console.log(error);
@@ -160,7 +166,6 @@ export default {
     try {
       console.log("save");
       if (req.session.user) {
-        console.log(req.body);
         const {
           caseId,
           caseTitle,
@@ -220,6 +225,12 @@ export default {
                 "profilePic",
               ],
             },
+            {
+              model: PracticeArea,
+              as: "practiceAreas",
+              through: { attributes: [] },
+              attributes: ["practiceAreaId", "name"],
+            },
           ],
         });
 
@@ -253,13 +264,52 @@ export default {
           ],
         });
 
-        const data = { ...foundCase.toJSON(), tasks: tasks };
+        const people = await Person.findAll({ where: { caseId } });
+        const data = {
+          ...foundCase.toJSON(),
+          tasks: tasks,
+          people: people,
+        };
 
         res.send(data);
       }
     } catch (error) {
       console.log(error);
       res.status(400).send(error);
+    }
+  },
+  updateCase: async (req, res) => {
+    try {
+      console.log("updateCase");
+      if (!req.session.user) {
+        return res.status(401).send("User not authenticated");
+      }
+
+      const { caseId, fieldName, value } = req.body;
+      const currentCase = await Case.findOne({ where: { caseId } });
+
+      if (!currentCase) {
+        return res.status(404).send("Case not found");
+      }
+
+      const oldValue = currentCase[fieldName];
+      await currentCase.update({ [fieldName]: value });
+
+      // Create activity log
+      await createActivityLog({
+        authorId: req.session.user.userId,
+        objectType: "case",
+        objectId: parseInt(caseId),
+        action: ACTIVITY_ACTIONS.CASE_UPDATED,
+        details: `changed the ${format(
+          fieldName
+        )} from ${oldValue} to ${value}`,
+      });
+
+      res.status(200).send("Saved Case Successfully");
+    } catch (err) {
+      console.log(err);
+      res.status(500).send("Failed to update case");
     }
   },
   updateCasePhase: async (req, res) => {
@@ -346,8 +396,6 @@ export default {
 
       const { caseId, userId } = req.body;
 
-      console.log(caseId, userId);
-
       // Validate that the case exists
       const caseExists = await Case.findByPk(caseId);
       if (!caseExists) {
@@ -416,8 +464,6 @@ export default {
 
       await CaseAssignees.destroy({ where: { caseId, userId } });
 
-      console.log(oldAssignee);
-
       await createActivityLog({
         authorId: req.session.user.userId,
         objectType: "case",
@@ -437,7 +483,6 @@ export default {
       console.log("getCaseNonAssignees");
       if (req.session.user) {
         const { caseId } = req.params;
-        console.log(caseId);
         const caseExists = await Case.findByPk(caseId);
         if (!caseExists) {
           return res.status(404).send("Case not found");
@@ -458,6 +503,118 @@ export default {
         });
 
         res.send(nonAssignees);
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(400).send(error);
+    }
+  },
+  addCasePracticeArea: async (req, res) => {
+    try {
+      console.log("addCasePracticeArea");
+      if (!req.session.user) {
+        return res.status(401).send("User not authenticated");
+      }
+
+      const { caseId, practiceAreaId } = req.body;
+
+      const caseExists = await Case.findByPk(caseId);
+      if (!caseExists) {
+        return res.status(404).send("Case not found");
+      }
+
+      const practiceAreaExists = await PracticeArea.findByPk(practiceAreaId);
+      if (!practiceAreaExists) {
+        return res.status(404).send("Practice area not found");
+      }
+
+      const existingAssignment = await CasePracticeAreas.findOne({
+        where: {
+          caseId,
+          practiceAreaId,
+        },
+      });
+
+      if (existingAssignment) {
+        return res.status(409).json({
+          message: "Practice area already assigned to this case",
+          assignment: existingAssignment,
+        });
+      }
+
+      const newAssignment = await CasePracticeAreas.create({
+        caseId,
+        practiceAreaId,
+      });
+
+      res.status(201).json(newAssignment);
+
+      await createActivityLog({
+        authorId: req.session.user.userId,
+        objectType: "case",
+        objectId: parseInt(caseId),
+        action: ACTIVITY_ACTIONS.CASE_PRACTICE_AREA_ADDED,
+        details: `Added ${practiceAreaExists.name} as practice area`,
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).send("Failed to add case practice area");
+    }
+  },
+  removeCasePracticeArea: async (req, res) => {
+    try {
+      console.log("addCasePracticeArea");
+      if (!req.session.user) {
+        return res.status(401).send("User not authenticated");
+      }
+
+      const { caseId, practiceAreaId } = req.body;
+
+      const caseExists = await Case.findByPk(caseId);
+      if (!caseExists) {
+        return res.status(404).send("Case not found");
+      }
+
+      const practiceAreaExists = await PracticeArea.findByPk(practiceAreaId);
+      if (!practiceAreaExists) {
+        return res.status(404).send("Practice area not found");
+      }
+
+      const existingAssignment = await CasePracticeAreas.findOne({
+        where: {
+          caseId,
+          practiceAreaId,
+        },
+      });
+
+      if (!existingAssignment) {
+        return res.status(409).json({
+          message: "Practice area is not already assigned to this case",
+          assignment: existingAssignment,
+        });
+      }
+      await existingAssignment.destroy();
+
+      res.status(200).send("Practice area removed");
+
+      await createActivityLog({
+        authorId: req.session.user.userId,
+        objectType: "case",
+        objectId: parseInt(caseId),
+        action: ACTIVITY_ACTIONS.CASE_PRACTICE_AREA_REMOVED,
+        details: `Removed ${practiceAreaExists.name} as practice area`,
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).send("Failed to add case practice area");
+    }
+  },
+  getPracticeAreas: async (req, res) => {
+    try {
+      console.log("getPracticeAreas");
+      if (req.session.user) {
+        const practiceAreas = await PracticeArea.findAll({});
+        res.send(practiceAreas);
       }
     } catch (error) {
       console.log(error);

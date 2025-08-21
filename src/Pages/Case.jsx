@@ -10,6 +10,9 @@ import Notes from "../Elements/Notes";
 import PhaseToggle from "../Elements/PhaseToggle";
 import PriorityToggle from "../Elements/PriorityToggle";
 import AssigneeList from "../Elements/AssigneeList";
+import PersonView from "../Elements/PersonView";
+import CaseInput from "../Elements/CaseInput";
+import PracticeAreaToggle from "../Elements/PracticeAreaToggle";
 
 const Case = () => {
   const { caseId } = useParams();
@@ -19,6 +22,12 @@ const Case = () => {
   const [priority, setPriority] = useState("");
   const [notes, setNotes] = useState();
   const [count, setCount] = useState(0);
+  const [personView, setPersonView] = useState(false);
+  const [selectedPerson, setSelectedPerson] = useState(null);
+  const [title, setTitle] = useState();
+  const [currentAreas, setCurrentAreas] = useState();
+  const [isAddingArea, setIsAddingArea] = useState(false);
+  const [newPracticeArea, setNewPracticeArea] = useState("");
 
   useEffect(() => {
     async function getData() {
@@ -32,6 +41,8 @@ const Case = () => {
         setPhase(caseResponse.data.phase);
         setPriority(caseResponse.data.priority);
         setNotes(caseResponse.data.notes);
+        setTitle(caseResponse.data.title);
+        setCurrentAreas(caseResponse.data.practiceAreas);
       } catch (error) {
         console.log(error);
       }
@@ -45,6 +56,19 @@ const Case = () => {
         `/api/getCaseActivities/${caseId}`
       );
       setActivityData(activityResponse.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const refreshCaseData = async () => {
+    try {
+      const caseResponse = await axios.get(`/api/getCase/${caseId}`);
+      setCaseData(caseResponse.data);
+      setPhase(caseResponse.data.phase);
+      setPriority(caseResponse.data.priority);
+      setNotes(caseResponse.data.notes);
+      setCurrentAreas(caseResponse.data.practiceAreas);
     } catch (error) {
       console.log(error);
     }
@@ -84,6 +108,15 @@ const Case = () => {
     }
   };
 
+  const handlePersonClick = (person) => {
+    setSelectedPerson(person);
+    setPersonView(true);
+  };
+  const handleOnBlur = () => {
+    setPersonView(false);
+    setSelectedPerson("");
+  };
+
   return caseData ? (
     <>
       <div className="case-wrapper">
@@ -95,9 +128,85 @@ const Case = () => {
           <div className="case-card">
             <div className="case-header">
               <span>
-                <p>{capitalize(caseData.practiceArea)}</p>
-                <h2>{caseData.title}</h2>
-                <h3>{caseData.clientName}</h3>
+                {personView && selectedPerson && (
+                  <PersonView
+                    onBlur={handleOnBlur}
+                    refreshActivityData={refreshActivityData}
+                    refreshCaseData={refreshCaseData}
+                    data={selectedPerson}
+                    caseId={caseId}
+                    onClose={() => {
+                      setPersonView(false);
+                      setSelectedPerson(null);
+                    }}
+                  />
+                )}
+                <h4>Practice Areas</h4>
+                {caseData.practiceAreas.map((area) => {
+                  return (
+                    <a
+                      onClick={() => {
+                        setIsAddingArea(true);
+                      }}
+                    >
+                      {capitalize(area.name)}
+                    </a>
+                  );
+                })}
+                {isAddingArea && (
+                  <PracticeAreaToggle
+                    currentAreas={currentAreas}
+                    setCurrentAreas={setCurrentAreas}
+                    newPracticeArea={newPracticeArea}
+                    setNewPracticeArea={setNewPracticeArea}
+                    caseId={caseId}
+                    refreshCaseData={refreshCaseData}
+                    refreshActivityData={refreshActivityData}
+                    isAddingArea={isAddingArea}
+                    setIsAddingArea={setIsAddingArea}
+                  />
+                )}
+                <CaseInput
+                  title={title}
+                  setTitle={setTitle}
+                  refreshActivityData={refreshActivityData}
+                  refreshCaseData={refreshCaseData}
+                  caseId={caseId}
+                />
+                {caseData.people.map((person, idx) => {
+                  if (caseData.people.length === 1) {
+                    return (
+                      <a
+                        className="case-person-link"
+                        onClick={() => handlePersonClick(person)}
+                      >{`${person.firstName} ${person.lastName}`}</a>
+                    );
+                  } else if (idx === caseData.people.length - 1) {
+                    return (
+                      <span>
+                        {" "}
+                        &{" "}
+                        <a
+                          className="case-person-link"
+                          onClick={() => handlePersonClick(person)}
+                        >{`${person.firstName} ${person.lastName}`}</a>
+                      </span>
+                    );
+                  } else if (idx === caseData.people.length - 2) {
+                    return (
+                      <a
+                        className="case-person-link"
+                        onClick={() => handlePersonClick(person)}
+                      >{`${person.firstName} ${person.lastName}`}</a>
+                    );
+                  } else
+                    return (
+                      <a
+                        className="case-person-link"
+                        onClick={() => handlePersonClick(person)}
+                      >{`${person.firstName} ${person.lastName}, `}</a>
+                    );
+                })}
               </span>
             </div>
             <div className="case-stats-wrapper">

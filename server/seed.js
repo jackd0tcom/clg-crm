@@ -3,12 +3,15 @@ import {
   User,
   Task,
   Case,
+  Person,
   Comment,
   ActivityLog,
   Notification,
   CaseAssignees,
   TaskAssignees,
   ActivityReaders,
+  PracticeArea,
+  CasePracticeAreas,
 } from "./model.js";
 import bcrypt from "bcryptjs";
 
@@ -52,6 +55,33 @@ const users = [
   },
 ];
 
+console.log("Creating practice areas...");
+const practiceAreas = await PracticeArea.bulkCreate([
+  { name: "divorce" },
+  { name: "custody" },
+  { name: "child support" },
+  { name: "child custody" },
+  { name: "spousal support" },
+  { name: "real estate - buyer" },
+  { name: "real estate - seller" },
+  { name: "real estate - litigation" },
+  { name: "personal injury - MVA" },
+  { name: "personal injury - premise" },
+  { name: "negligent security" },
+  { name: "dog bite" },
+  { name: "products liability" },
+  { name: "estate planning" },
+  { name: "probate" },
+  { name: "trust" },
+  { name: "business formation" },
+  { name: "community association" },
+  { name: "property damage" },
+  { name: "PFA" },
+  { name: "general civil litigation" },
+  { name: "employment law" },
+  { name: "foreign judgments" },
+]);
+
 // Create cases
 const cases = [
   {
@@ -60,7 +90,6 @@ const cases = [
     clientName: "John & Mary Smith",
     notes:
       "High-conflict divorce case, assets include family business and real estate holdings",
-    practiceArea: "divorce",
     phase: "negotiation",
     priority: "high",
   },
@@ -69,7 +98,6 @@ const cases = [
     title: "Downtown Real Estate Development",
     clientName: "Urban Development Corp",
     notes: "Zoning issues for mixed-use development project",
-    practiceArea: "real estate",
     phase: "litigation",
     priority: "urgent",
   },
@@ -78,7 +106,6 @@ const cases = [
     title: "Custody Battle - Johnson Family",
     clientName: "Amanda Johnson",
     notes: "Custody dispute involving relocation and school district changes",
-    practiceArea: "custody",
     phase: "investigation",
     priority: "normal",
   },
@@ -88,7 +115,6 @@ const cases = [
     clientName: "Robert Chen",
     notes:
       "Multi-vehicle accident with severe injuries, insurance company dispute",
-    practiceArea: "personal injury",
     phase: "settlement",
     priority: "high",
   },
@@ -97,9 +123,108 @@ const cases = [
     title: "Corporate Merger - TechStart Inc",
     clientName: "TechStart Inc",
     notes: "Merger with competitor, due diligence and contract negotiations",
-    practiceArea: "corporate",
     phase: "negotiation",
     priority: "normal",
+  },
+];
+
+// Create people involved in cases
+const people = [
+  {
+    caseId: 1, // Smith Divorce Settlement
+    firstName: "John",
+    lastName: "Smith",
+    address: "123 Oak Street",
+    city: "Springfield",
+    state: "IL",
+    zip: "62701",
+    phoneNumber: "2175550101",
+    dob: "1980-03-15",
+    county: "Sangamon",
+  },
+  {
+    caseId: 1, // Smith Divorce Settlement
+    firstName: "Mary",
+    lastName: "Smith",
+    address: "456 Maple Avenue",
+    city: "Springfield",
+    state: "IL",
+    zip: "62702",
+    phoneNumber: "2175550102",
+    dob: "1982-07-22",
+    county: "Sangamon",
+  },
+  {
+    caseId: 2, // Downtown Real Estate Development
+    firstName: "Robert",
+    lastName: "Chen",
+    address: "789 Business Blvd",
+    city: "Chicago",
+    state: "IL",
+    zip: "60601",
+    phoneNumber: "3125550201",
+    dob: "1975-11-08",
+    county: "Cook",
+  },
+  {
+    caseId: 3, // Custody Battle - Johnson Family
+    firstName: "Amanda",
+    lastName: "Johnson",
+    address: "321 Family Circle",
+    city: "Peoria",
+    state: "IL",
+    zip: "61601",
+    phoneNumber: "3095550301",
+    dob: "1988-05-14",
+    county: "Peoria",
+  },
+  {
+    caseId: 3, // Custody Battle - Johnson Family
+    firstName: "Michael",
+    lastName: "Johnson",
+    address: "654 Parent Lane",
+    city: "Peoria",
+    state: "IL",
+    zip: "61602",
+    phoneNumber: "3095550302",
+    dob: "1986-09-30",
+    county: "Peoria",
+  },
+  {
+    caseId: 4, // Personal Injury - Car Accident
+    firstName: "Robert",
+    lastName: "Chen",
+    address: "987 Hospital Drive",
+    city: "Rockford",
+    state: "IL",
+    zip: "61101",
+    phoneNumber: "8155550401",
+    dob: "1990-12-03",
+    county: "Winnebago",
+  },
+  {
+    caseId: 5, // Corporate Merger - TechStart Inc
+    firstName: "Sarah",
+    lastName: "Williams",
+    address: "555 Corporate Plaza",
+    city: "Chicago",
+    state: "IL",
+    zip: "60602",
+    phoneNumber: "3125550501",
+    dob: "1972-04-18",
+    county: "Cook",
+  },
+  {
+    caseId: 5, // Corporate Merger - TechStart Inc
+    firstName: "David",
+    lastName: "Rodriguez",
+    address: "777 Tech Tower",
+    city: "Chicago",
+    state: "IL",
+    zip: "60603",
+    phoneNumber: "3125550502",
+    dob: "1968-08-25",
+    county: "Cook",
   },
 ];
 
@@ -352,6 +477,21 @@ await db.sync({ force: true }).then(async () => {
   console.log("Creating cases...");
   const createdCases = await Case.bulkCreate(cases);
 
+  console.log("Creating case-practice area relationships...");
+  const casePracticeAreaRelations = [
+    { caseId: 1, practiceAreaId: 1 }, // Case 1: divorce
+    { caseId: 1, practiceAreaId: 2 }, // Case 1: custody (multiple areas)
+    { caseId: 2, practiceAreaId: 6 }, // Case 2: real estate - buyer
+    { caseId: 3, practiceAreaId: 2 }, // Case 3: custody
+    { caseId: 4, practiceAreaId: 9 }, // Case 4: personal injury - MVA
+    { caseId: 5, practiceAreaId: 14 }, // Case 5: estate planning
+  ];
+
+  await CasePracticeAreas.bulkCreate(casePracticeAreaRelations);
+
+  console.log("Creating people...");
+  const createdPeople = await Person.bulkCreate(people);
+
   console.log("Creating tasks...");
   const createdTasks = await Task.bulkCreate(tasks);
 
@@ -375,7 +515,7 @@ await db.sync({ force: true }).then(async () => {
 
   console.log("Database reset and seeded successfully!");
   console.log(
-    `Created ${createdUsers.length} users, ${createdCases.length} cases, and ${createdTasks.length} tasks`
+    `Created ${createdUsers.length} users, ${createdCases.length} cases, ${createdPeople.length} people, and ${createdTasks.length} tasks`
   );
   console.log(
     `Created ${caseAssignments.length} case assignments, ${taskAssignments.length} task assignments, and ${activityReaders.length} activity readers`

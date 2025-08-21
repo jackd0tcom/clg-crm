@@ -34,18 +34,24 @@ function App() {
               element={isAuthenticated ? <Navigate to="/" /> : <Landing />}
             />
             <Route path="/case/:caseId" element={<Case />} />
-            <Route path="/cases" element={<CaseList />} />
-            {/* <Route path="/write/:storyId" element={<Writer />} /> */}
-            {/* <Route path="/read/:storyId" element={<Reader />} /> */}
-            {/* <Route path="/stories" element={<StoriesList />} /> */}
-            {/* <Route path="/restricted" element={<Restricted />} /> */}
+            <Route
+              path="/cases"
+              element={
+                !isAuthenticated ? <Navigate to="/login" /> : <CaseList />
+              }
+            />
             <Route
               path="/profile"
               element={
                 !isAuthenticated ? <Navigate to="/login" /> : <Profile />
               }
             />
-            <Route path="/profile/:userIdParams" element={<Profile />} />
+            <Route
+              path="/profile/:userIdParams"
+              element={
+                !isAuthenticated ? <Navigate to="/login" /> : <Profile />
+              }
+            />
           </Routes>
         </div>
       </div>
