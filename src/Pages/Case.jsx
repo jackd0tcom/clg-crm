@@ -127,87 +127,89 @@ const Case = () => {
           </Link>
           <div className="case-card">
             <div className="case-header">
-              <span>
-                {personView && selectedPerson && (
-                  <PersonView
-                    onBlur={handleOnBlur}
-                    refreshActivityData={refreshActivityData}
-                    refreshCaseData={refreshCaseData}
-                    data={selectedPerson}
-                    caseId={caseId}
-                    onClose={() => {
-                      setPersonView(false);
-                      setSelectedPerson(null);
-                    }}
-                  />
-                )}
-                <h4>Practice Areas</h4>
-                {caseData.practiceAreas.map((area) => {
-                  return (
-                    <a
-                      onClick={() => {
-                        setIsAddingArea(true);
-                      }}
-                    >
-                      {capitalize(area.name)}
-                    </a>
-                  );
-                })}
-                {isAddingArea && (
-                  <PracticeAreaToggle
-                    currentAreas={currentAreas}
-                    setCurrentAreas={setCurrentAreas}
-                    newPracticeArea={newPracticeArea}
-                    setNewPracticeArea={setNewPracticeArea}
-                    caseId={caseId}
-                    refreshCaseData={refreshCaseData}
-                    refreshActivityData={refreshActivityData}
-                    isAddingArea={isAddingArea}
-                    setIsAddingArea={setIsAddingArea}
-                  />
-                )}
-                <CaseInput
-                  title={title}
-                  setTitle={setTitle}
+              {personView && selectedPerson && (
+                <PersonView
+                  onBlur={handleOnBlur}
                   refreshActivityData={refreshActivityData}
                   refreshCaseData={refreshCaseData}
+                  data={selectedPerson}
                   caseId={caseId}
+                  onClose={() => {
+                    setPersonView(false);
+                    setSelectedPerson(null);
+                  }}
                 />
-                {caseData.people.map((person, idx) => {
-                  if (caseData.people.length === 1) {
-                    return (
+              )}
+              <h4>Practice Areas</h4>
+              {caseData.practiceAreas.map((area) => {
+                return (
+                  <a
+                    key={area.practiceAreaId}
+                    onClick={() => {
+                      setIsAddingArea(true);
+                    }}
+                  >
+                    {capitalize(area.name)}
+                  </a>
+                );
+              })}
+              {isAddingArea && (
+                <PracticeAreaToggle
+                  currentAreas={currentAreas}
+                  setCurrentAreas={setCurrentAreas}
+                  newPracticeArea={newPracticeArea}
+                  setNewPracticeArea={setNewPracticeArea}
+                  caseId={caseId}
+                  refreshCaseData={refreshCaseData}
+                  refreshActivityData={refreshActivityData}
+                  isAddingArea={isAddingArea}
+                  setIsAddingArea={setIsAddingArea}
+                />
+              )}
+              <CaseInput
+                title={title}
+                setTitle={setTitle}
+                refreshActivityData={refreshActivityData}
+                refreshCaseData={refreshCaseData}
+                caseId={caseId}
+              />
+              {caseData.people.map((person, idx) => {
+                if (caseData.people.length === 1) {
+                  return (
+                    <a
+                      key={person.personId}
+                      className="case-person-link"
+                      onClick={() => handlePersonClick(person)}
+                    >{`${person.firstName} ${person.lastName}`}</a>
+                  );
+                } else if (idx === caseData.people.length - 1) {
+                  return (
+                    <span key={person.personId}>
+                      {" "}
+                      &{" "}
                       <a
                         className="case-person-link"
                         onClick={() => handlePersonClick(person)}
                       >{`${person.firstName} ${person.lastName}`}</a>
-                    );
-                  } else if (idx === caseData.people.length - 1) {
-                    return (
-                      <span>
-                        {" "}
-                        &{" "}
-                        <a
-                          className="case-person-link"
-                          onClick={() => handlePersonClick(person)}
-                        >{`${person.firstName} ${person.lastName}`}</a>
-                      </span>
-                    );
-                  } else if (idx === caseData.people.length - 2) {
-                    return (
-                      <a
-                        className="case-person-link"
-                        onClick={() => handlePersonClick(person)}
-                      >{`${person.firstName} ${person.lastName}`}</a>
-                    );
-                  } else
-                    return (
-                      <a
-                        className="case-person-link"
-                        onClick={() => handlePersonClick(person)}
-                      >{`${person.firstName} ${person.lastName}, `}</a>
-                    );
-                })}
-              </span>
+                    </span>
+                  );
+                } else if (idx === caseData.people.length - 2) {
+                  return (
+                    <a
+                      key={person.personId}
+                      className="case-person-link"
+                      onClick={() => handlePersonClick(person)}
+                    >{`${person.firstName} ${person.lastName}`}</a>
+                  );
+                } else
+                  return (
+                    <a
+                      key={person.personId}
+                      className="case-person-link"
+                      onClick={() => handlePersonClick(person)}
+                    >{`${person.firstName} ${person.lastName}, `}</a>
+                  );
+              })}
             </div>
             <div className="case-stats-wrapper">
               <div className="case-stats-container">

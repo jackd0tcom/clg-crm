@@ -37,7 +37,7 @@ const TaskItem = ({ task }) => {
             <div
               className="task-item-assignee-photo"
               style={{ backgroundImage: `url(${nee.profilePic})` }}
-              key={nee.taskId}
+              key={nee.userId}
             ></div>
           );
         })}

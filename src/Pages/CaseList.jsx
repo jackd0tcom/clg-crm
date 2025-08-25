@@ -1,17 +1,23 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import axios from "axios";
 import CaseCard from "../Elements/CaseCard";
+import CaseFilter from "../Elements/CaseFilter";
+import CaseListSearch from "../Elements/CaseListSearch";
 
 const CaseList = () => {
-  const [caseData, setCaseData] = useState();
+  const navigate = useNavigate();
+  const [cases, setCases] = useState();
+  const [originalCases, setOriginalCases] = useState();
   const [isFetched, setIsFetched] = useState(false);
+  
   useEffect(() => {
     async function fetch() {
       try {
         await axios.get("/api/getCasesWithTasks").then((res) => {
-          setCaseData(res.data);
+          setCases(res.data);
+          setOriginalCases(res.data);
           setIsFetched(true);
-          console.log(res.data);
         });
       } catch (error) {
         console.log(error);
@@ -24,10 +30,19 @@ const CaseList = () => {
     <>Loading...</>
   ) : (
     <div className="case-list-wrapper">
-      <h1>Cases</h1>
+      <div className="case-list-head">
+        <h1>Cases</h1>
+        <CaseListSearch 
+          cases={cases} 
+          setCases={setCases} 
+          originalCases={originalCases} 
+          setOriginalCases={setOriginalCases}
+        />
+        <CaseFilter cases={cases} setCases={setCases} originalCases={originalCases} />
+      </div>
       <div className="case-list">
-        {caseData.length > 0 ? (
-          caseData.map((data) => {
+        {cases.length > 0 ? (
+          cases.map((data) => {
             return <CaseCard key={data.caseId} data={data} />;
           })
         ) : (

@@ -186,10 +186,12 @@ Case.init(
     title: {
       type: DataTypes.STRING,
       allowNull: false,
+      defaultValue: "Case Title",
     },
     clientName: {
       type: DataTypes.STRING,
       allowNull: false,
+      defaultValue: "Client Info",
     },
     notes: {
       type: DataTypes.TEXT,
