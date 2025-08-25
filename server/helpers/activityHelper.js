@@ -130,6 +130,7 @@ export const ACTIVITY_ACTIONS = {
   PERSON_CREATED: "person_created",
   PERSON_UPDATED: "person_updated",
   PERSON_DELETED: "person_deleted",
+  PERSON_REMOVED: "person_removed",
 };
 
 export function capitalize(str) {

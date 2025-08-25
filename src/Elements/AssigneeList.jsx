@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import AssigneeAddToggle from "./AssigneeAddToggle";
 
-const AssigneeList = ({ assignees, caseId, taskId, onActivityUpdate }) => {
+const AssigneeList = ({ assignees, caseId, taskId, onActivityUpdate, isNewCase }) => {
   const [assigneeList, setAssigneeList] = useState([]);
   const [nonAssigneeList, setNonAssigneeList] = useState([]);
   const [isHovered, setIsHovered] = useState(false);
@@ -12,16 +12,20 @@ const AssigneeList = ({ assignees, caseId, taskId, onActivityUpdate }) => {
 
   useEffect(() => {
     setAssigneeList(assignees || []);
-    try {
-      axios.get(`/api/getCaseNonAssignees/${caseId}`).then((res) => {
-        if ((res.status = 200)) {
-          setNonAssigneeList(res.data);
-        }
-      });
-    } catch (error) {
-      console.log(error);
+    
+    // Only fetch non-assignees if we have a valid caseId and it's not a new case
+    if (caseId && caseId !== 0 && !isNewCase) {
+      try {
+        axios.get(`/api/getCaseNonAssignees/${caseId}`).then((res) => {
+          if (res.status === 200) {
+            setNonAssigneeList(res.data);
+          }
+        });
+      } catch (error) {
+        console.log(error);
+      }
     }
-  }, [assignees]);
+  }, [assignees, caseId, isNewCase]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -97,6 +101,17 @@ const AssigneeList = ({ assignees, caseId, taskId, onActivityUpdate }) => {
     }
   };
 
+  // Don't render assignee functionality for new cases
+  if (isNewCase) {
+    return (
+      <div className="assignee-list-wrapper">
+        <div className="new-case-assignee-placeholder">
+          <p>Assignees will appear here after case is created</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       className="assignee-list-wrapper"
@@ -129,7 +144,7 @@ const AssigneeList = ({ assignees, caseId, taskId, onActivityUpdate }) => {
         {isAdding && (
           <AssigneeAddToggle
             nonAssigneeList={nonAssigneeList}
-            setNonAssigneeList={setAssigneeList}
+            setNonAssigneeList={setNonAssigneeList}
             handleAdd={handleAdd}
             setIsAdding={setIsAdding}
             caseId={caseId}

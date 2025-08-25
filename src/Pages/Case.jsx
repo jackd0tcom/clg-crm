@@ -13,6 +13,7 @@ import AssigneeList from "../Elements/AssigneeList";
 import PersonView from "../Elements/PersonView";
 import CaseInput from "../Elements/CaseInput";
 import PracticeAreaToggle from "../Elements/PracticeAreaToggle";
+import AddPersonForm from "../Elements/AddPersonForm";
 
 const Case = () => {
   const { caseId } = useParams();
@@ -30,12 +31,13 @@ const Case = () => {
   const [isAddingArea, setIsAddingArea] = useState(false);
   const [newPracticeArea, setNewPracticeArea] = useState("");
   const [isNewCase, setIsNewCase] = useState(false);
+  const [isAddingPerson, setIsAddingPerson] = useState(false);
+  const [isNewPerson, setIsNewPerson] = useState(false);
 
   useEffect(() => {
     async function getData() {
       try {
         if (caseId == 0) {
-          console.log("new case");
           setIsNewCase(true);
           setCaseData({
             caseId: null,
@@ -48,10 +50,11 @@ const Case = () => {
             assignees: [],
             tasks: [],
           });
+
           setPhase("intake");
           setPriority("normal");
           setNotes("");
-          setTitle("Case Title");
+          setTitle("Untitled Case");
           setCurrentAreas([]);
           setActivityData([]);
           return;
@@ -140,21 +143,27 @@ const Case = () => {
   const handleOnBlur = () => {
     setPersonView(false);
     setSelectedPerson("");
+    setIsAddingPerson(false);
   };
 
   const newCase = async () => {
     try {
+      const caseTitle =
+        title && title.trim() !== "Untitled Case"
+          ? title.trim()
+          : "Untitled Case";
+
       const response = await axios.post("/api/newCase", {
-        title: title || "Untitled Case",
+        title: caseTitle,
       });
 
       // Use React Router navigate instead of window.history
       navigate(`/case/${response.data.caseId}`);
-      
+
       // Update local state
       setCaseData(response.data);
       setIsNewCase(false);
-      
+
       // Refresh data
       refreshCaseData();
       refreshActivityData();
@@ -173,21 +182,8 @@ const Case = () => {
           </Link>
           <div className="case-card">
             <div className="case-header">
-              {personView && selectedPerson && (
-                <PersonView
-                  onBlur={handleOnBlur}
-                  refreshActivityData={refreshActivityData}
-                  refreshCaseData={refreshCaseData}
-                  data={selectedPerson}
-                  caseId={caseId}
-                  onClose={() => {
-                    setPersonView(false);
-                    setSelectedPerson(null);
-                  }}
-                />
-              )}
               <h4>Practice Areas</h4>
-              {isNewCase ? (
+              {isNewCase || caseData.practiceAreas.length < 1 ? (
                 <a
                   onClick={() => {
                     if (!caseData?.caseId) {
@@ -234,24 +230,45 @@ const Case = () => {
                 refreshActivityData={refreshActivityData}
                 refreshCaseData={refreshCaseData}
                 caseId={caseId}
+                isNewCase={isNewCase}
+                newCase={newCase}
               />
-              {isNewCase ? (
-                <a
-                  onClick={() => {
-                    if (!caseData?.caseId) {
-                      newCase().then(() => {
-                        // Handle adding client logic here
-                        console.log("Case created, now add client");
-                      });
-                    } else {
-                      // Handle adding client logic here
-                      console.log("Add client to existing case");
-                    }
+              {personView && selectedPerson && (
+                <PersonView
+                  onBlur={handleOnBlur}
+                  refreshActivityData={refreshActivityData}
+                  refreshCaseData={refreshCaseData}
+                  data={selectedPerson}
+                  caseId={caseId}
+                  isNewPerson={false}
+                  onClose={() => {
+                    setPersonView(false);
+                    setSelectedPerson(null);
                   }}
-                >
-                  Add Client
-                </a>
-              ) : (
+                />
+              )}
+              {isAddingPerson && (
+                <PersonView
+                  data={{
+                    firstName: "",
+                    lastName: "",
+                    address: "",
+                    city: "",
+                    state: "",
+                    zip: "",
+                    phoneNumber: "",
+                    dob: "",
+                    county: "",
+                  }}
+                  onBlur={handleOnBlur}
+                  refreshActivityData={refreshActivityData}
+                  refreshCaseData={refreshCaseData}
+                  caseId={caseId}
+                  isNewPerson={isNewPerson}
+                  setIsNewPerson={setIsNewPerson}
+                />
+              )}
+              {caseData.people.length > 0 &&
                 caseData.people.map((person, idx) => {
                   if (caseData.people.length === 1) {
                     return (
@@ -288,8 +305,14 @@ const Case = () => {
                         onClick={() => handlePersonClick(person)}
                       >{`${person.firstName} ${person.lastName}, `}</a>
                     );
-                })
-              )}
+                })}
+              <i
+                className="fa-solid fa-circle-plus"
+                onClick={() => {
+                  setIsAddingPerson(true);
+                  setIsNewPerson(true);
+                }}
+              ></i>
             </div>
             <div className="case-stats-wrapper">
               <div className="case-stats-container">
@@ -307,6 +330,7 @@ const Case = () => {
                   assignees={caseData.assignees}
                   caseId={caseData.caseId}
                   onActivityUpdate={refreshActivityData}
+                  isNewCase={isNewCase}
                 />
                 <PriorityToggle
                   value={priority}

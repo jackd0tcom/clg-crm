@@ -7,7 +7,7 @@ import taskCtrl from "./controllers/taskCtrl.js";
 import userCtrl from "./controllers/userCtrl.js";
 import activityCtrl from "./controllers/activityCtrl.js";
 import personCtrl from "./controllers/personCtrl.js";
-const { updatePerson } = personCtrl;
+const { updatePerson, newPerson, deletePerson } = personCtrl;
 const { getUser, getUsers } = userCtrl;
 
 const {
@@ -27,6 +27,7 @@ const {
   getPracticeAreas,
   removeCasePracticeArea,
   getLatestCase,
+  archiveCase,
 } = caseCtrl;
 const {
   getAllTasks,
@@ -76,6 +77,7 @@ app.delete("/api/logout", logout);
 // user endpoints
 app.get("/api/getUser/:userId", getUser);
 app.get("/api/getUsers", getUsers);
+app.delete("/api/deletePerson", deletePerson);
 
 // case endpoints
 app.get("/api/getCases", getCases);
@@ -90,6 +92,7 @@ app.post("/api/updateCaseNotes", updateCaseNotes);
 app.post("/api/addCaseAssignees", addCaseAssignee);
 app.delete("/api/removeCaseAssignees", removeCaseAssignee);
 app.get("/api/getCaseNonAssignees/:caseId", getCaseNonAssignees);
+app.get("/api/archiveCase/:caseId", archiveCase);
 app.post("/api/addCasePracticeArea", addCasePracticeArea);
 app.post("/api/removeCasePracticeArea", removeCasePracticeArea);
 app.get("/api/getPracticeAreas", getPracticeAreas);
@@ -97,6 +100,7 @@ app.get("/api/getLatestCase", getLatestCase);
 
 // Person endpoints
 app.post("/api/updatePerson", updatePerson);
+app.post("/api/newPerson", newPerson);
 
 // task endpoints
 app.get("/api/getAllTasks", getAllTasks);

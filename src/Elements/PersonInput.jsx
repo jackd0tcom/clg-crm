@@ -9,24 +9,40 @@ const PersonInput = ({
   personId,
   refreshActivityData,
   refreshCaseData,
+  isNewPerson,
+  caseId,
+  setPersonId,
+  setIsNewPerson,
 }) => {
   const [input, setInput] = useState(value);
   const [count, setCount] = useState(0);
   const inputRef = useRef(null);
 
-  const saveInput = () => {
+  const saveInput = async () => {
     if (count !== 0) {
       try {
-        axios
-          .post("/api/updatePerson", { personId, fieldName, value: input })
-          .then((res) => {
-            if (res.status === 200) {
-              console.log(res);
-              refreshActivityData();
-              refreshCaseData();
-              setCount(0);
-            }
-          });
+        if (isNewPerson) {
+          await axios
+            .post("/api/newPerson", { caseId, fieldName, value: input })
+            .then((res) => {
+              if (res.status === 200) {
+                refreshActivityData();
+                refreshCaseData();
+                setCount(0);
+                setIsNewPerson(false);
+                setPersonId(res.data.personId);
+              }
+            });
+        } else
+          await axios
+            .post("/api/updatePerson", { personId, fieldName, value: input })
+            .then((res) => {
+              if (res.status === 200) {
+                refreshActivityData();
+                refreshCaseData();
+                setCount(0);
+              }
+            });
       } catch (error) {
         console.log(error);
       }

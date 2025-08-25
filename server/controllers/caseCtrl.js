@@ -28,6 +28,7 @@ export default {
             [Op.or]: [
               { ownerId: userId },
               { caseId: { [Op.in]: assignedCaseIds } },
+              { isArchived: false },
             ],
           },
           include: [
@@ -76,6 +77,7 @@ export default {
           [Op.or]: [
             { ownerId: userId },
             { caseId: { [Op.in]: assignedCaseIds } },
+            { isArchived: true },
           ],
         },
         include: [
@@ -656,6 +658,20 @@ export default {
       if (req.session.user) {
         const practiceAreas = await PracticeArea.findAll({});
         res.send(practiceAreas);
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(400).send(error);
+    }
+  },
+  archiveCase: async (req, res) => {
+    try {
+      console.log("archiveCase");
+      if (req.session.user) {
+        const { caseId } = req.params;
+        const foundCase = await Case.findOne({ where: { caseId } });
+        foundCase.update({ isArchived: true });
+        res.send("case archived");
       }
     } catch (error) {
       console.log(error);

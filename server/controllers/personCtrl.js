@@ -41,4 +41,53 @@ export default {
       res.status(500).send("Failed to update person");
     }
   },
+  newPerson: async (req, res) => {
+    try {
+      console.log("newPerson");
+      const { caseId, fieldName, value } = req.body;
+      const newPerson = await Person.create({ caseId, [fieldName]: value });
+
+      await createActivityLog({
+        authorId: req.session.user.userId,
+        objectType: "person",
+        objectId: parseInt(personId),
+        action: ACTIVITY_ACTIONS.PERSON_CREATED,
+        details: `Added ${format(fieldName)} to the case`,
+      });
+      res.status(200).send(newPerson);
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  deletePerson: async (req, res) => {
+    try {
+      console.log("deletePerson");
+      if (!req.session.user) {
+        return res.status(401).send("User not authenticated");
+      }
+
+      const { personId } = req.body;
+      console.log(personId);
+      const currentPerson = await Person.findOne({ where: { personId } });
+
+      if (!currentPerson) {
+        return res.status(404).send("Person not found");
+      }
+      const caseId = currentPerson.caseId;
+
+      await currentPerson.destroy();
+      await createActivityLog({
+        authorId: req.session.user.userId,
+        objectType: "case",
+        objectId: caseId,
+        action: ACTIVITY_ACTIONS.PERSON_REMOVED,
+        details: `Removed ${currentPerson.firstName} ${currentPerson.lastName} from the case`,
+      });
+
+      res.status(200).send("Person removed from case successfully");
+    } catch (error) {
+      console.log(error);
+      res.status(500).send("Failed to remove person from case");
+    }
+  },
 };

@@ -8,6 +8,8 @@ const CaseInput = ({
   refreshActivityData,
   refreshCaseData,
   caseId,
+  isNewCase,
+  newCase,
 }) => {
   const [count, setCount] = useState(0);
   const inputRef = useRef(null);
@@ -15,6 +17,19 @@ const CaseInput = ({
   const saveInput = () => {
     if (count !== 0) {
       try {
+        // If it's a new case and we have a title, create the case first
+        if (
+          isNewCase &&
+          caseId == 0 &&
+          title &&
+          title.trim() !== "Untitled Case"
+        ) {
+          console.log("new case Title");
+          newCase();
+          return;
+        }
+
+        // Otherwise, update existing case
         axios
           .post("/api/updateCase", { caseId, fieldName: "title", value: title })
           .then((res) => {
@@ -43,7 +58,7 @@ const CaseInput = ({
   useEffect(() => {
     clearSaveTimer();
     saveTimer.current = setTimeout(() => {
-      if (title) {
+      if (title && title.trim() !== "Untitled Case") {
         saveInput();
       }
     }, 2000);
@@ -56,14 +71,15 @@ const CaseInput = ({
     clearSaveTimer();
     saveInput();
   };
+
   const handleEnter = (e) => {
     if (e.key === "Enter") {
-      console.log("Enter");
       clearSaveTimer();
       saveInput();
       inputRef.current.blur();
     }
   };
+
   return (
     <div className="case-input-wrapper">
       <input
@@ -77,7 +93,9 @@ const CaseInput = ({
           setTitle(e.target.value);
           setCount((prevCount) => prevCount + 1);
         }}
+        onBlur={handleBlur}
         onKeyDown={handleEnter}
+        placeholder="Enter case title..."
       />
     </div>
   );
