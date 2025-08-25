@@ -10,7 +10,7 @@ const CaseList = () => {
   const [cases, setCases] = useState();
   const [originalCases, setOriginalCases] = useState();
   const [isFetched, setIsFetched] = useState(false);
-  
+
   useEffect(() => {
     async function fetch() {
       try {
@@ -32,13 +32,18 @@ const CaseList = () => {
     <div className="case-list-wrapper">
       <div className="case-list-head">
         <h1>Cases</h1>
-        <CaseListSearch 
-          cases={cases} 
-          setCases={setCases} 
-          originalCases={originalCases} 
+        <CaseListSearch
+          cases={cases}
+          setCases={setCases}
+          originalCases={originalCases}
           setOriginalCases={setOriginalCases}
         />
-        <CaseFilter cases={cases} setCases={setCases} originalCases={originalCases} />
+        <CaseFilter
+          cases={cases}
+          setCases={setCases}
+          originalCases={originalCases}
+        />
+        <a onClick={() => navigate("/case/0")}>New Case</a>
       </div>
       <div className="case-list">
         {cases.length > 0 ? (
@@ -46,13 +51,7 @@ const CaseList = () => {
             return <CaseCard key={data.caseId} data={data} />;
           })
         ) : (
-          <button
-            onClick={() => {
-              navigate("/new-story");
-            }}
-          >
-            Open a new case
-          </button>
+          <p>No Active Cases</p>
         )}
       </div>
     </div>

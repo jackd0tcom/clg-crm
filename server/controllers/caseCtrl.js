@@ -149,19 +149,60 @@ export default {
         const newCase = await Case.create({
           ownerId: userId,
           title: req.body.title,
-          clientName: req.body.clientName,
-          notes: req.body.notes,
-          practiceArea: req.body.practiceArea,
-          phase: req.body.phase,
-          priority: req.body.priority,
-          status: req.body.status,
+          notes: req.body.notes || "",
+          phase: req.body.phase || "intake",
+          priority: req.body.priority || "normal",
         });
-        res.send(newCase);
+
+        // Create the case owner as an assignee
+        await CaseAssignees.create({
+          caseId: newCase.caseId,
+          userId: req.session.user.userId,
+        });
+
+        // Log the activity
+        await createActivityLog({
+          authorId: req.session.user.userId,
+          objectType: "case",
+          objectId: newCase.caseId,
+          action: ACTIVITY_ACTIONS.CASE_CREATED,
+          details: `Created new case: ${newCase.title}`,
+        });
+
+        // Return the created case with basic info
+        res.status(201).json({
+          caseId: newCase.caseId,
+          title: newCase.title,
+          phase: newCase.phase,
+          priority: newCase.priority,
+          status: newCase.status,
+          notes: newCase.notes,
+          clientName: newCase.clientName,
+          practiceAreas: [],
+          people: [],
+          assignees: [req.session.user],
+          tasks: [],
+        });
       } else console.log("no user logged in");
     } catch (error) {
       console.log(error);
     }
   },
+  getLatestCase: async (req, res) => {
+    try {
+      console.log("getNewCaseId");
+      if (req.session.user) {
+        const userId = req.session.user.userId;
+        const latestCase = await Case.findOne({
+          order: [["createdAt", "DESC"]],
+        });
+        res.send(latestCase);
+      } else console.log("no user logged in");
+    } catch (error) {
+      console.log(error);
+    }
+  },
+
   saveCase: async (req, res) => {
     try {
       console.log("save");

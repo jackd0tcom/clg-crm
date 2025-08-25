@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router";
+import { useParams, useNavigate } from "react-router";
 import axios from "axios";
 import { capitalize } from "../helpers/helperFunctions";
 import ProfilePic from "../Elements/ProfilePic";
@@ -16,6 +16,7 @@ import PracticeAreaToggle from "../Elements/PracticeAreaToggle";
 
 const Case = () => {
   const { caseId } = useParams();
+  const navigate = useNavigate();
   const [caseData, setCaseData] = useState();
   const [activityData, setActivityData] = useState();
   const [phase, setPhase] = useState("");
@@ -28,27 +29,51 @@ const Case = () => {
   const [currentAreas, setCurrentAreas] = useState();
   const [isAddingArea, setIsAddingArea] = useState(false);
   const [newPracticeArea, setNewPracticeArea] = useState("");
+  const [isNewCase, setIsNewCase] = useState(false);
 
   useEffect(() => {
     async function getData() {
       try {
-        const caseResponse = await axios.get(`/api/getCase/${caseId}`);
-        const activityResponse = await axios.get(
-          `/api/getCaseActivities/${caseId}`
-        );
-        setCaseData(caseResponse.data);
-        setActivityData(activityResponse.data);
-        setPhase(caseResponse.data.phase);
-        setPriority(caseResponse.data.priority);
-        setNotes(caseResponse.data.notes);
-        setTitle(caseResponse.data.title);
-        setCurrentAreas(caseResponse.data.practiceAreas);
+        if (caseId == 0) {
+          console.log("new case");
+          setIsNewCase(true);
+          setCaseData({
+            caseId: null,
+            title: "",
+            notes: "",
+            phase: "intake",
+            priority: "normal",
+            practiceAreas: [],
+            people: [],
+            assignees: [],
+            tasks: [],
+          });
+          setPhase("intake");
+          setPriority("normal");
+          setNotes("");
+          setTitle("Case Title");
+          setCurrentAreas([]);
+          setActivityData([]);
+          return;
+        } else {
+          const caseResponse = await axios.get(`/api/getCase/${caseId}`);
+          const activityResponse = await axios.get(
+            `/api/getCaseActivities/${caseId}`
+          );
+          setCaseData(caseResponse.data);
+          setActivityData(activityResponse.data);
+          setPhase(caseResponse.data.phase);
+          setPriority(caseResponse.data.priority);
+          setNotes(caseResponse.data.notes);
+          setTitle(caseResponse.data.title);
+          setCurrentAreas(caseResponse.data.practiceAreas);
+        }
       } catch (error) {
         console.log(error);
       }
     }
     getData();
-  }, []);
+  }, [caseId]);
 
   const refreshActivityData = async () => {
     try {
@@ -117,6 +142,27 @@ const Case = () => {
     setSelectedPerson("");
   };
 
+  const newCase = async () => {
+    try {
+      const response = await axios.post("/api/newCase", {
+        title: title || "Untitled Case",
+      });
+
+      // Use React Router navigate instead of window.history
+      navigate(`/case/${response.data.caseId}`);
+      
+      // Update local state
+      setCaseData(response.data);
+      setIsNewCase(false);
+      
+      // Refresh data
+      refreshCaseData();
+      refreshActivityData();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return caseData ? (
     <>
       <div className="case-wrapper">
@@ -141,18 +187,34 @@ const Case = () => {
                 />
               )}
               <h4>Practice Areas</h4>
-              {caseData.practiceAreas.map((area) => {
-                return (
-                  <a
-                    key={area.practiceAreaId}
-                    onClick={() => {
+              {isNewCase ? (
+                <a
+                  onClick={() => {
+                    if (!caseData?.caseId) {
+                      newCase().then(() => {
+                        setIsAddingArea(true);
+                      });
+                    } else {
                       setIsAddingArea(true);
-                    }}
-                  >
-                    {capitalize(area.name)}
-                  </a>
-                );
-              })}
+                    }
+                  }}
+                >
+                  Add Practice Area
+                </a>
+              ) : (
+                caseData.practiceAreas.map((area) => {
+                  return (
+                    <a
+                      key={area.practiceAreaId}
+                      onClick={() => {
+                        setIsAddingArea(true);
+                      }}
+                    >
+                      {capitalize(area.name)}
+                    </a>
+                  );
+                })
+              )}
               {isAddingArea && (
                 <PracticeAreaToggle
                   currentAreas={currentAreas}
@@ -173,43 +235,61 @@ const Case = () => {
                 refreshCaseData={refreshCaseData}
                 caseId={caseId}
               />
-              {caseData.people.map((person, idx) => {
-                if (caseData.people.length === 1) {
-                  return (
-                    <a
-                      key={person.personId}
-                      className="case-person-link"
-                      onClick={() => handlePersonClick(person)}
-                    >{`${person.firstName} ${person.lastName}`}</a>
-                  );
-                } else if (idx === caseData.people.length - 1) {
-                  return (
-                    <span key={person.personId}>
-                      {" "}
-                      &{" "}
+              {isNewCase ? (
+                <a
+                  onClick={() => {
+                    if (!caseData?.caseId) {
+                      newCase().then(() => {
+                        // Handle adding client logic here
+                        console.log("Case created, now add client");
+                      });
+                    } else {
+                      // Handle adding client logic here
+                      console.log("Add client to existing case");
+                    }
+                  }}
+                >
+                  Add Client
+                </a>
+              ) : (
+                caseData.people.map((person, idx) => {
+                  if (caseData.people.length === 1) {
+                    return (
                       <a
+                        key={person.personId}
                         className="case-person-link"
                         onClick={() => handlePersonClick(person)}
                       >{`${person.firstName} ${person.lastName}`}</a>
-                    </span>
-                  );
-                } else if (idx === caseData.people.length - 2) {
-                  return (
-                    <a
-                      key={person.personId}
-                      className="case-person-link"
-                      onClick={() => handlePersonClick(person)}
-                    >{`${person.firstName} ${person.lastName}`}</a>
-                  );
-                } else
-                  return (
-                    <a
-                      key={person.personId}
-                      className="case-person-link"
-                      onClick={() => handlePersonClick(person)}
-                    >{`${person.firstName} ${person.lastName}, `}</a>
-                  );
-              })}
+                    );
+                  } else if (idx === caseData.people.length - 1) {
+                    return (
+                      <span key={person.personId}>
+                        {" "}
+                        &{" "}
+                        <a
+                          className="case-person-link"
+                          onClick={() => handlePersonClick(person)}
+                        >{`${person.firstName} ${person.lastName}`}</a>
+                      </span>
+                    );
+                  } else if (idx === caseData.people.length - 2) {
+                    return (
+                      <a
+                        key={person.personId}
+                        className="case-person-link"
+                        onClick={() => handlePersonClick(person)}
+                      >{`${person.firstName} ${person.lastName}`}</a>
+                    );
+                  } else
+                    return (
+                      <a
+                        key={person.personId}
+                        className="case-person-link"
+                        onClick={() => handlePersonClick(person)}
+                      >{`${person.firstName} ${person.lastName}, `}</a>
+                    );
+                })
+              )}
             </div>
             <div className="case-stats-wrapper">
               <div className="case-stats-container">

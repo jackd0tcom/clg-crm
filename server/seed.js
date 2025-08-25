@@ -87,7 +87,6 @@ const cases = [
   {
     ownerId: 1, // Sarah Johnson
     title: "Smith Divorce Settlement",
-    clientName: "John & Mary Smith",
     notes:
       "High-conflict divorce case, assets include family business and real estate holdings",
     phase: "negotiation",
@@ -96,7 +95,6 @@ const cases = [
   {
     ownerId: 2, // Meg Williams
     title: "Downtown Real Estate Development",
-    clientName: "Urban Development Corp",
     notes: "Zoning issues for mixed-use development project",
     phase: "litigation",
     priority: "urgent",
@@ -104,7 +102,6 @@ const cases = [
   {
     ownerId: 3, // Jenn Davis
     title: "Custody Battle - Johnson Family",
-    clientName: "Amanda Johnson",
     notes: "Custody dispute involving relocation and school district changes",
     phase: "investigation",
     priority: "normal",
@@ -112,7 +109,6 @@ const cases = [
   {
     ownerId: 4, // Mike Thompson
     title: "Personal Injury - Car Accident",
-    clientName: "Robert Chen",
     notes:
       "Multi-vehicle accident with severe injuries, insurance company dispute",
     phase: "settlement",
@@ -121,7 +117,6 @@ const cases = [
   {
     ownerId: 1, // Sarah Johnson
     title: "Corporate Merger - TechStart Inc",
-    clientName: "TechStart Inc",
     notes: "Merger with competitor, due diligence and contract negotiations",
     phase: "negotiation",
     priority: "normal",

@@ -9,7 +9,7 @@ const CaseFilter = ({ cases, setCases, originalCases }) => {
       console.log("is latest - sorting newest first");
       const sortedCases = [...originalCases].sort(
         (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
       );
       console.log("Sorted cases:", sortedCases);
       setCases(sortedCases);
@@ -18,7 +18,7 @@ const CaseFilter = ({ cases, setCases, originalCases }) => {
       console.log("is not latest - sorting oldest first");
       const sortedCases = [...originalCases].sort(
         (a, b) =>
-          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
       console.log("Sorted cases:", sortedCases);
       setCases(sortedCases);
