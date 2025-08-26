@@ -28,7 +28,6 @@ export default {
             [Op.or]: [
               { ownerId: userId },
               { caseId: { [Op.in]: assignedCaseIds } },
-              { isArchived: false },
             ],
           },
           include: [
@@ -77,7 +76,6 @@ export default {
           [Op.or]: [
             { ownerId: userId },
             { caseId: { [Op.in]: assignedCaseIds } },
-            { isArchived: true },
           ],
         },
         include: [

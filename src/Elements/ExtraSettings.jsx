@@ -34,11 +34,9 @@ const ExtraSettings = ({
     let caseId = Id;
     try {
       await axios.get(`/api/archiveCase/${caseId}`).then((res) => {
-        if (res.data[0] === "0") {
-          setIsArchived(false);
-        } else if (res.data[0] === "1") {
-          setIsArchived(true);
-        }
+        // The endpoint returns "0 case unarchived" or "1 case archived"
+        const isArchived = res.data.startsWith("1");
+        setIsArchived(isArchived);
         handleRefresh();
         refreshActivityData();
       });
