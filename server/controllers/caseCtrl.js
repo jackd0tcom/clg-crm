@@ -670,8 +670,30 @@ export default {
       if (req.session.user) {
         const { caseId } = req.params;
         const foundCase = await Case.findOne({ where: { caseId } });
-        foundCase.update({ isArchived: true });
-        res.send("case archived");
+        if (foundCase.dataValues.isArchived) {
+          console.log("archived");
+          foundCase.update({ isArchived: false });
+          await createActivityLog({
+            authorId: req.session.user.userId,
+            objectType: "case",
+            objectId: parseInt(caseId),
+            action: ACTIVITY_ACTIONS.CASE_UNARCHIVED,
+            details: `removed case from archive`,
+          });
+
+          res.send("0 case unarchived");
+        } else {
+          foundCase.update({ isArchived: true });
+          await createActivityLog({
+            authorId: req.session.user.userId,
+            objectType: "case",
+            objectId: parseInt(caseId),
+            action: ACTIVITY_ACTIONS.CASE_ARCHIVED,
+            details: `archived case`,
+          });
+
+          res.send("1 case archived");
+        }
       }
     } catch (error) {
       console.log(error);

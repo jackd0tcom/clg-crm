@@ -13,7 +13,7 @@ import AssigneeList from "../Elements/AssigneeList";
 import PersonView from "../Elements/PersonView";
 import CaseInput from "../Elements/CaseInput";
 import PracticeAreaToggle from "../Elements/PracticeAreaToggle";
-import AddPersonForm from "../Elements/AddPersonForm";
+import ExtraSettings from "../Elements/ExtraSettings";
 
 const Case = () => {
   const { caseId } = useParams();
@@ -33,6 +33,7 @@ const Case = () => {
   const [isNewCase, setIsNewCase] = useState(false);
   const [isAddingPerson, setIsAddingPerson] = useState(false);
   const [isNewPerson, setIsNewPerson] = useState(false);
+  const [isArchived, setIsArchived] = useState(false);
 
   useEffect(() => {
     async function getData() {
@@ -70,6 +71,7 @@ const Case = () => {
           setNotes(caseResponse.data.notes);
           setTitle(caseResponse.data.title);
           setCurrentAreas(caseResponse.data.practiceAreas);
+          setIsArchived(caseResponse.data.isArchived);
         }
       } catch (error) {
         console.log(error);
@@ -97,6 +99,7 @@ const Case = () => {
       setPriority(caseResponse.data.priority);
       setNotes(caseResponse.data.notes);
       setCurrentAreas(caseResponse.data.practiceAreas);
+      setIsArchived(caseResponse.data.isArchived);
     } catch (error) {
       console.log(error);
     }
@@ -176,12 +179,22 @@ const Case = () => {
     <>
       <div className="case-wrapper">
         <div className="case-details-container">
-          <Link to="/cases">
-            {" "}
-            <i className="fa-solid fa-arrow-left"></i>
-          </Link>
+          <div className="case-top-bar">
+            <Link to="/cases">
+              {" "}
+              <i className="fa-solid fa-arrow-left"></i>
+            </Link>
+            <ExtraSettings
+              Id={caseId}
+              handleRefresh={refreshCaseData}
+              refreshActivityData={refreshActivityData}
+              isArchived={isArchived}
+              setIsArchived={setIsArchived}
+            />
+          </div>
           <div className="case-card">
             <div className="case-header">
+              {isArchived && <h3>Archived</h3>}
               <h4>Practice Areas</h4>
               {isNewCase || caseData.practiceAreas.length < 1 ? (
                 <a

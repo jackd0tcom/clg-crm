@@ -26,6 +26,7 @@ const PersonInput = ({
             .post("/api/newPerson", { caseId, fieldName, value: input })
             .then((res) => {
               if (res.status === 200) {
+                console.log("new person added");
                 refreshActivityData();
                 refreshCaseData();
                 setCount(0);
@@ -74,12 +75,26 @@ const PersonInput = ({
     clearSaveTimer();
     saveInput();
   };
+  
   const handleEnter = (e) => {
     if (e.key === "Enter") {
       console.log("Enter");
       clearSaveTimer();
       saveInput();
       inputRef.current.blur();
+    }
+  };
+
+  // Handle autofill detection
+  const handleAnimationStart = (e) => {
+    if (e.animationName === 'onAutoFillStart') {
+      console.log('Autofill detected for:', fieldName);
+      // Trigger save immediately when autofill occurs
+      setInput(e.target.value);
+      setCount(prevCount => prevCount + 1);
+      clearSaveTimer();
+      // Save immediately after autofill
+      setTimeout(() => saveInput(), 100);
     }
   };
 
@@ -99,7 +114,10 @@ const PersonInput = ({
         value={input}
         onBlur={handleBlur}
         onKeyDown={handleEnter}
+        onAnimationStart={handleAnimationStart}
         ref={inputRef}
+        className="person-input-field"
+        autoComplete="on"
       />
     </div>
   );

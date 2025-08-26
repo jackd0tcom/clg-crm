@@ -50,7 +50,7 @@ export default {
       await createActivityLog({
         authorId: req.session.user.userId,
         objectType: "person",
-        objectId: parseInt(personId),
+        objectId: parseInt(newPerson.personId),
         action: ACTIVITY_ACTIONS.PERSON_CREATED,
         details: `Added ${format(fieldName)} to the case`,
       });

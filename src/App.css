@@ -44,6 +44,43 @@
   }
 }
 
+/* Autofill */
+/* Add this to your CSS file */
+@keyframes onAutoFillStart {
+  from {
+    /**/
+  }
+  to {
+    /**/
+  }
+}
+
+@keyframes onAutoFillCancel {
+  from {
+    /**/
+  }
+  to {
+    /**/
+  }
+}
+
+.person-input-field:-webkit-autofill {
+  animation-name: onAutoFillStart;
+}
+
+.person-input-field:not(:-webkit-autofill) {
+  animation-name: onAutoFillCancel;
+}
+
+/* Alternative approach using background color detection */
+.person-input-field:-webkit-autofill,
+.person-input-field:-webkit-autofill:hover,
+.person-input-field:-webkit-autofill:focus,
+.person-input-field:-webkit-autofill:active {
+  transition-delay: 99999s;
+  transition-property: background-color, color;
+}
+
 /* General */
 #root {
   --root-bg-color-dark: rgb(18, 18, 18);
@@ -138,6 +175,10 @@ button:hover,
 .case-details-container {
   width: 50%;
   margin: 10px 20px;
+}
+.case-top-bar {
+  display: flex;
+  justify-content: space-between;
 }
 .case-activity-container {
   width: 50%;

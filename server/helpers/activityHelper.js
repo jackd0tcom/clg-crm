@@ -118,6 +118,8 @@ export const ACTIVITY_ACTIONS = {
   CASE_PRACTICE_AREAS_UPDATED: "practice_areas_updated",
   CASE_PRACTICE_AREA_ADDED: "practice_area_added",
   CASE_PRACTICE_AREA_REMOVED: "practice_area_removed",
+  CASE_ARCHIVED: "case_archived",
+  CASE_UNARCHIVED: "case_unarchived",
 
   TASK_CREATED: "task_created",
   TASK_UPDATED: "task_updated",
