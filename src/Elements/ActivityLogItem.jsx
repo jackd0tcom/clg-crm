@@ -1,4 +1,4 @@
-import { formatDate } from "../helpers/helperFunctions";
+import { formatRelativeTime } from "../helpers/helperFunctions";
 
 const ActivityLogItem = ({ data }) => {
   return (
@@ -7,7 +7,7 @@ const ActivityLogItem = ({ data }) => {
         <i className="fa-solid fa-circle activity-log-dot"></i>
         {data.author.firstName} {data.author.lastName} {data.details}
       </p>
-      <p className="activity-log-item-p">{formatDate(data.createdAt)}</p>
+      <p className="activity-log-item-p">{formatRelativeTime(data.createdAt)}</p>
     </div>
   );
 };

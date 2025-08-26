@@ -10,13 +10,16 @@ const CaseList = () => {
   const [cases, setCases] = useState();
   const [originalCases, setOriginalCases] = useState();
   const [isFetched, setIsFetched] = useState(false);
+  const [showArchived, setShowArchived] = useState(false);
 
   useEffect(() => {
     async function fetch() {
       try {
         await axios.get("/api/getCasesWithTasks").then((res) => {
-          setCases(res.data);
-          setOriginalCases(res.data);
+          // Filter out archived cases before setting initial state
+          const nonArchivedCases = res.data.filter((a) => !a.isArchived);
+          setCases(nonArchivedCases);
+          setOriginalCases(res.data); // Keep original data for filtering
           setIsFetched(true);
         });
       } catch (error) {
@@ -31,19 +34,27 @@ const CaseList = () => {
   ) : (
     <div className="case-list-wrapper">
       <div className="case-list-head">
-        <h1>Cases</h1>
+        <h1 className="section-heading">Cases</h1>
+        <CaseFilter
+          cases={cases}
+          setCases={setCases}
+          originalCases={originalCases}
+          showArchived={showArchived}
+          setShowArchived={setShowArchived}
+        />
         <CaseListSearch
           cases={cases}
           setCases={setCases}
           originalCases={originalCases}
           setOriginalCases={setOriginalCases}
+          showArchived={showArchived}
         />
-        <CaseFilter
-          cases={cases}
-          setCases={setCases}
-          originalCases={originalCases}
-        />
-        <a onClick={() => navigate("/case/0")}>New Case</a>
+        <a
+          className="button button-primary add-case-button"
+          onClick={() => navigate("/case/0")}
+        >
+          Open Case
+        </a>
       </div>
       <div className="case-list">
         {cases.length > 0 ? (

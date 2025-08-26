@@ -85,13 +85,22 @@
 #root {
   --root-bg-color-dark: rgb(18, 18, 18);
   --main-bg-color-dark: rgb(26, 26, 26);
-  --root-bg-color-light: rgb(235, 235, 235);
+  --root-bg-color-light: rgb(246, 246, 246);
   --main-bg-color-light: rgb(255, 255, 255);
   --light-grey: rgb(244, 244, 244);
-  --grey: rgb(75, 75, 75);
+  --grey: rgb(50, 50, 50);
+  --dark-grey: rgb(54, 54, 54);
   --light-border: rgb(210, 210, 210);
   --glc-green: #08331d;
-  --bright-green: rgb(0, 102, 0);
+  --red: rgb(231, 13, 13);
+  --blue: rgb(91, 135, 255);
+  --bright-green: rgb(67, 138, 67);
+  --bright-dark-green: rgb(47, 98, 47);
+  --button-active-font: rgb(33, 98, 33);
+  --button-active-bg: rgb(201, 247, 226);
+  --button-active-bg-hover: rgba(188, 243, 218, 0.512);
+  --button-active-border: rgb(205, 239, 205);
+  --white-bg: white;
 }
 
 a {
@@ -116,6 +125,20 @@ button:hover,
   border: 1px solid var(--light-border);
 }
 
+.button-primary {
+  font-size: 0.85rem;
+  background-color: var(--bright-green);
+  border: none;
+  color: white;
+  padding: 6px 10px;
+  transition: 70ms;
+}
+.button-primary:hover {
+  background-color: var(--bright-dark-green);
+  color: white;
+  border: none;
+}
+
 .app-wrapper {
   display: flex;
   width: calc(100vw - 30px);
@@ -125,7 +148,6 @@ button:hover,
   column-gap: 15px;
 }
 .page-wrapper {
-  padding: 15px;
   border: 1px solid var(--light-border);
   border-radius: 5px;
   width: 100%;
@@ -135,6 +157,25 @@ button:hover,
   background-color: white;
   z-index: 999;
   padding: 20px;
+}
+.section-heading {
+  font-size: 1.5rem;
+  margin: 0;
+  font-weight: 600;
+}
+h3 {
+  font-weight: 500;
+  font-size: 1rem;
+  margin: 5px 0px;
+}
+h4 {
+  font-weight: 400;
+  font-size: 0.9rem;
+  margin: 5px 0px;
+}
+h5 {
+  font-weight: 400;
+  margin: 5px 0px;
 }
 
 /* Nav */
@@ -165,6 +206,123 @@ button:hover,
   display: flex;
   align-items: center;
   column-gap: 5px;
+}
+
+/* Case List */
+
+.case-list-wrapper {
+  width: 100%;
+  height: 100%;
+}
+.case-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 2rem;
+  padding: 0px 15px 15px 15px;
+}
+.case-list-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 15px 10px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--light-border);
+}
+
+/* Case Filter */
+.case-filter-wrapper {
+  display: flex;
+  justify-content: space-evenly;
+  padding: 0px 10px;
+}
+.case-filter-wrapper:hover p {
+  border: 1px solid var(--light-border);
+}
+.case-filter-section p {
+  font-size: 0.85rem;
+  padding: 6px 8px;
+  margin: 0 5px;
+  color: var(--grey);
+  border: 1px solid transparent;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 100ms;
+}
+.case-filter-section p:hover {
+  background-color: var(--button-active-bg-hover);
+  color: var(--button-active-font);
+  border-color: var(--button-active-border);
+}
+.active-filter p:hover {
+  background-color: var(--button-active-bg-hover);
+}
+.active-filter p {
+  background-color: var(--button-active-bg);
+  color: var(--button-active-font);
+  border-color: var(--button-active-border);
+}
+
+/* Case Search */
+.case-list-search {
+  width: 20%;
+}
+.case-list-search input {
+  padding: 10px;
+  width: 100%;
+  border: 1px solid var(--light-border);
+  border-radius: 5px;
+}
+.case-list-search input:focus-visible {
+  outline: none;
+}
+
+/* Case Card */
+.case-card-wrapper {
+  display: grid;
+  row-gap: 40px;
+  padding: 20px;
+  height: 100%;
+  border: 1px solid var(--light-border);
+  border-radius: 3px;
+  color: black;
+  transition: 100ms;
+}
+.case-card-wrapper:hover {
+  background-color: var(--root-bg-color-light);
+}
+.case-card-practice-areas {
+  display: flex;
+  margin: 5px 0px;
+}
+.case-card-practice-areas h4 {
+  font-size: 0.8rem;
+  font-weight: 500;
+  width: auto;
+  color: var(--grey);
+}
+.case-card-title {
+  font-size: 1.25rem;
+  margin-top: 20px;
+}
+.case-card-tasks {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Priority Icon */
+.priority-icon {
+  font-size: 0.85rem;
+  margin: 0;
+}
+.high-priority i {
+  color: var(--red);
+}
+.normal-priority i {
+  color: var(--bright-green);
+}
+.low-priority i {
+  color: var(--blue);
 }
 
 /* Case page */
@@ -198,16 +356,6 @@ button:hover,
   grid-template-rows: 1fr 1fr 1fr;
   align-items: center;
 }
-.case-list {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 2rem;
-}
-.case-list-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
 .case-title-input {
   width: 100%;
 }
@@ -217,16 +365,6 @@ button:hover,
 }
 .case-person-link {
   cursor: pointer;
-}
-
-/* Case Card */
-.case-card-wrapper {
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
-  border: 1px solid var(--light-grey);
-  border-radius: 5px;
-  color: black;
 }
 
 /* Task List Item */
@@ -285,6 +423,7 @@ button:hover,
 }
 .task-list-item {
   display: contents;
+  display: flex;
 }
 .task-list-item p {
   overflow: auto;

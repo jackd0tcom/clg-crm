@@ -21,6 +21,39 @@ export function formatDateNoTime(data) {
     month: "short",
   }).format(date);
 }
+
+export function formatRelativeTime(data) {
+  const now = new Date();
+  const activityDate = new Date(data);
+  const diffInMs = now - activityDate;
+  const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+  const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+  const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+  // Less than 2 minutes ago
+  if (diffInMinutes < 2) {
+    return "Just now";
+  }
+  
+  // Less than 1 hour ago but more than 2 minutes
+  if (diffInMinutes < 60) {
+    return `${diffInMinutes} minute${diffInMinutes === 1 ? '' : 's'} ago`;
+  }
+  
+  // Same day (today) but more than 1 hour ago
+  if (diffInDays === 0) {
+    return "Today";
+  }
+  
+  // Yesterday
+  if (diffInDays === 1) {
+    return "Yesterday";
+  }
+  
+  // More than 1 day ago - use the regular formatDate
+  return formatDate(data);
+}
+
 export function format(str) {
   if (str === "dob") {
     return "Date of Birth";
