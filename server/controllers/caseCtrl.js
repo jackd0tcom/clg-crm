@@ -29,6 +29,7 @@ export default {
               { ownerId: userId },
               { caseId: { [Op.in]: assignedCaseIds } },
             ],
+            isArchived: false,
           },
           include: [
             {

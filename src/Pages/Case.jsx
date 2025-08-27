@@ -349,6 +349,9 @@ const Case = () => {
                           >{`${person.firstName} ${person.lastName}, `}</a>
                         );
                     })}
+                  {caseData.people.length === 0 && (
+                    <p className="add-person-p">Add Person</p>
+                  )}
                 </div>
                 <i
                   className="fa-solid fa-circle-plus add-person-button"
@@ -358,30 +361,30 @@ const Case = () => {
                   }}
                 ></i>
               </div>
-            </div>
-            <div className="case-stats-wrapper">
-              <div className="case-stats-container">
-                <h4>Phase</h4>
-                <h4>Assignees</h4>
-                <h4>Priority</h4>
-              </div>
-              <div className="case-stats-container">
-                <PhaseToggle
-                  value={phase}
-                  onHandle={handleUpdatePhase}
-                  setPhase={setPhase}
-                />
-                <AssigneeList
-                  assignees={caseData.assignees}
-                  caseId={caseData.caseId}
-                  onActivityUpdate={refreshActivityData}
-                  isNewCase={isNewCase}
-                />
-                <PriorityToggle
-                  value={priority}
-                  onHandle={handleUpdatePriority}
-                  setPriority={setPriority}
-                />
+              <div className="case-stats-wrapper">
+                <div className="case-stats-container">
+                  <h4>Phase</h4>
+                  <h4>Assignees</h4>
+                  <h4>Priority</h4>
+                </div>
+                <div className="case-stats-container">
+                  <PhaseToggle
+                    value={phase}
+                    onHandle={handleUpdatePhase}
+                    setPhase={setPhase}
+                  />
+                  <AssigneeList
+                    assignees={caseData.assignees}
+                    caseId={caseData.caseId}
+                    onActivityUpdate={refreshActivityData}
+                    isNewCase={isNewCase}
+                  />
+                  <PriorityToggle
+                    value={priority}
+                    onHandle={handleUpdatePriority}
+                    setPriority={setPriority}
+                  />
+                </div>
               </div>
             </div>
             <div className="case-notes">

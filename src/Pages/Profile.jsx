@@ -3,16 +3,17 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import Loader from "../Elements/Loader";
 import { useParams } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
-  const currentUserId = useSelector((state) => state.userId);
+  const userId = useSelector((state) => state.user.userId);
   const [userData, setUserData] = useState({});
   const [isLoading, setIsLoading] = useState(true);
-  const { userIdParams } = useParams();
-  const [userId, setUserId] = useState(null);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const userId = userIdParams || currentUserId;
     try {
       axios.get(`/api/getUser/${userId}`).then((res) => {
         setUserData(res.data);
@@ -30,6 +31,16 @@ const Profile = () => {
     return <Loader />;
   }
 
+  const logout = () => {
+    axios
+      .delete("/api/logout")
+      .then((res) => {
+        dispatch({ type: "LOGOUT" });
+        navigate("/");
+      })
+      .catch((err) => console.log(err));
+  };
+
   return (
     <div className="profile-wrapper">
       <button
@@ -39,25 +50,18 @@ const Profile = () => {
       >
         User Data
       </button>
-      <div className="profile-title-wrapper">
-        <div className="profile-pic"></div>
-        <h2>{userData.username}</h2>
-      </div>
       <div className="profile-content-wrapper">
         <p>
           {userData.firstName} {userData.lastName}
         </p>
       </div>
-      <div className="profile-friends-wrapper">
-        <h2>Friends</h2>
-        {userData.friends.map((friend) => {
-          return (
-            <div key={friend.userId} className="profile-friend-card">
-              <h4>{friend.username}</h4>
-            </div>
-          );
-        })}
-      </div>
+      <button
+        onClick={() => {
+          logout();
+        }}
+      >
+        Logout
+      </button>
     </div>
   );
 };

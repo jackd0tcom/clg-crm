@@ -3,7 +3,13 @@ import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import AssigneeAddToggle from "./AssigneeAddToggle";
 
-const AssigneeList = ({ assignees, caseId, taskId, onActivityUpdate, isNewCase }) => {
+const AssigneeList = ({
+  assignees,
+  caseId,
+  taskId,
+  onActivityUpdate,
+  isNewCase,
+}) => {
   const [assigneeList, setAssigneeList] = useState([]);
   const [nonAssigneeList, setNonAssigneeList] = useState([]);
   const [isHovered, setIsHovered] = useState(false);
@@ -12,7 +18,7 @@ const AssigneeList = ({ assignees, caseId, taskId, onActivityUpdate, isNewCase }
 
   useEffect(() => {
     setAssigneeList(assignees || []);
-    
+
     // Only fetch non-assignees if we have a valid caseId and it's not a new case
     if (caseId && caseId !== 0 && !isNewCase) {
       try {
@@ -101,12 +107,31 @@ const AssigneeList = ({ assignees, caseId, taskId, onActivityUpdate, isNewCase }
     }
   };
 
-  // Don't render assignee functionality for new cases
   if (isNewCase) {
     return (
       <div className="assignee-list-wrapper">
         <div className="new-case-assignee-placeholder">
-          <p>Assignees will appear here after case is created</p>
+          <p>Empty</p>
+        </div>
+        <div className="assignee-add-container" ref={dropdownRef}>
+          <div
+            className="assignee-toggle-add-wrapper-new"
+            onClick={() => {
+              setIsHovered(false);
+              setIsAdding(true);
+            }}
+          >
+            <i className="fa-solid fa-circle-plus assignee-toggle-add"></i>
+          </div>
+          {isAdding && (
+            <AssigneeAddToggle
+              nonAssigneeList={nonAssigneeList}
+              setNonAssigneeList={setNonAssigneeList}
+              handleAdd={handleAdd}
+              setIsAdding={setIsAdding}
+              caseId={caseId}
+            />
+          )}
         </div>
       </div>
     );
@@ -130,17 +155,15 @@ const AssigneeList = ({ assignees, caseId, taskId, onActivityUpdate, isNewCase }
         );
       })}
       <div className="assignee-add-container" ref={dropdownRef}>
-        {!isAdding && (
-          <div
-            className="assignee-toggle-add-wrapper"
-            onClick={() => {
-              setIsHovered(false);
-              setIsAdding(true);
-            }}
-          >
-            <i className="fa-solid fa-circle-plus assignee-toggle-add"></i>
-          </div>
-        )}
+        <div
+          className="assignee-toggle-add-wrapper"
+          onClick={() => {
+            setIsHovered(false);
+            setIsAdding(true);
+          }}
+        >
+          <i className="fa-solid fa-circle-plus assignee-toggle-add"></i>
+        </div>
         {isAdding && (
           <AssigneeAddToggle
             nonAssigneeList={nonAssigneeList}

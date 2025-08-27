@@ -23,7 +23,7 @@ const Login = ({
   return (
     <>
       <section>
-        <div>
+        <div className="login-wrapper">
           <h1>Login</h1>
           <form onSubmit={(e) => submit(e)}>
             <input

@@ -18,7 +18,14 @@ const reducer = (state = initialState, action) => {
   switch (action.type) {
     case LOGIN:
       return {
-        user: action.payload,
+        user: {
+          userId: action.payload.userId,
+          username: action.payload.userName,
+          firstName: action.payload.firstName,
+          lastName: action.payload.lastName,
+          role: action.payload.role,
+          profilePic: action.payload.profilePic,
+        },
         isAuthenticated: true,
       };
     case LOGOUT:

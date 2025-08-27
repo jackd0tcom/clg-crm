@@ -22,19 +22,20 @@ const PersonView = ({
 
   useEffect(() => {
     const handleClickOutside = (event) => {
+      console.log("test");
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsAddingPerson(false);
+        onBlur(); // Also call onBlur to close the component
       }
     };
 
-    if (isAddingPerson) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
+    // Always add the event listener when component mounts
+    document.addEventListener("mousedown", handleClickOutside);
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isAddingPerson]);
+  }, [setIsAddingPerson, onBlur]);
 
   const personObject = {
     firstName: "",
@@ -92,7 +93,7 @@ const PersonView = ({
               handleRemove();
             }}
           >
-            Remove from case
+            Remove Person
           </a>
         </div>
       </div>

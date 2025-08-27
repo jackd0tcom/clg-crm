@@ -1,0 +1,38 @@
+/* Nav */
+.nav-bar {
+  width: 13%;
+  border: 1px solid var(--light-border);
+  padding: 15px;
+}
+.nav-button {
+  padding: 5px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+}
+.nav-button:hover {
+  background-color: var(--root-bg-color-light);
+}
+.nav-buttons-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+.nav-buttons-container {
+  display: flex;
+  flex-direction: column;
+  row-gap: 10px;
+}
+.clg-logo {
+  width: 100%;
+  margin-bottom: 2rem;
+}
+.active-nav {
+  color: var(--bright-dark-green);
+  background-color: var(--button-active-bg);
+}
+#nav-profile {
+  display: flex;
+  align-items: center;
+  column-gap: 5px;
+}

@@ -1,4 +1,6 @@
 @import "./CaseStyles.css";
+@import "./Nav.css";
+@import "./Home.css";
 
 @media (prefers-color-scheme: light) {
   :root {
@@ -95,7 +97,7 @@
   --bright-green: rgb(67, 138, 67);
   --bright-dark-green: rgb(47, 98, 47);
   --button-active-font: rgb(33, 98, 33);
-  --button-active-bg: rgb(201, 247, 226);
+  --button-active-bg: rgb(226, 255, 242);
   --button-active-bg-hover: rgba(188, 243, 218, 0.512);
   --button-active-border: rgb(205, 239, 205);
   --white-bg: white;
@@ -139,9 +141,8 @@ button:hover,
 
 .app-wrapper {
   display: flex;
-  width: calc(100vw - 30px);
-  height: calc(100vh - 30px);
-  padding: 15px;
+  width: 100vw;
+  height: 100vh;
   row-gap: 20px;
   column-gap: 15px;
 }
@@ -149,6 +150,8 @@ button:hover,
   border: 1px solid var(--light-border);
   border-radius: 5px;
   width: 100%;
+  margin: 15px;
+  margin-left: 0;
 }
 .section-heading {
   font-size: 1.5rem;
@@ -170,37 +173,34 @@ h5 {
   margin: 5px 0px;
 }
 
-/* Nav */
-.nav-bar {
-  width: 15%;
+/* Login */
+.login-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.login-wrapper form {
+  display: flex;
+  flex-direction: column;
+  row-gap: 20px;
+  width: 100%;
+  max-width: 300px;
+}
+.login-wrapper form input {
+  padding: 10px;
   border: 1px solid var(--light-border);
   border-radius: 5px;
-  padding: 15px;
 }
-.nav-buttons-wrapper {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  height: 100%;
+.login-wrapper form button {
+  background-color: var(--bright-dark-green);
+  color: white;
 }
-.nav-buttons-container {
-  display: flex;
-  flex-direction: column;
-  row-gap: 10px;
-}
-.clg-logo {
-  width: 200px;
-}
-.active-nav {
-  color: var(--bright-green);
-}
-#nav-profile {
-  display: flex;
-  align-items: center;
-  column-gap: 5px;
-}
-
 /* Priority Icon */
+.priority-icon {
+  display: flex;
+  column-gap: 5px;
+  align-items: center;
+}
 .priority-icon {
   font-size: 0.85rem;
   margin: 0;
@@ -215,12 +215,6 @@ h5 {
   color: var(--blue);
 }
 
-/* Task List Item */
-.task-list-item {
-  display: flex;
-  align-items: center;
-  column-gap: 5px;
-}
 /* ProfilePic component */
 .profile-pic-wrapper {
   height: auto;
@@ -271,7 +265,8 @@ h5 {
 }
 .task-list-item {
   display: contents;
-  display: flex;
+  align-items: center;
+  column-gap: 5px;
 }
 .task-list-item p {
   overflow: auto;
@@ -295,8 +290,19 @@ h5 {
 }
 
 /* Notes */
+.notes-heading {
+  font-size: 0.9rem;
+  color: var(--dark-grey);
+  margin-bottom: 0.5rem;
+}
+
 .case-notes textarea {
   min-height: 15vh;
+  border: 1px solid var(--light-border);
+  border-radius: 5px;
+}
+.case-notes textarea:focus-visible {
+  outline: none;
 }
 
 .notes-textarea {
@@ -311,6 +317,19 @@ h5 {
   column-gap: 10px;
   align-items: top;
   position: relative;
+}
+.new-case-assignee-placeholder p {
+  font-size: 0.9rem;
+  margin: 0;
+  color: var(--grey);
+}
+.new-case-assignee-placeholder {
+  display: flex;
+  align-items: center;
+}
+.assignee-toggle-add-wrapper-new {
+  cursor: pointer;
+  margin-left: 3px;
 }
 .assignee-toggle-photo {
   width: 30px;
@@ -356,29 +375,35 @@ h5 {
   display: flex;
   flex-direction: column;
   position: absolute;
-  top: 0;
-  left: 10px;
+  top: -3px;
+  left: 5px;
   border: 1px solid var(--light-border);
   border-radius: 5px;
-  min-width: 120px;
+  min-width: 150px;
   width: 100%;
+  padding: 10px;
+  background-color: white;
+  row-gap: 10px;
 }
 .assignee-add-toggle-wrapper p:nth-child(1) {
   margin: 0;
-  padding: 10px 10px;
+  font-size: 0.9rem;
+  color: var(--grey);
 }
 .assignee-add-toggle-item {
   display: flex;
   column-gap: 10px;
-  padding: 5px 10px;
-  border: 1px solid var(--light-border);
-  border-bottom: 0;
+  padding: 5px;
+  margin-left: -5px;
+  border-radius: 5px;
+  border: 1px solid transparent;
   border-left: 0px;
   border-right: 0px;
   cursor: pointer;
 }
 .assignee-add-toggle-item:hover {
-  background-color: var(--light-grey);
+  background-color: var(--root-bg-color-light);
+  border: 1px solid var(--light-border);
 }
 .assignee-add-toggle-pic {
   width: 25px;

@@ -30,7 +30,7 @@ const Notes = ({ value, onChange, setCount, count, updateNotes }) => {
 
   return (
     <div className="notes-wrapper">
-      <h3>Notes</h3>
+      <h3 className="notes-heading">Notes</h3>
       <textarea
         onChange={(e) => {
           onChange(e.target.value);

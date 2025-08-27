@@ -82,9 +82,6 @@
 .case-card-wrapper:hover {
   background-color: var(--root-bg-color-light);
 }
-.case-header {
-  position: relative;
-}
 .case-card-practice-areas {
   display: flex;
   margin: 5px 0px;
@@ -108,6 +105,10 @@
 .case-wrapper {
   display: flex;
   height: 100%;
+  justify-content: space-between;
+}
+.case-header {
+  position: relative;
 }
 .case-details-container {
   width: 50%;
@@ -171,7 +172,7 @@
 }
 
 .case-activity-container {
-  width: 50%;
+  width: 40%;
   border-left: 1px solid var(--light-border);
   background-color: var(--root-bg-color-light);
   padding: 0px 20px;
@@ -182,10 +183,12 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   max-width: 250px;
+  margin-top: 1rem;
 }
 .case-stats-container {
   display: grid;
   grid-template-rows: 1fr 1fr 1fr;
+  row-gap: 1.5rem;
   align-items: center;
 }
 .case-title-input {
@@ -283,6 +286,11 @@
 .add-person-button:hover {
   color: black;
 }
+.add-person-p {
+  font-size: 0.9rem;
+  margin: 0;
+  color: var(--grey);
+}
 
 .case-person-link {
   cursor: pointer;
@@ -336,4 +344,17 @@
 }
 .remove-person-button {
   grid-column: span 2;
+}
+.remove-person-button a {
+  cursor: pointer;
+  font-size: 0.9rem;
+  border: 1px solid var(--light-border);
+  padding: 6px 8px;
+  border-radius: 5px;
+  color: var(--grey);
+  font-weight: 600;
+}
+.remove-person-button a:hover {
+  background-color: var(--red);
+  color: white;
 }

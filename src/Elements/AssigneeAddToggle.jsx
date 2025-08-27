@@ -7,13 +7,14 @@ const AssigneeAddToggle = ({
 }) => {
   return (
     <div className="assignee-add-toggle-wrapper">
-      <p>Assignees</p>
+      <p>Add Assignees</p>
       {nonAssigneeList.length > 0 ? (
         nonAssigneeList.map((nee) => {
           return (
             <div
               className="assignee-add-toggle-item"
               onClick={() => {
+                console.log(nee.profilePic);
                 handleAdd({ caseId, userId: nee.userId });
               }}
             >

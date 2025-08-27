@@ -35,7 +35,7 @@ const Nav = () => {
               <NavLink
                 to="/"
                 className={({ isActive }) =>
-                  isActive ? "active-nav button" : "inactive-nav button"
+                  isActive ? "active-nav nav-button" : "inactive-nav nav-button"
                 }
               >
                 <i className="fa-solid fa-grip"></i>
@@ -44,7 +44,7 @@ const Nav = () => {
               <NavLink
                 to="/inbox"
                 className={({ isActive }) =>
-                  isActive ? "active-nav button" : "inactive-nav button"
+                  isActive ? "active-nav nav-button" : "inactive-nav nav-button"
                 }
               >
                 <i className="fa-solid fa-inbox"></i>
@@ -53,7 +53,7 @@ const Nav = () => {
               <NavLink
                 to="/tasks"
                 className={({ isActive }) =>
-                  isActive ? "active-nav button" : "inactive-nav button"
+                  isActive ? "active-nav nav-button" : "inactive-nav nav-button"
                 }
               >
                 <i className="fa-solid fa-list-check"></i>
@@ -62,7 +62,7 @@ const Nav = () => {
               <NavLink
                 to="/cases"
                 className={({ isActive }) =>
-                  isActive ? "active-nav button" : "inactive-nav button"
+                  isActive ? "active-nav nav-button" : "inactive-nav nav-button"
                 }
               >
                 <i className="fa-solid fa-suitcase"></i>
@@ -71,7 +71,7 @@ const Nav = () => {
               <NavLink
                 to="/calendar"
                 className={({ isActive }) =>
-                  isActive ? "active-nav button" : "inactive-nav button"
+                  isActive ? "active-nav nav-button" : "inactive-nav nav-button"
                 }
               >
                 <i className="fa-regular fa-calendar"></i>
@@ -82,7 +82,7 @@ const Nav = () => {
               <NavLink
                 to="/settings"
                 className={({ isActive }) =>
-                  isActive ? "active-nav button" : "inactive-nav button"
+                  isActive ? "active-nav nav-button" : "inactive-nav nav-button"
                 }
               >
                 <i className="fa-solid fa-gear"></i>
@@ -91,7 +91,7 @@ const Nav = () => {
               <NavLink
                 to="/search"
                 className={({ isActive }) =>
-                  isActive ? "active-nav button" : "inactive-nav button"
+                  isActive ? "active-nav nav-button" : "inactive-nav nav-button"
                 }
               >
                 <i className="fa-solid fa-magnifying-glass"></i>
@@ -101,7 +101,7 @@ const Nav = () => {
                 id="nav-profile"
                 to="/profile"
                 className={({ isActive }) =>
-                  isActive ? "active-nav button" : "inactive-nav button"
+                  isActive ? "active-nav nav-button" : "inactive-nav nav-button"
                 }
               >
                 <ProfilePic />
