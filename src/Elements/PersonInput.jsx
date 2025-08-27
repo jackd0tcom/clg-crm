@@ -75,7 +75,7 @@ const PersonInput = ({
     clearSaveTimer();
     saveInput();
   };
-  
+
   const handleEnter = (e) => {
     if (e.key === "Enter") {
       console.log("Enter");
@@ -87,11 +87,11 @@ const PersonInput = ({
 
   // Handle autofill detection
   const handleAnimationStart = (e) => {
-    if (e.animationName === 'onAutoFillStart') {
-      console.log('Autofill detected for:', fieldName);
+    if (e.animationName === "onAutoFillStart") {
+      console.log("Autofill detected for:", fieldName);
       // Trigger save immediately when autofill occurs
       setInput(e.target.value);
-      setCount(prevCount => prevCount + 1);
+      setCount((prevCount) => prevCount + 1);
       clearSaveTimer();
       // Save immediately after autofill
       setTimeout(() => saveInput(), 100);
@@ -100,7 +100,7 @@ const PersonInput = ({
 
   return (
     <div className="person-input-wrapper">
-      <label id={fieldName} htmlFor={fieldName}>
+      <label className="person-input-label" id={fieldName}>
         {format(fieldName)}
       </label>
       <input

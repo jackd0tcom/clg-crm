@@ -1,4 +1,4 @@
-import "./App.css";
+import "./styles/App.css";
 import { Route, Routes, Navigate } from "react-router";
 import Home from "./Pages/Home.jsx";
 import { useSelector } from "react-redux";

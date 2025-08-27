@@ -28,7 +28,6 @@ const Landing = () => {
             }
       )
       .then((res) => {
-        console.log(res.data);
         dispatch({ type: "LOGIN", payload: res.data });
       })
       .catch((err) => {

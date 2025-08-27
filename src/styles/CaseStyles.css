@@ -1,0 +1,339 @@
+/* Case List */
+
+.case-list-wrapper {
+  width: 100%;
+  height: 100%;
+}
+.case-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 2rem;
+  padding: 0px 15px 15px 15px;
+}
+.case-list-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 15px 10px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--light-border);
+}
+
+/* Case Filter */
+.case-filter-wrapper {
+  display: flex;
+  justify-content: space-evenly;
+  padding: 0px 10px;
+}
+.case-filter-wrapper:hover p {
+  border: 1px solid var(--light-border);
+}
+.case-filter-section p {
+  font-size: 0.85rem;
+  padding: 6px 8px;
+  margin: 0 5px;
+  color: var(--grey);
+  border: 1px solid transparent;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 100ms;
+}
+.case-filter-section p:hover {
+  background-color: var(--button-active-bg-hover);
+  color: var(--button-active-font);
+  border-color: var(--button-active-border);
+}
+.active-filter p:hover {
+  background-color: var(--button-active-bg-hover);
+}
+.active-filter p {
+  background-color: var(--button-active-bg);
+  color: var(--button-active-font);
+  border-color: var(--button-active-border);
+}
+
+/* Case Search */
+.case-list-search {
+  width: 20%;
+}
+.case-list-search input {
+  padding: 10px;
+  width: 100%;
+  border: 1px solid var(--light-border);
+  border-radius: 5px;
+}
+.case-list-search input:focus-visible {
+  outline: none;
+}
+
+/* Case Card */
+
+.case-card-wrapper {
+  display: grid;
+  row-gap: 40px;
+  padding: 20px;
+  height: 100%;
+  border: 1px solid var(--light-border);
+  border-radius: 3px;
+  color: black;
+  transition: 100ms;
+}
+.case-card-wrapper:hover {
+  background-color: var(--root-bg-color-light);
+}
+.case-header {
+  position: relative;
+}
+.case-card-practice-areas {
+  display: flex;
+  margin: 5px 0px;
+}
+.case-card-practice-areas h4 {
+  font-size: 0.8rem;
+  font-weight: 500;
+  width: auto;
+  color: var(--grey);
+}
+.case-card-title {
+  font-size: 1.25rem;
+  margin-top: 20px;
+}
+.case-card-tasks {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Case page */
+.case-wrapper {
+  display: flex;
+  height: 100%;
+}
+.case-details-container {
+  width: 50%;
+  margin: 15px 20px;
+  display: grid;
+  grid-template-rows: 0.25fr 4fr 2fr;
+}
+.case-top-bar {
+  display: flex;
+  justify-content: space-between;
+  /* flex-basis: 10%; */
+}
+.case-top-bar a {
+  color: var(--light-grey);
+  font-size: 0.8rem;
+  /* min-height: 25px; */
+}
+.case-top-bar a:hover {
+  color: var(--grey);
+  transform: 70ms;
+}
+.extra-settings-wrapper {
+  position: relative;
+}
+.extra-settings-wrapper a {
+  border: 1px solid transparent;
+  padding: 3px 6px 8px;
+  border-radius: 5px;
+  transition: 100ms;
+  cursor: pointer;
+}
+.extra-settings-wrapper a:hover {
+  border: 1px solid var(--light-border);
+  background-color: var(--root-bg-color-light);
+}
+.drop-down-wrapper {
+  position: absolute;
+  top: 0;
+  right: 0px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--light-border);
+  border-radius: 3px;
+  min-width: 175px;
+  width: 100%;
+}
+.drop-down-item {
+  padding: 5px;
+  font-size: 0.85rem;
+}
+.drop-down-item:hover {
+  background-color: var(--root-bg-color-light);
+}
+
+.case-card {
+  display: grid;
+}
+
+.case-view-task-wrapper {
+  /* flex-basis: 30%; */
+}
+
+.case-activity-container {
+  width: 50%;
+  border-left: 1px solid var(--light-border);
+  background-color: var(--root-bg-color-light);
+  padding: 0px 20px;
+  overflow: scroll;
+  scrollbar-width: none;
+}
+.case-stats-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  max-width: 250px;
+}
+.case-stats-container {
+  display: grid;
+  grid-template-rows: 1fr 1fr 1fr;
+  align-items: center;
+}
+.case-title-input {
+  width: calc(100% - 10px);
+  border: 1px solid transparent;
+  border-radius: 5px;
+  padding: 10px 5px;
+  font-size: 1.4em;
+  margin: 0px 20px 10px -5px;
+  font-weight: 600;
+}
+.case-title-input:hover {
+  background-color: var(--root-bg-color-light);
+}
+.case-title-input:focus-visible {
+  outline: 1px solid var(--light-border);
+}
+
+.case-practice-areas-wrapper {
+  display: flex;
+  position: relative;
+  column-gap: 5px;
+  border-radius: 5px;
+  padding: 5px;
+  margin-left: -5px;
+  cursor: pointer;
+}
+.case-practice-areas-wrapper:hover {
+  background-color: var(--root-bg-color-light);
+}
+
+.case-practice-area {
+  font-size: 0.9rem;
+  color: var(--grey);
+  font-weight: 500;
+}
+
+/* Practice Area toggle */
+.practice-area-item {
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 10px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  z-index: 999;
+}
+.practice-area-item i {
+  color: var(--bright-dark-green);
+  font-size: 0.8rem;
+}
+.practice-area-item:hover {
+  background-color: var(--root-bg-color-light);
+  border: 1px solid var(--light-border);
+}
+
+.practice-area-toggle-heading {
+  margin: 5px 10px;
+  font-size: 0.9rem;
+  color: var(--grey);
+}
+
+.toggle-overlay {
+  position: absolute;
+  background-color: white;
+  top: 35px;
+  left: 0px;
+  z-index: 999;
+  padding: 10px 5px;
+  border: 1px solid var(--light-border);
+  border-radius: 5px;
+  width: 40%;
+  max-height: 50vh;
+  overflow: scroll;
+}
+
+.case-assignee-wrapper {
+  display: flex;
+  column-gap: 5px;
+}
+
+/* Case Persons */
+.case-persons-wrapper {
+  display: flex;
+  align-items: center;
+  column-gap: 20px;
+  position: relative;
+}
+.add-person-button {
+  cursor: pointer;
+  color: var(--grey);
+}
+.add-person-button:hover {
+  color: black;
+}
+
+.case-person-link {
+  cursor: pointer;
+  color: var(--grey);
+}
+.case-person-amp {
+  color: var(--grey);
+}
+.case-person-link:hover {
+  color: black;
+}
+
+/* PersonView */
+.person-view-wrapper {
+  position: absolute;
+  top: 30px;
+  background-color: white;
+  border: 1px solid var(--light-border);
+  border-radius: 5px;
+  z-index: 999;
+  padding: 20px 20px 6rem;
+}
+.person-view-header {
+  font-size: 0.9rem;
+  color: var(--grey);
+  margin: 5px 0px;
+}
+.person-view-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 20px;
+  row-gap: 20px;
+}
+.person-input-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+.person-input-field {
+  padding: 5px;
+  margin-top: 5px;
+  border: 1px solid var(--light-border);
+  border-radius: 3px;
+}
+.person-input-field:hover {
+  background-color: var(--root-bg-color-light);
+}
+
+.person-input-label {
+  font-size: 0.9rem;
+  color: var(--grey);
+}
+.remove-person-button {
+  grid-column: span 2;
+}

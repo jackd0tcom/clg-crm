@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { capitalize } from "../helpers/helperFunctions";
 
@@ -14,6 +14,7 @@ const PracticeAreaToggle = ({
   setIsAddingArea,
 }) => {
   const [allAreas, setAllAreas] = useState();
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
     try {
@@ -32,6 +33,22 @@ const PracticeAreaToggle = ({
       console.log(error);
     }
   }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsAddingArea(false);
+      }
+    };
+
+    if (isAddingArea || isAddingPerson) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isAddingArea]);
 
   const handleAdd = (id) => {
     try {
@@ -53,7 +70,6 @@ const PracticeAreaToggle = ({
       axios
         .post("/api/removeCasePracticeArea", { caseId, practiceAreaId: id })
         .then((res) => {
-          console.log("removed");
           refreshCaseData();
           refreshActivityData();
           setNewPracticeArea("");
@@ -64,50 +80,45 @@ const PracticeAreaToggle = ({
   };
 
   return (
-    <div className="toggle-overlay">
+    <div className="toggle-overlay" ref={dropdownRef}>
       <div className="practice-area-toggle-wrapper">
-        <p
-          onClick={() => {
-            setIsAddingArea(false);
-          }}
-        >
-          X
-        </p>
         <div className="practice-area-list-wrapper">
-          <ul>
-            {currentAreas &&
-              currentAreas.map((area) => {
-                return (
-                  <li key={area.practiceAreaId}>
-                    <div
-                      onClick={() => {
-                        setNewPracticeArea(area.practiceAreaId);
-                        handleRemove(area.practiceAreaId);
-                      }}
-                      className="practice-area-item current"
-                    >
-                      {area.name}
-                    </div>
-                  </li>
-                );
-              })}
-            {allAreas &&
-              allAreas.map((area) => {
-                return (
-                  <li key={area.practiceAreaId}>
-                    <div
-                      onClick={() => {
-                        setNewPracticeArea(area.practiceAreaId);
-                        handleAdd(area.practiceAreaId);
-                      }}
-                      className="practice-area-item"
-                    >
-                      {capitalize(area.name)}
-                    </div>
-                  </li>
-                );
-              })}
-          </ul>
+          <p className="practice-area-toggle-heading">Practice Areas</p>
+          {currentAreas &&
+            currentAreas.map((area) => {
+              return (
+                <div key={area.practiceAreaId}>
+                  <div
+                    onClick={() => {
+                      setNewPracticeArea(area.practiceAreaId);
+                      handleRemove(area.practiceAreaId);
+                      setIsAddingArea(false);
+                    }}
+                    className="practice-area-item current-area"
+                  >
+                    {capitalize(area.name)}
+                    <i className="fa-solid fa-check"></i>
+                  </div>
+                </div>
+              );
+            })}
+          {allAreas &&
+            allAreas.map((area) => {
+              return (
+                <div key={area.practiceAreaId}>
+                  <div
+                    onClick={() => {
+                      setNewPracticeArea(area.practiceAreaId);
+                      handleAdd(area.practiceAreaId);
+                      setIsAddingArea(false);
+                    }}
+                    className="practice-area-item"
+                  >
+                    {capitalize(area.name)}
+                  </div>
+                </div>
+              );
+            })}
         </div>
       </div>
     </div>

@@ -1,6 +1,6 @@
 import PersonInput from "./PersonInput";
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const PersonView = ({
   data,
@@ -10,12 +10,31 @@ const PersonView = ({
   isNewPerson,
   setIsNewPerson,
   caseId,
+  isAddingPerson,
+  setIsAddingPerson,
 }) => {
   const [personId, setPersonId] = useState();
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
     setPersonId(data.personId);
   }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsAddingPerson(false);
+      }
+    };
+
+    if (isAddingPerson) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isAddingPerson]);
 
   const personObject = {
     firstName: "",
@@ -32,8 +51,8 @@ const PersonView = ({
   const handleRemove = async () => {
     try {
       await axios
-        .delete("/api/deletePerson", { 
-          data: { personId: personId } 
+        .delete("/api/deletePerson", {
+          data: { personId: personId },
         })
         .then((res) => {
           if (res.status === 200) {
@@ -48,11 +67,8 @@ const PersonView = ({
   };
 
   return (
-    <div className="person-view-wrapper">
-      <a className="person-view-close" onClick={() => onBlur()}>
-        x
-      </a>
-      <h3>Client</h3>
+    <div className="person-view-wrapper" ref={dropdownRef}>
+      <p className="person-view-header">Client</p>
       <div className="person-view-fields">
         {Object.entries(personObject).map(([fieldName]) => {
           return (
@@ -70,13 +86,15 @@ const PersonView = ({
             />
           );
         })}
-        <a
-          onClick={() => {
-            handleRemove();
-          }}
-        >
-          Remove from case
-        </a>
+        <div className="remove-person-button">
+          <a
+            onClick={() => {
+              handleRemove();
+            }}
+          >
+            Remove from case
+          </a>
+        </div>
       </div>
     </div>
   );

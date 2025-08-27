@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
+import { useRef } from "react";
 import axios from "axios";
 import { capitalize } from "../helpers/helperFunctions";
 import ProfilePic from "../Elements/ProfilePic";
@@ -34,6 +35,7 @@ const Case = () => {
   const [isAddingPerson, setIsAddingPerson] = useState(false);
   const [isNewPerson, setIsNewPerson] = useState(false);
   const [isArchived, setIsArchived] = useState(false);
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
     async function getData() {
@@ -79,6 +81,23 @@ const Case = () => {
     }
     getData();
   }, [caseId]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsAddingArea(false);
+        setIsAddingPerson(false);
+      }
+    };
+
+    if (isAddingArea || isAddingPerson) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isAddingArea, isAddingPerson]);
 
   const refreshActivityData = async () => {
     try {
@@ -195,35 +214,36 @@ const Case = () => {
           <div className="case-card">
             <div className="case-header">
               {isArchived && <h3>Archived</h3>}
-              <h4>Practice Areas</h4>
-              {isNewCase || caseData.practiceAreas.length < 1 ? (
-                <a
-                  onClick={() => {
-                    if (!caseData?.caseId) {
-                      newCase().then(() => {
-                        setIsAddingArea(true);
-                      });
-                    } else {
+              <div
+                className="case-practice-areas-wrapper"
+                onClick={() => {
+                  if (!caseData?.caseId) {
+                    newCase().then(() => {
                       setIsAddingArea(true);
-                    }
-                  }}
-                >
-                  Add Practice Area
-                </a>
-              ) : (
-                caseData.practiceAreas.map((area) => {
-                  return (
-                    <a
-                      key={area.practiceAreaId}
-                      onClick={() => {
-                        setIsAddingArea(true);
-                      }}
-                    >
-                      {capitalize(area.name)}
-                    </a>
-                  );
-                })
-              )}
+                    });
+                  } else {
+                    setIsAddingArea(true);
+                  }
+                }}
+              >
+                {isNewCase || caseData.practiceAreas.length < 1 ? (
+                  <a className="case-practice-area">Add Practice Area</a>
+                ) : (
+                  caseData.practiceAreas.map((area) => {
+                    return (
+                      <a
+                        className="case-practice-area"
+                        key={area.practiceAreaId}
+                        onClick={() => {
+                          setIsAddingArea(true);
+                        }}
+                      >
+                        {capitalize(area.name)}
+                      </a>
+                    );
+                  })
+                )}
+              </div>
               {isAddingArea && (
                 <PracticeAreaToggle
                   currentAreas={currentAreas}
@@ -246,86 +266,98 @@ const Case = () => {
                 isNewCase={isNewCase}
                 newCase={newCase}
               />
-              {personView && selectedPerson && (
-                <PersonView
-                  onBlur={handleOnBlur}
-                  refreshActivityData={refreshActivityData}
-                  refreshCaseData={refreshCaseData}
-                  data={selectedPerson}
-                  caseId={caseId}
-                  isNewPerson={false}
-                  onClose={() => {
-                    setPersonView(false);
-                    setSelectedPerson(null);
+              <div className="case-persons-wrapper">
+                {personView && selectedPerson && (
+                  <PersonView
+                    onBlur={handleOnBlur}
+                    refreshActivityData={refreshActivityData}
+                    refreshCaseData={refreshCaseData}
+                    data={selectedPerson}
+                    caseId={caseId}
+                    isNewPerson={false}
+                    isAddingPerson={isAddingPerson}
+                    setIsAddingPerson={setIsAddingPerson}
+                    onClose={() => {
+                      setPersonView(false);
+                      setSelectedPerson(null);
+                    }}
+                  />
+                )}
+                {isAddingPerson && (
+                  <PersonView
+                    data={{
+                      firstName: "",
+                      lastName: "",
+                      address: "",
+                      city: "",
+                      state: "",
+                      zip: "",
+                      phoneNumber: "",
+                      dob: "",
+                      county: "",
+                    }}
+                    ref={dropdownRef}
+                    onBlur={handleOnBlur}
+                    refreshActivityData={refreshActivityData}
+                    refreshCaseData={refreshCaseData}
+                    caseId={caseId}
+                    isNewPerson={isNewPerson}
+                    setIsNewPerson={setIsNewPerson}
+                    isAddingPerson={isAddingPerson}
+                    setIsAddingPerson={setIsAddingPerson}
+                  />
+                )}
+                <div className="case-persons-names-wrapper">
+                  {caseData.people.length > 0 &&
+                    caseData.people.map((person, idx) => {
+                      if (caseData.people.length === 1) {
+                        return (
+                          <a
+                            key={person.personId}
+                            className="case-person-link"
+                            onClick={() => handlePersonClick(person)}
+                          >{`${person.firstName} ${person.lastName}`}</a>
+                        );
+                      } else if (idx === caseData.people.length - 1) {
+                        return (
+                          <span
+                            className="case-person-amp"
+                            key={person.personId}
+                          >
+                            {" "}
+                            &{" "}
+                            <a
+                              className="case-person-link"
+                              onClick={() => handlePersonClick(person)}
+                            >{`${person.firstName} ${person.lastName}`}</a>
+                          </span>
+                        );
+                      } else if (idx === caseData.people.length - 2) {
+                        return (
+                          <a
+                            key={person.personId}
+                            className="case-person-link"
+                            onClick={() => handlePersonClick(person)}
+                          >{`${person.firstName} ${person.lastName}`}</a>
+                        );
+                      } else
+                        return (
+                          <a
+                            key={person.personId}
+                            className="case-person-link"
+                            onClick={() => handlePersonClick(person)}
+                          >{`${person.firstName} ${person.lastName}, `}</a>
+                        );
+                    })}
+                </div>
+                <i
+                  className="fa-solid fa-circle-plus add-person-button"
+                  onClick={() => {
+                    setIsAddingPerson(true);
+                    setIsNewPerson(true);
                   }}
-                />
-              )}
-              {isAddingPerson && (
-                <PersonView
-                  data={{
-                    firstName: "",
-                    lastName: "",
-                    address: "",
-                    city: "",
-                    state: "",
-                    zip: "",
-                    phoneNumber: "",
-                    dob: "",
-                    county: "",
-                  }}
-                  onBlur={handleOnBlur}
-                  refreshActivityData={refreshActivityData}
-                  refreshCaseData={refreshCaseData}
-                  caseId={caseId}
-                  isNewPerson={isNewPerson}
-                  setIsNewPerson={setIsNewPerson}
-                />
-              )}
-              {caseData.people.length > 0 &&
-                caseData.people.map((person, idx) => {
-                  if (caseData.people.length === 1) {
-                    return (
-                      <a
-                        key={person.personId}
-                        className="case-person-link"
-                        onClick={() => handlePersonClick(person)}
-                      >{`${person.firstName} ${person.lastName}`}</a>
-                    );
-                  } else if (idx === caseData.people.length - 1) {
-                    return (
-                      <span key={person.personId}>
-                        {" "}
-                        &{" "}
-                        <a
-                          className="case-person-link"
-                          onClick={() => handlePersonClick(person)}
-                        >{`${person.firstName} ${person.lastName}`}</a>
-                      </span>
-                    );
-                  } else if (idx === caseData.people.length - 2) {
-                    return (
-                      <a
-                        key={person.personId}
-                        className="case-person-link"
-                        onClick={() => handlePersonClick(person)}
-                      >{`${person.firstName} ${person.lastName}`}</a>
-                    );
-                  } else
-                    return (
-                      <a
-                        key={person.personId}
-                        className="case-person-link"
-                        onClick={() => handlePersonClick(person)}
-                      >{`${person.firstName} ${person.lastName}, `}</a>
-                    );
-                })}
-              <i
-                className="fa-solid fa-circle-plus"
-                onClick={() => {
-                  setIsAddingPerson(true);
-                  setIsNewPerson(true);
-                }}
-              ></i>
+                ></i>
+              </div>
             </div>
             <div className="case-stats-wrapper">
               <div className="case-stats-container">
