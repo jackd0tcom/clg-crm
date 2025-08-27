@@ -1,6 +1,6 @@
 const TaskListItem = ({ task }) => {
   return (
-    <div className="task-list-item">
+    <div className="task-list-item-condensed">
       <i className="fa-regular fa-circle"></i>
       <h5>{task.title}</h5>
     </div>

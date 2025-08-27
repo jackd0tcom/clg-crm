@@ -28,7 +28,7 @@ const Nav = () => {
               <a href="/">
                 <img
                   className="clg-logo"
-                  src="/src/assets/Clause-Law-Group-Logo-Green.png"
+                  src="/src/assets/Clause-Law-Group-Logo-White.webp"
                   alt="clg-logo"
                 />
               </a>

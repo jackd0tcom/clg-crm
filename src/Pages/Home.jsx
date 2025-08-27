@@ -30,10 +30,10 @@ const Home = () => {
 
   return !isAuthenticated ? (
     <section>
-      <div>
-        <h2>{capitalize("Welcome to")}</h2>
-        <h1>CLG</h1>
-        <button onClick={() => navigate("/login")}>Get Started</button>
+      <div className="home-landing-container">
+        <h2>Welcome to</h2>
+        <h1>Clause Law Group</h1>
+        <button onClick={() => navigate("/login")}>Login</button>
       </div>
     </section>
   ) : isLoading ? (

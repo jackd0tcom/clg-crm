@@ -1,16 +1,21 @@
 /* Nav */
 .nav-bar {
   width: 13%;
-  border: 1px solid var(--light-border);
   padding: 15px;
+  background-color: var(--dark-grey);
 }
 .nav-button {
   padding: 5px;
   border: 1px solid transparent;
   border-radius: 5px;
+  color: white;
+}
+.nav-button i {
+  color: var(--light-grey);
+  margin-right: 5px;
 }
 .nav-button:hover {
-  background-color: var(--root-bg-color-light);
+  background-color: var(--grey);
 }
 .nav-buttons-wrapper {
   display: flex;
@@ -28,8 +33,8 @@
   margin-bottom: 2rem;
 }
 .active-nav {
-  color: var(--bright-dark-green);
-  background-color: var(--button-active-bg);
+  color: white;
+  background-color: rgb(81, 81, 81);
 }
 #nav-profile {
   display: flex;

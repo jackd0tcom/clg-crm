@@ -5,23 +5,20 @@
 @media (prefers-color-scheme: light) {
   :root {
     background-color: var(--root-bg-color-light);
+
     color: black;
   }
   .app-wrapper {
     background-color: var(--root-bg-color-light);
+    background-image: url("../assets/clg-crm-bg.jpg");
+    background-size: cover;
   }
   .page-wrapper {
     background-color: var(--main-bg-color-light);
     color: black;
   }
-  .nav-bar {
-    background-color: var(--main-bg-color-light);
-  }
   button {
     background-color: #f9f9f9;
-  }
-  .inactive-nav {
-    color: black;
   }
 }
 
@@ -262,6 +259,11 @@ h5 {
 }
 .task-list-head {
   display: contents;
+}
+.task-list-item-condensed {
+  display: flex;
+  align-items: center;
+  column-gap: 10px;
 }
 .task-list-item {
   display: contents;
