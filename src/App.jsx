@@ -10,6 +10,7 @@ import Nav from "./Elements/Nav.jsx";
 import Profile from "./Pages/Profile.jsx";
 import Case from "./Pages/Case.jsx";
 import CaseList from "./Pages/CaseList.jsx";
+import Tasks from "./Pages/Tasks.jsx";
 import { formatDate } from "./helpers/helperFunctions.js";
 
 function App() {
@@ -39,6 +40,10 @@ function App() {
               element={
                 !isAuthenticated ? <Navigate to="/login" /> : <CaseList />
               }
+            />
+            <Route
+              path="/tasks"
+              element={!isAuthenticated ? <Navigate to="/login" /> : <Tasks />}
             />
             <Route
               path="/profile"

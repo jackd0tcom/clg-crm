@@ -1,0 +1,41 @@
+/* Tasks page */
+.tasks-page-head {
+  display: flex;
+  padding: 15px;
+  border-bottom: 1px solid var(--light-border);
+}
+.task-list {
+  display: grid;
+  grid-template-columns: 3fr 2fr 2fr 1fr;
+  row-gap: 10px;
+  margin: 15px;
+}
+.tasks-list-head {
+  display: contents;
+}
+.tasks-list-head p {
+  margin: 5px 0;
+  padding: 8px 5px;
+  border-bottom: 1px solid var(--light-border);
+  border-top: 1px solid var(--light-border);
+  font-size: 0.9rem;
+  color: var(--dark-grey);
+}
+.inside-border {
+  border: 1px solid var(--light-border);
+}
+.task-sections-wrapper {
+  padding: 15px;
+}
+
+.tasks-list-row {
+  display: grid;
+}
+.task-list-item {
+  display: contents;
+}
+.task-list-assignee-wrapper {
+  display: flex;
+  column-gap: 5px;
+  height: 30px;
+}

@@ -28,12 +28,23 @@ export default {
               model: User,
               as: "assignees",
               through: { attributes: [] },
-              attributes: ["userId", "username", "firstName", "lastName"],
+              attributes: [
+                "userId",
+                "username",
+                "firstName",
+                "lastName",
+                "profilePic",
+              ],
             },
             {
               model: User,
               as: "owner",
               attributes: ["userId", "username", "firstName", "lastName"],
+            },
+            {
+              model: Case,
+              attributes: ["caseId", "title"],
+              as: "case",
             },
           ],
         });
@@ -55,6 +66,30 @@ export default {
         console.log(caseId);
         const tasks = await Task.findAll({
           where: { caseId },
+          include: [
+            {
+              model: User,
+              as: "assignees",
+              through: { attributes: [] },
+              attributes: [
+                "userId",
+                "username",
+                "firstName",
+                "lastName",
+                "profilePic",
+              ],
+            },
+            {
+              model: User,
+              as: "owner",
+              attributes: ["userId", "username", "firstName", "lastName"],
+            },
+            {
+              model: Case,
+              attributes: ["caseId", "title"],
+              as: "case",
+            },
+          ],
         });
 
         res.send(tasks);
@@ -62,7 +97,7 @@ export default {
         res.status(401).send("User not authenticated");
       }
     } catch (error) {
-      console.log(error);
+      console.log("getTasksByCase error:", error);
       res.status(500).send("Error fetching tasks");
     }
   },
@@ -140,6 +175,37 @@ export default {
     } catch (err) {
       console.log(err);
       res.status(500).send("Failed to update task status");
+    }
+  },
+  getTaskNonAssignees: async (req, res) => {
+    try {
+      console.log("getTaskNonAssignees");
+      if (req.session.user) {
+        const { taskId } = req.params;
+        const taskExists = await Task.findByPk(taskId);
+        if (!taskExists) {
+          return res.status(404).send("Task not found");
+        }
+
+        const taskAssignees = await TaskAssignees.findAll({
+          where: { taskId },
+        });
+        const assignedUserIds = taskAssignees.map((ca) => ca.dataValues.userId);
+        const excludedUserIds = [...assignedUserIds, taskExists.ownerId];
+
+        const nonAssignees = await User.findAll({
+          where: {
+            userId: {
+              [Op.notIn]: excludedUserIds,
+            },
+          },
+        });
+
+        res.send(nonAssignees);
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(400).send(error);
     }
   },
 };

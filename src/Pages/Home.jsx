@@ -17,7 +17,6 @@ const Home = () => {
     async function fetch() {
       try {
         await axios.get("/api/getCases").then((res) => {
-          console.log(res.data);
           setCases(res.data);
           setIsLoading(false);
         });
@@ -61,7 +60,7 @@ const Home = () => {
           <div className="case-widget-container">
             {cases.length > 0 ? (
               cases.map((data) => {
-                return <CaseListItem data={data} />;
+                return <CaseListItem key={data.caseId} data={data} />;
               })
             ) : (
               <>You are not assigned to any cases</>

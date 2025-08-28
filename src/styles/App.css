@@ -1,6 +1,7 @@
 @import "./CaseStyles.css";
 @import "./Nav.css";
 @import "./Home.css";
+@import "./Tasks.css";
 
 @media (prefers-color-scheme: light) {
   :root {
@@ -243,54 +244,6 @@ h5 {
   font-size: 5px;
 }
 
-/* Task List */
-.task-list-table {
-  width: 100%;
-  table-layout: fixed;
-  border-collapse: collapse;
-}
-.task-list {
-  text-align: left;
-  font-size: 0.9rem;
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr;
-  column-gap: 20px;
-  align-items: center;
-}
-.task-list-head {
-  display: contents;
-}
-.task-list-item-condensed {
-  display: flex;
-  align-items: center;
-  column-gap: 10px;
-}
-.task-list-item {
-  display: contents;
-  align-items: center;
-  column-gap: 5px;
-}
-.task-list-item p {
-  overflow: auto;
-  font-size: 0.9rem;
-  white-space: nowrap;
-  scrollbar-width: none;
-}
-.task-title {
-  width: 45%;
-}
-.task-item-assignee-photo-wrapper {
-  display: flex;
-  column-gap: 2px;
-}
-
-.task-item-assignee-photo {
-  width: 20px;
-  height: 20px;
-  background-size: cover;
-  border-radius: 50%;
-}
-
 /* Notes */
 .notes-heading {
   font-size: 0.9rem;
@@ -335,6 +288,7 @@ h5 {
 }
 .assignee-toggle-photo {
   width: 30px;
+  height: 30px;
   border-radius: 50%;
 }
 .assignee-toggle-wrapper {

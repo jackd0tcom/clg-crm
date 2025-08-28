@@ -1,17 +1,21 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-const AssigneeToggle = ({ assignee, handleRemove, caseId }) => {
+const AssigneeToggle = ({ assignee, handleRemove, Id, isStatic }) => {
   const [isHovered, setIsHovered] = useState(false);
+
+  useEffect(() => {
+    console.log(Id);
+  }, []);
 
   return (
     <div
       className="assignee-toggle-wrapper"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={() => !isStatic && setIsHovered(true)}
+      onMouseLeave={() => !isStatic && setIsHovered(false)}
     >
       {isHovered && (
         <i
-          onClick={() => handleRemove({ caseId, userId: assignee.userId })}
+          onClick={() => handleRemove({ Id, userId: assignee.userId })}
           className="fa-solid fa-circle-xmark assignee-toggle-x"
         ></i>
       )}

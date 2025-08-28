@@ -437,6 +437,7 @@ export default {
       }
 
       const { caseId, userId } = req.body;
+      console.log(caseId, userId);
 
       // Validate that the case exists
       const caseExists = await Case.findByPk(caseId);

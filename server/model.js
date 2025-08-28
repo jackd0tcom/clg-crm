@@ -488,8 +488,8 @@ Case.hasMany(Person, { foreignKey: "caseId", as: "people" });
 Person.belongsTo(Case, { foreignKey: "caseId" });
 
 // Case-Task relationships
-Case.hasMany(Task, { foreignKey: "caseId" });
-Task.belongsTo(Case, { foreignKey: "caseId" });
+Case.hasMany(Task, { foreignKey: "caseId", as: "tasks" });
+Task.belongsTo(Case, { foreignKey: "caseId", as: "case" });
 
 // Case-Person relationships
 Case.hasMany(Person, { foreignKey: "caseId" });

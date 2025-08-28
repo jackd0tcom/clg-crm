@@ -1,10 +1,50 @@
 import { formatDateNoTime, capitalize } from "../helpers/helperFunctions";
 import StatusToggle from "./StatusToggle";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
+import AssigneeList from "./AssigneeList";
+import AssigneeToggle from "./AssigneeToggle";
 
-const TaskItem = ({ task }) => {
+const TaskItem = ({ task, headings }) => {
   const [status, setStatus] = useState(task.status);
+  const [assignees, setAssignees] = useState([]);
+
+  useEffect(() => {
+    if (task.assignees) {
+      setAssignees(task.assignees);
+    }
+  }, [task.assignees]);
+
+  const newTask = Object.fromEntries(
+    headings.map((heading) => {
+      if (heading === "Case") {
+        return [heading, task.case?.title || "No Case"];
+      }
+      if (heading === "Due Date") {
+        return [
+          heading,
+          task.dueDate ? formatDateNoTime(task.dueDate) : "No Due Date",
+        ];
+      }
+      if (heading === "Assignees") {
+        return [heading, assignees.length > 0 ? `${assignees.length}` : "0"];
+      }
+      if (heading === "Owner") {
+        return [
+          heading,
+          task.owner
+            ? `${task.owner.firstName} ${task.owner.lastName}`
+            : "Unknown",
+        ];
+      }
+      if (heading === "Status") {
+        return [heading, status]; // Use the state value for status
+      }
+      // For other fields, try to get from task object
+      const fieldName = heading.toLowerCase().replace(/\s+/g, "");
+      return [heading, task[fieldName] || "N/A"];
+    })
+  );
 
   const handleStatusChange = (newStatus) => {
     try {
@@ -25,24 +65,17 @@ const TaskItem = ({ task }) => {
 
   return (
     <div className="task-list-item">
-      <p className="task-title-td">{task.title}</p>
-      <StatusToggle
-        value={status}
-        onHandle={handleStatusChange}
-        setStatus={setStatus}
-      />
-      <div className="task-item-assignee-photo-wrapper">
-        {task.assignees.map((nee) => {
-          return (
-            <div
-              className="task-item-assignee-photo"
-              style={{ backgroundImage: `url(${nee.profilePic})` }}
-              key={nee.userId}
-            ></div>
-          );
-        })}
-      </div>
-      <p>{formatDateNoTime(task.dueDate)}</p>
+      {Object.entries(newTask).map(([key, value], index) =>
+        key !== "Assignees" ? (
+          <p key={index}>{value}</p>
+        ) : (
+          <div className="task-list-assignee-wrapper">
+            {assignees.map((nee) => {
+              return <AssigneeToggle assignee={nee} isStatic={true} />;
+            })}
+          </div>
+        )
+      )}
     </div>
   );
 };

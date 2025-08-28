@@ -5,8 +5,8 @@ const CaseListItem = ({ data }) => {
   const navigate = useNavigate();
 
   return (
-    <a onClick={() => navigate(`/case/${data.caseId}`)}>
-      <div key={data.caseId} className="case-list-item-wrapper">
+    <a key={data.title} onClick={() => navigate(`/case/${data.caseId}`)}>
+      <div className="case-list-item-wrapper">
         <p>{data.title}</p>
         <p>{capitalize(data.phase)}</p>
       </div>

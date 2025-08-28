@@ -3,7 +3,7 @@ const AssigneeAddToggle = ({
   setNonAssigneeList,
   handleAdd,
   setIsAdding,
-  caseId,
+  Id,
 }) => {
   return (
     <div className="assignee-add-toggle-wrapper">
@@ -15,7 +15,7 @@ const AssigneeAddToggle = ({
               className="assignee-add-toggle-item"
               onClick={() => {
                 console.log(nee.profilePic);
-                handleAdd({ caseId, userId: nee.userId });
+                handleAdd({ Id, userId: nee.userId });
               }}
             >
               <img

@@ -19,6 +19,18 @@ const AssigneeList = ({
   useEffect(() => {
     setAssigneeList(assignees || []);
 
+    if (taskId && taskId !== 0) {
+      try {
+        axios.get(`/api/getTaskNonAssignees/${taskId}`).then((res) => {
+          if (res.status === 200) {
+            setNonAssigneeList(res.data);
+          }
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
     // Only fetch non-assignees if we have a valid caseId and it's not a new case
     if (caseId && caseId !== 0 && !isNewCase) {
       try {
@@ -47,12 +59,12 @@ const AssigneeList = ({
     };
   }, [isAdding]);
 
-  const handleRemove = ({ caseId, userId }) => {
+  const handleRemove = ({ Id, userId }) => {
     try {
-      console.log(caseId, userId);
+      console.log(Id, userId);
       axios
         .delete("/api/removeCaseAssignees", {
-          data: { caseId, userId },
+          data: { caseId: Id, userId },
         })
         .then((res) => {
           if (res.status === 200) {
@@ -76,11 +88,11 @@ const AssigneeList = ({
       console.log(error);
     }
   };
-  const handleAdd = ({ caseId, userId }) => {
+  const handleAdd = ({ Id, userId }) => {
     try {
-      console.log(caseId, userId);
+      console.log(Id, userId);
       axios
-        .post("/api/addCaseAssignees", { caseId, userId })
+        .post("/api/addCaseAssignees", { caseId: Id, userId })
         .then((res) => {
           if (res.status === 201) {
             setAssigneeList((prevList) => [...prevList, res.data]);
@@ -129,7 +141,7 @@ const AssigneeList = ({
               setNonAssigneeList={setNonAssigneeList}
               handleAdd={handleAdd}
               setIsAdding={setIsAdding}
-              caseId={caseId}
+              Id={caseId || taskId}
             />
           )}
         </div>
@@ -149,7 +161,7 @@ const AssigneeList = ({
             assignee={nee}
             key={nee.userId}
             handleRemove={handleRemove}
-            caseId={caseId}
+            Id={caseId || taskId}
             handleAdd={handleAdd}
           />
         );
@@ -170,7 +182,7 @@ const AssigneeList = ({
             setNonAssigneeList={setNonAssigneeList}
             handleAdd={handleAdd}
             setIsAdding={setIsAdding}
-            caseId={caseId}
+            Id={caseId || taskId}
           />
         )}
       </div>

@@ -41,8 +41,12 @@ export function formatRelativeTime(data) {
 
   // Compare calendar dates to determine if it's today or yesterday
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const activityDay = new Date(activityDate.getFullYear(), activityDate.getMonth(), activityDate.getDate());
-  
+  const activityDay = new Date(
+    activityDate.getFullYear(),
+    activityDate.getMonth(),
+    activityDate.getDate()
+  );
+
   // Same calendar date (today)
   if (activityDay.getTime() === today.getTime()) {
     if (diffInHours < 24) {
@@ -61,6 +65,60 @@ export function formatRelativeTime(data) {
 
   // More than 1 day ago - use the regular formatDate
   return formatDate(data);
+}
+
+export function findTimeDifference(data) {
+  const now = new Date();
+  const activityDate = new Date(data);
+  const diffInMs = now - activityDate; // Fixed: now - activityDate for positive values
+  const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+  const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+  const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+  // For future dates (negative diffInMs), we need to handle differently
+  if (diffInMs < 0) {
+    const futureMs = Math.abs(diffInMs);
+    const futureDays = Math.floor(futureMs / (1000 * 60 * 60 * 24));
+    
+    // Tomorrow
+    if (futureDays === 1) {
+      return "1Tomorrow";
+    }
+    
+    // Within current work week (next 7 days)
+    if (futureDays <= 7) {
+      const dayNames = ['1Sunday', '1Monday', '1Tuesday', '1Wednesday', '1Thursday', '1Friday', '1Saturday'];
+      return dayNames[activityDate.getDay()];
+    }
+    
+    // Farther in the future - use formatDateNoTime
+    return "0" + formatDateNoTime(data);
+  }
+
+  // For past dates (positive diffInMs)
+
+  // Compare calendar dates to determine if it's today or yesterday
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const activityDay = new Date(
+    activityDate.getFullYear(),
+    activityDate.getMonth(),
+    activityDate.getDate()
+  );
+
+  // Same calendar date (today)
+  if (activityDay.getTime() === today.getTime()) {
+    return "0Today";
+  }
+
+  // Yesterday (previous calendar date)
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1); // Fixed: -1 not +1
+  if (activityDay.getTime() === yesterday.getTime()) {
+    return "2Yesterday";
+  }
+
+  // More than 1 day ago - use the regular formatDate
+  return "2" + formatDateNoTime(data);
 }
 
 export function format(str) {

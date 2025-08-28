@@ -34,7 +34,7 @@ const CaseList = () => {
   ) : (
     <div className="case-list-wrapper">
       <div className="case-list-head">
-        <h1 className="section-heading">Cases</h1>
+        <h1 className="section-heading">My Cases</h1>
         <CaseFilter
           cases={cases}
           setCases={setCases}

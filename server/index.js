@@ -36,6 +36,7 @@ const {
   saveTask,
   getTask,
   updateTaskStatus,
+  getTaskNonAssignees,
 } = taskCtrl;
 const { register, login, checkUser, logout, updateUser } = authCtrl;
 const { getUserActivities, getCaseActivities, createActivity, markAsRead } =
@@ -109,6 +110,7 @@ app.post("/api/newTask", newTask);
 app.post("/api/saveTask", saveTask);
 app.post("/api/updateTaskStatus", updateTaskStatus);
 app.get("/api/getTask", getTask);
+app.get("/api/getTaskNonAssignees/:taskId", getTaskNonAssignees);
 
 // activity endpoints
 app.get("/api/getUserActivities", getUserActivities);
