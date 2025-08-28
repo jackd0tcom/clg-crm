@@ -8,7 +8,6 @@ const CaseFilter = ({
   setShowArchived,
 }) => {
   const [isLatest, setIsLatest] = useState(true);
-  const [isPriority, setIsPriority] = useState(true);
   const [nonArchivedCases, setNonArchivedCases] = useState([]);
   const [active, setActive] = useState("updated");
 
@@ -118,27 +117,6 @@ const CaseFilter = ({
           Date Opened{" "}
           <span>
             {isLatest ? (
-              <i className="fa-solid fa-arrow-up"></i>
-            ) : (
-              <i className="fa-solid fa-arrow-down"></i>
-            )}
-          </span>
-        </p>
-      </div>
-      <div
-        className={`case-filter-section ${
-          active === "priority" && "active-filter"
-        }`}
-      >
-        <p
-          onClick={() => {
-            byPriority();
-            setActive("priority");
-          }}
-        >
-          Priority{" "}
-          <span>
-            {isPriority ? (
               <i className="fa-solid fa-arrow-up"></i>
             ) : (
               <i className="fa-solid fa-arrow-down"></i>

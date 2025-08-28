@@ -9,7 +9,6 @@ import TaskList from "../Elements/TaskList";
 import { Link } from "react-router";
 import Notes from "../Elements/Notes";
 import PhaseToggle from "../Elements/PhaseToggle";
-import PriorityToggle from "../Elements/PriorityToggle";
 import AssigneeList from "../Elements/AssigneeList";
 import PersonView from "../Elements/PersonView";
 import CaseInput from "../Elements/CaseInput";
@@ -22,7 +21,6 @@ const Case = () => {
   const [caseData, setCaseData] = useState();
   const [activityData, setActivityData] = useState();
   const [phase, setPhase] = useState("");
-  const [priority, setPriority] = useState("");
   const [notes, setNotes] = useState();
   const [count, setCount] = useState(0);
   const [personView, setPersonView] = useState(false);
@@ -47,7 +45,6 @@ const Case = () => {
             title: "",
             notes: "",
             phase: "intake",
-            priority: "normal",
             practiceAreas: [],
             people: [],
             assignees: [],
@@ -55,7 +52,6 @@ const Case = () => {
           });
 
           setPhase("intake");
-          setPriority("normal");
           setNotes("");
           setTitle("Untitled Case");
           setCurrentAreas([]);
@@ -69,7 +65,6 @@ const Case = () => {
           setCaseData(caseResponse.data);
           setActivityData(activityResponse.data);
           setPhase(caseResponse.data.phase);
-          setPriority(caseResponse.data.priority);
           setNotes(caseResponse.data.notes);
           setTitle(caseResponse.data.title);
           setCurrentAreas(caseResponse.data.practiceAreas);
@@ -115,7 +110,6 @@ const Case = () => {
       const caseResponse = await axios.get(`/api/getCase/${caseId}`);
       setCaseData(caseResponse.data);
       setPhase(caseResponse.data.phase);
-      setPriority(caseResponse.data.priority);
       setNotes(caseResponse.data.notes);
       setCurrentAreas(caseResponse.data.practiceAreas);
       setIsArchived(caseResponse.data.isArchived);
@@ -130,16 +124,6 @@ const Case = () => {
         console.log(res);
         refreshActivityData();
       });
-    } catch (error) {}
-  };
-  const handleUpdatePriority = (priority) => {
-    try {
-      axios
-        .post("/api/updateCasePriority", { caseId, priority })
-        .then((res) => {
-          console.log(res);
-          refreshActivityData();
-        });
     } catch (error) {}
   };
 
@@ -365,7 +349,6 @@ const Case = () => {
                 <div className="case-stats-container">
                   <h4>Phase</h4>
                   <h4>Assignees</h4>
-                  <h4>Priority</h4>
                 </div>
                 <div className="case-stats-container">
                   <PhaseToggle
@@ -378,11 +361,6 @@ const Case = () => {
                     caseId={caseData.caseId}
                     onActivityUpdate={refreshActivityData}
                     isNewCase={isNewCase}
-                  />
-                  <PriorityToggle
-                    value={priority}
-                    onHandle={handleUpdatePriority}
-                    setPriority={setPriority}
                   />
                 </div>
               </div>

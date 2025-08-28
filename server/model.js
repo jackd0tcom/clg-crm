@@ -200,10 +200,6 @@ Case.init(
       ),
       defaultValue: "intake",
     },
-    priority: {
-      type: DataTypes.ENUM("low", "normal", "high", "urgent"),
-      defaultValue: "normal",
-    },
     isArchived: {
       type: DataTypes.BOOLEAN,
       allowNull: false,

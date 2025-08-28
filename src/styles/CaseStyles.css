@@ -82,6 +82,11 @@
 .case-card-wrapper:hover {
   background-color: var(--root-bg-color-light);
 }
+.case-card-phase {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--grey);
+}
 .case-card-practice-areas {
   display: flex;
   margin: 5px 0px;
@@ -94,7 +99,7 @@
 }
 .case-card-title {
   font-size: 1.25rem;
-  margin-top: 20px;
+  margin-top: 10px;
 }
 .case-card-tasks {
   display: flex;

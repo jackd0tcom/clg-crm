@@ -90,21 +90,18 @@ const cases = [
     notes:
       "High-conflict divorce case, assets include family business and real estate holdings",
     phase: "negotiation",
-    priority: "high",
   },
   {
     ownerId: 2, // Meg Williams
     title: "Downtown Real Estate Development",
     notes: "Zoning issues for mixed-use development project",
     phase: "litigation",
-    priority: "urgent",
   },
   {
     ownerId: 3, // Jenn Davis
     title: "Custody Battle - Johnson Family",
     notes: "Custody dispute involving relocation and school district changes",
     phase: "investigation",
-    priority: "normal",
   },
   {
     ownerId: 4, // Mike Thompson
@@ -112,14 +109,12 @@ const cases = [
     notes:
       "Multi-vehicle accident with severe injuries, insurance company dispute",
     phase: "settlement",
-    priority: "high",
   },
   {
     ownerId: 1, // Sarah Johnson
     title: "Corporate Merger - TechStart Inc",
     notes: "Merger with competitor, due diligence and contract negotiations",
     phase: "negotiation",
-    priority: "normal",
   },
 ];
 

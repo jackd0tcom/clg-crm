@@ -1,14 +1,13 @@
 import { capitalize } from "../helpers/helperFunctions";
 import TaskListItem from "../Elements/TaskListItem";
 import { Link } from "react-router";
-import PriorityIcon from "./PriorityIcon";
 
 const CaseCard = ({ data }) => {
   return (
     <a href={`/case/${data.caseId}`}>
       <div className="case-card-wrapper">
         <div className="case-card-head">
-          <PriorityIcon data={data.priority} />
+          <p className="case-card-phase">{capitalize(data.phase)}</p>
           <h3 className="case-card-title">{data.title}</h3>
           <div className="case-card-practice-areas">
             {data.practiceAreas.length > 0

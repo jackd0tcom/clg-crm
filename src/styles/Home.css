@@ -47,7 +47,7 @@
 .case-list-item-wrapper {
   display: grid;
   cursor: pointer;
-  grid-template-columns: 1fr 2fr 1fr;
+  grid-template-columns: 2fr 1fr;
   font-size: 0.9rem;
   padding: 15px;
   justify-content: space-between;
