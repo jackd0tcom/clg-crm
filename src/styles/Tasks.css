@@ -27,6 +27,14 @@
 .task-sections-wrapper {
   padding: 15px;
 }
+.tasks-list-heading {
+  display: flex;
+  align-items: center;
+  column-gap: 5px;
+}
+.tasks-list-heading i {
+  font-size: 0.8rem;
+}
 
 .tasks-list-row {
   display: grid;
