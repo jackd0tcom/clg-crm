@@ -3,8 +3,14 @@ import axios from "axios";
 
 const TaskInput = ({ title, setTitle, taskId }) => {
   const [count, setCount] = useState(0);
+  const [localTitle, setLocalTitle] = useState(title);
   const inputRef = useRef(null);
   const saveTimer = useRef(null);
+
+  // Update local title when prop changes (but don't save)
+  useEffect(() => {
+    setLocalTitle(title);
+  }, [title]);
 
   const saveTask = async (fieldName, value) => {
     try {
@@ -21,27 +27,34 @@ const TaskInput = ({ title, setTitle, taskId }) => {
     }
   };
 
+  // Only save when local title changes (user input)
   useEffect(() => {
-    clearSaveTimer();
-    saveTimer.current = setTimeout(() => {
-      if (title && title.trim() !== "Untitled Case") {
-        saveTask("title", title);
-      }
-    }, 2000);
-    return () => {
+    if (count > 0) { // Only save if user has actually typed
       clearSaveTimer();
-    };
-  }, [title]);
+      saveTimer.current = setTimeout(() => {
+        if (localTitle && localTitle.trim() !== "Untitled Case") {
+          saveTask("title", localTitle);
+        }
+      }, 2000);
+      return () => {
+        clearSaveTimer();
+      };
+    }
+  }, [localTitle, count]);
 
   const handleBlur = () => {
-    clearSaveTimer();
-    saveTask("title", title);
+    if (count > 0) { // Only save if user has actually typed
+      clearSaveTimer();
+      saveTask("title", localTitle);
+    }
   };
 
   const handleEnter = (e) => {
     if (e.key === "Enter") {
-      clearSaveTimer();
-      saveTask("title", title);
+      if (count > 0) { // Only save if user has actually typed
+        clearSaveTimer();
+        saveTask("title", localTitle);
+      }
       inputRef.current.blur();
     }
   };
@@ -50,10 +63,12 @@ const TaskInput = ({ title, setTitle, taskId }) => {
     <div className="task-input-wrapper">
       <input
         type="text"
-        value={title}
-        id={title}
+        value={localTitle}
+        id={localTitle}
         onChange={(e) => {
-          setTitle(e.target.value);
+          const newTitle = e.target.value;
+          setLocalTitle(newTitle);
+          setTitle(newTitle); // Update parent state
           setCount((prevCount) => prevCount + 1);
         }}
         onBlur={handleBlur}

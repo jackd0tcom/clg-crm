@@ -42,8 +42,13 @@ const {
   removeTaskAssignee,
 } = taskCtrl;
 const { register, login, checkUser, logout, updateUser } = authCtrl;
-const { getUserActivities, getCaseActivities, createActivity, markAsRead } =
-  activityCtrl;
+const {
+  getUserActivities,
+  getCaseActivities,
+  getTaskActivities,
+  createActivity,
+  markAsRead,
+} = activityCtrl;
 
 // Express setup
 const app = express();
@@ -121,6 +126,7 @@ app.delete("/api/removeTaskAssignees", removeTaskAssignee);
 // activity endpoints
 app.get("/api/getUserActivities", getUserActivities);
 app.get("/api/getCaseActivities/:caseId", getCaseActivities);
+app.get("/api/getTaskActivities/:taskId", getTaskActivities);
 app.post("/api/createActivity", createActivity);
 app.post("/api/markAsRead", markAsRead);
 

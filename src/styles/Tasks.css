@@ -89,13 +89,18 @@
 .task-view-details {
   color: black;
   padding: 15px;
-  width: 100%;
+  margin-top: 10px;
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  row-gap: 10px;
 }
 .task-view-activity-wrapper {
   color: black;
   width: 40%;
   border-left: 1px solid var(--light-border);
   padding: 0px 15px;
+  background-color: var(--root-bg-color-light);
 }
 
 .task-input-wrapper input {
@@ -113,17 +118,36 @@
 .task-input-wrapper input:focus-visible {
   outline: 1px solid var(--light-border);
 }
+.task-view-case-name {
+  cursor: pointer;
+  color: var(--dark-grey);
+  font-size: 0.9rem;
+}
 
 .task-stats-wrapper {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  max-width: 250px;
-}
-.task-stats-container {
-  display: grid;
-  grid-template-rows: 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 3fr 1fr 3fr;
+  row-gap: 2rem;
+  column-gap: 1rem;
+  grid-template-rows: 1fr 1fr;
   align-items: center;
 }
+.task-stats-container {
+  display: contents;
+}
+.task-stats-item {
+  display: contents;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 20px;
+  align-items: center;
+}
+
 .date-picker-wrapper {
   z-index: 1;
+}
+
+.task-notes textarea {
+  min-height: 15vh;
+  border: 1px solid var(--light-border);
+  border-radius: 5px;
 }

@@ -196,15 +196,18 @@ export default {
         const currentTask = await Task.findOne({ where: { taskId } });
         const oldValue = currentTask[fieldName];
         await currentTask.update({ [fieldName]: value });
-        await createActivityLog({
-          authorId: req.session.user.userId,
-          objectType: "task",
-          objectId: parseInt(taskId),
-          action: ACTIVITY_ACTIONS.TASK_UPDATED,
-          details: `changed the ${format(
-            fieldName
-          )} from ${oldValue} to ${value}`,
-        });
+
+        if (fieldName !== "notes") {
+          await createActivityLog({
+            authorId: req.session.user.userId,
+            objectType: "task",
+            objectId: parseInt(taskId),
+            action: ACTIVITY_ACTIONS.TASK_UPDATED,
+            details: `changed the ${format(
+              fieldName
+            )} from ${oldValue} to ${value}`,
+          });
+        }
       }
       res.status(200).send("Saved Task Successfully");
     } catch (err) {

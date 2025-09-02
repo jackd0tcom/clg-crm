@@ -226,6 +226,7 @@ h5 {
 .activity-log-item-wrapper {
   display: flex;
   justify-content: space-between;
+  column-gap: 10px;
 }
 .activity-log-items {
   display: flex;

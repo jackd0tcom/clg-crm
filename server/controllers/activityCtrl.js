@@ -52,7 +52,7 @@ export default {
         where: { caseId },
         attributes: ["personId"],
       });
-      const personIds = people.map(p => p.personId);
+      const personIds = people.map((p) => p.personId);
 
       // Get all activities for the case (including person activities)
       const activities = await ActivityLog.findAll({
@@ -65,10 +65,59 @@ export default {
             {
               objectType: "person",
               objectId: {
-                [Op.in]: personIds
-              }
-            }
-          ]
+                [Op.in]: personIds,
+              },
+            },
+          ],
+        },
+        include: [
+          {
+            model: User,
+            as: "author",
+            attributes: [
+              "userId",
+              "username",
+              "firstName",
+              "lastName",
+              "profilePic",
+            ],
+          },
+          {
+            model: User,
+            as: "readers",
+            attributes: [
+              "userId",
+              "username",
+              "firstName",
+              "lastName",
+              "profilePic",
+            ],
+            required: false, // This makes it a LEFT JOIN
+          },
+        ],
+        order: [["createdAt", "DESC"]],
+      });
+
+      res.status(200).json(activities);
+    } catch (error) {
+      console.log(error);
+      res.status(500).send("Error fetching case activities");
+    }
+  },
+  getTaskActivities: async (req, res) => {
+    try {
+      if (!req.session.user) {
+        return res.status(401).send("User not authenticated");
+      }
+
+      const { taskId } = req.params;
+      const { userId } = req.session.user;
+
+      // Get all activities for the case (including person activities)
+      const activities = await ActivityLog.findAll({
+        where: {
+          objectType: "task",
+          objectId: taskId,
         },
         include: [
           {
