@@ -5,7 +5,7 @@ import axios from "axios";
 import AssigneeList from "./AssigneeList";
 import AssigneeToggle from "./AssigneeToggle";
 
-const TaskItem = ({ task, headings }) => {
+const TaskItem = ({ task, headings, openTaskView }) => {
   const [status, setStatus] = useState(task.status);
   const [assignees, setAssignees] = useState([]);
 
@@ -48,14 +48,12 @@ const TaskItem = ({ task, headings }) => {
 
   const handleStatusChange = (newStatus) => {
     try {
-      console.log(newStatus);
       axios
         .post("/api/updateTaskStatus", {
           taskId: task.taskId,
           status: newStatus,
         })
         .then((res) => {
-          console.log(res.data);
           setStatus(newStatus);
         });
     } catch (error) {
@@ -64,14 +62,25 @@ const TaskItem = ({ task, headings }) => {
   };
 
   return (
-    <div className="task-list-item">
+    <div
+      className="task-list-item"
+      onClick={() => {
+        openTaskView(task.taskId);
+      }}
+    >
       {Object.entries(newTask).map(([key, value], index) =>
         key !== "Assignees" ? (
           <p key={index}>{value}</p>
         ) : (
           <div className="task-list-assignee-wrapper">
             {assignees.map((nee) => {
-              return <AssigneeToggle assignee={nee} isStatic={true} />;
+              return (
+                <AssigneeToggle
+                  key={nee.userId}
+                  assignee={nee}
+                  isStatic={true}
+                />
+              );
             })}
           </div>
         )

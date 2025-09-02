@@ -2,7 +2,13 @@ import TaskItem from "./TaskItem";
 import { useState, useEffect } from "react";
 import { findTimeDifference } from "../helpers/helperFunctions";
 
-const TaskList = ({ tasks, headings, columns, title }) => {
+const TaskList = ({
+  tasks,
+  headings,
+  columns,
+  title,
+  openTaskView,
+}) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
@@ -39,6 +45,7 @@ const TaskList = ({ tasks, headings, columns, title }) => {
                     key={task.taskId || task.title}
                     task={task}
                     headings={headings}
+                    openTaskView={openTaskView}
                   />
                 );
               })
@@ -52,6 +59,7 @@ const TaskList = ({ tasks, headings, columns, title }) => {
                   key={task.taskId || task.title}
                   task={task}
                   headings={headings}
+                  openTaskView={openTaskView}
                 />
               );
             })}

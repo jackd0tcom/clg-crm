@@ -4,7 +4,7 @@ import Loader from "../Elements/Loader";
 import TaskList from "../Elements/TaskList";
 import { findTimeDifference } from "../helpers/helperFunctions";
 
-const Tasks = () => {
+const Tasks = ({ openTaskView }) => {
   const [tasks, setTasks] = useState();
   const [isLoading, setIsLoading] = useState(true);
   const [dueToday, setDueToday] = useState([]);
@@ -69,24 +69,29 @@ const Tasks = () => {
           })}
         </div>
       </div>
-      <TaskList
-        tasks={overdue}
-        headings={["Title", "Case", "Assignees", "Due Date"]}
-        columns={columns}
-        title={"Overdue"}
-      />
-      <TaskList
-        tasks={dueToday}
-        headings={["Title", "Case", "Assignees", "Due Date"]}
-        columns={columns}
-        title={"Due Today"}
-      />
-      <TaskList
-        tasks={upcoming}
-        headings={["Title", "Case", "Assignees", "Due Date"]}
-        columns={columns}
-        title={"Upcoming"}
-      />
+      <div className="task-page-task-list-wrapper">
+        <TaskList
+          openTaskView={openTaskView}
+          tasks={overdue}
+          headings={["Title", "Case", "Assignees", "Due Date"]}
+          columns={columns}
+          title={"Overdue"}
+        />
+        <TaskList
+          openTaskView={openTaskView}
+          tasks={dueToday}
+          headings={["Title", "Case", "Assignees", "Due Date"]}
+          columns={columns}
+          title={"Due Today"}
+        />
+        <TaskList
+          openTaskView={openTaskView}
+          tasks={upcoming}
+          headings={["Title", "Case", "Assignees", "Due Date"]}
+          columns={columns}
+          title={"Upcoming"}
+        />
+      </div>
     </div>
   );
 };

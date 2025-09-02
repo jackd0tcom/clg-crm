@@ -162,15 +162,10 @@ const Case = () => {
       const response = await axios.post("/api/newCase", {
         title: caseTitle,
       });
-
-      // Use React Router navigate instead of window.history
       navigate(`/case/${response.data.caseId}`);
 
-      // Update local state
       setCaseData(response.data);
       setIsNewCase(false);
-
-      // Refresh data
       refreshCaseData();
       refreshActivityData();
     } catch (error) {
@@ -379,7 +374,7 @@ const Case = () => {
           <div className="case-view-task-wrapper">
             <h3>Tasks</h3>
             <div className="case-view-task-list">
-              <TaskList data={caseData.tasks} />
+              {/* <TaskList data={caseData.tasks} /> */}
             </div>
           </div>
         </div>

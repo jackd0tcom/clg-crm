@@ -109,7 +109,7 @@ app.get("/api/getTasksByCase/:caseId", getTasksByCase);
 app.post("/api/newTask", newTask);
 app.post("/api/saveTask", saveTask);
 app.post("/api/updateTaskStatus", updateTaskStatus);
-app.get("/api/getTask", getTask);
+app.get("/api/getTask/:taskId", getTask);
 app.get("/api/getTaskNonAssignees/:taskId", getTaskNonAssignees);
 
 // activity endpoints

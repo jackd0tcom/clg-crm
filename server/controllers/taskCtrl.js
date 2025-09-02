@@ -151,8 +151,29 @@ export default {
     try {
       console.log("getTask");
       if (req.session.user) {
-        const { taskId } = req.body;
-        const foundTask = await Task.findOne({ where: { taskId } });
+        const { taskId } = req.params;
+        const foundTask = await Task.findOne({
+          where: { taskId },
+          include: [
+            {
+              model: User,
+              as: "assignees",
+              through: { attributes: [] },
+              attributes: [
+                "userId",
+                "username",
+                "firstName",
+                "lastName",
+                "profilePic",
+              ],
+            },
+            {
+              model: Case,
+              attributes: ["caseId", "title"],
+              as: "case",
+            },
+          ],
+        });
 
         res.send(foundTask);
       }

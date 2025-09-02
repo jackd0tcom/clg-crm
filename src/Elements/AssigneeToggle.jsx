@@ -3,10 +3,6 @@ import { useState, useEffect } from "react";
 const AssigneeToggle = ({ assignee, handleRemove, Id, isStatic }) => {
   const [isHovered, setIsHovered] = useState(false);
 
-  useEffect(() => {
-    console.log(Id);
-  }, []);
-
   return (
     <div
       className="assignee-toggle-wrapper"
