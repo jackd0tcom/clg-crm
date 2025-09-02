@@ -61,7 +61,28 @@ const AssigneeList = ({
 
   const handleRemove = ({ Id, userId }) => {
     try {
-      console.log(Id, userId);
+      if (taskId && taskId !== 0) {
+        axios
+          .delete("/api/removeTaskAssignees", { data: { taskId: Id, userId } })
+          .then((res) => {
+            if (res.status === 200) {
+              const removedUser = assigneeList.find(
+                (user) => user.userId === userId
+              );
+
+              setAssigneeList((prevList) =>
+                prevList.filter((nee) => nee.userId !== userId)
+              );
+
+              if (removedUser) {
+                setNonAssigneeList((prevList) => [...prevList, removedUser]);
+              }
+              if (onActivityUpdate) {
+                onActivityUpdate();
+              }
+            }
+          });
+      } else console.log(Id, userId);
       axios
         .delete("/api/removeCaseAssignees", {
           data: { caseId: Id, userId },
@@ -91,29 +112,47 @@ const AssigneeList = ({
   const handleAdd = ({ Id, userId }) => {
     try {
       console.log(Id, userId);
-      axios
-        .post("/api/addCaseAssignees", { caseId: Id, userId })
-        .then((res) => {
-          if (res.status === 201) {
-            setAssigneeList((prevList) => [...prevList, res.data]);
-            setNonAssigneeList((prevList) =>
-              prevList.filter((user) => user.userId !== userId)
-            );
-            setIsAdding(false);
+      if (taskId && taskId !== 0) {
+        axios
+          .post("/api/addTaskAssignees", { taskId: Id, userId })
+          .then((res) => {
+            if (res.status === 201) {
+              setAssigneeList((prevList) => [...prevList, res.data]);
+              setNonAssigneeList((prevList) =>
+                prevList.filter((user) => user.userId !== userId)
+              );
+              setIsAdding(false);
 
-            // Refresh activity data to show new activity
-            if (onActivityUpdate) {
-              onActivityUpdate();
+              // Refresh activity data to show new activity
+              if (onActivityUpdate) {
+                onActivityUpdate();
+              }
             }
-          }
-        })
-        .catch((error) => {
-          if (error.response?.status === 409) {
-            console.log("User is already assigned to this case");
-          } else {
-            console.log("Error adding assignee:", error);
-          }
-        });
+          });
+      } else
+        axios
+          .post("/api/addCaseAssignees", { caseId: Id, userId })
+          .then((res) => {
+            if (res.status === 201) {
+              setAssigneeList((prevList) => [...prevList, res.data]);
+              setNonAssigneeList((prevList) =>
+                prevList.filter((user) => user.userId !== userId)
+              );
+              setIsAdding(false);
+
+              // Refresh activity data to show new activity
+              if (onActivityUpdate) {
+                onActivityUpdate();
+              }
+            }
+          })
+          .catch((error) => {
+            if (error.response?.status === 409) {
+              console.log("User is already assigned to this case");
+            } else {
+              console.log("Error adding assignee:", error);
+            }
+          });
     } catch (error) {
       console.log(error);
     }

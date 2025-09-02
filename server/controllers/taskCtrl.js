@@ -259,4 +259,95 @@ export default {
       res.status(400).send(error);
     }
   },
+  addTaskAssignee: async (req, res) => {
+    try {
+      console.log("addTaskAssignee");
+      if (!req.session.user) {
+        return res.status(401).send("User not authenticated");
+      }
+
+      const { taskId, userId } = req.body;
+      console.log(taskId, userId);
+
+      const taskExists = await Task.findByPk(taskId);
+      if (!taskExists) {
+        return res.status(404).send("Task not found");
+      }
+
+      // Check if assignment already exists
+      const existingAssignment = await TaskAssignees.findOne({
+        where: {
+          taskId: parseInt(taskId),
+          userId: parseInt(userId),
+        },
+      });
+
+      if (existingAssignment) {
+        return res.status(409).json({
+          message: "User is already assigned to this task",
+          assignment: existingAssignment,
+        });
+      }
+
+      // Create new assignment if it doesn't exist
+      const newAssignee = await TaskAssignees.create({
+        taskId: parseInt(taskId),
+        userId: parseInt(userId),
+      });
+
+      // Get the assigned user's name for the activity log
+      const assignedUser = await User.findByPk(userId, {
+        attributes: ["firstName", "lastName"],
+      });
+
+      // Create activity log
+      await createActivityLog({
+        authorId: req.session.user.userId,
+        objectType: "task",
+        objectId: parseInt(taskId),
+        action: ACTIVITY_ACTIONS.TASK_ASSIGNEE_ADDED,
+        details: `added ${assignedUser.firstName} ${assignedUser.lastName} as assignee`,
+      });
+
+      res.status(201).json(newAssignee);
+    } catch (err) {
+      console.log(err);
+      res.status(500).send("Failed to add task assignee");
+    }
+  },
+  removeTaskAssignee: async (req, res) => {
+    try {
+      console.log("removeTaskAssignee");
+      if (!req.session.user) {
+        return res.status(401).send("User not authenticated");
+      }
+
+      const { taskId, userId } = req.body;
+      const taskExists = await Task.findByPk(taskId);
+      if (!taskExists) {
+        return res.status(404).send("Task not found");
+      }
+
+      const oldAssignee = await User.findOne({
+        where: {
+          userId,
+        },
+      });
+
+      await TaskAssignees.destroy({ where: { taskId, userId } });
+
+      await createActivityLog({
+        authorId: req.session.user.userId,
+        objectType: "task",
+        objectId: parseInt(taskId),
+        action: ACTIVITY_ACTIONS.TASK_ASSIGNEE_REMOVED,
+        details: `removed ${oldAssignee.firstName} ${oldAssignee.lastName} as assignee`,
+      });
+
+      res.status(200).send("Task assignees updated successfully");
+    } catch (err) {
+      console.log(err);
+      res.status(500).send("Failed to update task assignees");
+    }
+  },
 };

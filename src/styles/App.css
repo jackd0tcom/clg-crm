@@ -340,6 +340,7 @@ h5 {
   padding: 10px;
   background-color: white;
   row-gap: 10px;
+  z-index: 999;
 }
 .assignee-add-toggle-wrapper p:nth-child(1) {
   margin: 0;

@@ -124,3 +124,6 @@
   grid-template-rows: 1fr 1fr 1fr 1fr;
   align-items: center;
 }
+.date-picker-wrapper {
+  z-index: 1;
+}

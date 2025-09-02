@@ -33,12 +33,9 @@ function App() {
   useEffect(() => {
     const path = location.pathname;
     if (path.startsWith("/case/") && path !== "/case/0") {
-      setActivePage("case");
     } else if (path === "/cases") {
-      console.log("cases");
       setActivePage("caseList");
     } else if (path === "/tasks") {
-      console.log("tasks");
       setActivePage("tasks");
     } else {
       setActivePage(null);

@@ -6,11 +6,15 @@ import TaskInput from "./TaskInput";
 import { useNavigate } from "react-router";
 import AssigneeList from "./AssigneeList";
 import DueDatePicker from "./DueDatePicker";
+import StatusToggle from "./StatusToggle";
+import PriorityToggle from "./PriorityToggle";
 
 const TaskView = ({ taskId, isOpen, onClose, onTaskUpdate }) => {
   const [taskData, setTaskData] = useState();
   const [isLoading, setIsLoading] = useState(true);
-  const [title, setTitle] = useState("");
+  const [title, setTitle] = useState();
+  const [priority, setPriority] = useState();
+  const [status, setStatus] = useState();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -22,6 +26,8 @@ const TaskView = ({ taskId, isOpen, onClose, onTaskUpdate }) => {
             setTaskData(res.data);
             setTitle(res.data.title);
             setIsLoading(false);
+            setStatus(res.data.status);
+            setPriority(res.data.priority);
           });
         } catch (error) {
           console.log(error);
@@ -81,6 +87,8 @@ const TaskView = ({ taskId, isOpen, onClose, onTaskUpdate }) => {
         setTaskData(res.data);
         setTitle(res.data.title);
         setIsLoading(false);
+        setStatus(res.data.status);
+        setPriority(res.data.priority);
       });
     } catch (error) {
       console.log(error);
@@ -94,6 +102,30 @@ const TaskView = ({ taskId, isOpen, onClose, onTaskUpdate }) => {
         setTaskData(res.data);
         setTitle(res.data.title);
         setIsLoading(false);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const updateStatus = async (stat) => {
+    try {
+      console.log("updating status");
+      await axios.post("/api/updateTask", {
+        fieldName: "status",
+        value: stat,
+        taskId: taskData.taskId,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const updatePriority = async (stat) => {
+    try {
+      await axios.post("/api/updateTask", {
+        fieldName: "priority",
+        value: stat,
+        taskId: taskData.taskId,
       });
     } catch (error) {
       console.log(error);
@@ -130,7 +162,11 @@ const TaskView = ({ taskId, isOpen, onClose, onTaskUpdate }) => {
                   <h4>Priority</h4>
                 </div>
                 <div className="task-stats-container">
-                  <p>{taskData.status}</p>
+                  <StatusToggle
+                    value={status}
+                    setStatus={setStatus}
+                    onHandle={updateStatus}
+                  />
                   <AssigneeList
                     assignees={taskData.assignees}
                     taskId={taskData.taskId}
@@ -140,6 +176,11 @@ const TaskView = ({ taskId, isOpen, onClose, onTaskUpdate }) => {
                     taskId={taskId}
                     refreshTaskData={refreshTaskData}
                     refreshTaskActivityData={refreshTaskActivityData}
+                  />
+                  <PriorityToggle
+                    value={priority}
+                    setPriority={setPriority}
+                    onHandle={updatePriority}
                   />
                 </div>
               </div>
