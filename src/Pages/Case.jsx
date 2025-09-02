@@ -15,7 +15,7 @@ import CaseInput from "../Elements/CaseInput";
 import PracticeAreaToggle from "../Elements/PracticeAreaToggle";
 import ExtraSettings from "../Elements/ExtraSettings";
 
-const Case = () => {
+const Case = ({ openTaskView, refreshKey }) => {
   const { caseId } = useParams();
   const navigate = useNavigate();
   const [caseData, setCaseData] = useState();
@@ -35,47 +35,55 @@ const Case = () => {
   const [isArchived, setIsArchived] = useState(false);
   const dropdownRef = useRef(null);
 
-  useEffect(() => {
-    async function getData() {
-      try {
-        if (caseId == 0) {
-          setIsNewCase(true);
-          setCaseData({
-            caseId: null,
-            title: "",
-            notes: "",
-            phase: "intake",
-            practiceAreas: [],
-            people: [],
-            assignees: [],
-            tasks: [],
-          });
+  const getData = async () => {
+    try {
+      if (caseId == 0) {
+        setIsNewCase(true);
+        setCaseData({
+          caseId: null,
+          title: "",
+          notes: "",
+          phase: "intake",
+          practiceAreas: [],
+          people: [],
+          assignees: [],
+          tasks: [],
+        });
 
-          setPhase("intake");
-          setNotes("");
-          setTitle("Untitled Case");
-          setCurrentAreas([]);
-          setActivityData([]);
-          return;
-        } else {
-          const caseResponse = await axios.get(`/api/getCase/${caseId}`);
-          const activityResponse = await axios.get(
-            `/api/getCaseActivities/${caseId}`
-          );
-          setCaseData(caseResponse.data);
-          setActivityData(activityResponse.data);
-          setPhase(caseResponse.data.phase);
-          setNotes(caseResponse.data.notes);
-          setTitle(caseResponse.data.title);
-          setCurrentAreas(caseResponse.data.practiceAreas);
-          setIsArchived(caseResponse.data.isArchived);
-        }
-      } catch (error) {
-        console.log(error);
+        setPhase("intake");
+        setNotes("");
+        setTitle("Untitled Case");
+        setCurrentAreas([]);
+        setActivityData([]);
+        return;
+      } else {
+        const caseResponse = await axios.get(`/api/getCase/${caseId}`);
+        const activityResponse = await axios.get(
+          `/api/getCaseActivities/${caseId}`
+        );
+        setCaseData(caseResponse.data);
+        setActivityData(activityResponse.data);
+        setPhase(caseResponse.data.phase);
+        setNotes(caseResponse.data.notes);
+        setTitle(caseResponse.data.title);
+        setCurrentAreas(caseResponse.data.practiceAreas);
+        setIsArchived(caseResponse.data.isArchived);
       }
+    } catch (error) {
+      console.log(error);
     }
+  };
+
+  useEffect(() => {
     getData();
   }, [caseId]);
+
+  // Refetch case data when refreshKey changes (when tasks are updated)
+  useEffect(() => {
+    if (refreshKey > 0) {
+      getData();
+    }
+  }, [refreshKey]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -374,7 +382,12 @@ const Case = () => {
           <div className="case-view-task-wrapper">
             <h3>Tasks</h3>
             <div className="case-view-task-list">
-              {/* <TaskList data={caseData.tasks} /> */}
+              <TaskList
+                tasks={caseData.tasks}
+                headings={["Title", "Status", "Due Date", "Priority"]}
+                columns="2fr 1fr 1fr 1fr"
+                openTaskView={openTaskView}
+              />
             </div>
           </div>
         </div>

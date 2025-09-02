@@ -1,6 +1,12 @@
 import { User, Case, Task } from "../model.js";
 import { Op } from "sequelize";
 import { CaseAssignees, TaskAssignees } from "../model.js";
+import {
+  createActivityLog,
+  ACTIVITY_ACTIONS,
+  capitalize,
+  format,
+} from "../helpers/activityHelper.js";
 
 export default {
   getAllTasks: async (req, res) => {
@@ -180,6 +186,30 @@ export default {
     } catch (error) {
       console.log(error);
       res.status(400).send(error);
+    }
+  },
+  updateTask: async (req, res) => {
+    try {
+      console.log("updateTask");
+      if (req.session.user) {
+        const { taskId, fieldName, value } = req.body;
+        const currentTask = await Task.findOne({ where: { taskId } });
+        const oldValue = currentTask[fieldName];
+        await currentTask.update({ [fieldName]: value });
+        await createActivityLog({
+          authorId: req.session.user.userId,
+          objectType: "task",
+          objectId: parseInt(taskId),
+          action: ACTIVITY_ACTIONS.TASK_UPDATED,
+          details: `changed the ${format(
+            fieldName
+          )} from ${oldValue} to ${value}`,
+        });
+      }
+      res.status(200).send("Saved Task Successfully");
+    } catch (err) {
+      console.log(err);
+      res.status(500).send("Failed to update task");
     }
   },
   updateTaskStatus: async (req, res) => {

@@ -5,8 +5,9 @@ import ActivityLog from "./ActivityLog";
 import TaskInput from "./TaskInput";
 import { useNavigate } from "react-router";
 import AssigneeList from "./AssigneeList";
+import DueDatePicker from "./DueDatePicker";
 
-const TaskView = ({ taskId, isOpen, onClose }) => {
+const TaskView = ({ taskId, isOpen, onClose, onTaskUpdate }) => {
   const [taskData, setTaskData] = useState();
   const [isLoading, setIsLoading] = useState(true);
   const [title, setTitle] = useState("");
@@ -20,7 +21,6 @@ const TaskView = ({ taskId, isOpen, onClose }) => {
           await axios.get(`/api/getTask/${taskId}`).then((res) => {
             setTaskData(res.data);
             setTitle(res.data.title);
-            console.log(res.data);
             setIsLoading(false);
           });
         } catch (error) {
@@ -36,7 +36,7 @@ const TaskView = ({ taskId, isOpen, onClose }) => {
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (modalRef.current && !modalRef.current.contains(event.target)) {
-        onClose();
+        handleClose();
       }
     };
 
@@ -47,12 +47,12 @@ const TaskView = ({ taskId, isOpen, onClose }) => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isOpen, onClose]);
+  }, [isOpen]);
 
   useEffect(() => {
     const handleEscape = (event) => {
       if (event.key === "Escape") {
-        onClose();
+        handleClose();
       }
     };
 
@@ -63,9 +63,42 @@ const TaskView = ({ taskId, isOpen, onClose }) => {
     return () => {
       document.removeEventListener("keydown", handleEscape);
     };
-  }, [isOpen, onClose]);
+  }, [isOpen]);
+
+  const handleClose = () => {
+    if (onTaskUpdate) {
+      onTaskUpdate();
+    }
+    onClose();
+  };
 
   if (!isOpen) return null;
+
+  const refreshTaskData = async () => {
+    try {
+      await axios.get(`/api/getTask/${taskId}`).then((res) => {
+        console.log("refreshed task data");
+        setTaskData(res.data);
+        setTitle(res.data.title);
+        setIsLoading(false);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const refreshTaskActivityData = async () => {
+    try {
+      await axios.get(`/api/getTask/${taskId}`).then((res) => {
+        console.log("refreshed task data");
+        setTaskData(res.data);
+        setTitle(res.data.title);
+        setIsLoading(false);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div className="task-view-overlay">
@@ -79,7 +112,7 @@ const TaskView = ({ taskId, isOpen, onClose }) => {
               <a
                 onClick={() => {
                   navigate(`/case/${taskData.caseId}`);
-                  onClose();
+                  handleClose();
                 }}
               >
                 {taskData.case.title}
@@ -101,6 +134,12 @@ const TaskView = ({ taskId, isOpen, onClose }) => {
                   <AssigneeList
                     assignees={taskData.assignees}
                     taskId={taskData.taskId}
+                  />
+                  <DueDatePicker
+                    currentDate={taskData.dueDate}
+                    taskId={taskId}
+                    refreshTaskData={refreshTaskData}
+                    refreshTaskActivityData={refreshTaskActivityData}
                   />
                 </div>
               </div>

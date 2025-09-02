@@ -5,29 +5,36 @@ import CaseCard from "../Elements/CaseCard";
 import CaseFilter from "../Elements/CaseFilter";
 import CaseListSearch from "../Elements/CaseListSearch";
 
-const CaseList = () => {
+const CaseList = ({ openTaskView, refreshKey }) => {
   const navigate = useNavigate();
   const [cases, setCases] = useState();
   const [originalCases, setOriginalCases] = useState();
   const [isFetched, setIsFetched] = useState(false);
   const [showArchived, setShowArchived] = useState(false);
 
-  useEffect(() => {
-    async function fetch() {
-      try {
-        await axios.get("/api/getCasesWithTasks").then((res) => {
-          // Filter out archived cases before setting initial state
-          const nonArchivedCases = res.data.filter((a) => !a.isArchived);
-          setCases(nonArchivedCases);
-          setOriginalCases(res.data); // Keep original data for filtering
-          setIsFetched(true);
-        });
-      } catch (error) {
-        console.log(error);
-      }
+  const fetchCases = async () => {
+    try {
+      const res = await axios.get("/api/getCasesWithTasks");
+      // Filter out archived cases before setting initial state
+      const nonArchivedCases = res.data.filter((a) => !a.isArchived);
+      setCases(nonArchivedCases);
+      setOriginalCases(res.data); // Keep original data for filtering
+      setIsFetched(true);
+    } catch (error) {
+      console.log(error);
     }
-    fetch();
+  };
+
+  useEffect(() => {
+    fetchCases();
   }, []);
+
+  // Refetch cases when refreshKey changes (when tasks are updated)
+  useEffect(() => {
+    if (refreshKey > 0) {
+      fetchCases();
+    }
+  }, [refreshKey]);
 
   return !isFetched ? (
     <>Loading...</>
@@ -59,7 +66,7 @@ const CaseList = () => {
       <div className="case-list">
         {cases.length > 0 ? (
           cases.map((data) => {
-            return <CaseCard key={data.caseId} data={data} />;
+            return <CaseCard key={data.caseId} data={data} openTaskView={openTaskView} />;
           })
         ) : (
           <p>No Active Cases</p>

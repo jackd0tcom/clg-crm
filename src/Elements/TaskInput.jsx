@@ -1,13 +1,14 @@
 import { useState, useRef, useEffect } from "react";
+import axios from "axios";
 
 const TaskInput = ({ title, setTitle, taskId }) => {
   const [count, setCount] = useState(0);
   const inputRef = useRef(null);
   const saveTimer = useRef(null);
 
-  const saveTask = async (key, value) => {
+  const saveTask = async (fieldName, value) => {
     try {
-      await axios.post("/api/updateTask", { taskId, key, value });
+      await axios.post("/api/updateTask", { taskId, fieldName, value });
     } catch (error) {
       console.log(error);
     }
@@ -24,7 +25,7 @@ const TaskInput = ({ title, setTitle, taskId }) => {
     clearSaveTimer();
     saveTimer.current = setTimeout(() => {
       if (title && title.trim() !== "Untitled Case") {
-        saveTask();
+        saveTask("title", title);
       }
     }, 2000);
     return () => {
@@ -34,13 +35,13 @@ const TaskInput = ({ title, setTitle, taskId }) => {
 
   const handleBlur = () => {
     clearSaveTimer();
-    saveTask();
+    saveTask("title", title);
   };
 
   const handleEnter = (e) => {
     if (e.key === "Enter") {
       clearSaveTimer();
-      saveTask();
+      saveTask("title", title);
       inputRef.current.blur();
     }
   };
@@ -62,4 +63,5 @@ const TaskInput = ({ title, setTitle, taskId }) => {
     </div>
   );
 };
+
 export default TaskInput;

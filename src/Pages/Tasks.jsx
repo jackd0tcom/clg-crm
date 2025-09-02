@@ -4,7 +4,7 @@ import Loader from "../Elements/Loader";
 import TaskList from "../Elements/TaskList";
 import { findTimeDifference } from "../helpers/helperFunctions";
 
-const Tasks = ({ openTaskView }) => {
+const Tasks = ({ openTaskView, refreshKey }) => {
   const [tasks, setTasks] = useState();
   const [isLoading, setIsLoading] = useState(true);
   const [dueToday, setDueToday] = useState([]);
@@ -13,19 +13,29 @@ const Tasks = ({ openTaskView }) => {
   const columns = "3fr 2fr 2fr 1fr";
   const headings = ["Title", "Case", "Assignees", "Due Date"];
 
-  useEffect(() => {
-    async function fetch() {
-      try {
-        axios.get("/api/getAllTasks").then((res) => {
-          setTasks(res.data);
-          setIsLoading(false);
-        });
-      } catch (error) {
-        console.log(error);
-      }
+  const fetchTasks = async () => {
+    try {
+      setIsLoading(true);
+      const res = await axios.get("/api/getAllTasks");
+      setTasks(res.data);
+      setIsLoading(false);
+    } catch (error) {
+      console.log(error);
+      setIsLoading(false);
     }
-    fetch();
+  };
+
+  useEffect(() => {
+    fetchTasks();
   }, []);
+
+  // Refetch tasks when refreshKey change
+  useEffect(() => {
+    if (refreshKey > 0) {
+      console.log('refresh');
+      fetchTasks();
+    }
+  }, [refreshKey]);
 
   useEffect(() => {
     if (tasks && tasks.length > 0) {

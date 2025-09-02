@@ -2,7 +2,7 @@ import { capitalize } from "../helpers/helperFunctions";
 import TaskListItem from "../Elements/TaskListItem";
 import { Link } from "react-router";
 
-const CaseCard = ({ data }) => {
+const CaseCard = ({ data, openTaskView }) => {
   return (
     <a href={`/case/${data.caseId}`}>
       <div className="case-card-wrapper">
@@ -43,7 +43,13 @@ const CaseCard = ({ data }) => {
         <div className="case-card-tasks">
           <h4>To Do:</h4>
           {data.tasks.map((task) => {
-            return <TaskListItem key={task.taskId} task={task} />;
+            return (
+              <TaskListItem 
+                key={task.taskId} 
+                task={task} 
+                openTaskView={openTaskView}
+              />
+            );
           })}
         </div>
       </div>

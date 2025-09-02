@@ -1,8 +1,8 @@
 import "./styles/App.css";
-import { Route, Routes, Navigate } from "react-router";
+import { Route, Routes, Navigate, useLocation } from "react-router";
 import Home from "./Pages/Home.jsx";
 import { useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import Landing from "./Pages/Landing.jsx";
@@ -17,8 +17,11 @@ import TaskView from "./Elements/TaskView.jsx";
 function App() {
   const [isOpen, setIsOpen] = useState(false);
   const [taskId, setTaskId] = useState(null);
+  const [activePage, setActivePage] = useState(null);
+  const [refreshKey, setRefreshKey] = useState(0);
   const isAuthenticated = useSelector((state) => state.isAuthenticated);
   const dispatch = useDispatch();
+  const location = useLocation();
 
   useEffect(() => {
     axios
@@ -26,6 +29,21 @@ function App() {
       .then((res) => dispatch({ type: "LOGIN", payload: res.data }))
       .catch((err) => console.log(err));
   }, [isAuthenticated]);
+
+  useEffect(() => {
+    const path = location.pathname;
+    if (path.startsWith("/case/") && path !== "/case/0") {
+      setActivePage("case");
+    } else if (path === "/cases") {
+      console.log("cases");
+      setActivePage("caseList");
+    } else if (path === "/tasks") {
+      console.log("tasks");
+      setActivePage("tasks");
+    } else {
+      setActivePage(null);
+    }
+  }, [location.pathname]);
 
   const openTaskView = (id) => {
     setTaskId(id);
@@ -36,6 +54,10 @@ function App() {
     setIsOpen(false);
     setTaskId(null);
   };
+
+  const handleTaskUpdate = useCallback(() => {
+    setRefreshKey((prev) => prev + 1);
+  }, []);
 
   return (
     <>
@@ -50,12 +72,24 @@ function App() {
             />
             <Route
               path="/case/:caseId"
-              element={<Case openTaskView={openTaskView} />}
+              element={
+                <Case
+                  openTaskView={openTaskView}
+                  refreshKey={activePage === "case" ? refreshKey : 0}
+                />
+              }
             />
             <Route
               path="/cases"
               element={
-                !isAuthenticated ? <Navigate to="/login" /> : <CaseList />
+                !isAuthenticated ? (
+                  <Navigate to="/login" />
+                ) : (
+                  <CaseList
+                    openTaskView={openTaskView}
+                    refreshKey={activePage === "caseList" ? refreshKey : 0}
+                  />
+                )
               }
             />
             <Route
@@ -64,7 +98,10 @@ function App() {
                 !isAuthenticated ? (
                   <Navigate to="/login" />
                 ) : (
-                  <Tasks openTaskView={openTaskView} />
+                  <Tasks
+                    openTaskView={openTaskView}
+                    refreshKey={activePage === "tasks" ? refreshKey : 0}
+                  />
                 )
               }
             />
@@ -83,7 +120,12 @@ function App() {
           </Routes>
         </div>
         {isOpen && (
-          <TaskView taskId={taskId} isOpen={isOpen} onClose={closeTaskView} />
+          <TaskView
+            taskId={taskId}
+            isOpen={isOpen}
+            onClose={closeTaskView}
+            onTaskUpdate={handleTaskUpdate}
+          />
         )}
       </div>
     </>
