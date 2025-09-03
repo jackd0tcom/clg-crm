@@ -9,6 +9,8 @@ import DueDatePicker from "./DueDatePicker";
 import StatusToggle from "./StatusToggle";
 import PriorityToggle from "./PriorityToggle";
 import Notes from "./Notes";
+import ExtraSettings from "./ExtraSettings";
+import TaskCaseToggle from "./TaskCaseToggle";
 
 const TaskView = ({ taskId, isOpen, onClose, onTaskUpdate }) => {
   const [taskData, setTaskData] = useState();
@@ -19,6 +21,9 @@ const TaskView = ({ taskId, isOpen, onClose, onTaskUpdate }) => {
   const [status, setStatus] = useState();
   const [notes, setNotes] = useState();
   const [count, setCount] = useState(0);
+  const [isHoverMove, setIsHoverMove] = useState(false);
+  const [isMovingCase, setIsMovingCase] = useState(false);
+  const [currentCase, setCurrentCase] = useState();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -33,6 +38,7 @@ const TaskView = ({ taskId, isOpen, onClose, onTaskUpdate }) => {
             setStatus(res.data.status);
             setPriority(res.data.priority);
             setNotes(res.data.notes);
+            setCurrentCase(res.data.case);
           });
           await axios.get(`/api/getTaskActivities/${taskId}`).then((res) => {
             setActivities(res.data);
@@ -106,11 +112,8 @@ const TaskView = ({ taskId, isOpen, onClose, onTaskUpdate }) => {
 
   const refreshTaskActivityData = async () => {
     try {
-      await axios.get(`/api/getTask/${taskId}`).then((res) => {
-        console.log("refreshed task data");
-        setTaskData(res.data);
-        setTitle(res.data.title);
-        setIsLoading(false);
+      await axios.get(`/api/getTaskActivities/${taskId}`).then((res) => {
+        setActivities(res.data);
       });
     } catch (error) {
       console.log(error);
@@ -174,19 +177,54 @@ const TaskView = ({ taskId, isOpen, onClose, onTaskUpdate }) => {
         ) : taskData ? (
           <>
             <div className="task-view-details">
-              <a
-                className="task-view-case-name"
-                onClick={() => {
-                  navigate(`/case/${taskData.caseId}`);
-                  handleClose();
-                }}
+              <div className="task-view-header">
+                <h3>Task</h3>
+                <ExtraSettings
+                  taskId={taskData.taskId}
+                  handleRefresh={refreshTaskData}
+                  handleClose={handleClose}
+                />
+              </div>
+              <div
+                onMouseEnter={() => setIsHoverMove(true)}
+                onMouseLeave={() => setIsHoverMove(false)}
+                className="task-view-case-wrapper"
               >
-                {taskData.case.title}
-              </a>
+                <a
+                  className="task-view-case-name"
+                  onClick={() => {
+                    navigate(`/case/${taskData.caseId}`);
+                    handleClose();
+                  }}
+                >
+                  {taskData.case.title}
+                </a>
+                {isHoverMove && (
+                  <div className="move-task-wrapper">
+                    <i
+                      onClick={() => setIsMovingCase(true)}
+                      id="move-case-icon"
+                      className="fa-solid fa-pen-to-square"
+                    ></i>
+                  </div>
+                )}
+                {isMovingCase && (
+                  <TaskCaseToggle
+                    currentCase={currentCase}
+                    setCurrentCase={setCurrentCase}
+                    taskId={taskData.taskId}
+                    refreshTaskData={refreshTaskData}
+                    refreshTaskActivityData={refreshTaskActivityData}
+                    isMovingCase={isMovingCase}
+                    setIsMovingCase={setIsMovingCase}
+                  />
+                )}
+              </div>
               <TaskInput
                 title={title}
                 setTitle={setTitle}
                 taskId={taskData.taskId}
+                refreshTaskActivityData={refreshTaskActivityData}
               />
               <div className="task-stats-wrapper">
                 <div className="task-stats-item">
@@ -203,6 +241,7 @@ const TaskView = ({ taskId, isOpen, onClose, onTaskUpdate }) => {
                   <AssigneeList
                     assignees={taskData.assignees}
                     taskId={taskData.taskId}
+                    refreshTaskActivityData={refreshTaskActivityData}
                   />
                 </div>
                 <div className="task-stats-item">

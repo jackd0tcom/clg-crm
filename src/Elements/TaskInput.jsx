@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import axios from "axios";
 
-const TaskInput = ({ title, setTitle, taskId }) => {
+const TaskInput = ({ title, setTitle, taskId, refreshTaskActivityData }) => {
   const [count, setCount] = useState(0);
   const [localTitle, setLocalTitle] = useState(title);
   const inputRef = useRef(null);
@@ -14,7 +14,14 @@ const TaskInput = ({ title, setTitle, taskId }) => {
 
   const saveTask = async (fieldName, value) => {
     try {
-      await axios.post("/api/updateTask", { taskId, fieldName, value });
+      console.log("saving", count);
+      await axios
+        .post("/api/updateTask", { taskId, fieldName, value })
+        .then((res) => {
+          setCount(0);
+          refreshTaskActivityData();
+        });
+      console.log(count);
     } catch (error) {
       console.log(error);
     }
@@ -29,7 +36,8 @@ const TaskInput = ({ title, setTitle, taskId }) => {
 
   // Only save when local title changes (user input)
   useEffect(() => {
-    if (count > 0) { // Only save if user has actually typed
+    if (count > 0) {
+      // Only save if user has actually typed
       clearSaveTimer();
       saveTimer.current = setTimeout(() => {
         if (localTitle && localTitle.trim() !== "Untitled Case") {
@@ -43,7 +51,8 @@ const TaskInput = ({ title, setTitle, taskId }) => {
   }, [localTitle, count]);
 
   const handleBlur = () => {
-    if (count > 0) { // Only save if user has actually typed
+    if (count > 0) {
+      // Only save if user has actually typed
       clearSaveTimer();
       saveTask("title", localTitle);
     }
@@ -51,7 +60,8 @@ const TaskInput = ({ title, setTitle, taskId }) => {
 
   const handleEnter = (e) => {
     if (e.key === "Enter") {
-      if (count > 0) { // Only save if user has actually typed
+      if (count > 0) {
+        // Only save if user has actually typed
         clearSaveTimer();
         saveTask("title", localTitle);
       }
@@ -60,7 +70,7 @@ const TaskInput = ({ title, setTitle, taskId }) => {
   };
 
   return (
-    <div className="task-input-wrapper">
+    <div className="task-input-wrapper" ref={inputRef}>
       <input
         type="text"
         value={localTitle}

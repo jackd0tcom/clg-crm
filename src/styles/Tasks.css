@@ -102,7 +102,10 @@
   padding: 0px 15px;
   background-color: var(--root-bg-color-light);
 }
-
+.task-view-header {
+  display: flex;
+  justify-content: space-between;
+}
 .task-input-wrapper input {
   width: calc(100% - 10px);
   border: 1px solid transparent;
@@ -117,6 +120,17 @@
 }
 .task-input-wrapper input:focus-visible {
   outline: 1px solid var(--light-border);
+}
+.task-view-case-wrapper {
+  display: flex;
+  align-items: center;
+  column-gap: 10px;
+  position: relative;
+}
+#move-case-icon {
+  color: var(--dark-grey);
+  font-size: 0.9rem;
+  cursor: pointer;
 }
 .task-view-case-name {
   cursor: pointer;

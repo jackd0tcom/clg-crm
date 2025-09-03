@@ -8,6 +8,7 @@ const AssigneeList = ({
   caseId,
   taskId,
   onActivityUpdate,
+  refreshTaskActivityData,
   isNewCase,
 }) => {
   const [assigneeList, setAssigneeList] = useState([]);
@@ -80,6 +81,7 @@ const AssigneeList = ({
               if (onActivityUpdate) {
                 onActivityUpdate();
               }
+              refreshTaskActivityData();
             }
           });
       } else console.log(Id, userId);
@@ -103,6 +105,7 @@ const AssigneeList = ({
             if (onActivityUpdate) {
               onActivityUpdate();
             }
+            refreshTaskActivityData();
           }
         });
     } catch (error) {

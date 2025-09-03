@@ -6,6 +6,7 @@ import {
   ACTIVITY_ACTIONS,
   capitalize,
   format,
+  formatDateNoTime,
 } from "../helpers/activityHelper.js";
 
 export default {
@@ -193,9 +194,27 @@ export default {
       console.log("updateTask");
       if (req.session.user) {
         const { taskId, fieldName, value } = req.body;
+        let newCase = null;
+
         const currentTask = await Task.findOne({ where: { taskId } });
         const oldValue = currentTask[fieldName];
         await currentTask.update({ [fieldName]: value });
+
+        if (fieldName === "caseId") {
+          newCase = await Case.findOne({ where: { caseId: value } });
+        }
+
+        let message = `changed the ${fieldName} from ${oldValue} to ${value}`;
+
+        if (fieldName === "title") {
+          message = "changed the title";
+        } else if (fieldName === "dueDate") {
+          message = `changed the due date from ${formatDateNoTime(
+            oldValue
+          )} to ${formatDateNoTime(value)}`;
+        } else if (fieldName === "caseId") {
+          message = `assigned the task to ${newCase.title}`;
+        }
 
         if (fieldName !== "notes") {
           await createActivityLog({
@@ -203,13 +222,13 @@ export default {
             objectType: "task",
             objectId: parseInt(taskId),
             action: ACTIVITY_ACTIONS.TASK_UPDATED,
-            details: `changed the ${format(
-              fieldName
-            )} from ${oldValue} to ${value}`,
+            details: message,
           });
         }
+        if (fieldName === "caseId") {
+          res.status(200).send(currentTask);
+        } else res.status(200).send("Saved Task Successfully");
       }
-      res.status(200).send("Saved Task Successfully");
     } catch (err) {
       console.log(err);
       res.status(500).send("Failed to update task");
@@ -351,6 +370,37 @@ export default {
     } catch (err) {
       console.log(err);
       res.status(500).send("Failed to update task assignees");
+    }
+  },
+  deleteTask: async (req, res) => {
+    try {
+      console.log("deleteTask");
+      if (!req.session.user) {
+        return res.status(401).send("User not authenticated");
+      }
+
+      const { taskId } = req.body;
+      console.log(taskId);
+      const currentTask = await Task.findByPk(taskId);
+      if (!currentTask) {
+        return res.status(404).send("Task not found");
+      }
+      const oldTitle = currentTask.title;
+
+      await currentTask.destroy();
+
+      await createActivityLog({
+        authorId: req.session.user.userId,
+        objectType: "task",
+        objectId: parseInt(taskId),
+        action: ACTIVITY_ACTIONS.TASK_DELETED,
+        details: `deleted ${oldTitle}`,
+      });
+
+      res.status(200).send("Task deleted successfully");
+    } catch (err) {
+      console.log(err);
+      res.status(500).send("Failed to delete task");
     }
   },
 };

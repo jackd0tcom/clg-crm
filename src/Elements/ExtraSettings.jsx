@@ -4,10 +4,12 @@ import axios from "axios";
 
 const ExtraSettings = ({
   Id,
+  taskId,
   handleRefresh,
   refreshActivityData,
   isArchived,
   setIsArchived,
+  handleClose,
 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [value, setValue] = useState("");
@@ -21,11 +23,11 @@ const ExtraSettings = ({
     };
 
     if (isVisible) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isVisible]);
 
@@ -45,6 +47,19 @@ const ExtraSettings = ({
     }
   };
 
+  const handleDelete = async () => {
+    console.log("delete");
+    try {
+      await axios
+        .delete("/api/deleteTask", { data: { taskId } })
+        .then((res) => {
+          handleClose();
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const handleBlur = () => {
     setIsVisible(false);
   };
@@ -52,14 +67,25 @@ const ExtraSettings = ({
   return (
     <div className="extra-settings-wrapper" ref={dropdownRef}>
       {isVisible ? (
-        <DropDown
-          isVisible={isVisible}
-          setIsVisible={setIsVisible}
-          data={!isArchived ? ["Archive Case"] : ["Remove From Archive"]}
-          value={value}
-          setValue={setValue}
-          handleClick={handleArchive}
-        />
+        !taskId ? (
+          <DropDown
+            isVisible={isVisible}
+            setIsVisible={setIsVisible}
+            data={!isArchived ? ["Archive Case"] : ["Remove From Archive"]}
+            value={value}
+            setValue={setValue}
+            handleClick={handleArchive}
+          />
+        ) : (
+          <DropDown
+            isVisible={isVisible}
+            setIsVisible={setIsVisible}
+            data={["Delete Task"]}
+            value={value}
+            setValue={setValue}
+            handleClick={handleDelete}
+          />
+        )
       ) : (
         <a
           onClick={() => {

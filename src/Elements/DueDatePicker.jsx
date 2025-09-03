@@ -7,18 +7,20 @@ const DueDatePicker = ({
   currentDate,
   taskId,
   refreshTaskData,
-  refreshTaskActivity,
+  refreshTaskActivityData,
 }) => {
   const [dueDate, setDueDate] = useState(currentDate);
 
   const onDateChange = async (date) => {
     try {
       if (taskId) {
-        await axios.post("/api/updateTask", {
-          fieldName: "dueDate",
-          value: date,
-          taskId,
-        });
+        await axios
+          .post("/api/updateTask", {
+            fieldName: "dueDate",
+            value: date,
+            taskId,
+          })
+          .then((res) => refreshTaskActivityData());
       } else return;
     } catch (error) {
       console.log(error);

@@ -72,11 +72,11 @@ const TaskItem = ({ task, headings, openTaskView }) => {
         key !== "Assignees" ? (
           <p key={index}>{value}</p>
         ) : (
-          <div className="task-list-assignee-wrapper">
+          <div key={index} className="task-list-assignee-wrapper">
             {assignees.map((nee) => {
               return (
                 <AssigneeToggle
-                  key={nee.userId}
+                  key={`user-${nee.userId}`}
                   assignee={nee}
                   isStatic={true}
                 />

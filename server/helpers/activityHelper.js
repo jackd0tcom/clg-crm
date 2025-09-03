@@ -126,6 +126,7 @@ export const ACTIVITY_ACTIONS = {
   TASK_STATUS_CHANGED: "status_updated",
   TASK_ASSIGNEE_ADDED: "task_assignee_added",
   TASK_ASSIGNEE_REMOVED: "task_assignee_removed",
+  TASK_DELETED: "task_deleted",
 
   COMMENT_ADDED: "comment_added",
 
@@ -150,4 +151,11 @@ export function format(str) {
     .replace(/([A-Z])/g, " $1")
     .replace(/^./, (str) => str.toUpperCase())
     .trim();
+}
+export function formatDateNoTime(data) {
+  const date = new Date(data);
+  return new Intl.DateTimeFormat("en-US", {
+    day: "numeric",
+    month: "short",
+  }).format(date);
 }
