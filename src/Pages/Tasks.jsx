@@ -86,6 +86,7 @@ const Tasks = ({ openTaskView, refreshKey }) => {
           headings={["Title", "Case", "Assignees", "Due Date"]}
           columns={columns}
           title={"Overdue"}
+          refreshTasks={fetchTasks}
         />
         <TaskList
           openTaskView={openTaskView}
@@ -93,6 +94,7 @@ const Tasks = ({ openTaskView, refreshKey }) => {
           headings={["Title", "Case", "Assignees", "Due Date"]}
           columns={columns}
           title={"Due Today"}
+          refreshTasks={fetchTasks}
         />
         <TaskList
           openTaskView={openTaskView}
@@ -100,6 +102,7 @@ const Tasks = ({ openTaskView, refreshKey }) => {
           headings={["Title", "Case", "Assignees", "Due Date"]}
           columns={columns}
           title={"Upcoming"}
+          refreshTasks={fetchTasks}
         />
       </div>
     </div>

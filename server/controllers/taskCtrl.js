@@ -122,11 +122,14 @@ export default {
           priority: req.body.priority,
           status: req.body.status,
         });
-        res.send(newTask);
-        console.log(newTask);
-      } else console.log("no user logged in");
+        res.status(201).send(newTask);
+      } else {
+        console.log("no user logged in");
+        res.status(401).send("User not authenticated");
+      }
     } catch (error) {
       console.log(error);
+      res.status(500).send("Failed to create task");
     }
   },
   saveTask: async (req, res) => {

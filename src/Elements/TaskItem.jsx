@@ -4,18 +4,24 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import AssigneeList from "./AssigneeList";
 import AssigneeToggle from "./AssigneeToggle";
+import TaskInput from "./TaskInput";
 
-const TaskItem = ({ task, headings, openTaskView }) => {
+const TaskItem = ({ task, headings, openTaskView, newTask, setNewTask, refreshTasks }) => {
   const [status, setStatus] = useState(task.status);
   const [assignees, setAssignees] = useState([]);
+  const [newTitle, setNewTitle] = useState("");
+  const [taskId, setTaskId] = useState();
 
   useEffect(() => {
+    if (!newTask) {
+      setTaskId(task.taskId);
+    }
     if (task.assignees) {
       setAssignees(task.assignees);
     }
   }, [task.assignees]);
 
-  const newTask = Object.fromEntries(
+  const newTaskObj = Object.fromEntries(
     headings.map((heading) => {
       if (heading === "Case") {
         return [heading, task.case?.title || "No Case"];
@@ -65,24 +71,37 @@ const TaskItem = ({ task, headings, openTaskView }) => {
     <div
       className="task-list-item"
       onClick={() => {
-        openTaskView(task.taskId);
+        // openTaskView(task.taskId);
       }}
     >
-      {Object.entries(newTask).map(([key, value], index) =>
-        key !== "Assignees" ? (
-          <p key={index}>{value}</p>
-        ) : (
-          <div key={index} className="task-list-assignee-wrapper">
-            {assignees.map((nee) => {
-              return (
-                <AssigneeToggle
-                  key={`user-${nee.userId}`}
-                  assignee={nee}
-                  isStatic={true}
-                />
-              );
-            })}
-          </div>
+      {newTask ? (
+        <div className="new-task-item-wrapper">
+          <TaskInput
+            newTask={newTask}
+            setNewTask={setNewTask}
+            setTaskId={setTaskId}
+            title={newTitle}
+            setTitle={setNewTitle}
+            refreshTasks={refreshTasks}
+          />
+        </div>
+      ) : (
+        Object.entries(newTaskObj).map(([key, value], index) =>
+          key !== "Assignees" ? (
+            <p key={index}>{value}</p>
+          ) : (
+            <div key={index} className="task-list-assignee-wrapper">
+              {assignees.map((nee) => {
+                return (
+                  <AssigneeToggle
+                    key={`user-${nee.userId}`}
+                    assignee={nee}
+                    isStatic={true}
+                  />
+                );
+              })}
+            </div>
+          )
         )
       )}
     </div>

@@ -281,38 +281,38 @@ const tasks = [
 const comments = [
   {
     authorId: 1, // Sarah Johnson
-    taskId: 1,
+    objectType: "task",
+    objectId: 1,
     content:
       "Financial documents received from client. Need to verify authenticity of business valuations.",
-    isInternal: true,
   },
   {
     authorId: 2, // Meg Williams
-    taskId: 1,
+    objectType: "task",
+    objectId: 1,
     content:
       "I'll review the business valuation reports tomorrow. Sarah, can you forward the tax returns?",
-    isInternal: true,
   },
   {
     authorId: 3, // Jenn Davis
-    caseId: 3,
+    objectType: "case",
+    objectId: 3,
     content:
       "Client mentioned concerns about child's relationship with father. Need to document this for custody evaluation.",
-    isInternal: true,
   },
   {
     authorId: 4, // Mike Thompson
-    taskId: 4,
+    objectType: "task",
+    objectId: 4,
     content:
       "Insurance company offered $50K settlement. Client wants to counter with $150K based on medical bills and lost wages.",
-    isInternal: true,
   },
   {
     authorId: 5, // Lisa Rodriguez
-    caseId: 2,
+    objectType: "case",
+    objectId: 2,
     content:
       "Zoning board meeting scheduled for next Thursday. Need to prepare presentation materials.",
-    isInternal: true,
   },
 ];
 
@@ -387,35 +387,35 @@ const activityLogs = [
 const notifications = [
   {
     userId: 2, // Meg Williams
-    type: "task_assigned",
+    type: "assignment",
+    objectType: "task",
+    objectId: 2,
     message: "You have been assigned to: File motion for summary judgment",
     isRead: false,
-    relatedId: 2,
-    relatedType: "task",
   },
   {
     userId: 3, // Jenn Davis
-    type: "task_overdue",
+    type: "due_date",
+    objectType: "task",
+    objectId: 3,
     message: "Task 'Interview child's teacher and counselor' is due in 2 days",
     isRead: false,
-    relatedId: 3,
-    relatedType: "task",
   },
   {
     userId: 1, // Sarah Johnson
-    type: "case_update",
+    type: "status_change",
+    objectType: "case",
+    objectId: 1,
     message: "Case 'Smith Divorce Settlement' has new activity",
     isRead: false,
-    relatedId: 1,
-    relatedType: "case",
   },
   {
     userId: 4, // Mike Thompson
     type: "comment",
+    objectType: "task",
+    objectId: 4,
     message: "New comment on task: Negotiate with insurance adjuster",
     isRead: false,
-    relatedId: 4,
-    relatedType: "task",
   },
 ];
 

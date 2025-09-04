@@ -2,8 +2,9 @@ import TaskItem from "./TaskItem";
 import { useState, useEffect } from "react";
 import { findTimeDifference } from "../helpers/helperFunctions";
 
-const TaskList = ({ tasks, headings, columns, title, openTaskView }) => {
+const TaskList = ({ tasks, headings, columns, title, openTaskView, refreshTasks }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [newTask, setNewTask] = useState(false);
 
   return (
     <>
@@ -40,11 +41,21 @@ const TaskList = ({ tasks, headings, columns, title, openTaskView }) => {
                     task={task}
                     headings={headings}
                     openTaskView={openTaskView}
+                    refreshTasks={refreshTasks}
                   />
                 );
               })
+            ) : !newTask ? (
+              <a onClick={() => setNewTask(true)}>New task</a>
             ) : (
-              <p>No tasks to show</p>
+              <TaskItem
+                task={{}}
+                newTask={newTask}
+                headings={headings}
+                openTaskView={openTaskView}
+                setNewTask={setNewTask}
+                refreshTasks={refreshTasks}
+              />
             ))}
           {!title &&
             tasks.map((task) => {
@@ -54,6 +65,7 @@ const TaskList = ({ tasks, headings, columns, title, openTaskView }) => {
                   task={task}
                   headings={headings}
                   openTaskView={openTaskView}
+                  refreshTasks={refreshTasks}
                 />
               );
             })}

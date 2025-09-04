@@ -162,7 +162,7 @@ Task.init(
     },
   },
   {
-    modelName: "Task",
+    modelName: "task",
     sequelize: db,
     timestamps: true,
   }
@@ -207,7 +207,7 @@ Case.init(
     },
   },
   {
-    modelName: "Case",
+    modelName: "case",
     sequelize: db,
     timestamps: true,
   }
@@ -226,7 +226,7 @@ ActivityLog.init(
       allowNull: false,
     },
     objectType: {
-      type: DataTypes.ENUM("task", "case", "comment", "person"),
+      type: DataTypes.ENUM("case", "task", "person"),
       allowNull: false,
     },
     objectId: {
@@ -243,7 +243,7 @@ ActivityLog.init(
     },
   },
   {
-    modelName: "ActivityLog",
+    modelName: "activityLog",
     sequelize: db,
     timestamps: true,
   }
@@ -255,19 +255,20 @@ ActivityReaders.init(
   {
     activityId: {
       type: DataTypes.INTEGER,
-      references: { model: ActivityLog, key: "activityId" },
+      allowNull: false,
     },
     userId: {
       type: DataTypes.INTEGER,
-      references: { model: User, key: "userId" },
+      allowNull: false,
     },
     isRead: {
       type: DataTypes.BOOLEAN,
+      allowNull: false,
       defaultValue: false,
     },
   },
   {
-    modelName: "ActivityReaders",
+    modelName: "activityReaders",
     sequelize: db,
     timestamps: true,
   }
@@ -285,25 +286,21 @@ Comment.init(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    taskId: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
+    objectType: {
+      type: DataTypes.ENUM("case", "task"),
+      allowNull: false,
     },
-    caseId: {
+    objectId: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
     },
     content: {
       type: DataTypes.TEXT,
       allowNull: false,
     },
-    isInternal: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: true,
-    },
   },
   {
-    modelName: "Comment",
+    modelName: "comment",
     sequelize: db,
     timestamps: true,
   }
@@ -322,13 +319,15 @@ Notification.init(
       allowNull: false,
     },
     type: {
-      type: DataTypes.ENUM(
-        "task_assigned",
-        "task_overdue",
-        "case_update",
-        "comment",
-        "status_change"
-      ),
+      type: DataTypes.ENUM("comment", "assignment", "due_date", "status_change"),
+      allowNull: false,
+    },
+    objectType: {
+      type: DataTypes.ENUM("case", "task"),
+      allowNull: false,
+    },
+    objectId: {
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
     message: {
@@ -337,19 +336,12 @@ Notification.init(
     },
     isRead: {
       type: DataTypes.BOOLEAN,
+      allowNull: false,
       defaultValue: false,
-    },
-    relatedId: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-    },
-    relatedType: {
-      type: DataTypes.ENUM("task", "case", "comment"),
-      allowNull: true,
     },
   },
   {
-    modelName: "Notification",
+    modelName: "notification",
     sequelize: db,
     timestamps: true,
   }
@@ -360,15 +352,15 @@ TaskAssignees.init(
   {
     taskId: {
       type: DataTypes.INTEGER,
-      references: { model: Task, key: "taskId" },
+      allowNull: false,
     },
     userId: {
       type: DataTypes.INTEGER,
-      references: { model: User, key: "userId" },
+      allowNull: false,
     },
   },
   {
-    modelName: "TaskAssignees",
+    modelName: "taskAssignees",
     sequelize: db,
     timestamps: true,
   }
@@ -379,15 +371,15 @@ CaseAssignees.init(
   {
     caseId: {
       type: DataTypes.INTEGER,
-      references: { model: Case, key: "caseId" },
+      allowNull: false,
     },
     userId: {
       type: DataTypes.INTEGER,
-      references: { model: User, key: "userId" },
+      allowNull: false,
     },
   },
   {
-    modelName: "CaseAssignees",
+    modelName: "caseAssignees",
     sequelize: db,
     timestamps: true,
   }
@@ -407,6 +399,7 @@ PracticeArea.init(
     },
     isActive: {
       type: DataTypes.BOOLEAN,
+      allowNull: false,
       defaultValue: true,
     },
   },
@@ -423,15 +416,15 @@ CasePracticeAreas.init(
   {
     caseId: {
       type: DataTypes.INTEGER,
-      references: { model: Case, key: "caseId" },
+      allowNull: false,
     },
     practiceAreaId: {
       type: DataTypes.INTEGER,
-      references: { model: PracticeArea, key: "practiceAreaId" },
+      allowNull: false,
     },
   },
   {
-    modelName: "CasePracticeAreas",
+    modelName: "casePracticeAreas",
     sequelize: db,
     timestamps: true,
   }
