@@ -9,6 +9,9 @@ const TaskList = ({
   title,
   openTaskView,
   refreshTasks,
+  caseId,
+  refreshCaseData,
+  refreshActivityData,
 }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [newTask, setNewTask] = useState(false);
@@ -69,7 +72,9 @@ const TaskList = ({
         {!isCollapsed && (
           <div className="new-task-toggle-wrapper">
             {!newTask ? (
-              <a onClick={() => setNewTask(true)}>Add task...</a>
+              <a className="new-task-toggle" onClick={() => setNewTask(true)}>
+                <i className="fa-solid fa-plus"></i>Add task...
+              </a>
             ) : (
               <TaskItem
                 task={{}}
@@ -79,6 +84,9 @@ const TaskList = ({
                 setNewTask={setNewTask}
                 refreshTasks={refreshTasks}
                 date={title}
+                caseId={caseId}
+                refreshCaseData={refreshCaseData}
+                refreshActivityData={refreshActivityData}
               />
             )}
           </div>

@@ -1,8 +1,10 @@
 import { capitalize } from "../helpers/helperFunctions";
 import TaskListItem from "../Elements/TaskListItem";
 import { Link } from "react-router";
+import TaskList from "./TaskList";
 
 const CaseCard = ({ data, openTaskView }) => {
+  const tasks = data.tasks.slice(0, 2);
   return (
     <a href={`/case/${data.caseId}`}>
       <div className="case-card-wrapper">
@@ -42,11 +44,11 @@ const CaseCard = ({ data, openTaskView }) => {
         </div>
         <div className="case-card-tasks">
           <h4>To Do:</h4>
-          {data.tasks.map((task) => {
+          {tasks.map((task) => {
             return (
-              <TaskListItem 
-                key={task.taskId} 
-                task={task} 
+              <TaskListItem
+                key={task.taskId}
+                task={task}
                 openTaskView={openTaskView}
               />
             );

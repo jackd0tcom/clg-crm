@@ -12,6 +12,9 @@ const TaskInput = ({
   refreshTasks,
   openTaskView,
   date,
+  caseId,
+  refreshCaseData,
+  refreshActivityData,
 }) => {
   const [count, setCount] = useState(0);
   const [localTitle, setLocalTitle] = useState(title);
@@ -72,7 +75,7 @@ const TaskInput = ({
         .post("/api/newTask", {
           title: localTitle || "",
           notes: "",
-          caseId: null,
+          caseId: caseId || null,
           dueDate: dueDate,
           priority: "normal",
           status: "not started",
@@ -81,6 +84,10 @@ const TaskInput = ({
           if (res.status === 201) {
             setNewTask(false);
             setTaskId(res.data.taskId);
+            if (refreshCaseData) {
+              refreshCaseData();
+              refreshActivityData();
+            }
             if (refreshTasks) {
               refreshTasks();
             }

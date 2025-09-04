@@ -14,6 +14,9 @@ const TaskItem = ({
   setNewTask,
   refreshTasks,
   date,
+  caseId,
+  refreshCaseData,
+  refreshActivityData,
 }) => {
   const [status, setStatus] = useState(task.status);
   const [assignees, setAssignees] = useState([]);
@@ -90,12 +93,15 @@ const TaskItem = ({
             refreshTasks={refreshTasks}
             openTaskView={openTaskView}
             date={date}
+            caseId={caseId}
+            refreshCaseData={refreshCaseData}
+            refreshActivityData={refreshActivityData}
           />
         </div>
       ) : (
         Object.entries(newTaskObj).map(([key, value], index) =>
           key !== "Assignees" ? (
-            <p key={index}>{value}</p>
+            <p key={index}>{capitalize(value)}</p>
           ) : (
             <div key={index} className="task-list-assignee-wrapper">
               {assignees.map((nee) => {

@@ -35,6 +35,8 @@ const Case = ({ openTaskView, refreshKey }) => {
   const [isArchived, setIsArchived] = useState(false);
   const dropdownRef = useRef(null);
 
+  const headings = ["Title", "Status", "Due Date", "Priority"];
+
   const getData = async () => {
     try {
       if (caseId == 0) {
@@ -382,11 +384,21 @@ const Case = ({ openTaskView, refreshKey }) => {
           <div className="case-view-task-wrapper">
             <h3>Tasks</h3>
             <div className="case-view-task-list">
+              <div className="head-wrapper">
+                <div className="case-view-tasks-list-head tasks-list-head">
+                  {headings.map((heading) => {
+                    return <p key={heading}>{heading}</p>;
+                  })}
+                </div>
+              </div>
               <TaskList
+                caseId={caseData.caseId}
                 tasks={caseData.tasks}
-                headings={["Title", "Status", "Due Date", "Priority"]}
+                headings={headings}
                 columns="2fr 1fr 1fr 1fr"
                 openTaskView={openTaskView}
+                refreshCaseData={refreshCaseData}
+                refreshActivityData={refreshActivityData}
               />
             </div>
           </div>
