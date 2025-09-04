@@ -32,7 +32,6 @@ const AssigneeList = ({
       }
     }
 
-    // Only fetch non-assignees if we have a valid caseId and it's not a new case
     if (caseId && caseId !== 0 && !isNewCase) {
       try {
         axios.get(`/api/getCaseNonAssignees/${caseId}`).then((res) => {
@@ -125,8 +124,8 @@ const AssigneeList = ({
                 prevList.filter((user) => user.userId !== userId)
               );
               setIsAdding(false);
+              refreshTaskActivityData();
 
-              // Refresh activity data to show new activity
               if (onActivityUpdate) {
                 onActivityUpdate();
               }

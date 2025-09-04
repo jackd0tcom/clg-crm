@@ -6,7 +6,15 @@ import AssigneeList from "./AssigneeList";
 import AssigneeToggle from "./AssigneeToggle";
 import TaskInput from "./TaskInput";
 
-const TaskItem = ({ task, headings, openTaskView, newTask, setNewTask, refreshTasks }) => {
+const TaskItem = ({
+  task,
+  headings,
+  openTaskView,
+  newTask,
+  setNewTask,
+  refreshTasks,
+  date,
+}) => {
   const [status, setStatus] = useState(task.status);
   const [assignees, setAssignees] = useState([]);
   const [newTitle, setNewTitle] = useState("");
@@ -24,13 +32,10 @@ const TaskItem = ({ task, headings, openTaskView, newTask, setNewTask, refreshTa
   const newTaskObj = Object.fromEntries(
     headings.map((heading) => {
       if (heading === "Case") {
-        return [heading, task.case?.title || "No Case"];
+        return [heading, task.case?.title || ""];
       }
       if (heading === "Due Date") {
-        return [
-          heading,
-          task.dueDate ? formatDateNoTime(task.dueDate) : "No Due Date",
-        ];
+        return [heading, task.dueDate ? formatDateNoTime(task.dueDate) : ""];
       }
       if (heading === "Assignees") {
         return [heading, assignees.length > 0 ? `${assignees.length}` : "0"];
@@ -71,7 +76,7 @@ const TaskItem = ({ task, headings, openTaskView, newTask, setNewTask, refreshTa
     <div
       className="task-list-item"
       onClick={() => {
-        // openTaskView(task.taskId);
+        !newTask && openTaskView(task.taskId);
       }}
     >
       {newTask ? (
@@ -83,6 +88,8 @@ const TaskItem = ({ task, headings, openTaskView, newTask, setNewTask, refreshTa
             title={newTitle}
             setTitle={setNewTitle}
             refreshTasks={refreshTasks}
+            openTaskView={openTaskView}
+            date={date}
           />
         </div>
       ) : (

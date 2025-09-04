@@ -122,6 +122,15 @@ export default {
           priority: req.body.priority,
           status: req.body.status,
         });
+
+        await createActivityLog({
+          authorId: req.session.user.userId,
+          objectType: "task",
+          objectId: parseInt(newTask.taskId),
+          action: ACTIVITY_ACTIONS.TASK_CREATED,
+          details: "created this task",
+        });
+
         res.status(201).send(newTask);
       } else {
         console.log("no user logged in");

@@ -2,7 +2,14 @@ import TaskItem from "./TaskItem";
 import { useState, useEffect } from "react";
 import { findTimeDifference } from "../helpers/helperFunctions";
 
-const TaskList = ({ tasks, headings, columns, title, openTaskView, refreshTasks }) => {
+const TaskList = ({
+  tasks,
+  headings,
+  columns,
+  title,
+  openTaskView,
+  refreshTasks,
+}) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [newTask, setNewTask] = useState(false);
 
@@ -33,30 +40,18 @@ const TaskList = ({ tasks, headings, columns, title, openTaskView, refreshTasks 
         >
           {title &&
             !isCollapsed &&
-            (tasks.length > 0 ? (
-              tasks.map((task) => {
-                return (
-                  <TaskItem
-                    key={`task-${task.taskId}`}
-                    task={task}
-                    headings={headings}
-                    openTaskView={openTaskView}
-                    refreshTasks={refreshTasks}
-                  />
-                );
-              })
-            ) : !newTask ? (
-              <a onClick={() => setNewTask(true)}>New task</a>
-            ) : (
-              <TaskItem
-                task={{}}
-                newTask={newTask}
-                headings={headings}
-                openTaskView={openTaskView}
-                setNewTask={setNewTask}
-                refreshTasks={refreshTasks}
-              />
-            ))}
+            tasks.map((task) => {
+              return (
+                <TaskItem
+                  key={`task-${task.taskId}`}
+                  task={task}
+                  headings={headings}
+                  openTaskView={openTaskView}
+                  refreshTasks={refreshTasks}
+                  date={title}
+                />
+              );
+            })}
           {!title &&
             tasks.map((task) => {
               return (
@@ -66,10 +61,28 @@ const TaskList = ({ tasks, headings, columns, title, openTaskView, refreshTasks 
                   headings={headings}
                   openTaskView={openTaskView}
                   refreshTasks={refreshTasks}
+                  date={title}
                 />
               );
             })}
         </div>
+        {!isCollapsed && (
+          <div className="new-task-toggle-wrapper">
+            {!newTask ? (
+              <a onClick={() => setNewTask(true)}>Add task...</a>
+            ) : (
+              <TaskItem
+                task={{}}
+                newTask={newTask}
+                headings={headings}
+                openTaskView={openTaskView}
+                setNewTask={setNewTask}
+                refreshTasks={refreshTasks}
+                date={title}
+              />
+            )}
+          </div>
+        )}
       </div>
     </>
   );

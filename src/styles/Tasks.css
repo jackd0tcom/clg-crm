@@ -61,6 +61,18 @@
   column-gap: 5px;
   height: 30px;
 }
+.new-task-toggle-wrapper {
+  font-size: 1rem;
+  color: var(--dark-grey);
+  cursor: pointer;
+  padding: 5px;
+  padding-left: 10px;
+  margin-left: -10px;
+}
+.new-task-toggle-wrapper:hover {
+  background-color: var(--root-bg-color-light);
+  border-radius: 5px;
+}
 
 /* TaskView */
 .task-view-overlay {

@@ -197,7 +197,7 @@ const TaskView = ({ taskId, isOpen, onClose, onTaskUpdate }) => {
                     handleClose();
                   }}
                 >
-                  {taskData.case.title}
+                  {currentCase ? currentCase.title : "Assign to Case"}
                 </a>
                 {isHoverMove && (
                   <div className="move-task-wrapper">
