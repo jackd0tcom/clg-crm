@@ -103,6 +103,19 @@ function App() {
               }
             />
             <Route
+              path="/tasks/:caseId"
+              element={
+                !isAuthenticated ? (
+                  <Navigate to="/login" />
+                ) : (
+                  <Tasks
+                    openTaskView={openTaskView}
+                    refreshKey={activePage === "tasks" ? refreshKey : 0}
+                  />
+                )
+              }
+            />
+            <Route
               path="/profile"
               element={
                 !isAuthenticated ? <Navigate to="/login" /> : <Profile />
@@ -119,6 +132,7 @@ function App() {
         {isOpen && (
           <TaskView
             taskId={taskId}
+            setTaskId={setTaskId}
             isOpen={isOpen}
             onClose={closeTaskView}
             onTaskUpdate={handleTaskUpdate}

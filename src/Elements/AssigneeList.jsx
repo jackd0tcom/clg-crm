@@ -10,6 +10,7 @@ const AssigneeList = ({
   onActivityUpdate,
   refreshTaskActivityData,
   isNewCase,
+  onTaskUpdate,
 }) => {
   const [assigneeList, setAssigneeList] = useState([]);
   const [nonAssigneeList, setNonAssigneeList] = useState([]);
@@ -80,6 +81,9 @@ const AssigneeList = ({
               if (onActivityUpdate) {
                 onActivityUpdate();
               }
+              if (onTaskUpdate) {
+                onTaskUpdate();
+              }
               refreshTaskActivityData();
             }
           });
@@ -103,6 +107,9 @@ const AssigneeList = ({
             }
             if (onActivityUpdate) {
               onActivityUpdate();
+            }
+            if (onTaskUpdate) {
+              onTaskUpdate();
             }
             refreshTaskActivityData();
           }
@@ -129,6 +136,9 @@ const AssigneeList = ({
               if (onActivityUpdate) {
                 onActivityUpdate();
               }
+              if (onTaskUpdate) {
+                onTaskUpdate();
+              }
             }
           });
       } else
@@ -145,6 +155,9 @@ const AssigneeList = ({
               // Refresh activity data to show new activity
               if (onActivityUpdate) {
                 onActivityUpdate();
+              }
+              if (onTaskUpdate) {
+                onTaskUpdate();
               }
             }
           })

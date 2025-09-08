@@ -3,6 +3,8 @@ import axios from "axios";
 import Loader from "../Elements/Loader";
 import TaskList from "../Elements/TaskList";
 import { findTimeDifference } from "../helpers/helperFunctions";
+import { useParams } from "react-router";
+import TaskFilter from "../Elements/TaskFilter";
 
 const Tasks = ({ openTaskView, refreshKey }) => {
   const [tasks, setTasks] = useState();
@@ -12,6 +14,7 @@ const Tasks = ({ openTaskView, refreshKey }) => {
   const [upcoming, setUpcoming] = useState([]);
   const columns = "3fr 2fr 2fr 1fr";
   const headings = ["Title", "Case", "Assignees", "Due Date"];
+  const caseId = useParams();
 
   const fetchTasks = async () => {
     try {
@@ -32,7 +35,7 @@ const Tasks = ({ openTaskView, refreshKey }) => {
   // Refetch tasks when refreshKey change
   useEffect(() => {
     if (refreshKey > 0) {
-      console.log('refresh');
+      console.log("refresh");
       fetchTasks();
     }
   }, [refreshKey]);
@@ -71,6 +74,13 @@ const Tasks = ({ openTaskView, refreshKey }) => {
     <div className="tasks-page-wrapper">
       <div className="tasks-page-head">
         <h1 className="section-heading">My Tasks</h1>
+        <TaskFilter tasks={tasks} setTasks={setTasks} paramCase={caseId} />
+        <button 
+          className="new-task-button"
+          onClick={() => openTaskView("new")}
+        >
+          New Task
+        </button>
       </div>
       <div className="task-list">
         <div className="tasks-list-head">

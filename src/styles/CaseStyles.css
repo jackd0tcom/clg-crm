@@ -230,7 +230,20 @@ div.case-task-container
   > div.new-task-toggle-wrapper {
   border-top: 1px solid var(--light-border);
 }
-
+.case-view-tasks-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.case-view-tasks-header p {
+  font-size: 0.8rem;
+  margin: 0;
+  color: var(--grey);
+  cursor: pointer;
+}
+.case-view-tasks-header p:hover {
+  color: var(--dark-grey);
+}
 .case-activity-container {
   width: 40%;
   border-left: 1px solid var(--light-border);

@@ -29,7 +29,6 @@ const CaseList = ({ openTaskView, refreshKey }) => {
     fetchCases();
   }, []);
 
-  // Refetch cases when refreshKey changes (when tasks are updated)
   useEffect(() => {
     if (refreshKey > 0) {
       fetchCases();
@@ -66,7 +65,13 @@ const CaseList = ({ openTaskView, refreshKey }) => {
       <div className="case-list">
         {cases.length > 0 ? (
           cases.map((data) => {
-            return <CaseCard key={data.caseId} data={data} openTaskView={openTaskView} />;
+            return (
+              <CaseCard
+                key={data.caseId}
+                data={data}
+                openTaskView={openTaskView}
+              />
+            );
           })
         ) : (
           <p>No Active Cases</p>

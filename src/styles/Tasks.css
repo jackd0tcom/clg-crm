@@ -1,8 +1,113 @@
 /* Tasks page */
 .tasks-page-head {
   display: flex;
+  justify-content: space-between;
   padding: 15px;
   border-bottom: 1px solid var(--light-border);
+}
+.task-filter-wrapper {
+  position: relative;
+}
+.filter-header {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+.task-filter-dropdown {
+  position: absolute;
+  background-color: white;
+  z-index: 10;
+  border: 1px solid var(--light-border);
+  padding: 10px;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  row-gap: 5px;
+  min-width: 250px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-case-item {
+  font-size: 0.85rem;
+  padding: 6px 8px;
+  margin: 0;
+  color: var(--grey);
+  border: 1px solid transparent;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dropdown-case-item:hover {
+  background-color: var(--button-active-bg-hover);
+  color: var(--button-active-font);
+  border-color: var(--button-active-border);
+}
+.tasks-case-filter-button {
+  font-size: 0.85rem;
+  padding: 6px 8px;
+  margin: 0 5px;
+  color: var(--grey);
+  border: 1px solid transparent;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 100ms;
+}
+.tasks-case-filter-button:hover {
+  background-color: var(--button-active-bg-hover);
+  color: var(--button-active-font);
+  border-color: var(--button-active-border);
+}
+
+.new-task-button {
+  font-size: 0.85rem;
+  padding: 6px 12px;
+  margin: 0 5px;
+  color: white;
+  background-color: var(--bright-green);
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.new-task-button:hover {
+  background-color: var(--button-active-bg-hover);
+  color: var(--button-active-font);
+  border-color: var(--button-active-border);
+}
+.active-filters {
+  position: absolute;
+  left: 100%;
+  top: 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: 10px;
+  z-index: 5;
+}
+
+.filter-tag {
+  font-size: 0.8rem;
+  margin: 0;
+  padding: 5px 8px;
+  border: 1px solid var(--light-border);
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: var(--button-active-bg);
+  color: var(--button-active-font);
+  border-color: var(--button-active-border);
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+.filter-tag:hover {
+  background-color: var(--button-active-bg-hover);
+}
+.active-filter p {
+  background-color: var(--button-active-bg);
+  color: var(--button-active-font);
+  border-color: var(--button-active-border);
 }
 .task-page-task-list-wrapper {
   margin: 15px;

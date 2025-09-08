@@ -51,7 +51,7 @@ const Nav = () => {
                 Inbox
               </NavLink>
               <NavLink
-                to="/tasks"
+                to="/tasks/0"
                 className={({ isActive }) =>
                   isActive ? "active-nav nav-button" : "inactive-nav nav-button"
                 }

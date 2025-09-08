@@ -15,6 +15,8 @@ const TaskInput = ({
   caseId,
   refreshCaseData,
   refreshActivityData,
+  createNewTask,
+  isCreatingTask,
 }) => {
   const [count, setCount] = useState(0);
   const [localTitle, setLocalTitle] = useState(title);
@@ -113,13 +115,17 @@ const TaskInput = ({
 
   // Only save when local title changes (user input)
   useEffect(() => {
-    if (count > 0 && !isSaving) {
-      // Only save if user has actually typed and not currently saving
+    if (count > 0 && !isSaving && !isCreatingTask) {
+      // Only save if user has actually typed and not currently saving or creating
       clearSaveTimer();
       saveTimer.current = setTimeout(() => {
         if (localTitle && localTitle.trim() !== "Untitled Case") {
           if (newTask) {
-            saveNewTask();
+            if (createNewTask) {
+              createNewTask();
+            } else {
+              saveNewTask();
+            }
           } else saveTask("title", localTitle);
         }
       }, 2000);
@@ -127,7 +133,7 @@ const TaskInput = ({
         clearSaveTimer();
       };
     }
-  }, [localTitle, count, isSaving]);
+  }, [localTitle, count, isSaving, isCreatingTask]);
 
   const handleBlur = () => {
     if (newTask && count === 0) {
@@ -135,11 +141,15 @@ const TaskInput = ({
       return;
     }
 
-    if (count > 0 && !isSaving) {
-      // Only save if user has actually typed and not currently saving
+    if (count > 0 && !isSaving && !isCreatingTask) {
+      // Only save if user has actually typed and not currently saving or creating
       clearSaveTimer();
       if (newTask) {
-        saveNewTask();
+        if (createNewTask) {
+          createNewTask();
+        } else {
+          saveNewTask();
+        }
       } else saveTask("title", localTitle);
     }
   };
@@ -150,11 +160,15 @@ const TaskInput = ({
       return;
     }
     if (e.key === "Enter") {
-      if (count > 0 && !isSaving) {
-        // Only save if user has actually typed and not currently saving
+      if (count > 0 && !isSaving && !isCreatingTask) {
+        // Only save if user has actually typed and not currently saving or creating
         clearSaveTimer();
         if (newTask) {
-          saveNewTask();
+          if (createNewTask) {
+            createNewTask();
+          } else {
+            saveNewTask();
+          }
         } else saveTask("title", localTitle);
       }
       inputRef.current.blur();

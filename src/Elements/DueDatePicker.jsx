@@ -8,6 +8,7 @@ const DueDatePicker = ({
   taskId,
   refreshTaskData,
   refreshTaskActivityData,
+  onTaskUpdate,
 }) => {
   const [dueDate, setDueDate] = useState(currentDate);
 
@@ -20,8 +21,21 @@ const DueDatePicker = ({
             value: date,
             taskId,
           })
-          .then((res) => refreshTaskActivityData());
-      } else return;
+          .then((res) => {
+            if (refreshTaskActivityData) {
+              refreshTaskActivityData();
+            }
+            if (onTaskUpdate) {
+              onTaskUpdate();
+            }
+          });
+      } else {
+        // For new tasks, just update the local state
+        setDueDate(date);
+        if (onTaskUpdate) {
+          onTaskUpdate();
+        }
+      }
     } catch (error) {
       console.log(error);
     }

@@ -10,6 +10,7 @@ const ExtraSettings = ({
   isArchived,
   setIsArchived,
   handleClose,
+  onTaskUpdate,
 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [value, setValue] = useState("");
@@ -53,6 +54,10 @@ const ExtraSettings = ({
       await axios
         .delete("/api/deleteTask", { data: { taskId } })
         .then((res) => {
+          // Refresh the parent component before closing
+          if (onTaskUpdate) {
+            onTaskUpdate();
+          }
           handleClose();
         });
     } catch (error) {

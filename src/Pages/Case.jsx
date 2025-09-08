@@ -388,7 +388,12 @@ const Case = ({ openTaskView, refreshKey }) => {
       </div>
       <div className="case-task-container">
         <div className="case-view-task-wrapper">
-          <h3>Tasks</h3>
+          <div className="case-view-tasks-header">
+            <h3>Tasks</h3>
+            <p onClick={() => navigate(`/tasks/${caseId}`)}>
+              See all tasks for this case
+            </p>
+          </div>
           <div className="case-view-task-list">
             <div className="head-wrapper">
               <div className="case-view-tasks-list-head tasks-list-head">
