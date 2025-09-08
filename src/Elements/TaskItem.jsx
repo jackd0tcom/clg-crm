@@ -5,6 +5,8 @@ import axios from "axios";
 import AssigneeList from "./AssigneeList";
 import AssigneeToggle from "./AssigneeToggle";
 import TaskInput from "./TaskInput";
+import PriorityIcon from "./PriorityIcon";
+import StatusIcon from "./StatusIcon";
 
 const TaskItem = ({
   task,
@@ -54,6 +56,9 @@ const TaskItem = ({
       if (heading === "Status") {
         return [heading, status]; // Use the state value for status
       }
+      if (heading === "Priority") {
+        return [heading, task.priority || "normal"]; // Handle priority specifically
+      }
       // For other fields, try to get from task object
       const fieldName = heading.toLowerCase().replace(/\s+/g, "");
       return [heading, task[fieldName] || "N/A"];
@@ -102,6 +107,15 @@ const TaskItem = ({
         Object.entries(newTaskObj).map(([key, value], index) =>
           key !== "Assignees" ? (
             <p key={index}>{capitalize(value)}</p>
+          ) : key === "Priority" ? (
+            <PriorityIcon data={value} />
+          ) : key === "Status" ? (
+            <StatusIcon
+              status={value}
+              hasIcon={true}
+              hasTitle={true}
+              noBg={true}
+            />
           ) : (
             <div key={index} className="task-list-assignee-wrapper">
               {assignees.map((nee) => {

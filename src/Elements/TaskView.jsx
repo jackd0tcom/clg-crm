@@ -233,6 +233,7 @@ const TaskView = ({ taskId, isOpen, onClose, onTaskUpdate }) => {
                     value={status}
                     setStatus={setStatus}
                     onHandle={updateStatus}
+                    status={status}
                   />
                 </div>
                 <div className="task-stats-item">

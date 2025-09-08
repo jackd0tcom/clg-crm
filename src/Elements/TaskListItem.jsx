@@ -12,7 +12,12 @@ const TaskListItem = ({ task, openTaskView }) => {
 
   return (
     <div className="task-list-item-condensed" onClick={handleClick}>
-      <StatusIcon status={task.status} hasIcon={true} hasTitle={false} />
+      <StatusIcon
+        status={task.status}
+        hasIcon={true}
+        hasTitle={false}
+        hasBg={false}
+      />
       <p className="task-list-item-title">{task.title}</p>
       <p className="task-list-item-date">{formatDateNoTime(task.dueDate)}</p>
     </div>

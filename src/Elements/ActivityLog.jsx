@@ -6,9 +6,9 @@ const ActivityLog = ({ data }) => {
   const [shortList, setShortList] = useState();
 
   useEffect(() => {
-    if (data.length > 5) {
+    if (data.length > 8) {
       setShowAll(false);
-      setShortList(data.slice(0, 4));
+      setShortList(data.slice(0, 7));
     }
   }, [data]);
 
@@ -16,13 +16,18 @@ const ActivityLog = ({ data }) => {
     <div className="activity-log-wrapper">
       <h2>Activity</h2>
       <div className="activity-log-items">
-        {showAll
+        {!shortList
+          ? data.map((act) => {
+              return <ActivityLogItem key={act.activityId} data={act} />;
+            })
+          : showAll
           ? data.map((act) => {
               return <ActivityLogItem key={act.activityId} data={act} />;
             })
           : shortList.map((act) => {
               return <ActivityLogItem key={act.activityId} data={act} />;
             })}
+
         <div
           onClick={() => {
             if (!showAll) {
@@ -31,7 +36,7 @@ const ActivityLog = ({ data }) => {
           }}
           className="activity-show-wrapper"
         >
-          <p>{!showAll ? "See All Activity" : "See Less"}</p>
+          {shortList && <p>{!showAll ? "See All Activity" : "See Less"}</p>}
         </div>
       </div>
     </div>

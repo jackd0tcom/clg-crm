@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-const StatusIcon = (status, hasIcon, hasTitle) => {
+const StatusIcon = ({ status, hasIcon, hasTitle, noBg }) => {
   const copy = {
     "not started": <p className="status-title not-started">Not Started</p>,
     "in progress": <p className="status-title in-progress">In Progress</p>,
@@ -27,11 +27,11 @@ const StatusIcon = (status, hasIcon, hasTitle) => {
   return (
     <div
       className={`status-icon-wrapper ${
-        hasTitle ? className[status.status] : "colored-icons"
+        !noBg ? className[status] : "colored-icons"
       }`}
     >
-      {hasIcon && icons[status.status]}
-      {hasTitle && copy[status.status]}
+      {hasIcon && icons[status]}
+      {hasTitle && copy[status]}
     </div>
   );
 };

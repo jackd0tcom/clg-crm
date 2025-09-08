@@ -35,7 +35,7 @@ const Case = ({ openTaskView, refreshKey }) => {
   const [isArchived, setIsArchived] = useState(false);
   const dropdownRef = useRef(null);
 
-  const headings = ["Title", "Status", "Due Date", "Priority"];
+  const headings = ["Title", "Status", "Due Date", "Assignees", "Priority"];
 
   const getData = async () => {
     try {
@@ -184,7 +184,7 @@ const Case = ({ openTaskView, refreshKey }) => {
   };
 
   return caseData ? (
-    <>
+    <div className="case-container">
       <div className="case-wrapper">
         <div className="case-details-container">
           <div className="case-top-bar">
@@ -381,33 +381,35 @@ const Case = ({ openTaskView, refreshKey }) => {
               />
             </div>
           </div>
-          <div className="case-view-task-wrapper">
-            <h3>Tasks</h3>
-            <div className="case-view-task-list">
-              <div className="head-wrapper">
-                <div className="case-view-tasks-list-head tasks-list-head">
-                  {headings.map((heading) => {
-                    return <p key={heading}>{heading}</p>;
-                  })}
-                </div>
-              </div>
-              <TaskList
-                caseId={caseData.caseId}
-                tasks={caseData.tasks}
-                headings={headings}
-                columns="2fr 1fr 1fr 1fr"
-                openTaskView={openTaskView}
-                refreshCaseData={refreshCaseData}
-                refreshActivityData={refreshActivityData}
-              />
-            </div>
-          </div>
         </div>
         <div className="case-activity-container">
           <ActivityLog data={activityData} />
         </div>
       </div>
-    </>
+      <div className="case-task-container">
+        <div className="case-view-task-wrapper">
+          <h3>Tasks</h3>
+          <div className="case-view-task-list">
+            <div className="head-wrapper">
+              <div className="case-view-tasks-list-head tasks-list-head">
+                {headings.map((heading) => {
+                  return <p key={heading}>{heading}</p>;
+                })}
+              </div>
+            </div>
+            <TaskList
+              caseId={caseData.caseId}
+              tasks={caseData.tasks}
+              headings={headings}
+              columns="2fr 1fr 1fr 1fr"
+              openTaskView={openTaskView}
+              refreshCaseData={refreshCaseData}
+              refreshActivityData={refreshActivityData}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
   ) : (
     <>
       <p>loading...</p>

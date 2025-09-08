@@ -196,15 +196,39 @@ h5 {
   background-color: var(--bright-dark-green);
   color: white;
 }
+
+/* Priority toggle */
+.priority-toggle-wrapper {
+  position: relative;
+  cursor: pointer;
+}
+.priority-toggle-dropdown {
+  position: absolute;
+  background-color: white;
+  z-index: 999;
+  border: 1px solid var(--light-border);
+  border-radius: 5px;
+  padding: 10px;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  row-gap: 5px;
+}
+
 /* Priority Icon */
 .priority-icon {
   display: flex;
   column-gap: 5px;
   align-items: center;
-}
-.priority-icon {
   font-size: 0.85rem;
   margin: 0;
+}
+.priority-icon-wrapper {
+  padding: 5px;
+}
+.priority-icon-wrapper:hover {
+  background-color: var(--root-bg-color-light);
+  border-radius: 5px;
 }
 .high-priority i {
   color: var(--red);
@@ -248,6 +272,17 @@ h5 {
   font-size: 5px;
 }
 
+/* Date Picker */
+div.date-picker-wrapper > div > div > input[type="text"] {
+  border: none;
+  padding: 5px;
+  cursor: pointer;
+}
+div.date-picker-wrapper > div > div > input[type="text"]:hover {
+  background-color: var(--root-bg-color-light);
+  border-radius: 5px;
+}
+
 /* Notes */
 .notes-heading {
   font-size: 0.9rem;
@@ -256,7 +291,7 @@ h5 {
 }
 
 .case-notes textarea {
-  min-height: 15vh;
+  min-height: 20vh;
   border: 1px solid var(--light-border);
   border-radius: 5px;
 }

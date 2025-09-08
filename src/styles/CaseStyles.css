@@ -109,8 +109,17 @@
 /* Case page */
 .case-wrapper {
   display: flex;
-  height: 100%;
+  height: 61%;
   justify-content: space-between;
+}
+.case-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+.case-task-container {
+  padding: 15px;
 }
 .case-header {
   position: relative;
@@ -118,6 +127,7 @@
 .case-details-container {
   margin: 15px 20px;
   display: grid;
+  width: 53%;
   grid-template-rows: 0.25fr 4fr 3fr;
 }
 .case-top-bar {
@@ -181,7 +191,7 @@
 }
 .case-view-tasks-list-head {
   display: grid !important;
-  grid-template-columns: 4fr 2fr 2fr 1fr;
+  grid-template-columns: 4fr 2fr 2fr 2fr 1fr;
   column-gap: 10px;
   row-gap: 10px;
 }
@@ -211,12 +221,22 @@
   > div.task-sections-wrapper
   > div.tasks-list-row
   > div {
-  grid-template-columns: 4fr 2fr 2fr 1fr;
+  grid-template-columns: 4fr 2fr 2fr 2fr 1fr;
 }
+div.case-task-container
+  > div
+  > div
+  > div.task-sections-wrapper
+  > div.new-task-toggle-wrapper {
+  border-top: 1px solid var(--light-border);
+}
+
 .case-activity-container {
   width: 40%;
   border-left: 1px solid var(--light-border);
+  border-bottom: 1px solid var(--light-border);
   background-color: var(--root-bg-color-light);
+  border-radius: 5px;
   padding: 0px 20px;
   overflow: scroll;
   scrollbar-width: none;
