@@ -2,10 +2,6 @@ import { capitalize } from "../helpers/helperFunctions";
 import { useEffect } from "react";
 
 const PriorityIcon = ({ data }) => {
-  useEffect(() => {
-    console.log(data);
-  }, []);
-
   return (
     <div className="priority-icon-wrapper">
       <p className={`priority-icon ${data}-priority`}>

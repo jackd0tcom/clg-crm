@@ -16,7 +16,7 @@ const TaskListItem = ({ task, openTaskView }) => {
         status={task.status}
         hasIcon={true}
         hasTitle={false}
-        hasBg={false}
+        noBg={true}
       />
       <p className="task-list-item-title">{task.title}</p>
       <p className="task-list-item-date">{formatDateNoTime(task.dueDate)}</p>

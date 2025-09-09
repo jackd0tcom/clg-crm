@@ -46,7 +46,10 @@ const TaskCaseToggle = ({
         .post("/api/updateTask", { taskId, fieldName: "caseId", value: caseId })
         .then((res) => {
           if (res.status === 200) {
-            setCurrentCase(res.data);
+            // Fetch the case data to get the case title
+            axios.get(`/api/getCase/${caseId}`).then((caseRes) => {
+              setCurrentCase(caseRes.data);
+            });
             refreshTaskData();
             refreshTaskActivityData();
           }
@@ -63,26 +66,16 @@ const TaskCaseToggle = ({
           <p className="task-case-toggle-heading">Cases</p>
           {allCases &&
             allCases.map((current) => {
-              return current.caseId === currentCase.caseId ? (
+              return (
                 <div key={current.caseId}>
                   <div
                     onClick={() => {
                       updateCase(current.caseId);
                       setIsMovingCase(false);
                     }}
-                    className="task-case-item"
-                  >
-                    {current.title}
-                  </div>
-                </div>
-              ) : (
-                <div key={current.caseId}>
-                  <div
-                    onClick={() => {
-                      updateCase(current.caseId);
-                      setIsMovingCase(false);
-                    }}
-                    className="task-case-item"
+                    className={`task-case-item ${
+                      currentCase && current.caseId === currentCase.caseId ? 'selected' : ''
+                    }`}
                   >
                     {current.title}
                   </div>

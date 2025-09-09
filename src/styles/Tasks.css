@@ -161,12 +161,14 @@
   padding: 5px 15px;
   max-height: 250px;
   overflow: scroll;
+  scrollbar-width: none;
 }
 .task-list-item {
   display: grid;
   grid-template-columns: 3fr 2fr 2fr 1fr;
   column-gap: 10px;
   align-items: center;
+  cursor: pointer;
 }
 .task-list-item:first-child {
   border-top: 1px solid var(--light-border);
@@ -380,7 +382,7 @@
   display: flex;
   align-items: center;
   column-gap: 5px;
-  padding: 6px 4px;
+  padding: 4px 2px;
   border-radius: 5px;
   cursor: pointer;
   max-width: 120px;
@@ -395,16 +397,16 @@
   font-size: 0.8rem;
   font-weight: 500;
 }
-.not-started-wrapper {
-  background-color: var(--blue);
-  color: white !important;
-}
 .not-started-wrapper p,
 .in-progress-wrapper p,
 .blocked-wrapper p,
 .completed-wrapper p {
   color: white !important;
   font-weight: 600;
+}
+.not-started-wrapper {
+  background-color: var(--blue);
+  color: white !important;
 }
 .in-progress-wrapper {
   background-color: var(--purple);

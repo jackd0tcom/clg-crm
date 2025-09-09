@@ -13,8 +13,8 @@ const StatusIcon = ({ status, hasIcon, hasTitle, noBg }) => {
     "in progress": (
       <i className="status-icon in-progress fa-solid fa-circle-half-stroke"></i>
     ),
-    blocked: <i class="status-icon blocked fa-regular fa-circle-xmark"></i>,
-    completed: <i class="status-icon completed fa-solid fa-circle"></i>,
+    blocked: <i className="status-icon blocked fa-regular fa-circle-xmark"></i>,
+    completed: <i className="status-icon completed fa-solid fa-circle"></i>,
   };
 
   const className = {

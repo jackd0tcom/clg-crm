@@ -121,6 +121,7 @@ const TaskView = ({ taskId, setTaskId, isOpen, onClose, onTaskUpdate }) => {
         setTaskData(res.data);
         setTitle(res.data.title);
         setIsLoading(false);
+        setCurrentCase(res.data.case);
         setStatus(res.data.status);
         setPriority(res.data.priority);
         setNotes(res.data.notes);
@@ -154,6 +155,7 @@ const TaskView = ({ taskId, setTaskId, isOpen, onClose, onTaskUpdate }) => {
         })
         .then((res) => {
           refreshTaskActivityData();
+          refreshTaskData();
           if (onTaskUpdate) {
             onTaskUpdate();
           }
@@ -172,6 +174,7 @@ const TaskView = ({ taskId, setTaskId, isOpen, onClose, onTaskUpdate }) => {
         })
         .then((res) => {
           refreshTaskActivityData();
+          refreshTaskData();
           if (onTaskUpdate) {
             onTaskUpdate();
           }
@@ -202,7 +205,7 @@ const TaskView = ({ taskId, setTaskId, isOpen, onClose, onTaskUpdate }) => {
 
   const createNewTask = async () => {
     if (isCreatingTask) return; // Prevent duplicate creation
-    
+
     try {
       setIsCreatingTask(true);
       console.log("creating new task");
@@ -282,7 +285,7 @@ const TaskView = ({ taskId, setTaskId, isOpen, onClose, onTaskUpdate }) => {
                     <i
                       onClick={() => setIsMovingCase(true)}
                       id="move-case-icon"
-                      className="fa-solid fa-pen-to-square"
+                      className="fa-solid fa-arrow-up-right-from-square"
                     ></i>
                   </div>
                 )}
