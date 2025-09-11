@@ -5,10 +5,11 @@ import { useNavigate } from "react-router";
 import axios from "axios";
 import { NavLink } from "react-router";
 import ProfilePic from "./ProfilePic";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const Nav = () => {
   const dispatch = useDispatch();
-  const isAuthenticated = useSelector((state) => state.isAuthenticated);
+  const isAuthenticated = useAuth0();
   const navigate = useNavigate();
 
   return (

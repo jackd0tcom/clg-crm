@@ -2,6 +2,7 @@ import React from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import LoginButton from "./LoginButton";
 
 const Login = ({
   submit,
@@ -25,7 +26,8 @@ const Login = ({
       <section>
         <div className="login-wrapper">
           <h1>Login</h1>
-          <form onSubmit={(e) => submit(e)}>
+          <LoginButton />
+          {/* <form onSubmit={(e) => submit(e)}>
             <input
               type="text"
               name="username"
@@ -43,7 +45,7 @@ const Login = ({
               onChange={(e) => setPassword(e.target.value)}
             />
             <button>Login</button>
-          </form>
+          </form> */}
           {isError ? <p>{errorMsg}</p> : null}
           <p>Don't have an account yet?</p>
           <button onClick={register}>Create New Account</button>

@@ -13,24 +13,27 @@ import CaseList from "./Pages/CaseList.jsx";
 import Tasks from "./Pages/Tasks.jsx";
 import { formatDate } from "./helpers/helperFunctions.js";
 import TaskView from "./Elements/TaskView.jsx";
+import { useAuth0 } from "@auth0/auth0-react";
+import Loader from "./Elements/Loader.jsx";
 
 function App() {
   const [isOpen, setIsOpen] = useState(false);
   const [taskId, setTaskId] = useState(null);
   const [activePage, setActivePage] = useState(null);
   const [refreshKey, setRefreshKey] = useState(0);
-  const isAuthenticated = useSelector((state) => state.isAuthenticated);
+  const { isAuthenticated, user, isLoading } = useAuth0();
   const dispatch = useDispatch();
   const location = useLocation();
 
-  useEffect(() => {
-    axios
-      .get("/api/checkUser")
-      .then((res) => dispatch({ type: "LOGIN", payload: res.data }))
-      .catch((err) => console.log(err));
-  }, [isAuthenticated]);
+  // useEffect(() => {
+  //   axios
+  //     .get("/api/checkUser")
+  //     .then((res) => dispatch({ type: "LOGIN", payload: res.data }))
+  //     .catch((err) => console.log(err));
+  // }, [isAuthenticated]);
 
   useEffect(() => {
+    console.log(isAuthenticated, user);
     const path = location.pathname;
     if (path.startsWith("/case/") && path !== "/case/0") {
       setActivePage("case");
@@ -62,73 +65,77 @@ function App() {
       <div className="app-wrapper">
         <Nav />
         <div className="page-wrapper">
-          <Routes>
-            <Route index element={<Home />} />
-            <Route
-              path="/login"
-              element={isAuthenticated ? <Navigate to="/" /> : <Landing />}
-            />
-            <Route
-              path="/case/:caseId"
-              element={
-                <Case
-                  openTaskView={openTaskView}
-                  refreshKey={activePage === "case" ? refreshKey : 0}
-                />
-              }
-            />
-            <Route
-              path="/cases"
-              element={
-                !isAuthenticated ? (
-                  <Navigate to="/login" />
-                ) : (
-                  <CaseList
+          {isLoading ? (
+            <Loader />
+          ) : (
+            <Routes>
+              <Route index element={<Home />} />
+              <Route
+                path="/login"
+                element={isAuthenticated ? <Navigate to="/" /> : <Landing />}
+              />
+              <Route
+                path="/case/:caseId"
+                element={
+                  <Case
                     openTaskView={openTaskView}
-                    refreshKey={activePage === "caseList" ? refreshKey : 0}
+                    refreshKey={activePage === "case" ? refreshKey : 0}
                   />
-                )
-              }
-            />
-            <Route
-              path="/tasks"
-              element={
-                !isAuthenticated ? (
-                  <Navigate to="/login" />
-                ) : (
-                  <Tasks
-                    openTaskView={openTaskView}
-                    refreshKey={activePage === "tasks" ? refreshKey : 0}
-                  />
-                )
-              }
-            />
-            <Route
-              path="/tasks/:caseId"
-              element={
-                !isAuthenticated ? (
-                  <Navigate to="/login" />
-                ) : (
-                  <Tasks
-                    openTaskView={openTaskView}
-                    refreshKey={activePage === "tasks" ? refreshKey : 0}
-                  />
-                )
-              }
-            />
-            <Route
-              path="/profile"
-              element={
-                !isAuthenticated ? <Navigate to="/login" /> : <Profile />
-              }
-            />
-            <Route
-              path="/profile/:userIdParams"
-              element={
-                !isAuthenticated ? <Navigate to="/login" /> : <Profile />
-              }
-            />
-          </Routes>
+                }
+              />
+              <Route
+                path="/cases"
+                element={
+                  !isAuthenticated ? (
+                    <Navigate to="/login" />
+                  ) : (
+                    <CaseList
+                      openTaskView={openTaskView}
+                      refreshKey={activePage === "caseList" ? refreshKey : 0}
+                    />
+                  )
+                }
+              />
+              <Route
+                path="/tasks"
+                element={
+                  !isAuthenticated ? (
+                    <Navigate to="/login" />
+                  ) : (
+                    <Tasks
+                      openTaskView={openTaskView}
+                      refreshKey={activePage === "tasks" ? refreshKey : 0}
+                    />
+                  )
+                }
+              />
+              <Route
+                path="/tasks/:caseId"
+                element={
+                  !isAuthenticated ? (
+                    <Navigate to="/login" />
+                  ) : (
+                    <Tasks
+                      openTaskView={openTaskView}
+                      refreshKey={activePage === "tasks" ? refreshKey : 0}
+                    />
+                  )
+                }
+              />
+              <Route
+                path="/profile"
+                element={
+                  !isAuthenticated ? <Navigate to="/login" /> : <Profile />
+                }
+              />
+              <Route
+                path="/profile/:userIdParams"
+                element={
+                  !isAuthenticated ? <Navigate to="/login" /> : <Profile />
+                }
+              />
+            </Routes>
+          )}
         </div>
         {isOpen && (
           <TaskView

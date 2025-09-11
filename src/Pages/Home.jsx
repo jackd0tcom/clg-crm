@@ -6,14 +6,17 @@ import { capitalize } from "../helpers/helperFunctions";
 import CaseListItem from "../Elements/CaseListItem";
 import axios from "axios";
 import Loader from "../Elements/Loader";
+import { useAuth0 } from "@auth0/auth0-react";
+import LogoutButton from "../Elements/LogoutButton";
 
 const Home = () => {
-  const isAuthenticated = useSelector((state) => state.isAuthenticated);
+  const { user, isAuthenticated } = useAuth0();
   const navigate = useNavigate();
   const [cases, setCases] = useState();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    console.log(isAuthenticated, user);
     async function fetch() {
       try {
         await axios.get("/api/getCases").then((res) => {
@@ -33,6 +36,7 @@ const Home = () => {
         <h2>Welcome to</h2>
         <h1>Clause Law Group</h1>
         <button onClick={() => navigate("/login")}>Login</button>
+        <LogoutButton />
       </div>
     </section>
   ) : isLoading ? (
