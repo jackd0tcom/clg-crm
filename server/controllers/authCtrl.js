@@ -89,6 +89,44 @@ export default {
     req.session.destroy();
     res.status(200).send("there is no user on the session boi");
   },
+  syncAuth0User: async (req, res) => {
+    try {
+      const { auth0Id, email, name, picture } = req.body;
+
+      // Check if user exists by auth0Id
+      let user = await User.findOne({ where: { auth0Id } });
+
+      if (!user) {
+        // Create new user from Auth0 data
+        const [firstName, ...lastNameParts] = name.split(" ");
+        user = await User.create({
+          auth0Id,
+          username: email,
+          firstName,
+          lastName: lastNameParts.join(" ") || "",
+          email,
+          profilePic: picture,
+          role: "team_member",
+          authProvider: "auth0",
+        });
+      }
+
+      // Set up session with your local user data
+      req.session.user = {
+        userId: user.userId,
+        username: user.username,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role,
+        authProvider: "auth0",
+      };
+
+      res.status(200).json({ user: req.session.user });
+    } catch (err) {
+      console.log("Sync Auth0 user error:", err);
+      res.status(500).json({ message: "Failed to sync user" });
+    }
+  },
 
   //   updateUser: async (req, res) => {
   //     try {

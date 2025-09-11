@@ -15,22 +15,17 @@ import { formatDate } from "./helpers/helperFunctions.js";
 import TaskView from "./Elements/TaskView.jsx";
 import { useAuth0 } from "@auth0/auth0-react";
 import Loader from "./Elements/Loader.jsx";
+import Auth0Sync from "./Elements/Auth0Sync.jsx";
 
 function App() {
   const [isOpen, setIsOpen] = useState(false);
   const [taskId, setTaskId] = useState(null);
   const [activePage, setActivePage] = useState(null);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [userSynced, setUserSynced] = useState(false);
   const { isAuthenticated, user, isLoading } = useAuth0();
   const dispatch = useDispatch();
   const location = useLocation();
-
-  // useEffect(() => {
-  //   axios
-  //     .get("/api/checkUser")
-  //     .then((res) => dispatch({ type: "LOGIN", payload: res.data }))
-  //     .catch((err) => console.log(err));
-  // }, [isAuthenticated]);
 
   useEffect(() => {
     console.log(isAuthenticated, user);
@@ -45,6 +40,10 @@ function App() {
       setActivePage(null);
     }
   }, [location.pathname]);
+
+  const handleSyncComplete = () => {
+    setUserSynced(true);
+  };
 
   const openTaskView = (id) => {
     setTaskId(id);
@@ -62,10 +61,11 @@ function App() {
 
   return (
     <>
+      <Auth0Sync onSyncComplete={handleSyncComplete} />
       <div className="app-wrapper">
         <Nav />
         <div className="page-wrapper">
-          {isLoading ? (
+          {isLoading && !userSynced ? (
             <Loader />
           ) : (
             <Routes>

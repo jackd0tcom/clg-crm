@@ -20,35 +20,30 @@ const db = await connectToDB("postgresql:///clg-db");
 const users = [
   {
     username: "admin",
-    password: bcrypt.hashSync("1234", 10),
     firstName: "Jack",
     lastName: "Ball",
     role: "admin",
   },
   {
     username: "meg_attorney",
-    password: bcrypt.hashSync("meg456", 10),
     firstName: "Meg",
     lastName: "Williams",
     role: "team_member",
   },
   {
     username: "jenn_paralegal",
-    password: bcrypt.hashSync("jenn789", 10),
     firstName: "Jenn",
     lastName: "Davis",
     role: "team_member",
   },
   {
     username: "mike_partner",
-    password: bcrypt.hashSync("mike321", 10),
     firstName: "Mike",
     lastName: "Thompson",
     role: "admin",
   },
   {
     username: "lisa_associate",
-    password: bcrypt.hashSync("lisa654", 10),
     firstName: "Lisa",
     lastName: "Rodriguez",
     role: "team_member",
@@ -109,6 +104,12 @@ const cases = [
     notes:
       "Multi-vehicle accident with severe injuries, insurance company dispute",
     phase: "settlement",
+  },
+  {
+    ownerId: 1, // Sarah Johnson
+    title: "Corporate Merger - TechStart Inc",
+    notes: "Merger with competitor, due diligence and contract negotiations",
+    phase: "negotiation",
   },
   {
     ownerId: 1, // Sarah Johnson

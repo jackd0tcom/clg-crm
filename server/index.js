@@ -42,7 +42,7 @@ const {
   removeTaskAssignee,
   deleteTask,
 } = taskCtrl;
-const { register, login, checkUser, logout, updateUser } = authCtrl;
+const { register, login, checkUser, logout, syncAuth0User } = authCtrl;
 const {
   getUserActivities,
   getCaseActivities,
@@ -83,6 +83,7 @@ app.post("/api/login", login);
 app.get("/api/checkUser", checkUser);
 app.delete("/api/logout", logout);
 // app.put("/api/updateUser", updateUser);
+app.post("/api/sync-auth0-user", syncAuth0User);
 
 // user endpoints
 app.get("/api/getUser/:userId", getUser);

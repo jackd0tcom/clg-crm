@@ -16,10 +16,6 @@ User.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    password: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
     firstName: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -36,6 +32,15 @@ User.init(
     role: {
       type: DataTypes.ENUM("admin", "team_member"),
       allowNull: false,
+    },
+    auth0Id: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      unique: true,
+    },
+    email: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
   },
   {
@@ -319,7 +324,12 @@ Notification.init(
       allowNull: false,
     },
     type: {
-      type: DataTypes.ENUM("comment", "assignment", "due_date", "status_change"),
+      type: DataTypes.ENUM(
+        "comment",
+        "assignment",
+        "due_date",
+        "status_change"
+      ),
       allowNull: false,
     },
     objectType: {
