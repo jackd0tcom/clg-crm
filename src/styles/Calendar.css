@@ -1,0 +1,9 @@
+@import "react-big-calendar/lib/css/react-big-calendar.css";
+
+.calendar-wrapper {
+  padding: 15px;
+}
+
+.rbc-calendar {
+  height: 90vh;
+}

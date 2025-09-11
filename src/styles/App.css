@@ -2,6 +2,7 @@
 @import "./Nav.css";
 @import "./Home.css";
 @import "./Tasks.css";
+@import "./Calendar.css";
 
 @media (prefers-color-scheme: light) {
   :root {

@@ -16,6 +16,8 @@ import TaskView from "./Elements/TaskView.jsx";
 import { useAuth0 } from "@auth0/auth0-react";
 import Loader from "./Elements/Loader.jsx";
 import Auth0Sync from "./Elements/Auth0Sync.jsx";
+import Calendar from "./Pages/Calendar.jsx";
+import CalendarCallback from "./Pages/CalendarCallback.jsx";
 
 function App() {
   const [isOpen, setIsOpen] = useState(false);
@@ -132,6 +134,16 @@ function App() {
                 element={
                   !isAuthenticated ? <Navigate to="/login" /> : <Profile />
                 }
+              />
+              <Route
+                path="/calendar"
+                element={
+                  !isAuthenticated ? <Navigate to="/login" /> : <Calendar />
+                }
+              />
+                            <Route
+                path="/google-calendar-callback"
+                element={<CalendarCallback />}
               />
             </Routes>
           )}

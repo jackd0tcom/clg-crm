@@ -7,6 +7,11 @@ import taskCtrl from "./controllers/taskCtrl.js";
 import userCtrl from "./controllers/userCtrl.js";
 import activityCtrl from "./controllers/activityCtrl.js";
 import personCtrl from "./controllers/personCtrl.js";
+import calendarCtrl from "./controllers/calendarCtrl.js";
+
+import dotenv from "dotenv";
+dotenv.config();
+
 const { updatePerson, newPerson, deletePerson } = personCtrl;
 const { getUser, getUsers } = userCtrl;
 
@@ -50,6 +55,12 @@ const {
   createActivity,
   markAsRead,
 } = activityCtrl;
+const {
+  getAuthUrl,
+  handleCallback,
+  checkConnection,
+  getCalendarEvents,
+} = calendarCtrl;
 
 // Express setup
 const app = express();
@@ -136,3 +147,10 @@ app.post("/api/markAsRead", markAsRead);
 ViteExpress.listen(app, PORT, () =>
   console.log(`http://localhost:${PORT} chance baby`)
 );
+
+
+// calendar endpoints
+app.get("/api/calendar/auth-url", getAuthUrl);
+app.post("/api/calendar/callback", handleCallback);
+app.get("/api/calendar/events", getCalendarEvents);
+app.get("/api/calendar/check-connection", checkConnection);

@@ -42,6 +42,18 @@ User.init(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    googleAccessToken: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    googleRefreshToken: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    googleTokenExpiry: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
   },
   {
     modelName: "user",
