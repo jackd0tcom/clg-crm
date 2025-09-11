@@ -28,7 +28,6 @@ function App() {
   const location = useLocation();
 
   useEffect(() => {
-    console.log(isAuthenticated, user);
     const path = location.pathname;
     if (path.startsWith("/case/") && path !== "/case/0") {
       setActivePage("case");

@@ -16,7 +16,6 @@ const Home = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    console.log(isAuthenticated, user);
     async function fetch() {
       try {
         await axios.get("/api/getCases").then((res) => {
