@@ -7,10 +7,9 @@ const Calendar = () => {
   const [events, setEvents] = useState([]);
   const [isGoogleConnected, setIsGoogleConnected] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [isCheckingConnection, setIsCheckingConnection] = useState(false); // ← Add this line
+  const [isCheckingConnection, setIsCheckingConnection] = useState(false);
 
   useEffect(() => {
-    // Wait a bit for Auth0Sync to complete before checking connection
     const timer = setTimeout(() => {
       checkGoogleConnection();
       setIsLoading(false);
@@ -42,13 +41,24 @@ const Calendar = () => {
     setIsLoading(true);
     try {
       const res = await axios.get("/api/calendar/events");
-      const googleEvents = res.data.events.map((event) => ({
-        id: event.id,
-        title: event.summary,
-        start: new Date(event.start.dateTime || event.start.date),
-        end: new Date(event.end.dateTime || event.end.date),
-        resource: event,
-      }));
+      const googleEvents = res.data.events.map((event) => {
+        const parseGoogleDate = (dateObj) => {
+          if (dateObj.dateTime) {
+            return new Date(dateObj.dateTime);
+          } else if (dateObj.date) {
+            return new Date(dateObj.date + 'T00:00:00');
+          }
+          return new Date();
+        };
+
+        return {
+          id: event.id,
+          title: event.summary,
+          start: parseGoogleDate(event.start),
+          end: parseGoogleDate(event.end),
+          resource: event,
+        };
+      });
       setEvents(googleEvents);
     } catch (error) {
       console.error("Error fetching Google events:", error);
@@ -80,7 +90,7 @@ const Calendar = () => {
           // Wait a moment then check connection
           setTimeout(() => {
             checkGoogleConnection();
-          }, 1000);
+          }, 500);
         } else if (event.data.type === "GOOGLE_CALENDAR_AUTH_ERROR") {
           console.error("Google Calendar connection failed:", event.data.error);
           window.removeEventListener("message", messageListener);
@@ -96,9 +106,9 @@ const Calendar = () => {
           window.removeEventListener("message", messageListener);
           setTimeout(() => {
             checkGoogleConnection();
-          }, 1000);
+          }, 500);
         }
-      }, 1000);
+      }, 500);
     } catch (error) {
       console.error("Error connecting to Google Calendar:", error);
     }

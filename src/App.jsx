@@ -64,7 +64,7 @@ function App() {
     <>
       <Auth0Sync onSyncComplete={handleSyncComplete} />
       <div className="app-wrapper">
-        <Nav />
+        {isAuthenticated && <Nav />}
         <div className="page-wrapper">
           {isLoading && !userSynced ? (
             <Loader />
@@ -141,7 +141,7 @@ function App() {
                   !isAuthenticated ? <Navigate to="/login" /> : <Calendar />
                 }
               />
-                            <Route
+              <Route
                 path="/google-calendar-callback"
                 element={<CalendarCallback />}
               />
