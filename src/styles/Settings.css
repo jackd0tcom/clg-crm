@@ -1,17 +1,10 @@
-.settings-wrapper {
-  padding: 20px;
-  max-width: 800px;
-  margin: 0 auto;
-}
-
 .settings-header {
-  margin-bottom: 30px;
-  text-align: center;
+  padding: 15px;
+  border-bottom: 1px solid var(--light-border);
 }
 
 .settings-header h2 {
   color: #333;
-  margin-bottom: 8px;
   font-size: 2rem;
 }
 
@@ -22,9 +15,7 @@
 
 .settings-section {
   background: white;
-  border-radius: 12px;
   padding: 25px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
 }
 
@@ -273,6 +264,7 @@
 /* Settings Info */
 .settings-info {
   background: #e7f3ff;
+  margin-top: 1rem;
   border-radius: 8px;
   padding: 20px;
   border-left: 4px solid #007bff;
@@ -300,15 +292,15 @@
   .settings-wrapper {
     padding: 15px;
   }
-  
+
   .settings-section {
     padding: 20px 15px;
   }
-  
+
   .calendar-connect-card {
     padding: 20px 15px;
   }
-  
+
   .save-button {
     align-self: stretch;
   }

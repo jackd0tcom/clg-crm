@@ -9,6 +9,7 @@ const Settings = () => {
   const [selectedCalendar, setSelectedCalendar] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isChanging, setIsChanging] = useState(false);
   const [message, setMessage] = useState("");
   const [appCalendars, setAppCalendars] = useState([]);
   const [hasDuplicates, setHasDuplicates] = useState(false);
@@ -21,7 +22,7 @@ const Settings = () => {
     try {
       const res = await axios.get("/api/calendar/check-connection");
       setIsGoogleConnected(res.data.isConnected);
-      
+
       if (res.data.isConnected) {
         fetchUserCalendars();
         checkAppCalendars();
@@ -40,21 +41,23 @@ const Settings = () => {
       // Fetch calendars and preferred calendar in parallel
       const [calendarsRes, preferredRes] = await Promise.all([
         axios.get("/api/calendar/user-calendars"),
-        axios.get("/api/calendar/preferred-calendar")
+        axios.get("/api/calendar/preferred-calendar"),
       ]);
-      
+
       setCalendars(calendarsRes.data.calendars);
-      
+
       // Use preferred calendar if set, otherwise default to primary
       if (preferredRes.data.preferredCalendarId) {
         setSelectedCalendar(preferredRes.data.preferredCalendarId);
       } else {
-        const primaryCalendar = calendarsRes.data.calendars.find(cal => cal.primary);
+        const primaryCalendar = calendarsRes.data.calendars.find(
+          (cal) => cal.primary
+        );
         if (primaryCalendar) {
           setSelectedCalendar(primaryCalendar.id);
         }
       }
-      
+
       setIsLoading(false);
     } catch (error) {
       console.error("Error fetching calendars:", error);
@@ -76,27 +79,37 @@ const Settings = () => {
   };
 
   const handleCalendarChange = (calendarId) => {
+    setIsChanging(true);
     setSelectedCalendar(calendarId);
   };
 
   const saveCalendarPreference = async () => {
     setIsSaving(true);
+    setIsChanging(false);
     setMessage("");
-    
+
     try {
-      await axios.post("/api/calendar/preferred-calendar", {
-        calendarId: selectedCalendar
-      });
-      
-      const selectedCalendarName = calendars.find(cal => cal.id === selectedCalendar)?.name || "Unknown";
-      setMessage(`✅ Calendar preference saved! Tasks will now sync to "${selectedCalendarName}"`);
-      
+      await axios
+        .post("/api/calendar/preferred-calendar", {
+          calendarId: selectedCalendar,
+        })
+        .then(() => {
+          setTimeout(() => {
+            const selectedCalendarName =
+              calendars.find((cal) => cal.id === selectedCalendar)?.name ||
+              "Unknown";
+            setMessage(
+              `✅ Calendar preference saved! Tasks will now sync to "${selectedCalendarName}"`
+            );
+          }, 500);
+        });
+
       // Clear message after 3 seconds
-      setTimeout(() => setMessage(""), 3000);
+      setTimeout(() => setMessage(""), 5000);
     } catch (error) {
       console.error("Error saving calendar preference:", error);
       setMessage("❌ Error saving calendar preference. Please try again.");
-      setTimeout(() => setMessage(""), 3000);
+      setTimeout(() => setMessage(""), 5000);
     } finally {
       setIsSaving(false);
     }
@@ -136,13 +149,12 @@ const Settings = () => {
   return (
     <div className="settings-wrapper">
       <div className="settings-header">
-        <h2>Settings</h2>
-        <p>Manage your Google Calendar integration preferences</p>
+        <h1 className="section-heading">Settings</h1>
       </div>
 
       <div className="settings-section">
         <div className="settings-section-header">
-          <h3>📅 Google Calendar Integration</h3>
+          <h3>Google Calendar</h3>
           <p>Choose which calendar your tasks will be synced to</p>
         </div>
 
@@ -151,8 +163,8 @@ const Settings = () => {
             <div className="calendar-connect-icon">🔗</div>
             <h4>Connect Google Calendar</h4>
             <p>
-              Connect your Google Calendar to sync your tasks and events seamlessly.
-              You can choose which calendar to use for your tasks.
+              Connect your Google Calendar to sync your tasks and events
+              seamlessly. You can choose which calendar to use for your tasks.
             </p>
             <button onClick={handleConnectGoogle} className="connect-button">
               Connect Google Calendar
@@ -165,10 +177,9 @@ const Settings = () => {
               <span>Google Calendar Connected</span>
             </div>
 
-
             <div className="calendar-selection">
               <label htmlFor="calendar-select">
-                <strong>Select Calendar for Task Sync:</strong>
+                <strong>Select Google Calendar for tasks:</strong>
               </label>
               <select
                 id="calendar-select"
@@ -182,49 +193,49 @@ const Settings = () => {
                   </option>
                 ))}
               </select>
-              
-              {selectedCalendar && (
-                <div className="selected-calendar-info">
-                  <p>
-                    <strong>Selected:</strong>{" "}
-                    {calendars.find(cal => cal.id === selectedCalendar)?.name}
-                  </p>
-                  {calendars.find(cal => cal.id === selectedCalendar)?.description && (
-                    <p className="calendar-description">
-                      {calendars.find(cal => cal.id === selectedCalendar)?.description}
-                    </p>
-                  )}
-                </div>
-              )}
             </div>
 
-            <div className="save-section">
-              <button
-                onClick={saveCalendarPreference}
-                disabled={isSaving || !selectedCalendar}
-                className="save-button"
+            {isChanging && (
+              <div className="save-section">
+                <button
+                  onClick={saveCalendarPreference}
+                  disabled={isSaving || !selectedCalendar}
+                  className="save-button"
+                >
+                  {isSaving ? "Saving..." : "Save Calendar Preference"}
+                </button>
+              </div>
+            )}
+
+            {message && (
+              <div
+                className={`message ${
+                  message.includes("✅") ? "success" : "error"
+                }`}
               >
-                {isSaving ? "Saving..." : "Save Calendar Preference"}
-              </button>
-              
-              {message && (
-                <div className={`message ${message.includes("✅") ? "success" : "error"}`}>
-                  {message}
-                </div>
-              )}
-            </div>
+                {message}
+              </div>
+            )}
           </div>
         )}
-      </div>
-
-      <div className="settings-info">
-        <h4>ℹ️ How it works:</h4>
-        <ul>
-          <li>When you create a task, it will automatically appear in your selected calendar</li>
-          <li>When you edit a task's title, due date, or notes, the calendar event updates automatically</li>
-          <li>When you delete a task, the calendar event is removed automatically</li>
-          <li>You can change your preferred calendar at any time</li>
-        </ul>
+        <div className="settings-info">
+          <h4>How it works:</h4>
+          <ul>
+            <li>
+              When you create a task, it will automatically appear in your
+              selected calendar
+            </li>
+            <li>
+              When you edit a task's title, due date, or notes, the calendar
+              event updates automatically
+            </li>
+            <li>
+              When you delete a task, the calendar event is removed
+              automatically
+            </li>
+            <li>You can change your preferred calendar at any time</li>
+          </ul>
+        </div>
       </div>
     </div>
   );
