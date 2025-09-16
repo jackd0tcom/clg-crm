@@ -14,7 +14,6 @@ const AssigneeAddToggle = ({
             <div
               className="assignee-add-toggle-item"
               onClick={() => {
-                console.log(nee.profilePic);
                 handleAdd({ Id, userId: nee.userId });
               }}
             >

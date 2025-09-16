@@ -18,6 +18,7 @@ import Loader from "./Elements/Loader.jsx";
 import Auth0Sync from "./Elements/Auth0Sync.jsx";
 import Calendar from "./Pages/Calendar.jsx";
 import CalendarCallback from "./Pages/CalendarCallback.jsx";
+import Settings from "./Pages/Settings.jsx";
 
 function App() {
   const [isOpen, setIsOpen] = useState(false);
@@ -139,6 +140,12 @@ function App() {
                 path="/calendar"
                 element={
                   !isAuthenticated ? <Navigate to="/login" /> : <Calendar />
+                }
+              />
+              <Route
+                path="/settings"
+                element={
+                  !isAuthenticated ? <Navigate to="/login" /> : <Settings />
                 }
               />
               <Route

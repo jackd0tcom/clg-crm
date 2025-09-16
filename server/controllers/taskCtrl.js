@@ -8,6 +8,7 @@ import {
   format,
   formatDateNoTime,
 } from "../helpers/activityHelper.js";
+import { syncTaskWithCalendar } from "../helpers/calendarSyncHelper.js";
 
 export default {
   getAllTasks: async (req, res) => {
@@ -131,6 +132,9 @@ export default {
           details: "created this task",
         });
 
+        // Sync with Google Calendar
+        await syncTaskWithCalendar(newTask, userId, 'create');
+
         res.status(201).send(newTask);
       } else {
         console.log("no user logged in");
@@ -237,6 +241,12 @@ export default {
             details: message,
           });
         }
+
+        // Sync with Google Calendar (only for certain fields that affect calendar events)
+        if (['title', 'dueDate', 'notes'].includes(fieldName)) {
+          await syncTaskWithCalendar(currentTask, req.session.user.userId, 'update');
+        }
+
         if (fieldName === "caseId") {
           res.status(200).send(currentTask);
         } else res.status(200).send("Saved Task Successfully");
@@ -398,6 +408,9 @@ export default {
         return res.status(404).send("Task not found");
       }
       const oldTitle = currentTask.title;
+
+      // Sync with Google Calendar before deleting the task
+      await syncTaskWithCalendar(currentTask, req.session.user.userId, 'delete');
 
       await currentTask.destroy();
 

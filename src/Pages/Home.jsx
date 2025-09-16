@@ -11,23 +11,23 @@ import LogoutButton from "../Elements/LogoutButton";
 import LoginButton from "../Elements/LoginButton";
 
 const Home = () => {
-  const { user, isAuthenticated } = useAuth0();
+  const { user, isAuthenticated, isLoading } = useAuth0();
   const navigate = useNavigate();
   const [cases, setCases] = useState();
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetch() {
       try {
         await axios.get("/api/getCases").then((res) => {
           setCases(res.data);
-          setIsLoading(false);
+          setLoading(false);
         });
       } catch (error) {
         console.log(error);
       }
     }
-    fetch();
+    !isLoading && fetch();
   }, []);
 
   return !isAuthenticated ? (
@@ -38,7 +38,7 @@ const Home = () => {
         <LoginButton />
       </div>
     </section>
-  ) : isLoading ? (
+  ) : loading ? (
     <Loader />
   ) : (
     <div className="home-container">

@@ -4,6 +4,67 @@
   padding: 15px;
 }
 
+.calendar-view {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.calendar-info-banner {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 15px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-info-banner h4 {
+  margin: 0 0 8px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.calendar-info-banner p {
+  margin: 0 0 8px 0;
+  opacity: 0.9;
+  font-size: 0.9rem;
+}
+
+.calendar-info-banner small {
+  opacity: 0.7;
+  font-size: 0.8rem;
+  font-family: monospace;
+}
+
+.duplicate-warning-banner {
+  display: flex;
+  gap: 15px;
+  background: #fff3cd;
+  color: #856404;
+  padding: 15px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-left: 4px solid #f39c12;
+  margin-bottom: 15px;
+}
+
+.duplicate-warning-banner .warning-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.duplicate-warning-banner .warning-content h4 {
+  margin: 0 0 5px 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.duplicate-warning-banner .warning-content p {
+  margin: 0;
+  opacity: 0.9;
+  font-size: 0.9rem;
+}
+
 .rbc-calendar {
-  height: 90vh;
+  height: 85vh;
 }

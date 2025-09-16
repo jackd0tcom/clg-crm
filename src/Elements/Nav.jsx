@@ -89,7 +89,7 @@ const Nav = () => {
                 <i className="fa-solid fa-gear"></i>
                 Settings
               </NavLink>
-              <NavLink
+              {/* <NavLink
                 to="/search"
                 className={({ isActive }) =>
                   isActive ? "active-nav nav-button" : "inactive-nav nav-button"
@@ -97,7 +97,7 @@ const Nav = () => {
               >
                 <i className="fa-solid fa-magnifying-glass"></i>
                 Search
-              </NavLink>
+              </NavLink> */}
               <NavLink
                 id="nav-profile"
                 to="/profile"

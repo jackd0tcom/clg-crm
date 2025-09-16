@@ -54,6 +54,10 @@ User.init(
       type: DataTypes.DATE,
       allowNull: true,
     },
+    preferredCalendarId: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
   },
   {
     modelName: "user",
@@ -176,6 +180,10 @@ Task.init(
         "completed"
       ),
       defaultValue: "not started",
+    },
+    googleEventId: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
   },
   {

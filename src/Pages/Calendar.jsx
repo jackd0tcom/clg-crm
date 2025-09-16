@@ -8,6 +8,8 @@ const Calendar = () => {
   const [isGoogleConnected, setIsGoogleConnected] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isCheckingConnection, setIsCheckingConnection] = useState(false);
+  const [appCalendarInfo, setAppCalendarInfo] = useState(null);
+  const [duplicateWarning, setDuplicateWarning] = useState(null);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -28,12 +30,39 @@ const Calendar = () => {
     setIsCheckingConnection(true);
     try {
       const res = await axios.get("/api/calendar/check-connection");
-      setIsGoogleConnected(res.data.isConnected);
+      if (res.data.isConnected) {
+        setIsGoogleConnected(true);
+        // Get app calendar info
+        fetchAppCalendarInfo();
+        checkForDuplicates();
+      } else {
+        setIsGoogleConnected(false);
+      }
     } catch (error) {
       console.error("Error checking Google connection:", error);
       setIsGoogleConnected(false);
     } finally {
       setIsCheckingConnection(false);
+    }
+  };
+
+  const fetchAppCalendarInfo = async () => {
+    try {
+      const res = await axios.get("/api/calendar/app-calendar");
+      setAppCalendarInfo(res.data);
+    } catch (error) {
+      console.error("Error fetching app calendar info:", error);
+    }
+  };
+
+  const checkForDuplicates = async () => {
+    try {
+      const res = await axios.get("/api/calendar/check-app-calendars");
+      if (res.data.hasDuplicates) {
+        setDuplicateWarning(res.data);
+      }
+    } catch (error) {
+      console.error("Error checking for duplicate calendars:", error);
     }
   };
 
@@ -133,11 +162,30 @@ const Calendar = () => {
           <button onClick={handleConnectGoogle}>Connect Google Calendar</button>
         </div>
       ) : (
-        <CalendarDisplay
-          events={events}
-          setEvents={setEvents}
-          isLoading={isLoading}
-        />
+        <div className="calendar-view">
+          {duplicateWarning && (
+            <div className="duplicate-warning-banner">
+              <div className="warning-icon">⚠️</div>
+              <div className="warning-content">
+                <h4>Duplicate App Calendars Detected</h4>
+                <p>Found {duplicateWarning.appCalendars.length} calendars named "CLG CMS Tasks". Visit Settings to manage this.</p>
+              </div>
+            </div>
+          )}
+          
+          {appCalendarInfo && (
+            <div className="calendar-info-banner">
+              <h4>📅 {appCalendarInfo.calendarName}</h4>
+              <p>Your tasks are automatically synced to this dedicated calendar in Google Calendar.</p>
+              <small>Calendar ID: {appCalendarInfo.calendarId}</small>
+            </div>
+          )}
+          <CalendarDisplay
+            events={events}
+            setEvents={setEvents}
+            isLoading={isLoading}
+          />
+        </div>
       )}
     </div>
   );

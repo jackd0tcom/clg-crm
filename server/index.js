@@ -56,10 +56,18 @@ const {
   markAsRead,
 } = activityCtrl;
 const {
+  setupCalendar,
   getAuthUrl,
   handleCallback,
   checkConnection,
   getCalendarEvents,
+  createTaskEvent,
+  updateTaskEvent,
+  deleteTaskEvent,
+  getAppCalendar,
+  getUserCalendars,
+  updatePreferredCalendar,
+  checkAppCalendars,
 } = calendarCtrl;
 
 // Express setup
@@ -150,7 +158,15 @@ ViteExpress.listen(app, PORT, () =>
 
 
 // calendar endpoints
+app.post("/api/calendar/setup", setupCalendar);
 app.get("/api/calendar/auth-url", getAuthUrl);
 app.post("/api/calendar/callback", handleCallback);
 app.get("/api/calendar/events", getCalendarEvents);
 app.get("/api/calendar/check-connection", checkConnection);
+app.get("/api/calendar/app-calendar", getAppCalendar);
+app.get("/api/calendar/user-calendars", getUserCalendars);
+app.get("/api/calendar/check-app-calendars", checkAppCalendars);
+app.post("/api/calendar/preferred-calendar", updatePreferredCalendar);
+app.post("/api/calendar/create-task-event", createTaskEvent);
+app.post("/api/calendar/update-task-event", updateTaskEvent);
+app.post("/api/calendar/delete-task-event", deleteTaskEvent);
