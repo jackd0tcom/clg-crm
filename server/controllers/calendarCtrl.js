@@ -116,13 +116,38 @@ export default {
       }
 
       console.log(`🔧 Initializing calendar service for user ${userId}`);
-      await googleCalendarService.initializeCalendar(
+      const initSuccess = await googleCalendarService.initializeCalendar(
         user.googleAccessToken,
         user.googleRefreshToken
       );
+      
+      if (!initSuccess) {
+        return res.status(500).json({ 
+          message: "Failed to initialize Google Calendar service" 
+        });
+      }
 
-      console.log(`📅 Fetching events from primary calendar`);
-      const events = await googleCalendarService.getEvents(timeMin, timeMax);
+      // Check if tokens were refreshed and update database
+      const refreshedTokens = googleCalendarService.getRefreshedTokens();
+      if (refreshedTokens) {
+        console.log("💾 Updating user tokens in database");
+        await user.update({
+          googleAccessToken: refreshedTokens.access_token,
+          googleTokenExpiry: refreshedTokens.expiry_date ? new Date(refreshedTokens.expiry_date) : null
+        });
+      }
+
+      // Determine which calendar to use for fetching events
+      let targetCalendarId = null;
+      if (user.preferredCalendarId) {
+        targetCalendarId = user.preferredCalendarId;
+        console.log(`📅 Fetching events from preferred calendar: ${targetCalendarId}`);
+      } else {
+        targetCalendarId = await googleCalendarService.getPrimaryCalendar();
+        console.log(`📅 Fetching events from primary calendar: ${targetCalendarId}`);
+      }
+
+      const events = await googleCalendarService.getEvents(timeMin, timeMax, targetCalendarId);
 
       console.log(`✅ Found ${events.length} events`);
       res.json({ events });
@@ -302,6 +327,29 @@ export default {
     } catch (error) {
       console.error("Error fetching user calendars:", error);
       res.status(500).json({ message: "Error fetching calendars" });
+    }
+  },
+
+  // Get user's preferred calendar
+  getPreferredCalendar: async (req, res) => {
+    try {
+      const { userId } = req.session.user;
+
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+
+      const user = await User.findByPk(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.json({ 
+        preferredCalendarId: user.preferredCalendarId || null
+      });
+    } catch (error) {
+      console.error("Error getting preferred calendar:", error);
+      res.status(500).json({ message: "Error getting calendar preference" });
     }
   },
 

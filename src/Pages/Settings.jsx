@@ -37,13 +37,22 @@ const Settings = () => {
 
   const fetchUserCalendars = async () => {
     try {
-      const res = await axios.get("/api/calendar/user-calendars");
-      setCalendars(res.data.calendars);
+      // Fetch calendars and preferred calendar in parallel
+      const [calendarsRes, preferredRes] = await Promise.all([
+        axios.get("/api/calendar/user-calendars"),
+        axios.get("/api/calendar/preferred-calendar")
+      ]);
       
-      // Find the currently selected calendar or default to primary
-      const primaryCalendar = res.data.calendars.find(cal => cal.primary);
-      if (primaryCalendar) {
-        setSelectedCalendar(primaryCalendar.id);
+      setCalendars(calendarsRes.data.calendars);
+      
+      // Use preferred calendar if set, otherwise default to primary
+      if (preferredRes.data.preferredCalendarId) {
+        setSelectedCalendar(preferredRes.data.preferredCalendarId);
+      } else {
+        const primaryCalendar = calendarsRes.data.calendars.find(cal => cal.primary);
+        if (primaryCalendar) {
+          setSelectedCalendar(primaryCalendar.id);
+        }
       }
       
       setIsLoading(false);
@@ -56,14 +65,13 @@ const Settings = () => {
   const checkAppCalendars = async () => {
     try {
       const res = await axios.get("/api/calendar/check-app-calendars");
-      setAppCalendars(res.data.appCalendars);
-      setHasDuplicates(res.data.hasDuplicates);
-      
-      if (res.data.hasDuplicates) {
-        console.warn("Duplicate app calendars detected:", res.data.recommendedAction);
-      }
+      // Since we're using primary/preferred calendars now, we don't need to check for duplicates
+      setAppCalendars([]);
+      setHasDuplicates(false);
     } catch (error) {
       console.error("Error checking app calendars:", error);
+      setAppCalendars([]);
+      setHasDuplicates(false);
     }
   };
 
@@ -157,24 +165,6 @@ const Settings = () => {
               <span>Google Calendar Connected</span>
             </div>
 
-            {hasDuplicates && (
-              <div className="duplicate-warning">
-                <div className="warning-icon">⚠️</div>
-                <div className="warning-content">
-                  <h4>Duplicate App Calendars Detected</h4>
-                  <p>Found {appCalendars.length} calendars named "CLG CMS Tasks". This can cause confusion and duplicate events.</p>
-                  <p><strong>Recommendation:</strong> Keep only one app calendar and remove the others from Google Calendar.</p>
-                  <div className="duplicate-calendars">
-                    {appCalendars.map((cal, index) => (
-                      <div key={cal.id} className="duplicate-calendar-item">
-                        <span>📅 {cal.name}</span>
-                        <small>ID: {cal.id}</small>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
 
             <div className="calendar-selection">
               <label htmlFor="calendar-select">

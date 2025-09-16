@@ -47,6 +47,22 @@ class GoogleCalendarService {
         refresh_token: refreshToken,
       });
 
+      // Force token refresh to ensure we have valid credentials
+      if (refreshToken) {
+        try {
+          console.log("🔄 Refreshing Google Calendar tokens...");
+          const { credentials } = await oauth2Client.refreshAccessToken();
+          oauth2Client.setCredentials(credentials);
+          console.log("✅ Tokens refreshed successfully");
+          
+          // Store the refreshed tokens for potential future use
+          this.refreshedTokens = credentials;
+        } catch (refreshError) {
+          console.warn("⚠️ Token refresh failed, using provided tokens:", refreshError.message);
+          // Continue with provided tokens if refresh fails
+        }
+      }
+
       this.calendar = google.calendar({
         version: "v3",
         auth: oauth2Client,
@@ -58,17 +74,25 @@ class GoogleCalendarService {
     }
   }
 
-  async getEvents(timeMin, timeMax) {
+  // Get refreshed tokens if available
+  getRefreshedTokens() {
+    return this.refreshedTokens || null;
+  }
+
+  async getEvents(timeMin, timeMax, calendarId = null) {
     try {
       if (!this.calendar) {
         throw new Error("Calendar service not initialized. Call initializeCalendar() first.");
       }
       
-      // Use primary calendar
-      const primaryCalendarId = await this.getPrimaryCalendar();
+      // Use provided calendarId or fall back to primary calendar
+      let targetCalendarId = calendarId;
+      if (!targetCalendarId) {
+        targetCalendarId = await this.getPrimaryCalendar();
+      }
       
       const response = await this.calendar.events.list({
-        calendarId: primaryCalendarId,
+        calendarId: targetCalendarId,
         timeMin: timeMin || new Date().toISOString(),
         timeMax: timeMax,
         maxResults: 100,
@@ -79,6 +103,16 @@ class GoogleCalendarService {
       return response.data.items || [];
     } catch (error) {
       console.error("Error fetching events:", error);
+      
+      // Provide more specific error messages
+      if (error.code === 401) {
+        throw new Error("Google Calendar authentication failed. Please reconnect your calendar.");
+      } else if (error.code === 403) {
+        throw new Error("Access denied to Google Calendar. Please check permissions.");
+      } else if (error.code === 404) {
+        throw new Error("Calendar not found. Please check your calendar selection.");
+      }
+      
       throw error;
     }
   }

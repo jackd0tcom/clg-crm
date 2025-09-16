@@ -66,6 +66,7 @@ const {
   deleteTaskEvent,
   getAppCalendar,
   getUserCalendars,
+  getPreferredCalendar,
   updatePreferredCalendar,
   checkAppCalendars,
 } = calendarCtrl;
@@ -166,6 +167,7 @@ app.get("/api/calendar/check-connection", checkConnection);
 app.get("/api/calendar/app-calendar", getAppCalendar);
 app.get("/api/calendar/user-calendars", getUserCalendars);
 app.get("/api/calendar/check-app-calendars", checkAppCalendars);
+app.get("/api/calendar/preferred-calendar", getPreferredCalendar);
 app.post("/api/calendar/preferred-calendar", updatePreferredCalendar);
 app.post("/api/calendar/create-task-event", createTaskEvent);
 app.post("/api/calendar/update-task-event", updateTaskEvent);

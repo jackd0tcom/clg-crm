@@ -12,9 +12,12 @@ const Calendar = () => {
   const [duplicateWarning, setDuplicateWarning] = useState(null);
 
   useEffect(() => {
+    // Reset loading state when component mounts
+    setIsLoading(true);
+    setEvents([]);
+    
     const timer = setTimeout(() => {
       checkGoogleConnection();
-      setIsLoading(false);
     }, 500); // 1 second delay
 
     return () => clearTimeout(timer);
@@ -22,7 +25,12 @@ const Calendar = () => {
 
   useEffect(() => {
     if (isGoogleConnected) {
-      fetchGoogleEvents();
+      // Small delay to allow backend token refresh if needed
+      const timer = setTimeout(() => {
+        fetchGoogleEvents();
+      }, 500);
+      
+      return () => clearTimeout(timer);
     }
   }, [isGoogleConnected]);
 
@@ -35,12 +43,15 @@ const Calendar = () => {
         // Get app calendar info
         fetchAppCalendarInfo();
         checkForDuplicates();
+        // Don't set loading to false yet - wait for events to load
       } else {
         setIsGoogleConnected(false);
+        setIsLoading(false); // Only set loading false if not connected
       }
     } catch (error) {
       console.error("Error checking Google connection:", error);
       setIsGoogleConnected(false);
+      setIsLoading(false); // Set loading false on error
     } finally {
       setIsCheckingConnection(false);
     }
@@ -66,7 +77,7 @@ const Calendar = () => {
     }
   };
 
-  const fetchGoogleEvents = async () => {
+  const fetchGoogleEvents = async (retryCount = 0) => {
     setIsLoading(true);
     try {
       const res = await axios.get("/api/calendar/events");
@@ -89,9 +100,25 @@ const Calendar = () => {
         };
       });
       setEvents(googleEvents);
+      setIsLoading(false); // Set loading false when events are successfully loaded
     } catch (error) {
       console.error("Error fetching Google events:", error);
-    } finally {
+      
+      // Retry logic for authentication errors
+      if (error.response?.status === 401 && retryCount < 2) {
+        console.log(`🔄 Retrying fetch events (attempt ${retryCount + 1}/2)...`);
+        setTimeout(() => {
+          fetchGoogleEvents(retryCount + 1);
+        }, 1000 * (retryCount + 1)); // Progressive delay: 1s, 2s
+        return; // Don't set loading to false yet
+      }
+      
+      // If it's an auth error after retries, suggest reconnection
+      if (error.response?.status === 401) {
+        console.error("Authentication failed after retries. User may need to reconnect calendar.");
+      }
+      
+      // Only set loading false if we're not retrying
       setIsLoading(false);
     }
   };
@@ -143,16 +170,11 @@ const Calendar = () => {
     }
   };
 
-  return isLoading ? (
+  return (isLoading || isCheckingConnection) ? (
     <Loader />
   ) : (
     <div className="calendar-wrapper">
-      {isCheckingConnection ? (
-        <div className="calendar-connect-banner">
-          <h3>Checking Google Calendar connection...</h3>
-          <p>Please wait while we verify your connection.</p>
-        </div>
-      ) : !isGoogleConnected ? (
+      {!isGoogleConnected ? (
         <div className="calendar-connect-banner">
           <h3>Connect Google Calendar</h3>
           <p>
@@ -170,14 +192,6 @@ const Calendar = () => {
                 <h4>Duplicate App Calendars Detected</h4>
                 <p>Found {duplicateWarning.appCalendars.length} calendars named "CLG CMS Tasks". Visit Settings to manage this.</p>
               </div>
-            </div>
-          )}
-          
-          {appCalendarInfo && (
-            <div className="calendar-info-banner">
-              <h4>📅 {appCalendarInfo.calendarName}</h4>
-              <p>Your tasks are automatically synced to this dedicated calendar in Google Calendar.</p>
-              <small>Calendar ID: {appCalendarInfo.calendarId}</small>
             </div>
           )}
           <CalendarDisplay

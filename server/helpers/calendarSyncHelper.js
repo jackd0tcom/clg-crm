@@ -12,15 +12,36 @@ export const syncTaskWithCalendar = async (task, userId, action) => {
     }
 
     // Initialize calendar service
-    await googleCalendarService.initializeCalendar(
+    const initSuccess = await googleCalendarService.initializeCalendar(
       user.googleAccessToken,
       user.googleRefreshToken
     );
+    
+    if (!initSuccess) {
+      console.error("Failed to initialize calendar service for task sync");
+      return;
+    }
+
+    // Check if tokens were refreshed and update database
+    const refreshedTokens = googleCalendarService.getRefreshedTokens();
+    if (refreshedTokens) {
+      console.log("💾 Updating user tokens in database (task sync)");
+      await user.update({
+        googleAccessToken: refreshedTokens.access_token,
+        googleTokenExpiry: refreshedTokens.expiry_date ? new Date(refreshedTokens.expiry_date) : null
+      });
+    }
 
     // Determine which calendar to use
-    // Use primary calendar (simplified approach)
-    const targetCalendarId = await googleCalendarService.getPrimaryCalendar();
-    console.log(`Using primary calendar: ${targetCalendarId}`);
+    let targetCalendarId = null;
+    if (user.preferredCalendarId) {
+      targetCalendarId = user.preferredCalendarId;
+      console.log(`Using user's preferred calendar: ${targetCalendarId}`);
+    } else {
+      // Fall back to primary calendar if no preference is set
+      targetCalendarId = await googleCalendarService.getPrimaryCalendar();
+      console.log(`Using primary calendar: ${targetCalendarId}`);
+    }
 
     switch (action) {
       case 'create':
