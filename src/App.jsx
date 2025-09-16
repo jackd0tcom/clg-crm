@@ -19,6 +19,7 @@ import Auth0Sync from "./Elements/Auth0Sync.jsx";
 import Calendar from "./Pages/Calendar.jsx";
 import CalendarCallback from "./Pages/CalendarCallback.jsx";
 import Settings from "./Pages/Settings.jsx";
+import Inbox from "./Pages/Inbox.jsx";
 
 function App() {
   const [isOpen, setIsOpen] = useState(false);
@@ -134,6 +135,12 @@ function App() {
                 path="/profile/:userIdParams"
                 element={
                   !isAuthenticated ? <Navigate to="/login" /> : <Profile />
+                }
+              />
+              <Route
+                path="/inbox"
+                element={
+                  !isAuthenticated ? <Navigate to="/login" /> : <Inbox />
                 }
               />
               <Route

@@ -8,6 +8,7 @@ import userCtrl from "./controllers/userCtrl.js";
 import activityCtrl from "./controllers/activityCtrl.js";
 import personCtrl from "./controllers/personCtrl.js";
 import calendarCtrl from "./controllers/calendarCtrl.js";
+import notificationsCtrl from "./controllers/notificationsCtrl.js";
 
 import dotenv from "dotenv";
 dotenv.config();
@@ -70,6 +71,8 @@ const {
   updatePreferredCalendar,
   checkAppCalendars,
 } = calendarCtrl;
+
+const { getNotifications } = notificationsCtrl;
 
 // Express setup
 const app = express();
@@ -157,7 +160,6 @@ ViteExpress.listen(app, PORT, () =>
   console.log(`http://localhost:${PORT} chance baby`)
 );
 
-
 // calendar endpoints
 app.post("/api/calendar/setup", setupCalendar);
 app.get("/api/calendar/auth-url", getAuthUrl);
@@ -172,3 +174,6 @@ app.post("/api/calendar/preferred-calendar", updatePreferredCalendar);
 app.post("/api/calendar/create-task-event", createTaskEvent);
 app.post("/api/calendar/update-task-event", updateTaskEvent);
 app.post("/api/calendar/delete-task-event", deleteTaskEvent);
+
+// Notifications endpoints
+app.get("/api/getNotifications", getNotifications);
