@@ -18,15 +18,9 @@ export const syncTaskWithCalendar = async (task, userId, action) => {
     );
 
     // Determine which calendar to use
-    let targetCalendarId = null;
-    if (user.preferredCalendarId) {
-      targetCalendarId = user.preferredCalendarId;
-      console.log(`Using user's preferred calendar: ${targetCalendarId}`);
-    } else {
-      // Use the app calendar (assumes it exists from signup)
-      targetCalendarId = await googleCalendarService.getAppCalendar(userId);
-      console.log(`Using app calendar: ${targetCalendarId}`);
-    }
+    // Use primary calendar (simplified approach)
+    const targetCalendarId = await googleCalendarService.getPrimaryCalendar();
+    console.log(`Using primary calendar: ${targetCalendarId}`);
 
     switch (action) {
       case 'create':

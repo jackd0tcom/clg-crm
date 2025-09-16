@@ -30,28 +30,31 @@ const CalendarSetup = () => {
     setError("");
 
     try {
-      // Get Auth0 access token
-      const accessToken = await getAccessTokenSilently();
+      // Get the Google OAuth URL
+      const res = await axios.post("/api/calendar/setup");
       
-      // Request Google Calendar permission and create calendar
-      const res = await axios.post("/api/calendar/setup", {
-        accessToken: accessToken
-      });
+      if (res.data.success && res.data.authUrl) {
+        // Open Google OAuth in a popup
+        const popup = window.open(
+          res.data.authUrl,
+          'google-auth',
+          'width=500,height=600,scrollbars=yes,resizable=yes'
+        );
 
-      if (res.data.success) {
-        setSetupComplete(true);
-        // Redirect to main app after a short delay
-        setTimeout(() => {
-          window.location.href = "/";
-        }, 2000);
+        // Listen for the popup to close
+        const checkClosed = setInterval(() => {
+          if (popup.closed) {
+            clearInterval(checkClosed);
+            // Check if setup is complete
+            setTimeout(() => {
+              checkSetupStatus();
+            }, 1000);
+          }
+        }, 1000);
       }
     } catch (error) {
       console.error("Calendar setup error:", error);
-      if (error.response?.data?.message?.includes("consent")) {
-        setError("Please grant calendar permissions to continue. Try the setup again.");
-      } else {
-        setError("Failed to set up calendar. Please try again.");
-      }
+      setError("Failed to start calendar setup. Please try again.");
     } finally {
       setIsSettingUp(false);
     }
@@ -82,15 +85,15 @@ const CalendarSetup = () => {
           <div className="setup-icon">📅</div>
           <h3>Connect Google Calendar</h3>
           <p>
-            We'll create a dedicated "CLG CMS Tasks" calendar in your Google Calendar 
-            to keep your work tasks organized and separate from your personal events.
+            We'll sync your tasks with your primary Google Calendar so you can see 
+            all your work tasks alongside your other events.
           </p>
 
           <div className="setup-benefits">
             <h4>What you'll get:</h4>
             <ul>
               <li>✅ Automatic task sync to Google Calendar</li>
-              <li>✅ Dedicated work calendar</li>
+              <li>✅ Tasks appear in your main calendar</li>
               <li>✅ Real-time updates when tasks change</li>
               <li>✅ Calendar view of all your tasks</li>
             </ul>

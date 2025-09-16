@@ -5,32 +5,18 @@ export default {
   // New endpoint for calendar setup during onboarding
   setupCalendar: async (req, res) => {
     try {
-      const { accessToken } = req.body;
       const userId = req.session.user.userId;
 
       console.log("🔧 Setting up calendar for user:", userId);
 
-      // Initialize calendar service with the access token
-      await googleCalendarService.initializeCalendar(accessToken, null);
-
-      // Create the app calendar
-      const calendarId = await googleCalendarService.getOrCreateAppCalendar(userId);
-
-      // Update user record with calendar connection
-      const user = await User.findByPk(userId);
-      if (user) {
-        await user.update({
-          googleCalendarConnected: true,
-          preferredCalendarId: calendarId
-        });
-      }
-
-      console.log("✅ Calendar setup complete for user:", userId);
-
+      // For now, we'll use the existing Google OAuth flow
+      // The user needs to go through the Google OAuth process first
+      const authUrl = googleCalendarService.getAuthUrl();
+      
       res.json({ 
         success: true, 
-        message: "Calendar setup complete",
-        calendarId: calendarId
+        message: "Please complete Google OAuth flow",
+        authUrl: authUrl
       });
 
     } catch (error) {
@@ -99,30 +85,53 @@ export default {
   getCalendarEvents: async (req, res) => {
     try {
       const { timeMin, timeMax } = req.query;
+      
+      // Check if user session exists
+      if (!req.session || !req.session.user) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+      
       const { userId } = req.session.user;
 
       if (!userId) {
         return res.status(401).json({ message: "User not authenticated" });
       }
 
+      console.log(`🔍 Fetching calendar events for user ${userId}`);
+
       const user = await User.findByPk(userId);
+      if (!user) {
+        console.log(`❌ User ${userId} not found in database`);
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      console.log(`👤 User found: ${user.username || user.email || 'Unknown'}`);
+      console.log(`🔑 Google tokens: accessToken=${!!user.googleAccessToken}, refreshToken=${!!user.googleRefreshToken}`);
+      
       if (!user.googleAccessToken) {
+        console.log(`❌ User ${userId} does not have Google Calendar connected`);
         return res
           .status(400)
           .json({ message: "Google Calendar not connected" });
       }
 
+      console.log(`🔧 Initializing calendar service for user ${userId}`);
       await googleCalendarService.initializeCalendar(
         user.googleAccessToken,
         user.googleRefreshToken
       );
 
+      console.log(`📅 Fetching events from primary calendar`);
       const events = await googleCalendarService.getEvents(timeMin, timeMax);
 
+      console.log(`✅ Found ${events.length} events`);
       res.json({ events });
     } catch (error) {
-      console.error("Error fetching events:", error);
-      res.status(500).json({ message: "Error fetching events" });
+      console.error("❌ Error fetching events:", error);
+      res.status(500).json({ 
+        message: "Error fetching events",
+        error: error.message 
+      });
     }
   },
 
@@ -246,7 +255,7 @@ export default {
         user.googleRefreshToken
       );
 
-      const calendarId = await googleCalendarService.getAppCalendar(userId);
+      const calendarId = await googleCalendarService.getPrimaryCalendar();
 
       res.json({ 
         message: "App calendar ready",
@@ -325,7 +334,7 @@ export default {
     }
   },
 
-  // Check for duplicate app calendars and provide cleanup info
+  // Get primary calendar info (simplified)
   checkAppCalendars: async (req, res) => {
     try {
       const { userId } = req.session.user;
@@ -346,40 +355,28 @@ export default {
         user.googleRefreshToken
       );
 
+      // Get primary calendar info
+      const primaryCalendarId = await googleCalendarService.getPrimaryCalendar();
+      
+      // Get calendar details
       const calendars = await googleCalendarService.calendar.calendarList.list();
-      const appCalendars = calendars.data.items.filter(
-        cal => cal.summary === 'CLG CMS Tasks'
-      );
-
-      console.log(`🔍 Found ${appCalendars.length} CLG CMS Tasks calendars for user ${userId}`);
-      appCalendars.forEach((cal, index) => {
-        console.log(`   ${index + 1}. ID: ${cal.id}, Description: ${cal.description || 'No description'}`);
-      });
-
-      // Also log the current app calendar being used
-      try {
-        const currentAppCalendar = await googleCalendarService.getAppCalendar(userId);
-        console.log(`🎯 Current app calendar being used: ${currentAppCalendar}`);
-      } catch (error) {
-        console.error("Error getting current app calendar:", error.message);
-      }
+      const primaryCalendar = calendars.data.items.find(cal => cal.id === primaryCalendarId);
 
       res.json({ 
-        appCalendars: appCalendars.map(cal => ({
-          id: cal.id,
-          name: cal.summary,
-          description: cal.description || '',
-          primary: cal.primary || false,
-          accessRole: cal.accessRole
-        })),
-        hasDuplicates: appCalendars.length > 1,
-        recommendedAction: appCalendars.length > 1 
-          ? `Found ${appCalendars.length} app calendars. Consider keeping only one and removing the others.`
-          : 'No duplicate app calendars found.'
+        primaryCalendar: {
+          id: primaryCalendar.id,
+          summary: primaryCalendar.summary,
+          description: primaryCalendar.description,
+          primary: primaryCalendar.primary
+        },
+        message: "Using primary calendar for task sync"
       });
     } catch (error) {
-      console.error("Error checking app calendars:", error);
-      res.status(500).json({ message: "Error checking app calendars" });
+      console.error("Error getting primary calendar info:", error);
+      res.status(500).json({ 
+        message: "Error getting calendar info",
+        error: error.message 
+      });
     }
   },
 };
