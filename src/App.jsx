@@ -62,7 +62,7 @@ function App() {
     <>
       <Auth0Sync onSyncComplete={handleSyncComplete} />
       <div className="app-wrapper">
-        <Nav />
+        {isAuthenticated && <Nav />}
         <div className="page-wrapper">
           {isLoading && !userSynced ? (
             <Loader />

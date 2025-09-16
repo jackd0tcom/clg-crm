@@ -35,7 +35,6 @@ const Home = () => {
         <h2>Welcome to</h2>
         <h1>Clause Law Group</h1>
         <button onClick={() => navigate("/login")}>Login</button>
-        <LogoutButton />
       </div>
     </section>
   ) : isLoading ? (
