@@ -8,36 +8,37 @@ import axios from "axios";
 import Loader from "../Elements/Loader";
 import { useAuth0 } from "@auth0/auth0-react";
 import LogoutButton from "../Elements/LogoutButton";
+import LoginButton from "../Elements/LoginButton";
 
 const Home = () => {
-  const { user, isAuthenticated } = useAuth0();
+  const { user, isAuthenticated, isLoading } = useAuth0();
   const navigate = useNavigate();
   const [cases, setCases] = useState();
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetch() {
       try {
         await axios.get("/api/getCases").then((res) => {
           setCases(res.data);
-          setIsLoading(false);
+          setLoading(false);
         });
       } catch (error) {
         console.log(error);
       }
     }
-    fetch();
+    !isLoading && fetch();
   }, []);
 
   return !isAuthenticated ? (
-    <section>
+    <section className="home-landing-section">
       <div className="home-landing-container">
         <h2>Welcome to</h2>
         <h1>Clause Law Group</h1>
         <button onClick={() => navigate("/login")}>Login</button>
       </div>
     </section>
-  ) : isLoading ? (
+  ) : loading ? (
     <Loader />
   ) : (
     <div className="home-container">

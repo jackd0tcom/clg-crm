@@ -120,7 +120,6 @@ const AssigneeList = ({
   };
   const handleAdd = ({ Id, userId }) => {
     try {
-      console.log(Id, userId);
       if (taskId && taskId !== 0) {
         axios
           .post("/api/addTaskAssignees", { taskId: Id, userId })

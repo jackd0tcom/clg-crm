@@ -42,6 +42,22 @@ User.init(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    googleAccessToken: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    googleRefreshToken: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    googleTokenExpiry: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    preferredCalendarId: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
   },
   {
     modelName: "user",
@@ -164,6 +180,10 @@ Task.init(
         "completed"
       ),
       defaultValue: "not started",
+    },
+    googleEventId: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
   },
   {
@@ -328,7 +348,17 @@ Notification.init(
         "comment",
         "assignment",
         "due_date",
-        "status_change"
+        "status_change",
+        "task_created",
+        "task_updated",
+        "task_deleted",
+        "task_assigned",
+        "task_unassigned",
+        "task_status_changed",
+        "task_due_date_changed",
+        "task_priority_changed",
+        "task_case_changed",
+        "comment_added"
       ),
       allowNull: false,
     },
@@ -511,6 +541,10 @@ Comment.belongsTo(Case, { foreignKey: "caseId" });
 // Notification relationships
 User.hasMany(Notification, { foreignKey: "userId" });
 Notification.belongsTo(User, { foreignKey: "userId" });
+
+// Add Task relationship to Notification (for task notifications)
+Task.hasMany(Notification, { foreignKey: "objectId", constraints: false });
+Notification.belongsTo(Task, { foreignKey: "objectId", constraints: false, as: "task" });
 
 // Activity log relationships
 User.hasMany(ActivityLog, { foreignKey: "authorId", as: "authoredActivities" });

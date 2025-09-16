@@ -16,6 +16,10 @@ import TaskView from "./Elements/TaskView.jsx";
 import { useAuth0 } from "@auth0/auth0-react";
 import Loader from "./Elements/Loader.jsx";
 import Auth0Sync from "./Elements/Auth0Sync.jsx";
+import Calendar from "./Pages/Calendar.jsx";
+import CalendarCallback from "./Pages/CalendarCallback.jsx";
+import Settings from "./Pages/Settings.jsx";
+import Inbox from "./Pages/Inbox.jsx";
 
 function App() {
   const [isOpen, setIsOpen] = useState(false);
@@ -132,6 +136,35 @@ function App() {
                 element={
                   !isAuthenticated ? <Navigate to="/login" /> : <Profile />
                 }
+              />
+              <Route
+                path="/inbox"
+                element={
+                  !isAuthenticated ? (
+                    <Navigate to="/login" />
+                  ) : (
+                    <Inbox
+                      openTaskView={openTaskView}
+                      refreshKey={activePage === "tasks" ? refreshKey : 0}
+                    />
+                  )
+                }
+              />
+              <Route
+                path="/calendar"
+                element={
+                  !isAuthenticated ? <Navigate to="/login" /> : <Calendar />
+                }
+              />
+              <Route
+                path="/settings"
+                element={
+                  !isAuthenticated ? <Navigate to="/login" /> : <Settings />
+                }
+              />
+              <Route
+                path="/google-calendar-callback"
+                element={<CalendarCallback />}
               />
             </Routes>
           )}

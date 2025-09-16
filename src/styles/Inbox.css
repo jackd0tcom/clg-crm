@@ -1,0 +1,111 @@
+.inbox-header {
+  padding: 15px;
+  border-bottom: 1px solid var(--light-border);
+  display: flex;
+  justify-content: space-between;
+}
+.notification-list-wrapper {
+  display: flex;
+  flex-direction: column;
+  row-gap: 10px;
+  margin: 15px;
+}
+.notification-item-wrapper {
+  display: flex;
+  justify-content: space-between;
+  border: 1px solid var(--light-border);
+  border-radius: 5px;
+  padding: 0px 15px;
+  background-color: var(--super-light-grey);
+  cursor: pointer;
+}
+.notification-item-wrapper:hover {
+  background-color: var(--root-bg-color-light);
+}
+.notification-item-span {
+  display: grid;
+  width: 90%;
+  grid-template-columns: 1fr 2fr;
+}
+.notification-item-wrapper p {
+  font-size: 0.9rem;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  margin: 0;
+}
+.notification-task-wrapper {
+  display: flex;
+  column-gap: 3px;
+}
+.notification-task-wrapper i {
+  font-size: 0.75rem;
+}
+.clear-notification {
+  background-color: var(--bright-green);
+  color: white;
+  padding: 5px 8px;
+  margin: 5px 0px;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  column-gap: 5px;
+  z-index: 10;
+}
+.clear-notification:hover {
+  background-color: var(--bright-dark-green);
+  color: white;
+}
+.clear-all-button {
+  color: var(--grey);
+  border: 1px solid var(--light-border);
+  padding: 5px 8px;
+  margin: 5px 0px;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  column-gap: 5px;
+  z-index: 10;
+}
+.clear-all-button:hover {
+  color: var(--dark-grey);
+}
+.notifications-filter {
+  display: flex;
+  column-gap: 5px;
+}
+
+.notifications-filter-button {
+  color: var(--grey);
+  border: 1px solid var(--light-border);
+  padding: 5px 12px;
+  margin: 5px 0px;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  column-gap: 5px;
+  z-index: 10;
+}
+
+.active-filter:hover {
+  background-color: var(--button-active-bg-hover);
+}
+.active-filter {
+  background-color: var(--button-active-bg);
+  color: var(--button-active-font);
+  border-color: var(--button-active-border);
+}
+.caught-up {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin-top: 4rem;
+}
+.caught-up i {
+  font-size: 3rem;
+  color: var(--blue);
+}
+.caught-up p {
+  font-size: 1rem;
+  font-weight: 500;
+}

@@ -35,7 +35,6 @@ const Tasks = ({ openTaskView, refreshKey }) => {
   // Refetch tasks when refreshKey change
   useEffect(() => {
     if (refreshKey > 0) {
-      console.log("refresh");
       fetchTasks();
     }
   }, [refreshKey]);
@@ -75,10 +74,7 @@ const Tasks = ({ openTaskView, refreshKey }) => {
       <div className="tasks-page-head">
         <h1 className="section-heading">My Tasks</h1>
         <TaskFilter tasks={tasks} setTasks={setTasks} paramCase={caseId} />
-        <button 
-          className="new-task-button"
-          onClick={() => openTaskView("new")}
-        >
+        <button className="new-task-button" onClick={() => openTaskView("new")}>
           New Task
         </button>
       </div>

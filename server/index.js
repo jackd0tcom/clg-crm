@@ -7,6 +7,12 @@ import taskCtrl from "./controllers/taskCtrl.js";
 import userCtrl from "./controllers/userCtrl.js";
 import activityCtrl from "./controllers/activityCtrl.js";
 import personCtrl from "./controllers/personCtrl.js";
+import calendarCtrl from "./controllers/calendarCtrl.js";
+import notificationsCtrl from "./controllers/notificationsCtrl.js";
+
+import dotenv from "dotenv";
+dotenv.config();
+
 const { updatePerson, newPerson, deletePerson } = personCtrl;
 const { getUser, getUsers } = userCtrl;
 
@@ -48,8 +54,28 @@ const {
   getCaseActivities,
   getTaskActivities,
   createActivity,
-  markAsRead,
 } = activityCtrl;
+const {
+  setupCalendar,
+  getAuthUrl,
+  handleCallback,
+  checkConnection,
+  getCalendarEvents,
+  createTaskEvent,
+  updateTaskEvent,
+  deleteTaskEvent,
+  getAppCalendar,
+  getUserCalendars,
+  getPreferredCalendar,
+  updatePreferredCalendar,
+  checkAppCalendars,
+} = calendarCtrl;
+const {
+  getNotifications,
+  markAsRead,
+  getUnreadCount,
+  markAllAsRead,
+} = notificationsCtrl;
 
 // Express setup
 const app = express();
@@ -136,3 +162,24 @@ app.post("/api/markAsRead", markAsRead);
 ViteExpress.listen(app, PORT, () =>
   console.log(`http://localhost:${PORT} chance baby`)
 );
+
+// calendar endpoints
+app.post("/api/calendar/setup", setupCalendar);
+app.get("/api/calendar/auth-url", getAuthUrl);
+app.post("/api/calendar/callback", handleCallback);
+app.get("/api/calendar/events", getCalendarEvents);
+app.get("/api/calendar/check-connection", checkConnection);
+app.get("/api/calendar/app-calendar", getAppCalendar);
+app.get("/api/calendar/user-calendars", getUserCalendars);
+app.get("/api/calendar/check-app-calendars", checkAppCalendars);
+app.get("/api/calendar/preferred-calendar", getPreferredCalendar);
+app.post("/api/calendar/preferred-calendar", updatePreferredCalendar);
+app.post("/api/calendar/create-task-event", createTaskEvent);
+app.post("/api/calendar/update-task-event", updateTaskEvent);
+app.post("/api/calendar/delete-task-event", deleteTaskEvent);
+
+// notification endpoints
+app.get("/api/notifications", getNotifications);
+app.post("/api/notifications/mark-read", markAsRead);
+app.get("/api/notifications/unread-count", getUnreadCount);
+app.post("/api/notifications/mark-all-read", markAllAsRead);
