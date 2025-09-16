@@ -54,7 +54,6 @@ const {
   getCaseActivities,
   getTaskActivities,
   createActivity,
-  markAsRead,
 } = activityCtrl;
 const {
   setupCalendar,
@@ -71,8 +70,12 @@ const {
   updatePreferredCalendar,
   checkAppCalendars,
 } = calendarCtrl;
-
-const { getNotifications } = notificationsCtrl;
+const {
+  getNotifications,
+  markAsRead,
+  getUnreadCount,
+  markAllAsRead,
+} = notificationsCtrl;
 
 // Express setup
 const app = express();
@@ -175,5 +178,8 @@ app.post("/api/calendar/create-task-event", createTaskEvent);
 app.post("/api/calendar/update-task-event", updateTaskEvent);
 app.post("/api/calendar/delete-task-event", deleteTaskEvent);
 
-// Notifications endpoints
-app.get("/api/getNotifications", getNotifications);
+// notification endpoints
+app.get("/api/notifications", getNotifications);
+app.post("/api/notifications/mark-read", markAsRead);
+app.get("/api/notifications/unread-count", getUnreadCount);
+app.post("/api/notifications/mark-all-read", markAllAsRead);

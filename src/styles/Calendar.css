@@ -3,6 +3,31 @@
 .calendar-wrapper {
   padding: 15px;
 }
+.calendar-connect-banner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid var(--light-border);
+  border-radius: 5px;
+  padding: 2rem;
+  width: 75%;
+  margin: 4rem auto 0;
+}
+.calendar-connect-banner i {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: var(--blue);
+}
+.calendar-connect-banner button {
+  background-color: var(--bright-green);
+  color: white;
+  border: none;
+}
+.calendar-connect-banner button:hover {
+  background-color: var(--bright-dark-green);
+  color: white;
+  border: none;
+}
 
 .calendar-view {
   display: flex;

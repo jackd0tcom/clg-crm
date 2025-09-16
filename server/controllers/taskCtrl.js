@@ -9,6 +9,13 @@ import {
   formatDateNoTime,
 } from "../helpers/activityHelper.js";
 import { syncTaskWithCalendar } from "../helpers/calendarSyncHelper.js";
+import { 
+  notifyTaskCreated, 
+  notifyTaskUpdated, 
+  notifyTaskDeleted, 
+  notifyTaskAssigned, 
+  notifyTaskUnassigned 
+} from "../helpers/notificationHelper.js";
 
 export default {
   getAllTasks: async (req, res) => {
@@ -135,6 +142,10 @@ export default {
         // Sync with Google Calendar
         await syncTaskWithCalendar(newTask, userId, 'create');
 
+        // Create notifications for task creation
+        const actorName = `${req.session.user.firstName} ${req.session.user.lastName}`.trim() || req.session.user.username;
+        await notifyTaskCreated(newTask, userId, actorName);
+
         res.status(201).send(newTask);
       } else {
         console.log("no user logged in");
@@ -247,6 +258,12 @@ export default {
           await syncTaskWithCalendar(currentTask, req.session.user.userId, 'update');
         }
 
+        // Create notifications for task updates (excluding notes)
+        if (fieldName !== "notes") {
+          const actorName = `${req.session.user.firstName} ${req.session.user.lastName}`.trim() || req.session.user.username;
+          await notifyTaskUpdated(currentTask, req.session.user.userId, actorName, fieldName, oldValue, value);
+        }
+
         if (fieldName === "caseId") {
           res.status(200).send(currentTask);
         } else res.status(200).send("Saved Task Successfully");
@@ -262,9 +279,27 @@ export default {
       if (req.session.user) {
         const { taskId, status } = req.body;
         const currentTask = await Task.findOne({ where: { taskId } });
-        currentTask.update({
+        const oldStatus = currentTask.status;
+        
+        await currentTask.update({
           status,
         });
+
+        // Create activity log
+        await createActivityLog({
+          authorId: req.session.user.userId,
+          objectType: "task",
+          objectId: parseInt(taskId),
+          action: ACTIVITY_ACTIONS.TASK_UPDATED,
+          details: `changed the status from ${oldStatus} to ${status}`,
+        });
+
+        // Sync with Google Calendar
+        await syncTaskWithCalendar(currentTask, req.session.user.userId, 'update');
+
+        // Create notifications for status change
+        const actorName = `${req.session.user.firstName} ${req.session.user.lastName}`.trim() || req.session.user.username;
+        await notifyTaskUpdated(currentTask, req.session.user.userId, actorName, 'status', oldStatus, status);
       }
       res.status(200).send("Saved Task Status Successfully");
     } catch (err) {
@@ -353,6 +388,11 @@ export default {
         details: `added ${assignedUser.firstName} ${assignedUser.lastName} as assignee`,
       });
 
+      // Create notifications for task assignment
+      const actorName = `${req.session.user.firstName} ${req.session.user.lastName}`.trim() || req.session.user.username;
+      const assigneeName = `${assignedUser.firstName} ${assignedUser.lastName}`.trim() || 'Unknown User';
+      await notifyTaskAssigned(taskExists, userId, assigneeName, req.session.user.userId, actorName);
+
       res.status(201).json(newAssignee);
     } catch (err) {
       console.log(err);
@@ -388,6 +428,11 @@ export default {
         details: `removed ${oldAssignee.firstName} ${oldAssignee.lastName} as assignee`,
       });
 
+      // Create notifications for task unassignment
+      const actorName = `${req.session.user.firstName} ${req.session.user.lastName}`.trim() || req.session.user.username;
+      const unassignedUserName = `${oldAssignee.firstName} ${oldAssignee.lastName}`.trim() || 'Unknown User';
+      await notifyTaskUnassigned(taskExists, userId, unassignedUserName, req.session.user.userId, actorName);
+
       res.status(200).send("Task assignees updated successfully");
     } catch (err) {
       console.log(err);
@@ -411,6 +456,10 @@ export default {
 
       // Sync with Google Calendar before deleting the task
       await syncTaskWithCalendar(currentTask, req.session.user.userId, 'delete');
+
+      // Create notifications for task deletion (before deleting the task)
+      const actorName = `${req.session.user.firstName} ${req.session.user.lastName}`.trim() || req.session.user.username;
+      await notifyTaskDeleted(currentTask, req.session.user.userId, actorName);
 
       await currentTask.destroy();
 

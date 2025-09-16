@@ -403,7 +403,7 @@ const notifications = [
     isRead: false,
   },
   {
-    userId: 6, // Sarah Johnson
+    userId: 1, // Sarah Johnson
     type: "status_change",
     objectType: "case",
     objectId: 1,
@@ -411,7 +411,7 @@ const notifications = [
     isRead: false,
   },
   {
-    userId: 6, // Mike Thompson
+    userId: 4, // Mike Thompson
     type: "comment",
     objectType: "task",
     objectId: 4,

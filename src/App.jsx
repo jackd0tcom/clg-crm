@@ -140,7 +140,14 @@ function App() {
               <Route
                 path="/inbox"
                 element={
-                  !isAuthenticated ? <Navigate to="/login" /> : <Inbox />
+                  !isAuthenticated ? (
+                    <Navigate to="/login" />
+                  ) : (
+                    <Inbox
+                      openTaskView={openTaskView}
+                      refreshKey={activePage === "tasks" ? refreshKey : 0}
+                    />
+                  )
                 }
               />
               <Route

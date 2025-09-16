@@ -15,7 +15,7 @@ const Calendar = () => {
     // Reset loading state when component mounts
     setIsLoading(true);
     setEvents([]);
-    
+
     const timer = setTimeout(() => {
       checkGoogleConnection();
     }, 500); // 1 second delay
@@ -29,7 +29,7 @@ const Calendar = () => {
       const timer = setTimeout(() => {
         fetchGoogleEvents();
       }, 500);
-      
+
       return () => clearTimeout(timer);
     }
   }, [isGoogleConnected]);
@@ -86,7 +86,7 @@ const Calendar = () => {
           if (dateObj.dateTime) {
             return new Date(dateObj.dateTime);
           } else if (dateObj.date) {
-            return new Date(dateObj.date + 'T00:00:00');
+            return new Date(dateObj.date + "T00:00:00");
           }
           return new Date();
         };
@@ -103,21 +103,25 @@ const Calendar = () => {
       setIsLoading(false); // Set loading false when events are successfully loaded
     } catch (error) {
       console.error("Error fetching Google events:", error);
-      
+
       // Retry logic for authentication errors
       if (error.response?.status === 401 && retryCount < 2) {
-        console.log(`🔄 Retrying fetch events (attempt ${retryCount + 1}/2)...`);
+        console.log(
+          `🔄 Retrying fetch events (attempt ${retryCount + 1}/2)...`
+        );
         setTimeout(() => {
           fetchGoogleEvents(retryCount + 1);
         }, 1000 * (retryCount + 1)); // Progressive delay: 1s, 2s
         return; // Don't set loading to false yet
       }
-      
+
       // If it's an auth error after retries, suggest reconnection
       if (error.response?.status === 401) {
-        console.error("Authentication failed after retries. User may need to reconnect calendar.");
+        console.error(
+          "Authentication failed after retries. User may need to reconnect calendar."
+        );
       }
-      
+
       // Only set loading false if we're not retrying
       setIsLoading(false);
     }
@@ -170,12 +174,13 @@ const Calendar = () => {
     }
   };
 
-  return (isLoading || isCheckingConnection) ? (
+  return isLoading || isCheckingConnection ? (
     <Loader />
   ) : (
     <div className="calendar-wrapper">
       {!isGoogleConnected ? (
         <div className="calendar-connect-banner">
+          <i className="fa-solid fa-link"></i>
           <h3>Connect Google Calendar</h3>
           <p>
             Connect your Google Calendar to see all your tasks and events in one
@@ -190,7 +195,10 @@ const Calendar = () => {
               <div className="warning-icon">⚠️</div>
               <div className="warning-content">
                 <h4>Duplicate App Calendars Detected</h4>
-                <p>Found {duplicateWarning.appCalendars.length} calendars named "CLG CMS Tasks". Visit Settings to manage this.</p>
+                <p>
+                  Found {duplicateWarning.appCalendars.length} calendars named
+                  "CLG CMS Tasks". Visit Settings to manage this.
+                </p>
               </div>
             </div>
           )}

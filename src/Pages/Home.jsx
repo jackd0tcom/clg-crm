@@ -31,7 +31,7 @@ const Home = () => {
   }, []);
 
   return !isAuthenticated ? (
-    <section>
+    <section className="home-landing-section">
       <div className="home-landing-container">
         <h2>Welcome to</h2>
         <h1>Clause Law Group</h1>
