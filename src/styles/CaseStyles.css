@@ -173,8 +173,45 @@
   padding: 5px;
   font-size: 0.85rem;
 }
+.extra-settings-wrapper {
+  z-index: 999;
+}
 .drop-down-item:hover {
   background-color: var(--root-bg-color-light);
+}
+
+/* Phase */
+.phase-toggle-item {
+  z-index: 11;
+  padding: 5px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+.phase-icon-wrapper {
+  display: flex;
+  align-items: center;
+  column-gap: 8px;
+}
+.phase-toggle-item:hover {
+  background-color: var(--root-bg-color-light);
+}
+.phase-icon-wrapper p {
+  margin: 0;
+}
+.phase-icon-wrapper i {
+  font-size: 0.8rem;
+}
+.phase-toggle-wrapper {
+  position: relative;
+}
+.phase-toggle-dropdown {
+  position: absolute;
+  background-color: white;
+  z-index: 10;
+  padding: 15px;
+  border: 1px solid var(--light-border);
+  border-radius: 5px;
+  top: 0;
 }
 
 .case-card {
@@ -245,6 +282,12 @@ div.case-task-container
 .case-view-tasks-header p:hover {
   color: var(--dark-grey);
 }
+.no-tasks {
+  font-size: 0.9rem;
+  margin: 0;
+  margin-top: 0.5rem;
+}
+
 .case-activity-container {
   width: 40%;
   border-left: 1px solid var(--light-border);

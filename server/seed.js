@@ -132,6 +132,7 @@ const people = [
     phoneNumber: "2175550101",
     dob: "1980-03-15",
     county: "Sangamon",
+    SSN: 123456,
   },
   {
     caseId: 1, // Smith Divorce Settlement
@@ -144,6 +145,7 @@ const people = [
     phoneNumber: "2175550102",
     dob: "1982-07-22",
     county: "Sangamon",
+    SSN: 123456,
   },
   {
     caseId: 2, // Downtown Real Estate Development
@@ -156,6 +158,7 @@ const people = [
     phoneNumber: "3125550201",
     dob: "1975-11-08",
     county: "Cook",
+    SSN: 123456,
   },
   {
     caseId: 3, // Custody Battle - Johnson Family
@@ -168,6 +171,7 @@ const people = [
     phoneNumber: "3095550301",
     dob: "1988-05-14",
     county: "Peoria",
+    SSN: 123456,
   },
   {
     caseId: 3, // Custody Battle - Johnson Family
@@ -180,6 +184,7 @@ const people = [
     phoneNumber: "3095550302",
     dob: "1986-09-30",
     county: "Peoria",
+    SSN: 123456,
   },
   {
     caseId: 4, // Personal Injury - Car Accident
@@ -192,6 +197,7 @@ const people = [
     phoneNumber: "8155550401",
     dob: "1990-12-03",
     county: "Winnebago",
+    SSN: 123456,
   },
   {
     caseId: 5, // Corporate Merger - TechStart Inc
@@ -204,6 +210,7 @@ const people = [
     phoneNumber: "3125550501",
     dob: "1972-04-18",
     county: "Cook",
+    SSN: 123456,
   },
   {
     caseId: 5, // Corporate Merger - TechStart Inc
@@ -216,6 +223,7 @@ const people = [
     phoneNumber: "3125550502",
     dob: "1968-08-25",
     county: "Cook",
+    SSN: 123456,
   },
 ];
 

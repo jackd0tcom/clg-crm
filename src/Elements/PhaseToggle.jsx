@@ -1,26 +1,95 @@
 import { capitalize } from "../helpers/helperFunctions";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import PhaseIcon from "./PhaseIcon";
+
 const PhaseToggle = ({ value, onHandle, setPhase }) => {
+  const [isChanging, setIsChanging] = useState(false);
+  const dropdownRef = useRef(null);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsChanging(false);
+      }
+    };
+
+    if (isChanging) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isChanging]);
+
   return (
     <div className="phase-toggle-wrapper">
-      <div className="phase-toggle-active">
-        <select
-          name="phase-select"
-          id=""
-          value={value}
-          onChange={(e) => {
-            onHandle(e.target.value);
-            setPhase(e.target.value);
-          }}
-        >
-          <option value="intake">Intake</option>
-          <option value="investigation">Investigation</option>
-          <option value="negotiation">Negotiation</option>
-          <option value="litigation">Litigation</option>
-          <option value="settlement">Settlement</option>
-          <option value="closed">Closed</option>
-        </select>
+      <div className="phase-toggle-item" onClick={() => setIsChanging(true)}>
+        <PhaseIcon phase={value} />
       </div>
+      {isChanging && (
+        <div className="phase-toggle-dropdown" ref={dropdownRef}>
+          <div
+            onClick={() => {
+              onHandle("intake");
+              setIsChanging(false);
+              setPhase("intake");
+            }}
+            className="phase-toggle-item"
+          >
+            <PhaseIcon phase={"intake"} />
+          </div>
+          <div
+            onClick={() => {
+              onHandle("investigation");
+              setIsChanging(false);
+              setPhase("investigation");
+            }}
+            className="phase-toggle-item"
+          >
+            <PhaseIcon phase={"investigation"} />
+          </div>
+          <div
+            onClick={() => {
+              onHandle("negotiation");
+              setIsChanging(false);
+              setPhase("negotiation");
+            }}
+            className="phase-toggle-item"
+          >
+            <PhaseIcon phase={"negotiation"} />
+          </div>
+          <div
+            onClick={() => {
+              onHandle("litigation");
+              setPhase("litigation");
+              setIsChanging(false);
+            }}
+            className="phase-toggle-item"
+          >
+            <PhaseIcon phase={"litigation"} />
+          </div>
+          <div
+            onClick={() => {
+              onHandle("settlement");
+              setIsChanging(false);
+              setPhase("settlement");
+            }}
+            className="phase-toggle-item"
+          >
+            <PhaseIcon phase={"settlement"} />
+          </div>
+          <div
+            onClick={() => {
+              onHandle("closed");
+              setIsChanging(false);
+              setPhase("closed");
+            }}
+            className="phase-toggle-item"
+          >
+            <PhaseIcon phase={"closed"} />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

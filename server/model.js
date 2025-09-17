@@ -132,6 +132,10 @@ Person.init(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    SSN: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
   },
   {
     modelName: "person",
@@ -544,7 +548,11 @@ Notification.belongsTo(User, { foreignKey: "userId" });
 
 // Add Task relationship to Notification (for task notifications)
 Task.hasMany(Notification, { foreignKey: "objectId", constraints: false });
-Notification.belongsTo(Task, { foreignKey: "objectId", constraints: false, as: "task" });
+Notification.belongsTo(Task, {
+  foreignKey: "objectId",
+  constraints: false,
+  as: "task",
+});
 
 // Activity log relationships
 User.hasMany(ActivityLog, { foreignKey: "authorId", as: "authoredActivities" });

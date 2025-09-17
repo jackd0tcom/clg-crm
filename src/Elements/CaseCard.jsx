@@ -11,7 +11,7 @@ const CaseCard = ({ data, openTaskView }) => {
   const handleCaseClick = (e) => {
     e.preventDefault();
     // Add case to recent items before navigating
-    addRecentItem(data, 'case');
+    addRecentItem(data, "case");
     navigate(`/case/${data.caseId}`);
   };
 
@@ -54,15 +54,19 @@ const CaseCard = ({ data, openTaskView }) => {
         </div>
         <div className="case-card-tasks">
           <h4>To Do:</h4>
-          {tasks.map((task) => {
-            return (
-              <TaskListItem
-                key={task.taskId}
-                task={task}
-                openTaskView={openTaskView}
-              />
-            );
-          })}
+          {!tasks ? (
+            tasks.map((task) => {
+              return (
+                <TaskListItem
+                  key={task.taskId}
+                  task={task}
+                  openTaskView={openTaskView}
+                />
+              );
+            })
+          ) : (
+            <p className="no-tasks">All caught up!</p>
+          )}
         </div>
       </div>
     </a>

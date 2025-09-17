@@ -47,6 +47,7 @@ const PersonView = ({
     phoneNumber: "",
     dob: "",
     county: "",
+    SSN: "",
   };
 
   const handleRemove = async () => {
