@@ -10,7 +10,6 @@ const ToDoWidget = ({ openTaskView }) => {
   const fetch = async () => {
     try {
       await axios.get("/api/getTodayTasks").then((res) => {
-        console.log(res.data);
         setTasks(res.data);
       });
     } catch (error) {

@@ -7,6 +7,7 @@ const NotificationList = ({ notifications, handleRead, openTaskView }) => {
         notifications.map((item) => {
           return (
             <NotificationItem
+              key={item.notificationId}
               data={item}
               openTaskView={openTaskView}
               handleRead={handleRead}

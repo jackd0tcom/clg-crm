@@ -19,7 +19,7 @@ const NotificationItem = ({ data, handleRead, openTaskView }) => {
       onMouseLeave={() => setHover(false)}
     >
       <span className="notification-item-span" onClick={() => handleClick()}>
-        <p className="notification-task-wrapper">
+        <div className="notification-task-wrapper">
           {
             <StatusIcon
               status={data.task.status}
@@ -28,8 +28,8 @@ const NotificationItem = ({ data, handleRead, openTaskView }) => {
               noBg={true}
             />
           }
-          {data.task.title}
-        </p>
+          <p>{data.task.title}</p>
+        </div>
         <p>{data.message}</p>
       </span>
       <span>

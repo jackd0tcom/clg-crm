@@ -8,6 +8,8 @@ import axios from "axios";
 import Loader from "../Elements/Loader";
 import { useAuth0 } from "@auth0/auth0-react";
 import ToDoWidget from "../Elements/ToDoWidget";
+import UpdatesWidget from "../Elements/UpdatesWidget";
+import { formatDateNoTime } from "../helpers/helperFunctions";
 
 const Home = ({ openTaskView }) => {
   const { user, isAuthenticated, isLoading } = useAuth0();
@@ -29,6 +31,8 @@ const Home = ({ openTaskView }) => {
     !isLoading && fetch();
   }, []);
 
+  const date = new Date();
+
   return !isAuthenticated ? (
     <section className="home-landing-section">
       <div className="home-landing-container">
@@ -41,14 +45,13 @@ const Home = ({ openTaskView }) => {
     <Loader />
   ) : (
     <div className="home-container">
+      <p>{formatDateNoTime(date)}</p>
       <h1>Dashboard</h1>
       <div className="widget-wrapper">
         <div className="widget-container">
           <p>Recent Tasks</p>
         </div>
-        <div className="widget-container">
-          <p>Updates</p>
-        </div>{" "}
+        <UpdatesWidget />
         <ToDoWidget openTaskView={openTaskView} />
         <div className="widget-container">
           <a
