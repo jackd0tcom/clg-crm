@@ -6,7 +6,7 @@ const TaskListItem = ({ task, openTaskView }) => {
     e.preventDefault();
     e.stopPropagation();
     if (openTaskView) {
-      openTaskView(task.taskId);
+      openTaskView(task);
     }
   };
 

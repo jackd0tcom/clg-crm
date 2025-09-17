@@ -9,6 +9,7 @@ import Loader from "../Elements/Loader";
 import { useAuth0 } from "@auth0/auth0-react";
 import ToDoWidget from "../Elements/ToDoWidget";
 import UpdatesWidget from "../Elements/UpdatesWidget";
+import RecentItemsWidget from "../Elements/RecentItemsWidget";
 import { formatDateNoTime } from "../helpers/helperFunctions";
 
 const Home = ({ openTaskView }) => {
@@ -48,9 +49,7 @@ const Home = ({ openTaskView }) => {
       <p>{formatDateNoTime(date)}</p>
       <h1>Dashboard</h1>
       <div className="widget-wrapper">
-        <div className="widget-container">
-          <p>Recent Tasks</p>
-        </div>
+        <RecentItemsWidget openTaskView={openTaskView} navigate={navigate} />
         <UpdatesWidget />
         <ToDoWidget openTaskView={openTaskView} />
         <div className="widget-container">

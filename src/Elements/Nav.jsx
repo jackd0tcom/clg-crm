@@ -26,13 +26,11 @@ const Nav = () => {
         ) : (
           <>
             <div className="nav-buttons-container">
-              <a href="/">
                 <img
                   className="clg-logo"
                   src="/src/assets/Clause-Law-Group-Logo-White.webp"
                   alt="clg-logo"
                 />
-              </a>
               <NavLink
                 to="/"
                 className={({ isActive }) =>

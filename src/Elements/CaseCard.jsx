@@ -1,12 +1,22 @@
 import { capitalize } from "../helpers/helperFunctions";
 import TaskListItem from "../Elements/TaskListItem";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import TaskList from "./TaskList";
+import { addRecentItem } from "../helpers/recentItemsHelper";
 
 const CaseCard = ({ data, openTaskView }) => {
+  const navigate = useNavigate();
   const tasks = data.tasks.slice(0, 2);
+
+  const handleCaseClick = (e) => {
+    e.preventDefault();
+    // Add case to recent items before navigating
+    addRecentItem(data, 'case');
+    navigate(`/case/${data.caseId}`);
+  };
+
   return (
-    <a href={`/case/${data.caseId}`}>
+    <a href={`/case/${data.caseId}`} onClick={handleCaseClick}>
       <div className="case-card-wrapper">
         <div className="case-card-head">
           <p className="case-card-phase">{capitalize(data.phase)}</p>

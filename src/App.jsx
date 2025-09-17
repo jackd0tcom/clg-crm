@@ -20,6 +20,7 @@ import Calendar from "./Pages/Calendar.jsx";
 import CalendarCallback from "./Pages/CalendarCallback.jsx";
 import Settings from "./Pages/Settings.jsx";
 import Inbox from "./Pages/Inbox.jsx";
+import { addRecentItem } from "./helpers/recentItemsHelper";
 
 function App() {
   const [isOpen, setIsOpen] = useState(false);
@@ -48,8 +49,16 @@ function App() {
     setUserSynced(true);
   };
 
-  const openTaskView = (id) => {
-    setTaskId(id);
+  const openTaskView = (taskOrId) => {
+    // Handle both task object and task ID
+    const taskId = typeof taskOrId === 'object' ? taskOrId.taskId : taskOrId;
+    
+    // If we have the full task object, add it to recent items
+    if (typeof taskOrId === 'object' && taskOrId.taskId) {
+      addRecentItem(taskOrId, 'task');
+    }
+    
+    setTaskId(taskId);
     setIsOpen(true);
   };
 

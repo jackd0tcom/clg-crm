@@ -8,7 +8,7 @@ const NotificationItem = ({ data, handleRead, openTaskView }) => {
 
   const handleClick = (e) => {
     if (openTaskView) {
-      openTaskView(data.task.taskId);
+      openTaskView(data.task);
     }
   };
 

@@ -90,7 +90,7 @@ const TaskItem = ({
       className="task-list-item"
       style={{ gridTemplateColumns: `${columns}` }}
       onClick={() => {
-        !newTask && openTaskView(task.taskId);
+        !newTask && openTaskView(task);
       }}
     >
       {newTask ? (
