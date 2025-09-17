@@ -33,7 +33,9 @@ const Case = ({ openTaskView, refreshKey }) => {
   const [isAddingPerson, setIsAddingPerson] = useState(false);
   const [isNewPerson, setIsNewPerson] = useState(false);
   const [isArchived, setIsArchived] = useState(false);
+  const [isCreatingCase, setIsCreatingCase] = useState(false);
   const dropdownRef = useRef(null);
+  const isCreatingCaseRef = useRef(false);
 
   const headings = ["Title", "Status", "Due Date", "Assignees", "Priority"];
 
@@ -163,15 +165,32 @@ const Case = ({ openTaskView, refreshKey }) => {
   };
 
   const newCase = async () => {
+    // Prevent duplicate case creation using ref (not affected by re-renders)
+    if (isCreatingCaseRef.current) {
+      console.log("Case creation already in progress, skipping...", {
+        isCreatingCase: isCreatingCase,
+        isCreatingCaseRef: isCreatingCaseRef.current,
+      });
+      return;
+    }
+
     try {
+      console.log("Starting case creation...", { title, isCreatingCase });
+      setIsCreatingCase(true);
+      isCreatingCaseRef.current = true;
+
       const caseTitle =
         title && title.trim() !== "Untitled Case"
           ? title.trim()
           : "Untitled Case";
 
+      console.log("Creating case with title:", caseTitle);
       const response = await axios.post("/api/newCase", {
         title: caseTitle,
       });
+      console.log("Case created successfully:", response.data);
+
+      // Navigate first, then update state
       navigate(`/case/${response.data.caseId}`);
 
       setCaseData(response.data);
@@ -180,6 +199,10 @@ const Case = ({ openTaskView, refreshKey }) => {
       refreshActivityData();
     } catch (error) {
       console.log(error);
+    } finally {
+      console.log("Case creation completed, resetting flags");
+      setIsCreatingCase(false);
+      isCreatingCaseRef.current = false;
     }
   };
 
@@ -206,12 +229,25 @@ const Case = ({ openTaskView, refreshKey }) => {
               <div
                 className="case-practice-areas-wrapper"
                 onClick={() => {
-                  if (!caseData?.caseId) {
+                  console.log("Practice area clicked:", {
+                    caseId: caseData?.caseId,
+                    isCreatingCase,
+                    isCreatingCaseRef: isCreatingCaseRef.current,
+                  });
+                  if (!caseData?.caseId && !isCreatingCaseRef.current) {
+                    console.log("Practice area: Creating new case...");
                     newCase().then(() => {
                       setIsAddingArea(true);
                     });
-                  } else {
+                  } else if (caseData?.caseId) {
+                    console.log(
+                      "Practice area: Opening practice area toggle for existing case"
+                    );
                     setIsAddingArea(true);
+                  } else {
+                    console.log(
+                      "Practice area: Case creation in progress, skipping..."
+                    );
                   }
                 }}
               >
@@ -254,6 +290,7 @@ const Case = ({ openTaskView, refreshKey }) => {
                 caseId={caseId}
                 isNewCase={isNewCase}
                 newCase={newCase}
+                isCreatingCase={isCreatingCase}
               />
               <div className="case-persons-wrapper">
                 {personView && selectedPerson && (
@@ -406,7 +443,7 @@ const Case = ({ openTaskView, refreshKey }) => {
               caseId={caseData.caseId}
               tasks={caseData.tasks}
               headings={headings}
-              columns="2fr 1fr 1fr 1fr"
+              columns="4fr 2fr 2fr 2fr 1fr"
               openTaskView={openTaskView}
               refreshCaseData={refreshCaseData}
               refreshActivityData={refreshActivityData}

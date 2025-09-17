@@ -10,9 +10,17 @@ const CaseInput = ({
   caseId,
   isNewCase,
   newCase,
+  isCreatingCase,
 }) => {
   const [count, setCount] = useState(0);
   const inputRef = useRef(null);
+
+  // Auto-focus the input when it's a new case
+  useEffect(() => {
+    if (isNewCase && caseId == 0 && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isNewCase, caseId]);
 
   const saveInput = () => {
     if (count !== 0) {
@@ -22,9 +30,10 @@ const CaseInput = ({
           isNewCase &&
           caseId == 0 &&
           title &&
-          title.trim() !== "Untitled Case"
+          title.trim() !== "Untitled Case" &&
+          !isCreatingCase
         ) {
-          console.log("new case Title");
+          console.log("CaseInput: Creating new case with title:", title, { isCreatingCase });
           newCase();
           return;
         }
@@ -58,24 +67,28 @@ const CaseInput = ({
   useEffect(() => {
     clearSaveTimer();
     saveTimer.current = setTimeout(() => {
-      if (title && title.trim() !== "Untitled Case") {
+      if (title && title.trim() !== "Untitled Case" && !isCreatingCase) {
         saveInput();
       }
     }, 2000);
     return () => {
       clearSaveTimer();
     };
-  }, [title]);
+  }, [title, isCreatingCase]);
 
   const handleBlur = () => {
     clearSaveTimer();
-    saveInput();
+    if (!isCreatingCase) {
+      saveInput();
+    }
   };
 
   const handleEnter = (e) => {
     if (e.key === "Enter") {
       clearSaveTimer();
-      saveInput();
+      if (!isCreatingCase) {
+        saveInput();
+      }
       inputRef.current.blur();
     }
   };

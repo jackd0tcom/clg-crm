@@ -62,10 +62,13 @@ const TaskFilter = ({ tasks, setTasks, paramCase }) => {
       const caseIds = filteredCases.map((cas) => cas.caseId);
 
       const filteredTasks = originalTasks.filter((task) => {
-        return (
-          task.case && task.case.caseId && caseIds.includes(task.case.caseId)
-        );
+        // Include tasks that are assigned to one of the filtered cases
+        const hasCase = task.case && task.case.caseId;
+        const matchesFilter = hasCase && caseIds.includes(task.case.caseId);
+        
+        return matchesFilter;
       });
+      
       setTasks(filteredTasks);
     }
   }, [filteredCases, originalTasks]);
