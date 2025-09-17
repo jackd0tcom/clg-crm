@@ -75,28 +75,6 @@ export function findTimeDifference(data) {
   const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
   const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
 
-  // For future dates (negative diffInMs), we need to handle differently
-  if (diffInMs < 0) {
-    const futureMs = Math.abs(diffInMs);
-    const futureDays = Math.floor(futureMs / (1000 * 60 * 60 * 24));
-    
-    // Tomorrow
-    if (futureDays === 1) {
-      return "1Tomorrow";
-    }
-    
-    // Within current work week (next 7 days)
-    if (futureDays <= 7) {
-      const dayNames = ['1Sunday', '1Monday', '1Tuesday', '1Wednesday', '1Thursday', '1Friday', '1Saturday'];
-      return dayNames[activityDate.getDay()];
-    }
-    
-    // Farther in the future - use formatDateNoTime
-    return "0" + formatDateNoTime(data);
-  }
-
-  // For past dates (positive diffInMs)
-
   // Compare calendar dates to determine if it's today or yesterday
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const activityDay = new Date(
@@ -104,6 +82,41 @@ export function findTimeDifference(data) {
     activityDate.getMonth(),
     activityDate.getDate()
   );
+
+  // For future dates (negative diffInMs), we need to handle differently
+  if (diffInMs < 0) {
+    const futureMs = Math.abs(diffInMs);
+    const futureDays = Math.floor(futureMs / (1000 * 60 * 60 * 24));
+
+    // Check if it's today first (even for future times)
+    if (activityDay.getTime() === today.getTime()) {
+      return "0Today";
+    }
+
+    // Tomorrow
+    if (futureDays === 1) {
+      return "1Tomorrow";
+    }
+
+    // Within current work week (next 7 days)
+    if (futureDays <= 7) {
+      const dayNames = [
+        "1Sunday",
+        "1Monday",
+        "1Tuesday",
+        "1Wednesday",
+        "1Thursday",
+        "1Friday",
+        "1Saturday",
+      ];
+      return dayNames[activityDate.getDay()];
+    }
+
+    // Farther in the future - use formatDateNoTime
+    return "0" + formatDateNoTime(data);
+  }
+
+  // For past dates (positive diffInMs)
 
   // Same calendar date (today)
   if (activityDay.getTime() === today.getTime()) {

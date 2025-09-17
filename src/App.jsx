@@ -72,7 +72,7 @@ function App() {
             <Loader />
           ) : (
             <Routes>
-              <Route index element={<Home />} />
+              <Route index element={<Home openTaskView={openTaskView} />} />
               <Route
                 path="/login"
                 element={isAuthenticated ? <Navigate to="/" /> : <Landing />}

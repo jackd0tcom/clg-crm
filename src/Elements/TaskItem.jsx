@@ -7,6 +7,7 @@ import AssigneeToggle from "./AssigneeToggle";
 import TaskInput from "./TaskInput";
 import PriorityIcon from "./PriorityIcon";
 import StatusIcon from "./StatusIcon";
+import { findTimeDifference } from "../helpers/helperFunctions";
 
 const TaskItem = ({
   task,
@@ -19,6 +20,7 @@ const TaskItem = ({
   caseId,
   refreshCaseData,
   refreshActivityData,
+  columns,
 }) => {
   const [status, setStatus] = useState(task.status);
   const [assignees, setAssignees] = useState([]);
@@ -40,7 +42,10 @@ const TaskItem = ({
         return [heading, task.case?.title || ""];
       }
       if (heading === "Due Date") {
-        return [heading, task.dueDate ? formatDateNoTime(task.dueDate) : ""];
+        return [
+          heading,
+          task.dueDate ? findTimeDifference(task.dueDate).slice(1) : "",
+        ];
       }
       if (heading === "Assignees") {
         return [heading, assignees.length > 0 ? `${assignees.length}` : "0"];
@@ -83,6 +88,7 @@ const TaskItem = ({
   return (
     <div
       className="task-list-item"
+      style={{ gridTemplateColumns: `${columns}` }}
       onClick={() => {
         !newTask && openTaskView(task.taskId);
       }}

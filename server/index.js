@@ -47,6 +47,7 @@ const {
   addTaskAssignee,
   removeTaskAssignee,
   deleteTask,
+  getTodayTasks,
 } = taskCtrl;
 const { register, login, checkUser, logout, syncAuth0User } = authCtrl;
 const {
@@ -70,12 +71,8 @@ const {
   updatePreferredCalendar,
   checkAppCalendars,
 } = calendarCtrl;
-const {
-  getNotifications,
-  markAsRead,
-  getUnreadCount,
-  markAllAsRead,
-} = notificationsCtrl;
+const { getNotifications, markAsRead, getUnreadCount, markAllAsRead } =
+  notificationsCtrl;
 
 // Express setup
 const app = express();
@@ -141,6 +138,7 @@ app.post("/api/newPerson", newPerson);
 
 // task endpoints
 app.get("/api/getAllTasks", getAllTasks);
+app.get("/api/getTodayTasks", getTodayTasks);
 app.get("/api/getTasksByCase/:caseId", getTasksByCase);
 app.post("/api/newTask", newTask);
 app.post("/api/saveTask", saveTask);

@@ -52,6 +52,7 @@ const TaskList = ({
                   openTaskView={openTaskView}
                   refreshTasks={refreshTasks}
                   date={title}
+                  columns={columns}
                 />
               );
             })}
@@ -65,6 +66,7 @@ const TaskList = ({
                   openTaskView={openTaskView}
                   refreshTasks={refreshTasks}
                   date={title}
+                  columns={columns}
                 />
               );
             })}
@@ -87,6 +89,7 @@ const TaskList = ({
                 caseId={caseId}
                 refreshCaseData={refreshCaseData}
                 refreshActivityData={refreshActivityData}
+                columns={columns}
               />
             )}
           </div>

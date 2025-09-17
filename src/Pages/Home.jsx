@@ -7,10 +7,9 @@ import CaseListItem from "../Elements/CaseListItem";
 import axios from "axios";
 import Loader from "../Elements/Loader";
 import { useAuth0 } from "@auth0/auth0-react";
-import LogoutButton from "../Elements/LogoutButton";
-import LoginButton from "../Elements/LoginButton";
+import ToDoWidget from "../Elements/ToDoWidget";
 
-const Home = () => {
+const Home = ({ openTaskView }) => {
   const { user, isAuthenticated, isLoading } = useAuth0();
   const navigate = useNavigate();
   const [cases, setCases] = useState();
@@ -50,9 +49,7 @@ const Home = () => {
         <div className="widget-container">
           <p>Updates</p>
         </div>{" "}
-        <div className="widget-container">
-          <p>To Do</p>
-        </div>{" "}
+        <ToDoWidget openTaskView={openTaskView} />
         <div className="widget-container">
           <a
             onClick={() => navigate("/cases")}
@@ -66,7 +63,7 @@ const Home = () => {
                 return <CaseListItem key={data.caseId} data={data} />;
               })
             ) : (
-              <>You are not assigned to any cases</>
+              <p>You are not assigned to any cases</p>
             )}
           </div>
         </div>
