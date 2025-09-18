@@ -19,12 +19,6 @@ const db = await connectToDB("postgresql:///clg-db");
 
 const users = [
   {
-    username: "admin",
-    firstName: "Jack",
-    lastName: "Ball",
-    role: "admin",
-  },
-  {
     username: "meg_attorney",
     firstName: "Meg",
     lastName: "Williams",
@@ -46,6 +40,12 @@ const users = [
     username: "lisa_associate",
     firstName: "Lisa",
     lastName: "Rodriguez",
+    role: "team_member",
+  },
+  {
+    username: "hannah_associate",
+    firstName: "Hannah",
+    lastName: "Ball",
     role: "team_member",
   },
 ];

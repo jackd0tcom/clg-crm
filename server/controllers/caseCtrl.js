@@ -9,6 +9,14 @@ import {
   format,
 } from "../helpers/activityHelper.js";
 
+import {
+  // notifyCaseCreated,
+  // notifyCaseUpdated,
+  // notifyCaseDeleted,
+  notifyCaseAssigned,
+  // notifyCaseUnassigned,
+} from "../helpers/notificationHelper.js";
+
 export default {
   getCases: async (req, res) => {
     try {
@@ -480,6 +488,20 @@ export default {
         details: `Added ${assignedUser.firstName} ${assignedUser.lastName} as assignee`,
       });
 
+      // Create notifications for case assignment
+      const actorName =
+        `${req.session.user.firstName} ${req.session.user.lastName}`.trim() ||
+        req.session.user.username;
+      const assigneeName =
+        `${assignedUser.firstName} ${assignedUser.lastName}`.trim() ||
+        "Unknown User";
+      await notifyCaseAssigned(
+        caseExists,
+        userId,
+        assigneeName,
+        req.session.user.userId,
+        actorName
+      );
       res.status(201).json(newAssignee);
     } catch (err) {
       console.log(err);

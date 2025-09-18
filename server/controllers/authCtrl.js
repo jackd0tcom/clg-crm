@@ -90,6 +90,7 @@ export default {
     res.status(200).send("there is no user on the session boi");
   },
   syncAuth0User: async (req, res) => {
+    console.log("syncUser");
     try {
       const { auth0Id, email, name, picture } = req.body;
 
@@ -119,6 +120,7 @@ export default {
         lastName: user.lastName,
         role: user.role,
         authProvider: "auth0",
+        profilePic: user.picture,
       };
 
       res.status(200).json({ user: req.session.user });

@@ -96,8 +96,6 @@ export default {
           999
         );
 
-        console.log(today, startOfDay, endOfDay);
-
         // First get the IDs of tasks where the user is assigned
         const assignedTasks = await TaskAssignees.findAll({
           where: { userId },

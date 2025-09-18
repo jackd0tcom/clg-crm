@@ -1,7 +1,12 @@
 const Loader = () => {
   return (
     <div className="loader-wrapper">
-      <p>Loading...</p>
+      <div class="lds-ring">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
     </div>
   );
 };

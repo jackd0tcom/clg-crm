@@ -29,7 +29,7 @@ const Home = ({ openTaskView }) => {
         console.log(error);
       }
     }
-    !isLoading && fetch();
+    !isLoading && isAuthenticated && fetch();
   }, []);
 
   const date = new Date();

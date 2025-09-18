@@ -16,6 +16,7 @@ export const NOTIFICATION_TYPES = {
   TASK_DUE_DATE_CHANGED: "task_due_date_changed",
   TASK_PRIORITY_CHANGED: "task_priority_changed",
   TASK_CASE_CHANGED: "task_case_changed",
+  CASE_ASSIGNED: "case_assigned",
   COMMENT_ADDED: "comment_added",
 };
 
@@ -418,5 +419,45 @@ export const getUnreadNotificationCount = async (userId) => {
   } catch (error) {
     console.error("Error getting unread notification count:", error);
     return 0;
+  }
+};
+
+/**
+ * Create notifications for case assignment
+ * @param {Object} theCase - The case being assigned
+ * @param {number} assigneeId - The user being assigned
+ * @param {string} assigneeName - The name of the user being assigned
+ * @param {number} actorId - The user who assigned the task
+ * @param {string} actorName - The name of the user who assigned the task
+ */
+export const notifyCaseAssigned = async (
+  theCase,
+  assigneeId,
+  assigneeName,
+  actorId,
+  actorName
+) => {
+  try {
+    // Notify the assignee
+    await createNotification(
+      assigneeId,
+      NOTIFICATION_TYPES.CASE_ASSIGNED,
+      "case",
+      theCase.taskId,
+      `${actorName} assigned this case to you`
+    );
+
+    // Notify the task owner (if different from actor)
+    if (theCase.ownerId && theCase.ownerId !== actorId) {
+      await createNotification(
+        theCase.ownerId,
+        NOTIFICATION_TYPES.CASE_ASSIGNED,
+        "case",
+        theCase.taskId,
+        `${actorName} assigned ${assigneeName} to your case`
+      );
+    }
+  } catch (error) {
+    console.error("Error creating case assignment notifications:", error);
   }
 };

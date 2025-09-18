@@ -18,7 +18,7 @@ const Calendar = () => {
 
     const timer = setTimeout(() => {
       checkGoogleConnection();
-    }, 500); // 1 second delay
+    }, 300); // 1 second delay
 
     return () => clearTimeout(timer);
   }, []);
@@ -28,7 +28,7 @@ const Calendar = () => {
       // Small delay to allow backend token refresh if needed
       const timer = setTimeout(() => {
         fetchGoogleEvents();
-      }, 500);
+      }, 300);
 
       return () => clearTimeout(timer);
     }
@@ -175,7 +175,17 @@ const Calendar = () => {
   };
 
   return isLoading || isCheckingConnection ? (
-    <Loader />
+    <div className="calendar-loader">
+      <div className="calendar-loader-body flash">
+        <div class="lds-ring">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+        <p>Syncing Calendar...</p>
+      </div>
+    </div>
   ) : (
     <div className="calendar-wrapper">
       {!isGoogleConnected ? (

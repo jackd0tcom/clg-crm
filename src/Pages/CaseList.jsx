@@ -4,6 +4,7 @@ import axios from "axios";
 import CaseCard from "../Elements/CaseCard";
 import CaseFilter from "../Elements/CaseFilter";
 import CaseListSearch from "../Elements/CaseListSearch";
+import Loader from "../Elements/Loader";
 
 const CaseList = ({ openTaskView, refreshKey }) => {
   const navigate = useNavigate();
@@ -36,7 +37,7 @@ const CaseList = ({ openTaskView, refreshKey }) => {
   }, [refreshKey]);
 
   return !isFetched ? (
-    <>Loading...</>
+    <Loader />
   ) : (
     <div className="case-list-wrapper">
       <div className="case-list-head">
