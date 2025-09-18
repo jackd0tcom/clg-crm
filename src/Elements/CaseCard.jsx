@@ -3,10 +3,17 @@ import TaskListItem from "../Elements/TaskListItem";
 import { Link, useNavigate } from "react-router";
 import TaskList from "./TaskList";
 import { addRecentItem } from "../helpers/recentItemsHelper";
+import { useEffect, useState } from "react";
 
 const CaseCard = ({ data, openTaskView }) => {
   const navigate = useNavigate();
-  const tasks = data.tasks.slice(0, 2);
+  const [tasks, setTasks] = useState([]);
+
+  useEffect(() => {
+    if (data.tasks.length > 0) {
+      setTasks(data.tasks.slice(0, 2));
+    }
+  }, []);
 
   const handleCaseClick = (e) => {
     e.preventDefault();
@@ -16,7 +23,11 @@ const CaseCard = ({ data, openTaskView }) => {
   };
 
   return (
-    <a href={`/case/${data.caseId}`} onClick={handleCaseClick}>
+    <a
+      className="case-card-link"
+      href={`/case/${data.caseId}`}
+      onClick={handleCaseClick}
+    >
       <div className="case-card-wrapper">
         <div className="case-card-head">
           <p className="case-card-phase">{capitalize(data.phase)}</p>
@@ -54,7 +65,7 @@ const CaseCard = ({ data, openTaskView }) => {
         </div>
         <div className="case-card-tasks">
           <h4>To Do:</h4>
-          {!tasks ? (
+          {tasks.length > 0 ? (
             tasks.map((task) => {
               return (
                 <TaskListItem

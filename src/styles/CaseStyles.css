@@ -11,6 +11,7 @@
   gap: 2rem;
   padding: 20px 15px 15px 15px;
   background-color: var(--root-bg-color-light);
+  height: 100%;
 }
 .case-list-head {
   display: flex;
@@ -70,11 +71,15 @@
 
 /* Case Card */
 
+.case-card-link {
+  height: auto;
+}
+
 .case-card-wrapper {
   display: grid;
   row-gap: 40px;
   padding: 15px;
-  height: 100%;
+  min-height: 30vh;
   border: 1px solid var(--light-border);
   border-radius: 3px;
   color: black;
@@ -230,7 +235,7 @@
 }
 .case-view-tasks-list-head {
   display: grid !important;
-  grid-template-columns: 4fr 2fr 2fr 2fr 1fr;
+  grid-template-columns: 0.5fr 2fr 2fr 2fr 1fr;
   column-gap: 10px;
   row-gap: 10px;
 }

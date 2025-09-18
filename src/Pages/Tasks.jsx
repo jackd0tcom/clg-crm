@@ -8,19 +8,25 @@ import TaskFilter from "../Elements/TaskFilter";
 
 const Tasks = ({ openTaskView, refreshKey }) => {
   const [tasks, setTasks] = useState();
+  const [completedTasks, setCompletedTasks] = useState();
+  const [notCompletedTasks, setNotCompletedTasks] = useState();
   const [isLoading, setIsLoading] = useState(true);
   const [dueToday, setDueToday] = useState([]);
   const [overdue, setOverdue] = useState([]);
   const [upcoming, setUpcoming] = useState([]);
-  const columns = "3fr 2fr 2fr 1fr";
-  const headings = ["Title", "Case", "Assignees", "Due Date"];
+  const columns = "0.1fr 3fr 2fr 2fr 1fr";
+  const headings = ["", "Title", "Case", "Assignees", "Due Date"];
   const caseId = useParams();
 
   const fetchTasks = async () => {
     try {
       setIsLoading(true);
       const res = await axios.get("/api/getAllTasks");
-      setTasks(res.data);
+      const nonCompleted = res.data.filter((ta) => ta.status !== "completed");
+      const completed = res.data.filter((ta) => ta.status === "completed");
+      setNotCompletedTasks(nonCompleted);
+      setTasks(nonCompleted);
+      setCompletedTasks(completed);
       setIsLoading(false);
     } catch (error) {
       console.log(error);
@@ -42,6 +48,11 @@ const Tasks = ({ openTaskView, refreshKey }) => {
   useEffect(() => {
     if (tasks && tasks.length > 0) {
       format();
+    } else if (tasks && tasks.length === 0) {
+      // Handle empty filtered results
+      setDueToday([]);
+      setOverdue([]);
+      setUpcoming([]);
     }
   }, [tasks]);
 
@@ -73,7 +84,13 @@ const Tasks = ({ openTaskView, refreshKey }) => {
     <div className="tasks-page-wrapper">
       <div className="tasks-page-head">
         <h1 className="section-heading">My Tasks</h1>
-        <TaskFilter tasks={tasks} setTasks={setTasks} paramCase={caseId} />
+        <TaskFilter
+          tasks={tasks}
+          setTasks={setTasks}
+          completedTasks={completedTasks}
+          notCompletedTasks={notCompletedTasks}
+          paramCase={caseId}
+        />
         <button className="new-task-button" onClick={() => openTaskView("new")}>
           New Task
         </button>
@@ -89,7 +106,7 @@ const Tasks = ({ openTaskView, refreshKey }) => {
         <TaskList
           openTaskView={openTaskView}
           tasks={overdue}
-          headings={["Title", "Case", "Assignees", "Due Date"]}
+          headings={["Status", "Title", "Case", "Assignees", "Due Date"]}
           columns={columns}
           title={"Overdue"}
           refreshTasks={fetchTasks}
@@ -97,7 +114,7 @@ const Tasks = ({ openTaskView, refreshKey }) => {
         <TaskList
           openTaskView={openTaskView}
           tasks={dueToday}
-          headings={["Title", "Case", "Assignees", "Due Date"]}
+          headings={["Status", "Title", "Case", "Assignees", "Due Date"]}
           columns={columns}
           title={"Due Today"}
           refreshTasks={fetchTasks}
@@ -105,7 +122,7 @@ const Tasks = ({ openTaskView, refreshKey }) => {
         <TaskList
           openTaskView={openTaskView}
           tasks={upcoming}
-          headings={["Title", "Case", "Assignees", "Due Date"]}
+          headings={["Status", "Title", "Case", "Assignees", "Due Date"]}
           columns={columns}
           title={"Upcoming"}
           refreshTasks={fetchTasks}

@@ -37,7 +37,7 @@ const Case = ({ openTaskView, refreshKey }) => {
   const dropdownRef = useRef(null);
   const isCreatingCaseRef = useRef(false);
 
-  const headings = ["Title", "Status", "Due Date", "Assignees", "Priority"];
+  const headings = ["Status", "Title", "Priority", "Assignees", "Due Date"];
 
   const getData = async () => {
     try {
@@ -443,7 +443,7 @@ const Case = ({ openTaskView, refreshKey }) => {
               caseId={caseData.caseId}
               tasks={caseData.tasks}
               headings={headings}
-              columns="4fr 2fr 2fr 2fr 1fr"
+              columns="0.5fr 2fr 2fr 2fr 1fr"
               openTaskView={openTaskView}
               refreshCaseData={refreshCaseData}
               refreshActivityData={refreshActivityData}

@@ -26,6 +26,7 @@ const TaskItem = ({
   const [assignees, setAssignees] = useState([]);
   const [newTitle, setNewTitle] = useState("");
   const [taskId, setTaskId] = useState();
+  const [hasIcon, setHasIcon] = useState(false);
 
   useEffect(() => {
     if (!newTask) {
@@ -35,6 +36,12 @@ const TaskItem = ({
       setAssignees(task.assignees);
     }
   }, [task.assignees]);
+
+  useEffect(() => {
+    if (headings.includes("Status")) {
+      setHasIcon(true);
+    }
+  }, []);
 
   const newTaskObj = Object.fromEntries(
     headings.map((heading) => {
@@ -111,18 +118,7 @@ const TaskItem = ({
         </div>
       ) : (
         Object.entries(newTaskObj).map(([key, value], index) =>
-          key !== "Assignees" ? (
-            <p key={index}>{capitalize(value)}</p>
-          ) : key === "Priority" ? (
-            <PriorityIcon data={value} />
-          ) : key === "Status" ? (
-            <StatusIcon
-              status={value}
-              hasIcon={true}
-              hasTitle={true}
-              noBg={true}
-            />
-          ) : (
+          key === "Assignees" ? (
             <div key={index} className="task-list-assignee-wrapper">
               {assignees.map((nee) => {
                 return (
@@ -134,6 +130,18 @@ const TaskItem = ({
                 );
               })}
             </div>
+          ) : key === "Priority" ? (
+            <PriorityIcon key={index} data={value} />
+          ) : key === "Status" ? (
+            <StatusIcon
+              key={index}
+              status={value}
+              hasIcon={true}
+              hasTitle={false}
+              noBg={true}
+            />
+          ) : (
+            <p key={index}>{capitalize(value)}</p>
           )
         )
       )}

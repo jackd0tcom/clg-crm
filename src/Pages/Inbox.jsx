@@ -3,7 +3,7 @@ import axios from "axios";
 import NotificationList from "../Elements/NotificationList";
 
 const Inbox = ({ openTaskView }) => {
-  const [notifications, setNotifications] = useState();
+  const [notifications, setNotifications] = useState([]);
   const [clearedNotifications, setClearedNotifications] = useState();
 
   const [showCleared, setShowCleared] = useState(false);
@@ -82,18 +82,11 @@ const Inbox = ({ openTaskView }) => {
         </button>
       </div>
       {!showCleared ? (
-        notifications ? (
-          <NotificationList
-            notifications={notifications}
-            handleRead={handleRead}
-            openTaskView={openTaskView}
-          />
-        ) : (
-          <div className="caught-up">
-            <i className="fa-solid fa-inbox"></i>
-            <p>You're all caught up!</p>
-          </div>
-        )
+        <NotificationList
+          notifications={notifications}
+          handleRead={handleRead}
+          openTaskView={openTaskView}
+        />
       ) : (
         <NotificationList
           notifications={clearedNotifications}

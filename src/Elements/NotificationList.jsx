@@ -3,7 +3,7 @@ import NotificationItem from "./NotificationItem";
 const NotificationList = ({ notifications, handleRead, openTaskView }) => {
   return (
     <div className="notification-list-wrapper">
-      {notifications &&
+      {notifications.length > 0 ? (
         notifications.map((item) => {
           return (
             <NotificationItem
@@ -13,7 +13,13 @@ const NotificationList = ({ notifications, handleRead, openTaskView }) => {
               handleRead={handleRead}
             />
           );
-        })}
+        })
+      ) : (
+        <div className="caught-up">
+          <i className="fa-solid fa-inbox"></i>
+          <p>You're all caught up!</p>
+        </div>
+      )}
     </div>
   );
 };

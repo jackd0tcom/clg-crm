@@ -54,6 +54,21 @@
   font-weight: 500;
   transition: 100ms;
 }
+.tasks-case-filter-button-active {
+  font-size: 0.85rem;
+  padding: 6px 8px;
+  margin: 0 5px;
+  color: var(--button-active-font);
+  background-color: var(--button-active-bg);
+  border: 1px solid var(--button-active-border);
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 100ms;
+}
+.tasks-case-filter-button-active:hover {
+  background-color: var(--button-active-bg-hover);
+}
 .tasks-case-filter-button:hover {
   background-color: var(--button-active-bg-hover);
   color: var(--button-active-font);
@@ -114,7 +129,7 @@
 }
 .task-list {
   display: grid;
-  grid-template-columns: 3fr 2fr 2fr 1fr;
+  grid-template-columns: 0.1fr 3fr 2fr 2fr 1fr;
   column-gap: 10px;
   margin: 15px 30px;
   border-bottom: 1px solid var(--light-border);
