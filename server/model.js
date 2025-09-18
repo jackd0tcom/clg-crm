@@ -362,6 +362,14 @@ Notification.init(
         "task_due_date_changed",
         "task_priority_changed",
         "task_case_changed",
+        "case_created",
+        "case_updated",
+        "case_archived",
+        "case_unarchived",
+        "case_assigned",
+        "case_unassigned",
+        "case_phase_changed",
+        "case_priority_changed",
         "comment_added"
       ),
       allowNull: false,
@@ -379,6 +387,11 @@ Notification.init(
       allowNull: false,
     },
     isRead: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
+    isCleared: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
@@ -552,6 +565,13 @@ Notification.belongsTo(Task, {
   foreignKey: "objectId",
   constraints: false,
   as: "task",
+});
+
+Case.hasMany(Notification, { foreignKey: "objectId", constraints: false });
+Notification.belongsTo(Case, {
+  foreignKey: "objectId",
+  constraints: false,
+  as: "case",
 });
 
 // Activity log relationships

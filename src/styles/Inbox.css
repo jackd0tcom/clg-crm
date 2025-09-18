@@ -27,6 +27,9 @@
   width: 90%;
   grid-template-columns: 1fr 2fr;
 }
+.read {
+  color: var(--grey);
+}
 .notification-item-wrapper p {
   font-size: 0.9rem;
   padding-top: 10px;
@@ -36,6 +39,7 @@
 .notification-task-wrapper {
   display: flex;
   column-gap: 3px;
+  align-items: center;
 }
 .notification-task-wrapper i {
   font-size: 0.75rem;

@@ -11,9 +11,10 @@ const Inbox = ({ openTaskView }) => {
   const fetch = async () => {
     try {
       await axios.get("/api/notifications").then((res) => {
+        console.log(res.data);
         if (res.data) {
-          const all = res.data.filter((item) => !item.isRead);
-          const read = res.data.filter((item) => item.isRead);
+          const all = res.data.filter((item) => !item.isCleared);
+          const read = res.data.filter((item) => item.isCleared);
           setNotifications(all);
           setClearedNotifications(read);
         }
@@ -29,6 +30,20 @@ const Inbox = ({ openTaskView }) => {
     try {
       await axios
         .post("/api/notifications/mark-read", { notificationId: id })
+        .then((res) => {
+          if (res.status === 200) {
+            fetch();
+          }
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleCleared = async (id) => {
+    try {
+      await axios
+        .post("/api/notifications/mark-clear", { notificationId: id })
         .then((res) => {
           if (res.status === 200) {
             fetch();
@@ -86,12 +101,14 @@ const Inbox = ({ openTaskView }) => {
           notifications={notifications}
           handleRead={handleRead}
           openTaskView={openTaskView}
+          handleCleared={handleCleared}
         />
       ) : (
         <NotificationList
           notifications={clearedNotifications}
           handleRead={handleRead}
           openTaskView={openTaskView}
+          handleCleared={handleCleared}
         />
       )}
     </div>

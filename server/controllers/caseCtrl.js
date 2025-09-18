@@ -10,11 +10,11 @@ import {
 } from "../helpers/activityHelper.js";
 
 import {
-  // notifyCaseCreated,
-  // notifyCaseUpdated,
-  // notifyCaseDeleted,
+  notifyCaseCreated,
+  notifyCaseUpdated,
+  notifyCaseArchiveStatus,
   notifyCaseAssigned,
-  // notifyCaseUnassigned,
+  notifyCaseUnassigned,
 } from "../helpers/notificationHelper.js";
 
 export default {
@@ -177,6 +177,12 @@ export default {
           action: ACTIVITY_ACTIONS.CASE_CREATED,
           details: `Created new case: ${newCase.title}`,
         });
+
+        // Create notifications for case creation
+        const actorName = 
+          `${req.session.user.firstName} ${req.session.user.lastName}`.trim() ||
+          req.session.user.username;
+        await notifyCaseCreated(newCase, req.session.user.userId, actorName);
 
         // Return the created case with basic info
         res.status(201).json({
@@ -356,6 +362,12 @@ export default {
         )} from ${oldValue} to ${value}`,
       });
 
+      // Create notifications for case update
+      const actorName = 
+        `${req.session.user.firstName} ${req.session.user.lastName}`.trim() ||
+        req.session.user.username;
+      await notifyCaseUpdated(currentCase, req.session.user.userId, actorName, fieldName, oldValue, value);
+
       res.status(200).send("Saved Case Successfully");
     } catch (err) {
       console.log(err);
@@ -388,6 +400,12 @@ export default {
         details: `Changed case phase from ${oldPhase} to ${phase}`,
       });
 
+      // Create notifications for case phase change
+      const actorName = 
+        `${req.session.user.firstName} ${req.session.user.lastName}`.trim() ||
+        req.session.user.username;
+      await notifyCaseUpdated(currentCase, req.session.user.userId, actorName, "phase", oldPhase, phase);
+
       res.status(200).send("Saved Case Phase Successfully");
     } catch (err) {
       console.log(err);
@@ -402,7 +420,7 @@ export default {
         const currentCase = await Case.findOne({ where: { caseId } });
         const oldPriority = currentCase.priority;
 
-        currentCase.update({
+        await currentCase.update({
           priority,
         });
 
@@ -413,6 +431,12 @@ export default {
           action: ACTIVITY_ACTIONS.CASE_PRIORITY_CHANGED,
           details: `Changed case priority from ${oldPriority} to ${priority}`,
         });
+
+        // Create notifications for case priority change
+        const actorName = 
+          `${req.session.user.firstName} ${req.session.user.lastName}`.trim() ||
+          req.session.user.username;
+        await notifyCaseUpdated(currentCase, req.session.user.userId, actorName, "priority", oldPriority, priority);
       }
       res.status(200).send("Saved Case Priority Successfully");
     } catch (err) {
@@ -536,6 +560,15 @@ export default {
         action: ACTIVITY_ACTIONS.CASE_ASSIGNEE_REMOVED,
         details: `Removed ${oldAssignee.firstName} ${oldAssignee.lastName} as assignee`,
       });
+
+      // Create notifications for case unassignment
+      const actorName = 
+        `${req.session.user.firstName} ${req.session.user.lastName}`.trim() ||
+        req.session.user.username;
+      const unassignedUserName = 
+        `${oldAssignee.firstName} ${oldAssignee.lastName}`.trim() ||
+        oldAssignee.username;
+      await notifyCaseUnassigned(caseExists, userId, unassignedUserName, req.session.user.userId, actorName);
 
       res.status(200).send("Case assignees updated successfully");
     } catch (err) {
@@ -703,6 +736,12 @@ export default {
             details: `removed case from archive`,
           });
 
+          // Create notifications for case unarchiving
+          const actorName = 
+            `${req.session.user.firstName} ${req.session.user.lastName}`.trim() ||
+            req.session.user.username;
+          await notifyCaseArchiveStatus(foundCase, req.session.user.userId, actorName, false);
+
           res.send("0 case unarchived");
         } else {
           foundCase.update({ isArchived: true });
@@ -713,6 +752,12 @@ export default {
             action: ACTIVITY_ACTIONS.CASE_ARCHIVED,
             details: `archived case`,
           });
+
+          // Create notifications for case archiving
+          const actorName = 
+            `${req.session.user.firstName} ${req.session.user.lastName}`.trim() ||
+            req.session.user.username;
+          await notifyCaseArchiveStatus(foundCase, req.session.user.userId, actorName, true);
 
           res.send("1 case archived");
         }

@@ -7,6 +7,7 @@ import {
   PracticeArea,
   CasePracticeAreas,
   Notification,
+  Case,
 } from "../model.js";
 import {
   createActivityLog,
@@ -16,6 +17,7 @@ import {
 } from "../helpers/activityHelper.js";
 import {
   markNotificationAsRead,
+  markNotificationAsCleared,
   getUnreadNotificationCount,
 } from "../helpers/notificationHelper.js";
 
@@ -43,9 +45,21 @@ export default {
               "status",
               "priority",
               "dueDate",
-              "notes",
               "ownerId",
             ],
+            required: false,
+            include: [
+              {
+                model: User,
+                as: "owner",
+                attributes: ["userId", "username", "firstName", "lastName"],
+              },
+            ],
+          },
+          {
+            model: Case,
+            as: "case",
+            attributes: ["caseId", "title", "phase"],
             required: false,
             include: [
               {
@@ -58,10 +72,11 @@ export default {
         ],
       });
 
-      // Filter notifications to only include task notifications with valid task data
+      // Filter notifications to include both task and case notifications with valid data
       const filteredNotifications = notifications.filter(
         (notification) =>
-          notification.objectType === "task" && notification.task
+          (notification.objectType === "task" && notification.task) ||
+          (notification.objectType === "case" && notification.case)
       );
 
       res.json(filteredNotifications);
@@ -82,6 +97,23 @@ export default {
       const { userId } = req.session.user;
 
       await markNotificationAsRead(notificationId, userId);
+
+      res.status(200).json({ message: "Notification marked as read" });
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
+      res.status(500).send("Error updating notification");
+    }
+  },
+  markAsCleared: async (req, res) => {
+    try {
+      if (!req.session.user) {
+        return res.status(401).send("User not authenticated");
+      }
+
+      const { notificationId } = req.body;
+      const { userId } = req.session.user;
+
+      await markNotificationAsCleared(notificationId, userId);
 
       res.status(200).json({ message: "Notification marked as read" });
     } catch (error) {
@@ -117,7 +149,7 @@ export default {
       const { userId } = req.session.user;
 
       await Notification.update(
-        { isRead: true },
+        { isCleared: true },
         {
           where: {
             userId,

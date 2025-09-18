@@ -1,6 +1,11 @@
 import NotificationItem from "./NotificationItem";
 
-const NotificationList = ({ notifications, handleRead, openTaskView }) => {
+const NotificationList = ({
+  notifications,
+  handleRead,
+  handleCleared,
+  openTaskView,
+}) => {
   return (
     <div className="notification-list-wrapper">
       {notifications.length > 0 ? (
@@ -11,6 +16,7 @@ const NotificationList = ({ notifications, handleRead, openTaskView }) => {
               data={item}
               openTaskView={openTaskView}
               handleRead={handleRead}
+              handleCleared={handleCleared}
             />
           );
         })

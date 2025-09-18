@@ -2,41 +2,54 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { formatDateNoTime, capitalize } from "../helpers/helperFunctions";
 import StatusIcon from "./StatusIcon";
 import { useState } from "react";
+import { useNavigate } from "react-router";
 
-const NotificationItem = ({ data, handleRead, openTaskView }) => {
+const NotificationItem = ({
+  data,
+  handleRead,
+  handleCleared,
+  openTaskView,
+}) => {
   const [hover, setHover] = useState(false);
+  const nav = useNavigate();
 
   const handleClick = (e) => {
-    if (openTaskView) {
+    handleRead(data.notificationId);
+    if (openTaskView && data.task) {
       openTaskView(data.task);
-    }
+    } else nav(`/case/${data.case.caseId}`);
   };
 
   return (
     <div
-      className="notification-item-wrapper"
+      className={
+        !data.isRead
+          ? `notification-item-wrapper`
+          : `notification-item-wrapper read`
+      }
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
       <span className="notification-item-span" onClick={() => handleClick()}>
         <div className="notification-task-wrapper">
-          {
+          {data.task && (
             <StatusIcon
               status={data.task.status}
               hasIcon={true}
               hasTitle={false}
               noBg={true}
             />
-          }
-          <p>{data.task.title}</p>
+          )}
+          {!data.task && <i className="fa-solid fa-briefcase"></i>}
+          <p>{data.case.title || data.task.title}</p>
         </div>
         <p>{data.message}</p>
       </span>
       <span>
-        {!data.isRead && hover ? (
+        {!data.isCleared && hover ? (
           <button
             className="clear-notification"
-            onClick={() => handleRead(data.notificationId)}
+            onClick={() => handleCleared(data.notificationId)}
           >
             <i className="fa-solid fa-check"></i>
             Clear

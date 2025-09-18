@@ -376,7 +376,15 @@ const Case = ({ openTaskView, refreshKey }) => {
                         );
                     })}
                   {caseData.people.length === 0 && (
-                    <p className="add-person-p">Add Person</p>
+                    <p
+                      onClick={() => {
+                        setIsAddingPerson(true);
+                        setIsNewPerson(true);
+                      }}
+                      className="add-person-p"
+                    >
+                      Add Person
+                    </p>
                   )}
                 </div>
                 <i

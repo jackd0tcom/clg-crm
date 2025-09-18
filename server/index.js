@@ -71,8 +71,13 @@ const {
   updatePreferredCalendar,
   checkAppCalendars,
 } = calendarCtrl;
-const { getNotifications, markAsRead, getUnreadCount, markAllAsRead } =
-  notificationsCtrl;
+const {
+  getNotifications,
+  markAsRead,
+  markAsCleared,
+  getUnreadCount,
+  markAllAsRead,
+} = notificationsCtrl;
 
 // Express setup
 const app = express();
@@ -179,5 +184,6 @@ app.post("/api/calendar/delete-task-event", deleteTaskEvent);
 // notification endpoints
 app.get("/api/notifications", getNotifications);
 app.post("/api/notifications/mark-read", markAsRead);
+app.post("/api/notifications/mark-clear", markAsCleared);
 app.get("/api/notifications/unread-count", getUnreadCount);
 app.post("/api/notifications/mark-all-read", markAllAsRead);

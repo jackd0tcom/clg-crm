@@ -26,11 +26,11 @@ const Nav = () => {
         ) : (
           <>
             <div className="nav-buttons-container">
-                <img
-                  className="clg-logo"
-                  src="/src/assets/Clause-Law-Group-Logo-White.webp"
-                  alt="clg-logo"
-                />
+              <img
+                className="clg-logo"
+                src="/src/assets/Clause-Law-Group-Logo-White.webp"
+                alt="clg-logo"
+              />
               <NavLink
                 to="/"
                 className={({ isActive }) =>
@@ -64,7 +64,7 @@ const Nav = () => {
                   isActive ? "active-nav nav-button" : "inactive-nav nav-button"
                 }
               >
-                <i className="fa-solid fa-suitcase"></i>
+                <i className="fa-solid fa-briefcase"></i>
                 Cases
               </NavLink>
               <NavLink
