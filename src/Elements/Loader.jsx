@@ -1,7 +1,7 @@
 const Loader = () => {
   return (
     <div className="loader-wrapper">
-      <div class="lds-ring">
+      <div className="lds-ring">
         <div></div>
         <div></div>
         <div></div>

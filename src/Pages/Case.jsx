@@ -342,7 +342,9 @@ const Case = ({ openTaskView, refreshKey }) => {
                             key={person.personId}
                             className="case-person-link"
                             onClick={() => handlePersonClick(person)}
-                          >{`${person.firstName} ${person.lastName}`}</a>
+                          >{`${person.firstName} ${
+                            person.lastName ? person.lastName : ""
+                          }`}</a>
                         );
                       } else if (idx === caseData.people.length - 1) {
                         return (
@@ -355,7 +357,9 @@ const Case = ({ openTaskView, refreshKey }) => {
                             <a
                               className="case-person-link"
                               onClick={() => handlePersonClick(person)}
-                            >{`${person.firstName} ${person.lastName}`}</a>
+                            >{`${person.firstName} ${
+                              person.lastName ? person.lastName : ""
+                            }`}</a>
                           </span>
                         );
                       } else if (idx === caseData.people.length - 2) {
@@ -364,7 +368,9 @@ const Case = ({ openTaskView, refreshKey }) => {
                             key={person.personId}
                             className="case-person-link"
                             onClick={() => handlePersonClick(person)}
-                          >{`${person.firstName} ${person.lastName}`}</a>
+                          >{`${person.firstName} ${
+                            person.lastName ? person.lastName : ""
+                          }`}</a>
                         );
                       } else
                         return (
@@ -372,7 +378,9 @@ const Case = ({ openTaskView, refreshKey }) => {
                             key={person.personId}
                             className="case-person-link"
                             onClick={() => handlePersonClick(person)}
-                          >{`${person.firstName} ${person.lastName}, `}</a>
+                          >{`${person.firstName} ${
+                            person.lastName ? person.lastName : ""
+                          }, `}</a>
                         );
                     })}
                   {caseData.people.length === 0 && (

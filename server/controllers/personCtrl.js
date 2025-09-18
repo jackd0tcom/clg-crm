@@ -23,6 +23,12 @@ export default {
       }
 
       const oldValue = currentPerson[fieldName];
+      let message = `updated ${currentPerson.firstName}'s ${fieldName}`;
+      if (oldValue === null) {
+        message = `added ${format(fieldName).toLowerCase()} to ${
+          currentPerson.firstName
+        }`;
+      }
       await currentPerson.update({ [fieldName]: value });
       console.log(currentPerson);
 
@@ -32,7 +38,7 @@ export default {
         objectType: "person",
         objectId: parseInt(personId),
         action: ACTIVITY_ACTIONS.PERSON_UPDATED,
-        details: `Updated ${format(fieldName)} from ${oldValue} to ${value}`,
+        details: message,
       });
 
       res.status(200).send("Saved Person Successfully");
@@ -52,7 +58,7 @@ export default {
         objectType: "person",
         objectId: parseInt(newPerson.personId),
         action: ACTIVITY_ACTIONS.PERSON_CREATED,
-        details: `Added ${format(fieldName)} to the case`,
+        details: `added ${newPerson.firstName} to the case`,
       });
       res.status(200).send(newPerson);
     } catch (error) {
@@ -81,7 +87,7 @@ export default {
         objectType: "case",
         objectId: caseId,
         action: ACTIVITY_ACTIONS.PERSON_REMOVED,
-        details: `Removed ${currentPerson.firstName} ${currentPerson.lastName} from the case`,
+        details: `removed ${currentPerson.firstName} ${currentPerson.lastName} from the case`,
       });
 
       res.status(200).send("Person removed from case successfully");

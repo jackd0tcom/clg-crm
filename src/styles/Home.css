@@ -1,9 +1,76 @@
+.home-landing-section {
+  height: 100%;
+}
 .home-landing-container {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 6rem;
+  width: 100%;
+  height: 100%;
 }
+.home-section {
+  min-height: 100%;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+.bg-video {
+  height: calc(100% - 31px);
+  width: calc(100% - 31px);
+  object-fit: cover;
+  position: absolute;
+  border-radius: 5px;
+}
+.bg-video-overlay {
+  position: absolute;
+  height: calc(100% - 30px);
+  width: calc(100% - 30px);
+  background-color: rgba(8, 51, 29, 0.6);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  margin-top: -1px;
+  margin-left: -1px;
+}
+.welcome-logo {
+  width: 200px;
+}
+.home-content {
+  width: 25%;
+  min-height: 60%;
+  max-width: 350px;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: center;
+  padding: 0 35px 35px 35px;
+  border-radius: 5px;
+  z-index: 10;
+  background-color: white;
+  color: black;
+  row-gap: 1rem;
+}
+
+.home-content p {
+  font-size: 0.9rem;
+}
+.login-button {
+  width: 100%;
+  padding: 15px;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  column-gap: 10px;
+}
+.login-button img {
+  width: 20px;
+}
+.login-button:hover {
+  background-color: var(--root-bg-color-light);
+  color: black;
+}
+
 .home-landing-container button {
   background-color: var(--bright-dark-green);
   color: white;

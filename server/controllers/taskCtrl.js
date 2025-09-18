@@ -489,7 +489,7 @@ export default {
 
       // Get the assigned user's name for the activity log
       const assignedUser = await User.findByPk(userId, {
-        attributes: ["firstName", "lastName"],
+        attributes: ["firstName", "lastName", "userId", "profilePic"],
       });
 
       // Create activity log
@@ -516,7 +516,7 @@ export default {
         actorName
       );
 
-      res.status(201).json(newAssignee);
+      res.status(201).json(assignedUser);
     } catch (err) {
       console.log(err);
       res.status(500).send("Failed to add task assignee");

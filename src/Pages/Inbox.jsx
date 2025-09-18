@@ -11,7 +11,6 @@ const Inbox = ({ openTaskView }) => {
   const fetch = async () => {
     try {
       await axios.get("/api/notifications").then((res) => {
-        console.log(res.data);
         if (res.data) {
           const all = res.data.filter((item) => !item.isCleared);
           const read = res.data.filter((item) => item.isCleared);

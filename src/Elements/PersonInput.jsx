@@ -16,38 +16,49 @@ const PersonInput = ({
 }) => {
   const [input, setInput] = useState(value);
   const [count, setCount] = useState(0);
+  const [isSaving, setIsSaving] = useState(false);
   const inputRef = useRef(null);
+  const isSavingRef = useRef(false);
 
   const saveInput = async () => {
-    if (count !== 0) {
-      try {
-        if (isNewPerson) {
-          await axios
-            .post("/api/newPerson", { caseId, fieldName, value: input })
-            .then((res) => {
-              if (res.status === 200) {
-                console.log("new person added");
-                refreshActivityData();
-                refreshCaseData();
-                setCount(0);
-                setIsNewPerson(false);
-                setPersonId(res.data.personId);
-              }
-            });
-        } else
-          await axios
-            .post("/api/updatePerson", { personId, fieldName, value: input })
-            .then((res) => {
-              if (res.status === 200) {
-                refreshActivityData();
-                refreshCaseData();
-                setCount(0);
-              }
-            });
-      } catch (error) {
-        console.log(error);
+    // Prevent duplicate saves
+    if (isSavingRef.current || count === 0) {
+      return;
+    }
+
+    isSavingRef.current = true;
+    setIsSaving(true);
+
+    try {
+      if (isNewPerson) {
+        await axios
+          .post("/api/newPerson", { caseId, fieldName, value: input })
+          .then((res) => {
+            if (res.status === 200) {
+              refreshActivityData();
+              refreshCaseData();
+              setCount(0);
+              setIsNewPerson(false);
+              setPersonId(res.data.personId);
+            }
+          });
+      } else {
+        await axios
+          .post("/api/updatePerson", { personId, fieldName, value: input })
+          .then((res) => {
+            if (res.status === 200) {
+              refreshActivityData();
+              refreshCaseData();
+              setCount(0);
+            }
+          });
       }
-    } else return;
+    } catch (error) {
+      console.log(error);
+    } finally {
+      isSavingRef.current = false;
+      setIsSaving(false);
+    }
   };
 
   const saveTimer = useRef(null);
@@ -62,7 +73,7 @@ const PersonInput = ({
   useEffect(() => {
     clearSaveTimer();
     saveTimer.current = setTimeout(() => {
-      if (value) {
+      if (value && !isSavingRef.current) {
         saveInput();
       }
     }, 2000);
@@ -73,14 +84,17 @@ const PersonInput = ({
 
   const handleBlur = () => {
     clearSaveTimer();
-    saveInput();
+    if (!isSavingRef.current) {
+      saveInput();
+    }
   };
 
   const handleEnter = (e) => {
     if (e.key === "Enter") {
-      console.log("Enter");
       clearSaveTimer();
-      saveInput();
+      if (!isSavingRef.current) {
+        saveInput();
+      }
       inputRef.current.blur();
     }
   };
@@ -94,7 +108,11 @@ const PersonInput = ({
       setCount((prevCount) => prevCount + 1);
       clearSaveTimer();
       // Save immediately after autofill
-      setTimeout(() => saveInput(), 100);
+      setTimeout(() => {
+        if (!isSavingRef.current) {
+          saveInput();
+        }
+      }, 100);
     }
   };
 

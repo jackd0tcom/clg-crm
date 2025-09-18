@@ -1,6 +1,7 @@
 import PersonInput from "./PersonInput";
 import axios from "axios";
 import { useState, useEffect, useRef } from "react";
+import Confirm from "./ConfirmModal";
 
 const PersonView = ({
   data,
@@ -15,6 +16,7 @@ const PersonView = ({
 }) => {
   const [personId, setPersonId] = useState();
   const dropdownRef = useRef(null);
+  const [confirm, setConfirm] = useState(false);
 
   useEffect(() => {
     setPersonId(data.personId);
@@ -22,10 +24,9 @@ const PersonView = ({
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      console.log("test");
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsAddingPerson(false);
-        onBlur(); // Also call onBlur to close the component
+        onBlur();
       }
     };
 
@@ -70,6 +71,13 @@ const PersonView = ({
 
   return (
     <div className="person-view-wrapper" ref={dropdownRef}>
+      {confirm && (
+        <Confirm
+          message={"delete this person?"}
+          handleConfirm={handleRemove}
+          setConfirm={setConfirm}
+        />
+      )}
       <p className="person-view-header">Client</p>
       <div className="person-view-fields">
         {Object.entries(personObject).map(([fieldName]) => {
@@ -91,7 +99,7 @@ const PersonView = ({
         <div className="remove-person-button">
           <a
             onClick={() => {
-              handleRemove();
+              setConfirm(true);
             }}
           >
             Remove Person

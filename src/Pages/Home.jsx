@@ -11,6 +11,7 @@ import ToDoWidget from "../Elements/ToDoWidget";
 import UpdatesWidget from "../Elements/UpdatesWidget";
 import RecentItemsWidget from "../Elements/RecentItemsWidget";
 import { formatDateNoTime } from "../helpers/helperFunctions";
+import LoginButton from "../Elements/LoginButton";
 
 const Home = ({ openTaskView }) => {
   const { user, isAuthenticated, isLoading } = useAuth0();
@@ -29,17 +30,31 @@ const Home = ({ openTaskView }) => {
         console.log(error);
       }
     }
-    !isLoading && isAuthenticated && fetch();
+    !isLoading &&
+      isAuthenticated &&
+      setTimeout(() => {
+        fetch();
+      }, 500);
   }, []);
 
   const date = new Date();
 
   return !isAuthenticated ? (
     <section className="home-landing-section">
-      <div className="home-landing-container">
-        <h2>Welcome to</h2>
-        <h1>Clause Law Group</h1>
-        <button onClick={() => navigate("/login")}>Login</button>
+      <video loop={true} muted autoPlay={true} playsInline className="bg-video">
+        <source src="https://videos.files.wordpress.com/8jJQp5hK/stock-video-example.mp4" />
+      </video>
+      <div className="bg-video-overlay">
+        <div className="home-content">
+          <img
+            className="welcome-logo"
+            src="src/assets/Clause-Law-Group-Logo-Green.png"
+            alt=""
+          />
+          <h1>Welcome Back!</h1>
+          <LoginButton />
+          <p>New here? Contact your administrator to set up an account.</p>
+        </div>
       </div>
     </section>
   ) : loading ? (

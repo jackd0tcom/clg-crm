@@ -120,7 +120,7 @@
   --dark-grey: rgb(54, 54, 54);
   --medium-border: rgb(210, 210, 210);
   --light-border: rgb(225, 225, 225);
-  --glc-green: #08331d;
+  --clg-green: #08331d;
   --red: rgb(231, 13, 13);
   --blue: rgb(91, 135, 255);
   --purple: rgb(92, 29, 227);
@@ -440,4 +440,27 @@ div.date-picker-wrapper > div > div > input[type="text"]:hover {
 }
 .assignee-add-toggle-item p {
   margin: 0;
+}
+.confirm-modal-wrapper {
+  position: absolute;
+  background-color: white;
+  padding: 15px;
+  z-index: 999;
+  border: 1px solid var(--light-border);
+  border-radius: 5px;
+}
+.confirm-modal-buttons {
+  display: flex;
+  justify-content: space-between;
+}
+.confirm-modal-buttons button {
+  font-size: 0.9rem;
+}
+#cancel {
+  background-color: white;
+}
+#confirm {
+  background-color: var(--red);
+  border: none;
+  color: white;
 }

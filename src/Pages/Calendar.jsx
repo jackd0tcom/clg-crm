@@ -177,7 +177,7 @@ const Calendar = () => {
   return isLoading || isCheckingConnection ? (
     <div className="calendar-loader">
       <div className="calendar-loader-body flash">
-        <div class="lds-ring">
+        <div className="lds-ring">
           <div></div>
           <div></div>
           <div></div>
