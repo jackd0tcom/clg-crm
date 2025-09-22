@@ -100,6 +100,12 @@ export default {
       if (!user) {
         // Create new user from Auth0 data
         const [firstName, ...lastNameParts] = name.split(" ");
+        
+        // Check if this is the first admin user
+        const isFirstAdmin = email === process.env.ADMIN_EMAIL;
+        const userCount = await User.count();
+        const isFirstUser = userCount === 0;
+        
         user = await User.create({
           auth0Id,
           username: email,
@@ -107,8 +113,26 @@ export default {
           lastName: lastNameParts.join(" ") || "",
           email,
           profilePic: picture,
-          role: "team_member",
+          role: isFirstAdmin || isFirstUser ? "admin" : "user",
           authProvider: "auth0",
+          isAllowed: isFirstAdmin || isFirstUser, // First admin or first user gets access
+        });
+        
+        if (isFirstAdmin || isFirstUser) {
+          console.log(`🎉 First admin user created: ${email}`);
+        }
+      }
+
+      // Check if user has access
+      if (!user.isAllowed) {
+        console.log(`Access denied for user: ${email} (${user.userId})`);
+        return res.status(403).json({
+          error: "Access denied",
+          message: "Your account does not have access to this system. Please contact an administrator.",
+          contactInfo: {
+            email: "admin@yourlawfirm.com", // You can customize this
+            message: "Contact an administrator to request access"
+          }
         });
       }
 
@@ -120,7 +144,8 @@ export default {
         lastName: user.lastName,
         role: user.role,
         authProvider: "auth0",
-        profilePic: user.picture,
+        profilePic: user.profilePic,
+        isAllowed: user.isAllowed,
       };
 
       res.status(200).json({ user: req.session.user });

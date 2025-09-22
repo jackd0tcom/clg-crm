@@ -11,6 +11,8 @@ import calendarCtrl from "./controllers/calendarCtrl.js";
 import notificationsCtrl from "./controllers/notificationsCtrl.js";
 import cleanupCtrl from "./controllers/cleanupCtrl.js";
 import cleanupScheduler from "./services/cleanupScheduler.js";
+import adminCtrl from "./controllers/adminCtrl.js";
+import { requireAccess, requireAdmin } from "./middleware/authMiddleware.js";
 
 import dotenv from "dotenv";
 dotenv.config();
@@ -192,6 +194,15 @@ app.post("/api/notifications/mark-read", markAsRead);
 app.post("/api/notifications/mark-clear", markAsCleared);
 app.get("/api/notifications/unread-count", getUnreadCount);
 app.post("/api/notifications/mark-all-read", markAllAsRead);
+
+// user access check endpoint
+app.get("/api/user/check-access", adminCtrl.checkUserAccess);
+
+// admin endpoints (require admin role)
+app.get("/api/admin/users", requireAccess, requireAdmin, adminCtrl.getAllUsers);
+app.post("/api/admin/users/:userId/access", requireAccess, requireAdmin, adminCtrl.updateUserAccess);
+app.post("/api/admin/users", requireAccess, requireAdmin, adminCtrl.addUserByEmail);
+app.post("/api/admin/users/bulk-access", requireAccess, requireAdmin, adminCtrl.bulkUpdateUserAccess);
 
 // cleanup endpoints (admin only)
 app.get("/api/cleanup/stats", cleanupCtrl.getDatabaseStats);

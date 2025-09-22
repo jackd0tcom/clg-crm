@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "nodemon server/index.js -w server/index.js -w src",
     "initdb": "dropdb --if-exists clg-db && createdb clg-db && node server/model.js && node server/seed.js",
+    "seedAdmin": "node server/seedAdmin.js",
     "seed": "node server/model.js && node server/seed.js",
     "start": "npm i && npm run initdb && nodemon server/index.js -w server/index.js -w src",
     "build": "vite build",

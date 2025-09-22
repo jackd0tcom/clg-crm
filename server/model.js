@@ -30,7 +30,7 @@ User.init(
       defaultValue: "/src/assets/default-profile-pic.jpg",
     },
     role: {
-      type: DataTypes.ENUM("admin", "team_member"),
+      type: DataTypes.ENUM("admin", "team_member", "user"),
       allowNull: false,
     },
     auth0Id: {
@@ -57,6 +57,11 @@ User.init(
     preferredCalendarId: {
       type: DataTypes.STRING,
       allowNull: true,
+    },
+    isAllowed: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
     },
   },
   {
