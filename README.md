@@ -1,10 +1,17 @@
 # CLG CRM
 
-React, Express, Sequelize
+An internal task and case management app for Clause Law group.
 
-To run:
+## Technologies
 
-npm i
-npm run initdb
-npm run seed
-npm run dev
+Built with:
+
+- React
+- Express
+- Sequelize
+
+## Setup
+
+To install and start dev environment, run:
+
+`npm start`
