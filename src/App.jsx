@@ -51,13 +51,13 @@ function App() {
 
   const openTaskView = (taskOrId) => {
     // Handle both task object and task ID
-    const taskId = typeof taskOrId === 'object' ? taskOrId.taskId : taskOrId;
-    
+    const taskId = typeof taskOrId === "object" ? taskOrId.taskId : taskOrId;
+
     // If we have the full task object, add it to recent items
-    if (typeof taskOrId === 'object' && taskOrId.taskId) {
-      addRecentItem(taskOrId, 'task');
+    if (typeof taskOrId === "object" && taskOrId.taskId) {
+      addRecentItem(taskOrId, "task");
     }
-    
+
     setTaskId(taskId);
     setIsOpen(true);
   };
@@ -84,15 +84,19 @@ function App() {
               <Route index element={<Home openTaskView={openTaskView} />} />
               <Route
                 path="/login"
-                element={isAuthenticated ? <Navigate to="/" /> : <Landing />}
+                element={isAuthenticated ? <Navigate to="/" /> : <Home />}
               />
               <Route
                 path="/case/:caseId"
                 element={
-                  <Case
-                    openTaskView={openTaskView}
-                    refreshKey={activePage === "case" ? refreshKey : 0}
-                  />
+                  !isAuthenticated ? (
+                    <Navigate to="/login" />
+                  ) : (
+                    <Case
+                      openTaskView={openTaskView}
+                      refreshKey={activePage === "case" ? refreshKey : 0}
+                    />
+                  )
                 }
               />
               <Route

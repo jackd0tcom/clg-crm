@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import Loader from "../Elements/Loader";
 import "../styles/Settings.css";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const Settings = () => {
   const [isGoogleConnected, setIsGoogleConnected] = useState(false);
@@ -13,6 +14,8 @@ const Settings = () => {
   const [message, setMessage] = useState("");
   const [appCalendars, setAppCalendars] = useState([]);
   const [hasDuplicates, setHasDuplicates] = useState(false);
+  const [migrating, setMigrating] = useState(false);
+  const { user } = useAuth0();
 
   useEffect(() => {
     checkGoogleConnection();
@@ -86,25 +89,42 @@ const Settings = () => {
   const saveCalendarPreference = async () => {
     setIsSaving(true);
     setIsChanging(false);
-    setMessage("");
+
+    // Show migration message if changing calendars
+    const currentCalendarId = user?.preferredCalendarId;
+    const isMigrating =
+      currentCalendarId && currentCalendarId !== selectedCalendar;
+
+    setMessage("✅ 🔄 Migrating your tasks to your selected calendar...");
 
     try {
-      await axios
-        .post("/api/calendar/preferred-calendar", {
-          calendarId: selectedCalendar,
-        })
-        .then(() => {
-          setTimeout(() => {
-            const selectedCalendarName =
-              calendars.find((cal) => cal.id === selectedCalendar)?.name ||
-              "Unknown";
-            setMessage(
-              `✅ Calendar preference saved! Tasks will now sync to "${selectedCalendarName}"`
-            );
-          }, 500);
-        });
+      const response = await axios.post("/api/calendar/preferred-calendar", {
+        calendarId: selectedCalendar,
+      });
 
-      // Clear message after 3 seconds
+      setTimeout(() => {
+        const selectedCalendarName =
+          calendars.find((cal) => cal.id === selectedCalendar)?.name ||
+          "Unknown";
+
+        let messageText = `✅ Calendar preference saved! Tasks will now sync to "${selectedCalendarName}"`;
+
+        // Add migration details if tasks were migrated
+        if (response.data.migration) {
+          if (response.data.migration.error) {
+            messageText += `\n⚠️ Note: Some tasks may not have migrated properly.`;
+          } else if (response.data.migration.migratedCount > 0) {
+            messageText += `\n🔄 Migrated ${response.data.migration.migratedCount} existing tasks to the new calendar.`;
+            if (response.data.migration.errorCount > 0) {
+              messageText += `\n⚠️ ${response.data.migration.errorCount} tasks could not be migrated.`;
+            }
+          }
+        }
+
+        setMessage(messageText);
+      }, 500);
+
+      // Clear message after 5 seconds
       setTimeout(() => setMessage(""), 5000);
     } catch (error) {
       console.error("Error saving calendar preference:", error);
@@ -210,7 +230,7 @@ const Settings = () => {
             {message && (
               <div
                 className={`message ${
-                  message.includes("✅") ? "success" : "error"
+                  message.includes("✅" || "🔄") ? "success" : "error"
                 }`}
               >
                 {message}
