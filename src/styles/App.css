@@ -6,6 +6,7 @@
 @import "./Inbox.css";
 @import "./Loader.css";
 @import "./Profile.css";
+@import "./Admin.css";
 
 @media (prefers-color-scheme: light) {
   :root {

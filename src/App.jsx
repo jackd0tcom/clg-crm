@@ -21,6 +21,7 @@ import CalendarCallback from "./Pages/CalendarCallback.jsx";
 import Settings from "./Pages/Settings.jsx";
 import Inbox from "./Pages/Inbox.jsx";
 import { addRecentItem } from "./helpers/recentItemsHelper";
+import Admin from "./Pages/Admin.jsx";
 
 function App() {
   const [isOpen, setIsOpen] = useState(false);
@@ -173,6 +174,16 @@ function App() {
                 path="/settings"
                 element={
                   !isAuthenticated ? <Navigate to="/login" /> : <Settings />
+                }
+              />
+              <Route
+                path="/admin"
+                element={
+                  !isAuthenticated && isAdmin ? (
+                    <Navigate to="/admin" />
+                  ) : (
+                    <Admin />
+                  )
                 }
               />
               <Route

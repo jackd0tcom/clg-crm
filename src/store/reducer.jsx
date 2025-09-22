@@ -6,6 +6,7 @@ const initialState = {
     lastName: null,
     role: null,
     profilePic: null,
+    isAllowed: false,
   },
   isAuthenticated: false,
 };
@@ -25,6 +26,7 @@ const reducer = (state = initialState, action) => {
           lastName: action.payload.lastName,
           role: action.payload.role,
           profilePic: action.payload.profilePic,
+          isAllowed: action.payload.isAllowed,
         },
         isAuthenticated: true,
       };
@@ -37,6 +39,7 @@ const reducer = (state = initialState, action) => {
           lastName: null,
           role: null,
           profilePic: null,
+          isAllowed: false,
         },
         isAuthenticated: false,
       };

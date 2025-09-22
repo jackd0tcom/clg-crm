@@ -22,6 +22,7 @@ export default {
           "role",
           "isAllowed",
           "createdAt",
+          "profilePic",
         ],
         order: [["createdAt", "DESC"]],
       });
@@ -37,6 +38,7 @@ export default {
           role: user.role,
           isAllowed: user.isAllowed,
           createdAt: user.createdAt,
+          profilePic: user.profilePic,
           fullName:
             `${user.firstName || ""} ${user.lastName || ""}`.trim() ||
             user.username,

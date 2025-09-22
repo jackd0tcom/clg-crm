@@ -87,6 +87,15 @@ const Nav = () => {
                 <i className="fa-solid fa-gear"></i>
                 Settings
               </NavLink>
+              <NavLink
+                to="/admin"
+                className={({ isActive }) =>
+                  isActive ? "active-nav nav-button" : "inactive-nav nav-button"
+                }
+              >
+                <i className="fa-solid fa-user-tie"></i>
+                Admin
+              </NavLink>
               {/* <NavLink
                 to="/search"
                 className={({ isActive }) =>
