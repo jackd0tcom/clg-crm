@@ -185,7 +185,6 @@ const TaskView = ({ taskId, setTaskId, isOpen, onClose, onTaskUpdate }) => {
   };
   const updateNotes = async () => {
     try {
-      console.log("updating notes");
       await axios
         .post("/api/updateTask", {
           fieldName: "notes",
@@ -193,7 +192,6 @@ const TaskView = ({ taskId, setTaskId, isOpen, onClose, onTaskUpdate }) => {
           taskId: taskData.taskId,
         })
         .then((res) => {
-          console.log(res.data);
           if (onTaskUpdate) {
             onTaskUpdate();
           }

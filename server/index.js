@@ -9,6 +9,8 @@ import activityCtrl from "./controllers/activityCtrl.js";
 import personCtrl from "./controllers/personCtrl.js";
 import calendarCtrl from "./controllers/calendarCtrl.js";
 import notificationsCtrl from "./controllers/notificationsCtrl.js";
+import cleanupCtrl from "./controllers/cleanupCtrl.js";
+import cleanupScheduler from "./services/cleanupScheduler.js";
 
 import dotenv from "dotenv";
 dotenv.config();
@@ -162,9 +164,12 @@ app.get("/api/getTaskActivities/:taskId", getTaskActivities);
 app.post("/api/createActivity", createActivity);
 app.post("/api/markAsRead", markAsRead);
 
-ViteExpress.listen(app, PORT, () =>
-  console.log(`http://localhost:${PORT} chance baby`)
-);
+ViteExpress.listen(app, PORT, () => {
+  console.log(`http://localhost:${PORT} chance baby`);
+  
+  // Start automated cleanup scheduler
+  cleanupScheduler.start();
+});
 
 // calendar endpoints
 app.post("/api/calendar/setup", setupCalendar);
@@ -187,3 +192,19 @@ app.post("/api/notifications/mark-read", markAsRead);
 app.post("/api/notifications/mark-clear", markAsCleared);
 app.get("/api/notifications/unread-count", getUnreadCount);
 app.post("/api/notifications/mark-all-read", markAllAsRead);
+
+// cleanup endpoints (admin only)
+app.get("/api/cleanup/stats", cleanupCtrl.getDatabaseStats);
+app.get("/api/cleanup/policies", cleanupCtrl.getCleanupPolicies);
+app.get("/api/cleanup/status", (req, res) => {
+  if (!req.session.user || req.session.user.role !== 'admin') {
+    return res.status(403).json({ error: 'Admin access required' });
+  }
+  res.json(cleanupScheduler.getStatus());
+});
+app.post("/api/cleanup/activity-logs", cleanupCtrl.cleanupActivityLogs);
+app.post("/api/cleanup/notifications", cleanupCtrl.cleanupNotifications);
+app.post("/api/cleanup/comments", cleanupCtrl.cleanupComments);
+app.post("/api/cleanup/completed-tasks", cleanupCtrl.cleanupCompletedTasks);
+app.post("/api/cleanup/archived-cases", cleanupCtrl.cleanupArchivedCases);
+app.post("/api/cleanup/full", cleanupCtrl.runFullCleanup);

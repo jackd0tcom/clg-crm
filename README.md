@@ -1,6 +1,6 @@
 # CLG CRM
 
-An internal task and case management app for Clause Law group.
+An internal task and case management app for Clause Law Group
 
 ## Technologies
 
