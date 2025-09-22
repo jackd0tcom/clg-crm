@@ -516,6 +516,9 @@ export default {
         actorName
       );
 
+      // Sync with Google Calendar for the assigned user
+      await syncTaskWithCalendar(taskExists, userId, "create");
+
       res.status(201).json(assignedUser);
     } catch (err) {
       console.log(err);
@@ -565,6 +568,9 @@ export default {
         req.session.user.userId,
         actorName
       );
+
+      // Remove from Google Calendar for the unassigned user
+      await syncTaskWithCalendar(taskExists, userId, "delete");
 
       res.status(200).send("Task assignees updated successfully");
     } catch (err) {

@@ -157,16 +157,8 @@ export const notifyTaskCreated = async (task, actorId, actorName) => {
           `${actorName} created a new task: "${task.title}"`
         );
       }
-      // Assignees only get notified if they're assigned (which they would be for new tasks)
-      else {
-        await createNotification(
-          recipient.userId,
-          NOTIFICATION_TYPES.TASK_ASSIGNED,
-          "task",
-          task.taskId,
-          `${actorName} assigned this task to you"`
-        );
-      }
+      // Assignees do NOT get notified for task creation
+      // They only get notifications when they are specifically assigned (handled in addTaskAssignee)
     }
   } catch (error) {
     console.error("Error creating task creation notifications:", error);
@@ -245,16 +237,8 @@ export const notifyTaskUpdated = async (
           message
         );
       }
-      // Non-owners only get notified if they're assigned to the task
-      else {
-        await createNotification(
-          recipient.userId,
-          notificationType,
-          "task",
-          task.taskId,
-          message
-        );
-      }
+      // Assignees do NOT get notified for general task updates
+      // They only get notifications for assignment/unassignment (handled elsewhere)
     }
   } catch (error) {
     console.error("Error creating task update notifications:", error);
@@ -286,16 +270,8 @@ export const notifyTaskDeleted = async (task, actorId, actorName) => {
           `${actorName} deleted the task: "${task.title}"`
         );
       }
-      // Assignees only get notified if they're assigned
-      else {
-        await createNotification(
-          recipient.userId,
-          NOTIFICATION_TYPES.TASK_DELETED,
-          "task",
-          task.taskId,
-          `${actorName} deleted a task you were assigned to: "${task.title}"`
-        );
-      }
+      // Assignees do NOT get notified for task deletion
+      // They only get notifications for assignment/unassignment
     }
   } catch (error) {
     console.error("Error creating task deletion notifications:", error);
@@ -364,7 +340,7 @@ export const notifyTaskUnassigned = async (
       NOTIFICATION_TYPES.TASK_UNASSIGNED,
       "task",
       task.taskId,
-      `${actorName} removed you`
+      `${actorName} removed you from this task`
     );
 
     // Notify the task owner (if different from actor)
@@ -480,15 +456,9 @@ export const getCaseNotificationRecipients = async (caseId, actorId) => {
       return [];
     }
 
-    // Get all case assignees
-    const caseAssignees = await CaseAssignees.findAll({
-      where: { caseId },
-      include: [
-        {
-          model: User,
-          attributes: ["userId", "username", "firstName", "lastName"],
-        },
-      ],
+    // Get all case assignees using the proper association method
+    const assignedUsers = await theCase.getAssignees({
+      attributes: ["userId", "username", "firstName", "lastName"],
     });
 
     const recipients = [];
@@ -505,17 +475,16 @@ export const getCaseNotificationRecipients = async (caseId, actorId) => {
     }
 
     // Add assignees (if not the actor and not already added as owner)
-    caseAssignees.forEach((assignment) => {
-      const assignee = assignment.User;
+    assignedUsers.forEach((user) => {
       if (
-        assignee.userId !== actorId &&
-        !recipients.find((r) => r.userId === assignee.userId)
+        user.userId !== actorId &&
+        !recipients.find((r) => r.userId === user.userId)
       ) {
         recipients.push({
-          userId: assignee.userId,
-          username: assignee.username,
-          firstName: assignee.firstName,
-          lastName: assignee.lastName,
+          userId: user.userId,
+          username: user.username,
+          firstName: user.firstName,
+          lastName: user.lastName,
           isOwner: false,
         });
       }

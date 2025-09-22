@@ -12,30 +12,12 @@ import UpdatesWidget from "../Elements/UpdatesWidget";
 import RecentItemsWidget from "../Elements/RecentItemsWidget";
 import { formatDateNoTime } from "../helpers/helperFunctions";
 import LoginButton from "../Elements/LoginButton";
+import CasesWidget from "../Elements/CasesWidget";
 
 const Home = ({ openTaskView }) => {
   const { user, isAuthenticated, isLoading } = useAuth0();
   const navigate = useNavigate();
-  const [cases, setCases] = useState();
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetch() {
-      try {
-        await axios.get("/api/getCases").then((res) => {
-          setCases(res.data);
-          setLoading(false);
-        });
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    !isLoading &&
-      isAuthenticated &&
-      setTimeout(() => {
-        fetch();
-      }, 500);
-  }, []);
 
   const date = new Date();
 
@@ -57,7 +39,7 @@ const Home = ({ openTaskView }) => {
         </div>
       </div>
     </section>
-  ) : loading ? (
+  ) : isLoading ? (
     <Loader />
   ) : (
     <div className="home-container">
@@ -65,25 +47,9 @@ const Home = ({ openTaskView }) => {
       <h1>Dashboard</h1>
       <div className="widget-wrapper">
         <RecentItemsWidget openTaskView={openTaskView} navigate={navigate} />
-        <UpdatesWidget />
+        <UpdatesWidget openTaskView={openTaskView} />
         <ToDoWidget openTaskView={openTaskView} />
-        <div className="widget-container">
-          <a
-            onClick={() => navigate("/cases")}
-            className="widget-container-heading"
-          >
-            My Cases
-          </a>
-          <div className="case-widget-container">
-            {cases.length > 0 ? (
-              cases.map((data) => {
-                return <CaseListItem key={data.caseId} data={data} />;
-              })
-            ) : (
-              <p>You are not assigned to any cases</p>
-            )}
-          </div>
-        </div>
+        <CasesWidget loading={loading} setLoading={setLoading} />
       </div>
     </div>
   );

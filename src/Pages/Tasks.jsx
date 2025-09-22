@@ -5,37 +5,47 @@ import TaskList from "../Elements/TaskList";
 import { findTimeDifference } from "../helpers/helperFunctions";
 import { useParams } from "react-router";
 import TaskFilter from "../Elements/TaskFilter";
+import { useAuth0 } from "@auth0/auth0-react";
+import { useNavigate } from "react-router";
 
 const Tasks = ({ openTaskView, refreshKey }) => {
+  const { isAuthenticated, isLoading } = useAuth0();
   const [tasks, setTasks] = useState();
   const [completedTasks, setCompletedTasks] = useState();
   const [notCompletedTasks, setNotCompletedTasks] = useState();
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [dueToday, setDueToday] = useState([]);
   const [overdue, setOverdue] = useState([]);
   const [upcoming, setUpcoming] = useState([]);
   const columns = "0.1fr 3fr 2fr 2fr 1fr";
   const headings = ["", "Title", "Case", "Assignees", "Due Date"];
   const caseId = useParams();
+  const nav = useNavigate();
 
   const fetchTasks = async () => {
     try {
-      setIsLoading(true);
+      setLoading(true);
       const res = await axios.get("/api/getAllTasks");
       const nonCompleted = res.data.filter((ta) => ta.status !== "completed");
       const completed = res.data.filter((ta) => ta.status === "completed");
       setNotCompletedTasks(nonCompleted);
       setTasks(nonCompleted);
       setCompletedTasks(completed);
-      setIsLoading(false);
+      setLoading(false);
     } catch (error) {
       console.log(error);
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchTasks();
+    if (!isLoading && isAuthenticated) {
+      setTimeout(() => {
+        fetchTasks();
+      }, 500);
+    } else if (!isLoading && !isAuthenticated) {
+      nav("/");
+    }
   }, []);
 
   // Refetch tasks when refreshKey change
@@ -78,7 +88,7 @@ const Tasks = ({ openTaskView, refreshKey }) => {
     });
   };
 
-  return isLoading ? (
+  return loading ? (
     <Loader />
   ) : (
     <div className="tasks-page-wrapper">

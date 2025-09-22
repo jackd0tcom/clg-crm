@@ -25,10 +25,12 @@ const Inbox = ({ openTaskView }) => {
     fetch();
   }, []);
 
-  const handleRead = async (id) => {
+  const handleRead = async (notification) => {
     try {
       await axios
-        .post("/api/notifications/mark-read", { notificationId: id })
+        .post("/api/notifications/mark-read", {
+          notificationId: notification.notificationId,
+        })
         .then((res) => {
           if (res.status === 200) {
             fetch();
@@ -39,10 +41,12 @@ const Inbox = ({ openTaskView }) => {
     }
   };
 
-  const handleCleared = async (id) => {
+  const handleCleared = async (notification) => {
     try {
       await axios
-        .post("/api/notifications/mark-clear", { notificationId: id })
+        .post("/api/notifications/mark-clear", {
+          notificationId: notification.notificationId,
+        })
         .then((res) => {
           if (res.status === 200) {
             fetch();
@@ -53,7 +57,7 @@ const Inbox = ({ openTaskView }) => {
     }
   };
 
-  const handleClear = async (id) => {
+  const handleClear = async (notification) => {
     try {
       await axios.post("/api/notifications/mark-all-read").then((res) => {
         if (res.status === 200) {

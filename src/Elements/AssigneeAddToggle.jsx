@@ -12,6 +12,7 @@ const AssigneeAddToggle = ({
         nonAssigneeList.map((nee) => {
           return (
             <div
+              key={nee.userId}
               className="assignee-add-toggle-item"
               onClick={() => {
                 handleAdd({ Id, userId: nee.userId });

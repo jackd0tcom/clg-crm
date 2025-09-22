@@ -14,10 +14,10 @@ const NotificationItem = ({
   const nav = useNavigate();
 
   const handleClick = (e) => {
-    handleRead(data.notificationId);
-    if (openTaskView && data.task) {
-      openTaskView(data.task);
-    } else nav(`/case/${data.case.caseId}`);
+    handleRead(data);
+    if (data.case) {
+      nav(`/case/${data.case.caseId}`);
+    } else openTaskView(data.task);
   };
 
   return (
@@ -41,7 +41,7 @@ const NotificationItem = ({
             />
           )}
           {!data.task && <i className="fa-solid fa-briefcase"></i>}
-          <p>{data.case.title || data.task.title}</p>
+          <p>{data.case ? data.case.title : data.task.title}</p>
         </div>
         <p>{data.message}</p>
       </span>
@@ -49,7 +49,7 @@ const NotificationItem = ({
         {!data.isCleared && hover ? (
           <button
             className="clear-notification"
-            onClick={() => handleCleared(data.notificationId)}
+            onClick={() => handleCleared(data)}
           >
             <i className="fa-solid fa-check"></i>
             Clear

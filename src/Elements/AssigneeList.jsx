@@ -63,14 +63,48 @@ const AssigneeList = ({
   const handleRemove = ({ Id, userId }) => {
     try {
       if (taskId && taskId !== 0) {
+        // For tasks: Update UI immediately for instant feedback
+        const removedUser = assigneeList.find((user) => user.userId === userId);
+
+        setAssigneeList((prevList) =>
+          prevList.filter((nee) => nee.userId !== userId)
+        );
+
+        if (removedUser) {
+          setNonAssigneeList((prevList) => [...prevList, removedUser]);
+        }
+
+        // Trigger UI updates immediately
+        if (onActivityUpdate) {
+          onActivityUpdate();
+        }
+        if (onTaskUpdate) {
+          onTaskUpdate();
+        }
+        if (taskId) {
+          refreshTaskActivityData();
+        }
+      }
+
+      // Make API call
+      if (taskId && taskId !== 0) {
+        // For tasks: make API call in background (don't wait for response)
         axios
           .delete("/api/removeTaskAssignees", { data: { taskId: Id, userId } })
+          .catch((error) => {
+            console.error("Failed to remove task assignee:", error);
+          });
+      } else {
+        // For cases: wait for API response to ensure proper data
+        const removedUser = assigneeList.find((user) => user.userId === userId);
+
+        axios
+          .delete("/api/removeCaseAssignees", {
+            data: { caseId: Id, userId },
+          })
           .then((res) => {
             if (res.status === 200) {
-              const removedUser = assigneeList.find(
-                (user) => user.userId === userId
-              );
-
+              // Update UI with the proper response data
               setAssigneeList((prevList) =>
                 prevList.filter((nee) => nee.userId !== userId)
               );
@@ -84,36 +118,15 @@ const AssigneeList = ({
               if (onTaskUpdate) {
                 onTaskUpdate();
               }
-              refreshTaskActivityData();
+              if (taskId) {
+                refreshTaskActivityData();
+              }
             }
+          })
+          .catch((error) => {
+            console.error("Failed to remove case assignee:", error);
           });
-      } else console.log(Id, userId);
-      axios
-        .delete("/api/removeCaseAssignees", {
-          data: { caseId: Id, userId },
-        })
-        .then((res) => {
-          if (res.status === 200) {
-            const removedUser = assigneeList.find(
-              (user) => user.userId === userId
-            );
-
-            setAssigneeList((prevList) =>
-              prevList.filter((nee) => nee.userId !== userId)
-            );
-
-            if (removedUser) {
-              setNonAssigneeList((prevList) => [...prevList, removedUser]);
-            }
-            if (onActivityUpdate) {
-              onActivityUpdate();
-            }
-            if (onTaskUpdate) {
-              onTaskUpdate();
-            }
-            refreshTaskActivityData();
-          }
-        });
+      }
     } catch (error) {
       console.log(error);
     }
@@ -121,30 +134,52 @@ const AssigneeList = ({
   const handleAdd = ({ Id, userId }) => {
     try {
       if (taskId && taskId !== 0) {
+        // For tasks: Find the user being added from nonAssigneeList
+        const userToAdd = nonAssigneeList.find(
+          (user) => user.userId === userId
+        );
+
+        if (userToAdd) {
+          // Update UI immediately for instant feedback
+          setAssigneeList((prevList) => [...prevList, userToAdd]);
+          setNonAssigneeList((prevList) =>
+            prevList.filter((user) => user.userId !== userId)
+          );
+          setIsAdding(false);
+
+          // Trigger UI updates immediately
+          if (onActivityUpdate) {
+            onActivityUpdate();
+          }
+          if (onTaskUpdate) {
+            onTaskUpdate();
+          }
+        }
+      }
+
+      // Make API call
+      if (taskId && taskId !== 0) {
+        // For tasks: make API call in background (don't wait for response)
         axios
           .post("/api/addTaskAssignees", { taskId: Id, userId })
           .then((res) => {
-            if (res.status === 201) {
-              setAssigneeList((prevList) => [...prevList, res.data]);
-              setNonAssigneeList((prevList) =>
-                prevList.filter((user) => user.userId !== userId)
-              );
-              setIsAdding(false);
+            if (res.status === 200) {
               refreshTaskActivityData();
-
-              if (onActivityUpdate) {
-                onActivityUpdate();
-              }
-              if (onTaskUpdate) {
-                onTaskUpdate();
-              }
+            }
+          })
+          .catch((error) => {
+            console.error("Failed to add task assignee:", error);
+            if (error.response?.status === 409) {
+              console.log("User is already assigned to this task");
             }
           });
-      } else
+      } else {
+        // For cases: wait for API response to ensure proper data
         axios
           .post("/api/addCaseAssignees", { caseId: Id, userId })
           .then((res) => {
             if (res.status === 201) {
+              // Update UI with the proper response data
               setAssigneeList((prevList) => [...prevList, res.data]);
               setNonAssigneeList((prevList) =>
                 prevList.filter((user) => user.userId !== userId)
@@ -161,12 +196,12 @@ const AssigneeList = ({
             }
           })
           .catch((error) => {
+            console.error("Failed to add case assignee:", error);
             if (error.response?.status === 409) {
               console.log("User is already assigned to this case");
-            } else {
-              console.log("Error adding assignee:", error);
             }
           });
+      }
     } catch (error) {
       console.log(error);
     }
