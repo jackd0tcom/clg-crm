@@ -159,12 +159,33 @@ const TaskFilter = ({
         >
           Completed
         </button>
-        <button
-          className="tasks-case-filter-button"
-          onClick={() => setByCase(true)}
-        >
-          Filter By Case
-        </button>
+        <div className="tasks-case-filter-wrapper">
+          <button
+            className="tasks-case-filter-button"
+            onClick={() => setByCase(true)}
+          >
+            Filter By Case
+          </button>
+
+          {byCase && (
+            <div className="task-filter-dropdown" ref={dropdownRef}>
+              {caseData
+                .filter(
+                  (ca) => !filteredCases.some((c) => c.caseId === ca.caseId)
+                )
+                .map((ca) => (
+                  <p
+                    key={ca.caseId}
+                    onClick={() => handleCaseClick(ca)}
+                    className="dropdown-case-item"
+                    title={ca.title} // Show full title on hover
+                  >
+                    {truncateTitleLonger(ca.title)}
+                  </p>
+                ))}
+            </div>
+          )}
+        </div>
         {filteredCases.length > 0 && (
           <div className="active-filters">
             {filteredCases.map((ca) => (
@@ -180,23 +201,6 @@ const TaskFilter = ({
           </div>
         )}
       </div>
-
-      {byCase && (
-        <div className="task-filter-dropdown" ref={dropdownRef}>
-          {caseData
-            .filter((ca) => !filteredCases.some((c) => c.caseId === ca.caseId))
-            .map((ca) => (
-              <p
-                key={ca.caseId}
-                onClick={() => handleCaseClick(ca)}
-                className="dropdown-case-item"
-                title={ca.title} // Show full title on hover
-              >
-                {truncateTitleLonger(ca.title)}
-              </p>
-            ))}
-        </div>
-      )}
     </div>
   );
 };

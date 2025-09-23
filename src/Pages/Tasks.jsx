@@ -24,7 +24,6 @@ const Tasks = ({ openTaskView, refreshKey }) => {
 
   const fetchTasks = async () => {
     try {
-      setLoading(true);
       const res = await axios.get("/api/getAllTasks");
       const nonCompleted = res.data.filter((ta) => ta.status !== "completed");
       const completed = res.data.filter((ta) => ta.status === "completed");
@@ -42,7 +41,7 @@ const Tasks = ({ openTaskView, refreshKey }) => {
     if (!isLoading && isAuthenticated) {
       setTimeout(() => {
         fetchTasks();
-      }, 500);
+      }, 100);
     } else if (!isLoading && !isAuthenticated) {
       nav("/");
     }

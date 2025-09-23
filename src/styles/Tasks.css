@@ -13,6 +13,10 @@
   align-items: center;
   position: relative;
 }
+.tasks-case-filter-wrapper {
+  position: relative;
+}
+
 .task-filter-dropdown {
   position: absolute;
   background-color: white;
@@ -24,6 +28,8 @@
   flex-direction: column;
   row-gap: 5px;
   min-width: 250px;
+  left: 5px;
+  top: 35px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -85,6 +91,7 @@
   cursor: pointer;
   font-weight: 500;
   transition: all 0.2s ease;
+  border: 1px solid transparent;
 }
 
 .new-task-button:hover {
@@ -174,9 +181,8 @@
   flex-direction: column;
   cursor: pointer;
   padding: 5px 15px;
-  max-height: 250px;
+  max-height: 18vh;
   overflow: scroll;
-  scrollbar-width: none;
 }
 .task-list-item {
   display: grid;
@@ -234,6 +240,20 @@
 .new-task-toggle i {
   font-size: 0.7rem;
   margin-bottom: 2px;
+}
+.new-task-toggle-wrapper {
+  border: 0px;
+}
+.new-task-toggle-wrapper .task-list-item {
+  border-top: none;
+}
+.new-task-item-wrapper input {
+  font-size: 0.9rem !important;
+  font-weight: 500 !important;
+  border: 1px solid var(--light-border) !important;
+  margin-top: 5px !important;
+  padding: 5px !important;
+  outline: none !important;
 }
 
 /* TaskView */

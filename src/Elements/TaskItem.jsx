@@ -95,7 +95,7 @@ const TaskItem = ({
   return (
     <div
       className="task-list-item"
-      style={{ gridTemplateColumns: `${columns}` }}
+      style={{ gridTemplateColumns: `${newTask ? "1fr 1fr 1fr" : columns}` }}
       onClick={() => {
         !newTask && openTaskView(task);
       }}

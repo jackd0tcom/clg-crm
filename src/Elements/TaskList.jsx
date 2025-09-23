@@ -70,30 +70,30 @@ const TaskList = ({
                 />
               );
             })}
+          {!isCollapsed && (
+            <div className="new-task-toggle-wrapper">
+              {!newTask ? (
+                <a className="new-task-toggle" onClick={() => setNewTask(true)}>
+                  <i className="fa-solid fa-plus"></i>Add task...
+                </a>
+              ) : (
+                <TaskItem
+                  task={{}}
+                  newTask={newTask}
+                  headings={headings}
+                  openTaskView={openTaskView}
+                  setNewTask={setNewTask}
+                  refreshTasks={refreshTasks}
+                  date={title}
+                  caseId={caseId}
+                  refreshCaseData={refreshCaseData}
+                  refreshActivityData={refreshActivityData}
+                  columns={columns}
+                />
+              )}
+            </div>
+          )}
         </div>
-        {!isCollapsed && (
-          <div className="new-task-toggle-wrapper">
-            {!newTask ? (
-              <a className="new-task-toggle" onClick={() => setNewTask(true)}>
-                <i className="fa-solid fa-plus"></i>Add task...
-              </a>
-            ) : (
-              <TaskItem
-                task={{}}
-                newTask={newTask}
-                headings={headings}
-                openTaskView={openTaskView}
-                setNewTask={setNewTask}
-                refreshTasks={refreshTasks}
-                date={title}
-                caseId={caseId}
-                refreshCaseData={refreshCaseData}
-                refreshActivityData={refreshActivityData}
-                columns={columns}
-              />
-            )}
-          </div>
-        )}
       </div>
     </>
   );

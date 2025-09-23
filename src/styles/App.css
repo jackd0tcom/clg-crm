@@ -367,7 +367,7 @@ div.date-picker-wrapper > div > div > input[type="text"]:hover {
   overflow: visible;
   position: relative;
   display: flex;
-  /* align-items: center; */
+  align-items: center;
 }
 .assignee-toggle-x {
   position: absolute;
