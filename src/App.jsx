@@ -3,15 +3,11 @@ import { Route, Routes, Navigate, useLocation } from "react-router";
 import Home from "./Pages/Home.jsx";
 import { useSelector } from "react-redux";
 import { useEffect, useState, useCallback } from "react";
-import axios from "axios";
-import { useDispatch } from "react-redux";
-import Landing from "./Pages/Landing.jsx";
 import Nav from "./Elements/Nav.jsx";
 import Profile from "./Pages/Profile.jsx";
 import Case from "./Pages/Case.jsx";
 import CaseList from "./Pages/CaseList.jsx";
 import Tasks from "./Pages/Tasks.jsx";
-import { formatDate } from "./helpers/helperFunctions.js";
 import TaskView from "./Elements/TaskView.jsx";
 import { useAuth0 } from "@auth0/auth0-react";
 import Loader from "./Elements/Loader.jsx";
@@ -22,16 +18,18 @@ import Settings from "./Pages/Settings.jsx";
 import Inbox from "./Pages/Inbox.jsx";
 import { addRecentItem } from "./helpers/recentItemsHelper";
 import Admin from "./Pages/Admin.jsx";
+import Denied from "./Pages/Denied.jsx";
 
 function App() {
+  const userStore = useSelector((state) => state.user);
   const [isOpen, setIsOpen] = useState(false);
   const [taskId, setTaskId] = useState(null);
   const [activePage, setActivePage] = useState(null);
   const [refreshKey, setRefreshKey] = useState(0);
   const [userSynced, setUserSynced] = useState(false);
   const { isAuthenticated, user, isLoading } = useAuth0();
-  const dispatch = useDispatch();
   const location = useLocation();
+  // Use Redux store directly - no need for local state
 
   useEffect(() => {
     const path = location.pathname;
@@ -72,7 +70,9 @@ function App() {
     setRefreshKey((prev) => prev + 1);
   }, []);
 
-  return (
+  return isAuthenticated && userSynced && !userStore.isAllowed ? (
+    <Denied />
+  ) : (
     <>
       <Auth0Sync onSyncComplete={handleSyncComplete} />
       <div className="app-wrapper">
@@ -179,8 +179,8 @@ function App() {
               <Route
                 path="/admin"
                 element={
-                  !isAuthenticated && isAdmin ? (
-                    <Navigate to="/admin" />
+                  !isAuthenticated || !userStore.isAdmin ? (
+                    <Navigate to="/" />
                   ) : (
                     <Admin />
                   )
@@ -190,6 +190,7 @@ function App() {
                 path="/google-calendar-callback"
                 element={<CalendarCallback />}
               />
+              <Route path="/denied" element={<Denied />} />
             </Routes>
           )}
         </div>

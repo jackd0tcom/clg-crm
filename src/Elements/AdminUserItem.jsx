@@ -1,14 +1,24 @@
 import { useState } from "react";
 
-const AdminUserToggle = ({ user, handleAllow }) => {
+const AdminUserToggle = ({ user, handleAllow, handleRoleChange }) => {
   const [isLoading, setIsLoading] = useState(false);
-  
+  const [roleLoading, setRoleLoading] = useState(false);
+
   const handleToggle = async () => {
     setIsLoading(true);
     try {
       await handleAllow(user);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleRoleToggle = async () => {
+    setRoleLoading(true);
+    try {
+      await handleRoleChange(user);
+    } finally {
+      setRoleLoading(false);
     }
   };
 
@@ -20,17 +30,27 @@ const AdminUserToggle = ({ user, handleAllow }) => {
         className="admin-user-profile-pic"
       />
       <p>
-        {user.fullName || `${user.firstName} ${user.lastName}`.trim() || user.username}
+        {user.fullName ||
+          `${user.firstName} ${user.lastName}`.trim() ||
+          user.username}
       </p>
       <p>{user.email}</p>
-      <p className={`role-badge ${user.role}`}>
-        {user.role}
-      </p>
+      <div className="role-container">
+        <div className="role-toggle-wrapper">
+          <span className={`role-badge ${user.role}`}>{user.role}</span>
+          <button
+            onClick={handleRoleToggle}
+            disabled={roleLoading}
+            className="role-toggle-button"
+            title={`Change to ${user.role === "admin" ? "user" : "admin"}`}
+          >
+            {roleLoading ? "..." : "↔"}
+          </button>
+        </div>
+      </div>
       <div className="toggle-container">
-        <label
-          htmlFor={`allow-toggle-${user.userId}`}
-          className="switch"
-        >
+        <p>Blocked</p>
+        <label htmlFor={`allow-toggle-${user.userId}`} className="switch">
           <input
             type="checkbox"
             onChange={handleToggle}
@@ -41,7 +61,7 @@ const AdminUserToggle = ({ user, handleAllow }) => {
           />
           <span className="slider round"></span>
         </label>
-        {isLoading && <span className="loading-text">Updating...</span>}
+        <p>Allowed</p>
       </div>
     </div>
   );

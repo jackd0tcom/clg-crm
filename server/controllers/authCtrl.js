@@ -124,19 +124,8 @@ export default {
         }
       }
 
-      // Check if user has access
-      if (!user.isAllowed) {
-        console.log(`Access denied for user: ${email} (${user.userId})`);
-        return res.status(403).json({
-          error: "Access denied",
-          message:
-            "Your account does not have access to this system. Please contact an administrator.",
-          contactInfo: {
-            email: "admin@yourlawfirm.com", // You can customize this
-            message: "Contact an administrator to request access",
-          },
-        });
-      }
+      // Always sync user to session, let frontend handle access control
+      console.log(`User synced: ${email} (${user.userId}) - Allowed: ${user.isAllowed}`);
 
       // Set up session with your local user data
       req.session.user = {

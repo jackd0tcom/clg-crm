@@ -201,6 +201,7 @@ app.get("/api/user/check-access", adminCtrl.checkUserAccess);
 // admin endpoints (require admin role)
 app.get("/api/admin/users", requireAccess, requireAdmin, adminCtrl.getAllUsers);
 app.post("/api/admin/users/:userId/access", requireAccess, requireAdmin, adminCtrl.updateUserAccess);
+app.post("/api/admin/users/:userId/role", requireAccess, requireAdmin, adminCtrl.updateUserRole);
 app.post("/api/admin/users", requireAccess, requireAdmin, adminCtrl.addUserByEmail);
 app.post("/api/admin/users/bulk-access", requireAccess, requireAdmin, adminCtrl.bulkUpdateUserAccess);
 

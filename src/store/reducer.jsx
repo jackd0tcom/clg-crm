@@ -7,6 +7,7 @@ const initialState = {
     role: null,
     profilePic: null,
     isAllowed: false,
+    isAdmin: false,
   },
   isAuthenticated: false,
 };
@@ -27,6 +28,7 @@ const reducer = (state = initialState, action) => {
           role: action.payload.role,
           profilePic: action.payload.profilePic,
           isAllowed: action.payload.isAllowed,
+          isAdmin: action.payload.role === "admin",
         },
         isAuthenticated: true,
       };
@@ -40,13 +42,18 @@ const reducer = (state = initialState, action) => {
           role: null,
           profilePic: null,
           isAllowed: false,
+          isAdmin: false,
         },
         isAuthenticated: false,
       };
     case UPDATE_USER:
       return {
         ...state,
-        user: { ...state.user, ...action.payload },
+        user: { 
+          ...state.user, 
+          ...action.payload,
+          isAdmin: action.payload.role ? action.payload.role === "admin" : state.user.isAdmin
+        },
       };
     default:
       return state;

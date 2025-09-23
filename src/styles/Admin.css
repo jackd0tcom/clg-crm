@@ -85,6 +85,42 @@ input:checked + .slider:before {
   font-weight: 600;
   text-transform: uppercase;
   text-align: center;
+  margin-right: 8px;
+}
+
+.role-container {
+  display: flex;
+  align-items: center;
+}
+
+.role-toggle-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.role-toggle-button {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.role-toggle-button:hover:not(:disabled) {
+  background-color: #5a6268;
+}
+
+.role-toggle-button:disabled {
+  background-color: #adb5bd;
+  cursor: not-allowed;
 }
 
 .role-badge.admin {

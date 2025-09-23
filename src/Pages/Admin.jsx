@@ -18,12 +18,10 @@ const Admin = () => {
     try {
       fetchUsers();
     } catch (error) {
-      console.log(users);
     }
   }, []);
 
   const handleAllow = async (user) => {
-    console.log("Toggling access for user:", user);
     try {
       const response = await axios.post(
         `/api/admin/users/${user.userId}/access`,
@@ -33,7 +31,6 @@ const Admin = () => {
       );
 
       if (response.data.success) {
-        console.log("✅ User access updated successfully");
         
         // Update the user in place instead of refetching all users
         setUsers(prevUsers => 
@@ -46,6 +43,34 @@ const Admin = () => {
       }
     } catch (error) {
       console.error("❌ Failed to update user access:", error);
+      // Optionally show an error message
+    }
+  };
+
+  const handleRoleChange = async (user) => {
+    const newRole = user.role === 'admin' ? 'user' : 'admin';
+    
+    try {
+      const response = await axios.post(
+        `/api/admin/users/${user.userId}/role`,
+        {
+          role: newRole,
+        }
+      );
+
+      if (response.data.success) {
+        
+        // Update the user in place
+        setUsers(prevUsers => 
+          prevUsers.map(u => 
+            u.userId === user.userId 
+              ? { ...u, role: newRole }
+              : u
+          )
+        );
+      }
+    } catch (error) {
+      console.error("❌ Failed to update user role:", error);
       // Optionally show an error message
     }
   };
@@ -77,6 +102,7 @@ const Admin = () => {
                   key={user.userId}
                   user={user}
                   handleAllow={handleAllow}
+                  handleRoleChange={handleRoleChange}
                 />
               );
             })

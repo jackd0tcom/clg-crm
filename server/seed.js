@@ -22,13 +22,13 @@ const users = [
     username: "meg_attorney",
     firstName: "Meg",
     lastName: "Williams",
-    role: "team_member",
+    role: "user",
   },
   {
     username: "jenn_paralegal",
     firstName: "Jenn",
     lastName: "Davis",
-    role: "team_member",
+    role: "user",
   },
   {
     username: "mike_partner",
@@ -40,13 +40,13 @@ const users = [
     username: "lisa_associate",
     firstName: "Lisa",
     lastName: "Rodriguez",
-    role: "team_member",
+    role: "user",
   },
   {
     username: "hannah_associate",
     firstName: "Hannah",
     lastName: "Ball",
-    role: "team_member",
+    role: "user",
   },
 ];
 

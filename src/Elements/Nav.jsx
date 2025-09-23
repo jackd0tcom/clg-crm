@@ -9,9 +9,9 @@ import { useAuth0 } from "@auth0/auth0-react";
 
 const Nav = () => {
   const dispatch = useDispatch();
-  const isAuthenticated = useAuth0();
+  const user = useSelector((state) => state.user);
+  const { isAuthenticated } = useAuth0();
   const navigate = useNavigate();
-
   return (
     <nav className="nav-bar">
       <div className="nav-buttons-wrapper">
@@ -87,15 +87,19 @@ const Nav = () => {
                 <i className="fa-solid fa-gear"></i>
                 Settings
               </NavLink>
-              <NavLink
-                to="/admin"
-                className={({ isActive }) =>
-                  isActive ? "active-nav nav-button" : "inactive-nav nav-button"
-                }
-              >
-                <i className="fa-solid fa-user-tie"></i>
-                Admin
-              </NavLink>
+              {user.isAdmin && isAuthenticated && (
+                <NavLink
+                  to="/admin"
+                  className={({ isActive }) =>
+                    isActive
+                      ? "active-nav nav-button"
+                      : "inactive-nav nav-button"
+                  }
+                >
+                  <i className="fa-solid fa-user-tie"></i>
+                  Admin
+                </NavLink>
+              )}
               {/* <NavLink
                 to="/search"
                 className={({ isActive }) =>

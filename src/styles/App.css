@@ -465,3 +465,9 @@ div.date-picker-wrapper > div > div > input[type="text"]:hover {
   border: none;
   color: white;
 }
+.denied-page-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}

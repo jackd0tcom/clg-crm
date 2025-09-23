@@ -161,6 +161,56 @@ export default {
       });
     }
   },
+  updateUserRole: async (req, res) => {
+    try {
+      const { userId } = req.params;
+      const { role } = req.body;
+
+      if (!role || !['admin', 'user'].includes(role)) {
+        return res.status(400).json({
+          error: "Invalid request",
+          message: "Role must be either 'admin' or 'user'",
+        });
+      }
+
+      const user = await User.findByPk(userId);
+      if (!user) {
+        return res.status(404).json({
+          error: "User not found",
+          message: "The specified user does not exist",
+        });
+      }
+
+      // Prevent admin from changing their own role to user
+      if (user.userId === req.session.user.userId && role === 'user') {
+        return res.status(400).json({
+          error: "Cannot change own role",
+          message: "You cannot change your own role from admin to user",
+        });
+      }
+
+      await user.update({ role });
+
+      res.json({
+        success: true,
+        message: `User role updated to ${role} successfully`,
+        user: {
+          userId: user.userId,
+          username: user.username,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          role: user.role,
+        },
+      });
+    } catch (error) {
+      console.error("Error updating user role:", error);
+      res.status(500).json({
+        error: "Failed to update user role",
+        message: "An error occurred while updating user role",
+      });
+    }
+  },
   checkUserAccess: async (req, res) => {
     try {
       if (!req.session.user) {
