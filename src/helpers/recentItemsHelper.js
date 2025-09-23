@@ -4,7 +4,7 @@
  */
 
 const RECENT_ITEMS_KEY = "recentItems";
-const MAX_RECENT_ITEMS = 5; // Increased to accommodate both tasks and cases
+const MAX_RECENT_ITEMS = 8; // Increased to accommodate both tasks and cases
 
 /**
  * Add an item (task or case) to the recent items list

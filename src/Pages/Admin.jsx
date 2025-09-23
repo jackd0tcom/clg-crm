@@ -8,6 +8,7 @@ const Admin = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const { isAuthenticated, isLoading } = useAuth0();
+
   const fetchUsers = async () => {
     await axios.get("/api/admin/users").then((res) => {
       setUsers(res.data.users);
@@ -17,8 +18,7 @@ const Admin = () => {
   useEffect(() => {
     try {
       fetchUsers();
-    } catch (error) {
-    }
+    } catch (error) {}
   }, []);
 
   const handleAllow = async (user) => {
@@ -31,13 +31,10 @@ const Admin = () => {
       );
 
       if (response.data.success) {
-        
         // Update the user in place instead of refetching all users
-        setUsers(prevUsers => 
-          prevUsers.map(u => 
-            u.userId === user.userId 
-              ? { ...u, isAllowed: !u.isAllowed }
-              : u
+        setUsers((prevUsers) =>
+          prevUsers.map((u) =>
+            u.userId === user.userId ? { ...u, isAllowed: !u.isAllowed } : u
           )
         );
       }
@@ -48,8 +45,8 @@ const Admin = () => {
   };
 
   const handleRoleChange = async (user) => {
-    const newRole = user.role === 'admin' ? 'user' : 'admin';
-    
+    const newRole = user.role === "admin" ? "user" : "admin";
+
     try {
       const response = await axios.post(
         `/api/admin/users/${user.userId}/role`,
@@ -59,13 +56,10 @@ const Admin = () => {
       );
 
       if (response.data.success) {
-        
         // Update the user in place
-        setUsers(prevUsers => 
-          prevUsers.map(u => 
-            u.userId === user.userId 
-              ? { ...u, role: newRole }
-              : u
+        setUsers((prevUsers) =>
+          prevUsers.map((u) =>
+            u.userId === user.userId ? { ...u, role: newRole } : u
           )
         );
       }

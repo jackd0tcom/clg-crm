@@ -2,6 +2,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { formatDateNoTime, capitalize } from "../helpers/helperFunctions";
 import StatusIcon from "./StatusIcon";
 import { useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router";
 
 const NotificationItem = ({
@@ -12,10 +13,17 @@ const NotificationItem = ({
 }) => {
   const [hover, setHover] = useState(false);
   const nav = useNavigate();
+  const [isTask, setIsTask] = useState(false);
+
+  useEffect(() => {
+    if (data.objectType === "task") {
+      setIsTask(true);
+    }
+  }, []);
 
   const handleClick = (e) => {
     handleRead(data);
-    if (data.case) {
+    if (!isTask) {
       nav(`/case/${data.case.caseId}`);
     } else openTaskView(data.task);
   };
@@ -30,9 +38,9 @@ const NotificationItem = ({
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
-      <span className="notification-item-span" onClick={() => handleClick()}>
+      <div className="notification-item-span" onClick={() => handleClick()}>
         <div className="notification-task-wrapper">
-          {data.task && (
+          {isTask && (
             <StatusIcon
               status={data.task.status}
               hasIcon={true}
@@ -40,12 +48,12 @@ const NotificationItem = ({
               noBg={true}
             />
           )}
-          {!data.task && <i className="fa-solid fa-briefcase"></i>}
-          <p>{data.case ? data.case.title : data.task.title}</p>
+          {!isTask && <i className="fa-solid fa-briefcase"></i>}
+          <p>{!isTask ? data.case.title : data.task.title}</p>
         </div>
         <p>{data.message}</p>
-      </span>
-      <span>
+      </div>
+      <div className="notification-item-button-wrapper">
         {!data.isCleared && hover ? (
           <button
             className="clear-notification"
@@ -57,7 +65,7 @@ const NotificationItem = ({
         ) : (
           <p>{formatDateNoTime(data.updatedAt)}</p>
         )}
-      </span>
+      </div>
     </div>
   );
 };

@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import axios from "axios";
 import CaseListItem from "./CaseListItem";
-import Loader from "./Loader";
+import { useNavigate } from "react-router";
 
 const CasesWidget = ({ loading, setLoading }) => {
   const [cases, setCases] = useState();
   const { isLoading, isAuthenticated } = useAuth0();
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function fetch() {
@@ -28,15 +29,19 @@ const CasesWidget = ({ loading, setLoading }) => {
 
   return (
     <div className="widget-container">
-      <a
-        onClick={() => navigate("/cases")}
-        className="widget-container-heading"
-      >
-        My Cases
-      </a>
+      <div className="widget-header">
+        <p
+          onClick={() => navigate("/cases")}
+          className="widget-container-heading"
+        >
+          My Cases
+        </p>
+      </div>
       <div className="case-widget-container">
         {loading ? (
-          <p>fetching cases...</p>
+          <div className="case-widget-loader">
+            <p>Fetching your cases...</p>
+          </div>
         ) : cases.length > 0 ? (
           cases.map((data) => {
             return <CaseListItem key={data.caseId} data={data} />;

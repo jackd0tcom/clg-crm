@@ -21,6 +21,14 @@ export function formatDateNoTime(data) {
     month: "short",
   }).format(date);
 }
+export function formatDateWithDay(data) {
+  const date = new Date(data);
+  return new Intl.DateTimeFormat("en-US", {
+    weekday: "long",
+    day: "numeric",
+    month: "short",
+  }).format(date);
+}
 
 export function formatRelativeTime(data) {
   const now = new Date();

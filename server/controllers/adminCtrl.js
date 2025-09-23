@@ -11,6 +11,7 @@ export default {
     next();
   },
   getAllUsers: async (req, res) => {
+    console.log("getAllUsers");
     try {
       const users = await User.findAll({
         attributes: [
@@ -166,7 +167,7 @@ export default {
       const { userId } = req.params;
       const { role } = req.body;
 
-      if (!role || !['admin', 'user'].includes(role)) {
+      if (!role || !["admin", "user"].includes(role)) {
         return res.status(400).json({
           error: "Invalid request",
           message: "Role must be either 'admin' or 'user'",
@@ -182,7 +183,7 @@ export default {
       }
 
       // Prevent admin from changing their own role to user
-      if (user.userId === req.session.user.userId && role === 'user') {
+      if (user.userId === req.session.user.userId && role === "user") {
         return res.status(400).json({
           error: "Cannot change own role",
           message: "You cannot change your own role from admin to user",

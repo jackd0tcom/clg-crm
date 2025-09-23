@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { getRecentItems, clearRecentItems } from '../helpers/recentItemsHelper';
-import { findTimeDifference } from '../helpers/helperFunctions';
-
+import React, { useState, useEffect } from "react";
+import { getRecentItems, clearRecentItems } from "../helpers/recentItemsHelper";
+import { findTimeDifference } from "../helpers/helperFunctions";
+import StatusIcon from "./StatusIcon";
+import PriorityIcon from "./PriorityIcon";
+import PhaseIcon from "./PhaseIcon";
 
 const RecentItemsWidget = ({ openTaskView, navigate }) => {
   const [recentItems, setRecentItems] = useState([]);
@@ -13,12 +15,12 @@ const RecentItemsWidget = ({ openTaskView, navigate }) => {
   }, []);
 
   const handleItemClick = (item) => {
-    if (item.itemType === 'task') {
+    if (item.itemType === "task") {
       // Open the task view
       if (openTaskView) {
         openTaskView(item);
       }
-    } else if (item.itemType === 'case') {
+    } else if (item.itemType === "case") {
       // Navigate to the case
       if (navigate) {
         navigate(`/case/${item.caseId}`);
@@ -45,9 +47,9 @@ const RecentItemsWidget = ({ openTaskView, navigate }) => {
   return (
     <div className="widget-container">
       <div className="widget-header">
-        <p>Recent Items</p>
+        <p id="recent-items">Recents</p>
         {recentItems.length > 0 && (
-          <button 
+          <button
             className="clear-history-btn"
             onClick={handleClearHistory}
             title="Clear recent items"
@@ -58,53 +60,34 @@ const RecentItemsWidget = ({ openTaskView, navigate }) => {
       </div>
       <div className="recent-items-container">
         {recentItems.map((item) => (
-          <div 
+          <div
             key={`${item.itemType}-${item.itemId}`}
             className="recent-item"
             onClick={() => handleItemClick(item)}
           >
             <div className="recent-item-content">
               <div className="recent-item-header">
-                <span className={`item-type-badge item-type-${item.itemType}`}>
-                  {item.itemType === 'task' ? 'Task' : 'Case'}
-                </span>
+                {item.itemType === "task" ? (
+                  <StatusIcon
+                    status={item.status}
+                    hasIcon={true}
+                    hasTitle={false}
+                    noBg={true}
+                  />
+                ) : (
+                  <i className="fa-solid fa-briefcase"></i>
+                )}
                 <h4 className="recent-item-title">{item.title}</h4>
               </div>
-              
-              {item.itemType === 'task' && (
-                <>
-                  {item.case && (
-                    <p className="recent-item-case">{item.case.title}</p>
-                  )}
-                  <div className="recent-item-meta">
-                    <span className={`priority-badge priority-${item.priority?.toLowerCase()}`}>
-                      {item.priority}
-                    </span>
-                    {item.dueDate && (
-                      <span className="due-date">
-                        {findTimeDifference(item.dueDate).replace(/^[012]/, '')}
-                      </span>
-                    )}
-                  </div>
-                </>
-              )}
-              
-              {item.itemType === 'case' && (
-                <div className="recent-item-meta">
-                  <span className="case-phase">{item.phase}</span>
-                </div>
-              )}
             </div>
-            
+
             <div className="recent-item-status">
-              {item.itemType === 'task' && (
-                <span className={`status-badge status-${item.status?.toLowerCase()}`}>
-                  {item.status}
-                </span>
+              {item.itemType === "task" && (
+                <PriorityIcon data={item.priority} />
               )}
-              {item.itemType === 'case' && (
+              {item.itemType === "case" && (
                 <span className="case-owner">
-                  {item.owner?.firstName} {item.owner?.lastName}
+                  <PhaseIcon phase={item.phase} />
                 </span>
               )}
             </div>

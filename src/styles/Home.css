@@ -1,3 +1,4 @@
+/* Login / Landing Page */
 .home-landing-section {
   height: 100%;
 }
@@ -88,55 +89,64 @@
   color: white;
 }
 
+/* Dashboard */
 .home-container {
-  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
 }
-.home-container h1 {
-  margin: 5px 0px 25px 0px;
-  font-size: 1.5rem;
+.dashboard-header {
+  padding: 25px 15px 15px 15px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  row-gap: 1rem;
+  border-bottom: 1px solid var(--light-border);
+}
+.dashboard-header h1 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+.dashboard-header p {
+  margin: 0;
+  font-size: var(--grey);
 }
 .widget-wrapper {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  grid-template-rows: repeat(auto-fill, 50%);
   row-gap: 10px;
   column-gap: 10px;
+  height: 100%;
+  padding: 15px;
+  background-color: var(--root-bg-color-light);
 }
 
 .widget-container {
   border: 1px solid var(--light-border);
   border-radius: 5px;
-  height: 35vh;
   padding: 15px;
   font-size: 1.25rem;
   font-weight: 500;
-  overflow: scroll;
+  background-color: white;
+  position: relative;
+}
+.widget-header {
+  position: absolute;
+  background-color: white;
+  top: 0;
+  left: 0;
+  padding: 15px 15px 0px 15px;
+  width: calc(100% - 30px);
+  border-radius: 5px 5px 0 0;
 }
 .widget-container p {
   margin: 0;
 }
 .widget-container-heading {
   cursor: pointer;
-}
-.case-widget-container {
-  display: flex;
-  flex-direction: column;
-  row-gap: 10px;
-  margin-top: 10px;
-}
-
-.case-list-item-wrapper {
-  display: grid;
-  cursor: pointer;
-  grid-template-columns: 2fr 1fr;
-  font-size: 0.9rem;
-  padding: 15px;
-  justify-content: space-between;
-  border: 1px solid var(--light-border);
-  border-radius: 5px;
-}
-
-.case-list-item-wrapper:hover {
-  background-color: var(--root-bg-color-light);
 }
 
 /* Recent Items Widget Styles */
@@ -149,12 +159,21 @@
 
 .widget-header p {
   margin: 0;
+  cursor: pointer;
+}
+.widget-header p:hover {
+  font-weight: 600;
+  transition: 0.1s;
+}
+#recent-items:hover {
+  font-weight: 500;
+  cursor: default;
 }
 
 .clear-history-btn {
   background: none;
-  border: none;
-  color: var(--text-color);
+  border: 1px solid transparent;
+  color: var(--dark-grey);
   cursor: pointer;
   font-size: 0.8rem;
   padding: 4px 8px;
@@ -163,14 +182,17 @@
 }
 
 .clear-history-btn:hover {
-  background-color: var(--light-border);
+  background-color: var(--root-bg-color-light);
+  color: black;
 }
 
 .recent-items-container {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin-top: 10px;
+  margin-top: 2.5rem;
+  overflow: scroll;
+  height: 85%;
 }
 
 .no-recent-items {
@@ -181,9 +203,9 @@
 }
 
 .recent-item {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
   align-items: center;
+  grid-template-columns: 3fr 0.8fr;
   padding: 10px;
   border: 1px solid var(--light-border);
   border-radius: 5px;
@@ -195,45 +217,40 @@
   background-color: var(--root-bg-color-light);
 }
 
-.recent-item-content {
-  flex: 1;
-  min-width: 0;
+.recent-item-header h4 {
+  font-weight: 400;
 }
-
 .recent-item-header {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 4px;
+  gap: 5px;
+  font-size: 1rem;
 }
-
-.item-type-badge {
-  padding: 2px 6px;
-  border-radius: 3px;
-  font-size: 0.6rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  flex-shrink: 0;
+.recent-item-header i {
+  font-size: 0.9rem;
+  display: flex;
+  margin-top: 2px;
 }
-
-.item-type-task {
-  background-color: #dbeafe;
-  color: #2563eb;
+.recent-item-status p {
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--dark-grey);
 }
-
-.item-type-case {
-  background-color: #f3e8ff;
-  color: #7c3aed;
+.recent-item-status .phase-icon-wrapper {
+  column-gap: 5px;
+  color: var(--dark-grey);
+}
+.recent-item-status .priority-icon-wrapper {
+  padding: 0;
 }
 
 .recent-item-title {
   font-size: 0.9rem;
-  font-weight: 600;
-  margin: 0;
   color: var(--text-color);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  margin: 0;
 }
 
 .recent-item-case {
@@ -245,77 +262,59 @@
   white-space: nowrap;
 }
 
-.recent-item-meta {
+/* Updates Widget */
+.updates-widget {
+  margin-top: 2.5rem;
+  max-height: 85%;
+  overflow: scroll;
+}
+
+/* To Do Widget */
+.widget-tasklist {
+  margin-top: 2.5rem;
+  font-weight: 400;
+}
+
+/* Cases Widget */
+.case-widget-loader {
+  background-color: var(--root-bg-color-light);
+  height: 100%;
+  width: 100%;
+  border-radius: 5px;
+  font-size: 1rem;
+  padding: 15px;
+  color: var(--dark-grey);
+}
+.case-widget-container {
   display: flex;
-  gap: 8px;
+  flex-direction: column;
+  row-gap: 10px;
+  margin-top: 2.5rem;
+  overflow: scroll;
+  height: 85%;
+  font-weight: 400;
+}
+.case-list-title {
+  display: flex;
   align-items: center;
+  column-gap: 5px;
 }
 
-.priority-badge {
-  padding: 2px 6px;
-  border-radius: 3px;
-  font-size: 0.7rem;
-  font-weight: 500;
-  text-transform: uppercase;
+.case-list-item-wrapper {
+  display: grid;
+  cursor: pointer;
+  grid-template-columns: 2fr 0.5fr;
+  font-size: 0.9rem;
+  padding: 10px 15px;
+  justify-content: space-between;
+  border: 1px solid var(--light-border);
+  border-radius: 5px;
 }
 
-.priority-high {
-  background-color: #fee2e2;
-  color: #dc2626;
+.case-list-item-wrapper:hover {
+  background-color: var(--root-bg-color-light);
 }
 
-.priority-medium {
-  background-color: #fef3c7;
-  color: #d97706;
-}
-
-.priority-low {
-  background-color: #d1fae5;
-  color: #059669;
-}
-
-.due-date {
-  font-size: 0.7rem;
-  color: var(--text-muted);
-}
-
-.recent-item-status {
-  margin-left: 10px;
-}
-
-.case-phase {
-  font-size: 0.7rem;
-  color: var(--text-muted);
-  text-transform: capitalize;
-}
-
-.case-owner {
-  font-size: 0.7rem;
-  color: var(--text-muted);
-}
-
-.status-badge {
-  padding: 2px 8px;
-  border-radius: 3px;
-  font-size: 0.7rem;
-  font-weight: 500;
-  text-transform: uppercase;
-}
-
-.status-open {
-  background-color: #dbeafe;
-  color: #2563eb;
-}
-
-.status-in-progress {
-  background-color: #fef3c7;
-  color: #d97706;
-}
-
-.status-completed {
-  background-color: #d1fae5;
-  color: #059669;
-}
 @media screen and (max-width: 1200px) {
   .home-content {
     width: 40%;

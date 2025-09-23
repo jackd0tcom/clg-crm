@@ -23,17 +23,21 @@ const ToDoWidget = ({ openTaskView }) => {
 
   return (
     <div className="widget-container">
-      <p className="widget-heading" onClick={() => navigate("/tasks")}>
-        To Do
-      </p>
-      <TaskList
-        tasks={tasks}
-        openTaskView={openTaskView}
-        headings={["Title", "Case", "Due Date"]}
-        title={"Due Today"}
-        refreshTasks={fetch}
-        columns={"3fr 2fr 1.2fr"}
-      />
+      <div className="widget-header">
+        <p className="widget-heading" onClick={() => navigate("/tasks")}>
+          To Do
+        </p>
+      </div>
+      <div className="widget-tasklist">
+        <TaskList
+          tasks={tasks}
+          openTaskView={openTaskView}
+          headings={["Title", "Case", "Due Date"]}
+          title={"Due Today"}
+          refreshTasks={fetch}
+          columns={"3fr 2fr 1.2fr"}
+        />
+      </div>
     </div>
   );
 };

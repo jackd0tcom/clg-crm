@@ -10,7 +10,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import ToDoWidget from "../Elements/ToDoWidget";
 import UpdatesWidget from "../Elements/UpdatesWidget";
 import RecentItemsWidget from "../Elements/RecentItemsWidget";
-import { formatDateNoTime } from "../helpers/helperFunctions";
+import { formatDateWithDay } from "../helpers/helperFunctions";
 import LoginButton from "../Elements/LoginButton";
 import CasesWidget from "../Elements/CasesWidget";
 import { Link } from "react-router-dom";
@@ -49,8 +49,10 @@ const Home = ({ openTaskView }) => {
     <Loader />
   ) : (
     <div className="home-container">
-      <p>{formatDateNoTime(date)}</p>
-      <h1>Dashboard</h1>
+      <div className="dashboard-header">
+        <h1>Dashboard</h1>
+        <p>{formatDateWithDay(date)}</p>
+      </div>
       <div className="widget-wrapper">
         <RecentItemsWidget openTaskView={openTaskView} navigate={navigate} />
         <UpdatesWidget openTaskView={openTaskView} />

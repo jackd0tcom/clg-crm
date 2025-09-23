@@ -60,13 +60,17 @@ const UpdatesWidget = ({ openTaskView }) => {
 
   return (
     <div className="widget-container">
-      <p onClick={() => navigate("/inbox")}>Updates</p>
-      <NotificationList
-        notifications={updates}
-        handleRead={handleRead}
-        handleCleared={handleCleared}
-        openTaskView={openTaskView}
-      />
+      <div className="widget-header">
+        <p onClick={() => navigate("/inbox")}>Updates</p>
+      </div>
+      <div className="updates-widget">
+        <NotificationList
+          notifications={updates}
+          handleRead={handleRead}
+          handleCleared={handleCleared}
+          openTaskView={openTaskView}
+        />
+      </div>
     </div>
   );
 };
