@@ -13,6 +13,7 @@ import RecentItemsWidget from "../Elements/RecentItemsWidget";
 import { formatDateNoTime } from "../helpers/helperFunctions";
 import LoginButton from "../Elements/LoginButton";
 import CasesWidget from "../Elements/CasesWidget";
+import { Link } from "react-router-dom";
 
 const Home = ({ openTaskView }) => {
   const { user, isAuthenticated, isLoading } = useAuth0();
@@ -28,14 +29,19 @@ const Home = ({ openTaskView }) => {
       </video>
       <div className="bg-video-overlay">
         <div className="home-content">
-          <img
-            className="welcome-logo"
-            src="src/assets/Clause-Law-Group-Logo-Green.png"
-            alt=""
-          />
-          <h1>Welcome Back!</h1>
-          <LoginButton />
-          <p>New here? Contact your administrator to set up an account.</p>
+          <a href="https://clauselawgroup.com" target="_blank">
+            <img
+              className="welcome-logo"
+              src="src/assets/Clause-Law-Group-Logo-Green.png"
+              alt=""
+            />
+          </a>
+          <div className="welcome-content">
+            <h1 className="welcome-heading">Welcome Back</h1>
+            <h3>Sign in below with your Google account to continue</h3>
+            <LoginButton />
+            <p>New here? Contact your administrator to set up an account.</p>
+          </div>
         </div>
       </div>
     </section>

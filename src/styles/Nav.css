@@ -15,7 +15,7 @@
   margin-right: 5px;
 }
 .nav-button:hover {
-  background-color: var(--grey);
+  background-color: rgb(91, 91, 91);
 }
 .nav-buttons-wrapper {
   display: flex;
@@ -28,16 +28,40 @@
   flex-direction: column;
   row-gap: 10px;
 }
+.profile-buttons {
+  border-bottom: 0;
+  border-top: 1px solid var(--grey);
+  padding-top: 1rem;
+}
 .clg-logo {
   width: 100%;
-  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--grey);
 }
 .active-nav {
   color: white;
   background-color: rgb(81, 81, 81);
 }
+.active-nav i {
+  color: #3ab99d;
+}
 #nav-profile {
   display: flex;
   align-items: center;
   column-gap: 5px;
+  margin-left: -3px;
+}
+.profile-pic-wrapper {
+  display: flex;
+}
+@media screen and (max-width: 1100px) {
+  .nav-bar {
+    width: 15%;
+  }
+}
+@media screen and (max-width: 950px) {
+  .nav-bar {
+    width: 18%;
+  }
 }

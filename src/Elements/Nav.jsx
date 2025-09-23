@@ -77,7 +77,7 @@ const Nav = () => {
                 Calendar
               </NavLink>
             </div>
-            <div className="nav-buttons-container">
+            <div className="nav-buttons-container profile-buttons">
               <NavLink
                 to="/settings"
                 className={({ isActive }) =>

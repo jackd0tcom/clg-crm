@@ -27,12 +27,11 @@ function App() {
   const [activePage, setActivePage] = useState(null);
   const [refreshKey, setRefreshKey] = useState(0);
   const [userSynced, setUserSynced] = useState(false);
-  const { isAuthenticated, user, isLoading } = useAuth0();
+  const { isAuthenticated, isLoading } = useAuth0();
   const location = useLocation();
-  // Use Redux store directly - no need for local state
+  const path = location.pathname;
 
   useEffect(() => {
-    const path = location.pathname;
     if (path.startsWith("/case/") && path !== "/case/0") {
       setActivePage("case");
     } else if (path === "/cases") {
@@ -75,7 +74,7 @@ function App() {
   ) : (
     <>
       <Auth0Sync onSyncComplete={handleSyncComplete} />
-      <div className="app-wrapper">
+      <div className={path.startsWith("/ ") ? `home-wrapper` : `app-wrapper`}>
         {isAuthenticated && <Nav />}
         <div className="page-wrapper">
           {isLoading && !userSynced ? (

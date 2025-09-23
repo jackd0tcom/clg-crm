@@ -9,23 +9,11 @@ const Denied = () => {
     <div className="denied-page-wrapper">
       <div className="denied-icon">🚫</div>
       <h1>Access Denied</h1>
+      <p>Your Google account is not authorized to access this application.</p>
       <p>
-        Your Google account is not authorized to access this application.
+        This system is restricted to authorized users only. Please contact your
+        administrator to request access.
       </p>
-      <p>
-        This system is restricted to authorized users only. Please contact your administrator to request access.
-      </p>
-      
-      <div className="contact-info">
-        <h3>Need Access?</h3>
-        <p>Contact your system administrator:</p>
-        <p>
-          <strong>Email:</strong>{" "}
-          <a href="mailto:admin@yourlawfirm.com">
-            admin@yourlawfirm.com
-          </a>
-        </p>
-      </div>
 
       <button
         onClick={() => {
