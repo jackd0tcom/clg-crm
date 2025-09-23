@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
@@ -7,11 +7,28 @@ import { NavLink } from "react-router";
 import ProfilePic from "./ProfilePic";
 import { useAuth0 } from "@auth0/auth0-react";
 
-const Nav = () => {
+const Nav = ({ checkNotifications }) => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
   const { isAuthenticated } = useAuth0();
+  const [notification, setNotification] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetch = async () => {
+      try {
+        const res = await axios.get("/api/notifications");
+        let unread = [];
+        unread = res.data.filter((item) => !item.isCleared && !item.isRead);
+        setNotification(unread.length >= 1);
+      } catch (error) {
+        console.log(error);
+        setNotification(false);
+      }
+    };
+    fetch();
+  }, [checkNotifications]);
+
   return (
     <nav className="nav-bar">
       <div className="nav-buttons-wrapper">
@@ -46,7 +63,12 @@ const Nav = () => {
                   isActive ? "active-nav nav-button" : "inactive-nav nav-button"
                 }
               >
-                <i className="fa-solid fa-inbox"></i>
+                <span className="notification-icon-wrapper">
+                  <i className="fa-solid fa-inbox"></i>
+                  {notification && (
+                    <i className="fa-solid fa-circle notification-push"></i>
+                  )}
+                </span>
                 Inbox
               </NavLink>
               <NavLink

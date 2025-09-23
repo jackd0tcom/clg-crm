@@ -111,7 +111,8 @@
 }
 .dashboard-header p {
   margin: 0;
-  font-size: var(--grey);
+  color: var(--dark-grey);
+  font-size: 0.9rem;
 }
 .widget-wrapper {
   display: grid;
@@ -197,9 +198,10 @@
 
 .no-recent-items {
   text-align: center;
-  color: var(--text-muted);
+  color: var(--grey);
   font-style: italic;
   margin-top: 20px;
+  font-size: 1rem;
 }
 
 .recent-item {
@@ -294,10 +296,21 @@
   height: 85%;
   font-weight: 400;
 }
+.no-cases {
+  border-radius: 5px;
+  height: 100%;
+  border: 1px solid var(--light-border);
+  padding: 15px;
+  font-size: 1rem;
+  color: var(--grey);
+}
 .case-list-title {
   display: flex;
   align-items: center;
   column-gap: 5px;
+}
+.case-list-item .phase-icon-wrapper {
+  color: var(--dark-grey);
 }
 
 .case-list-item-wrapper {

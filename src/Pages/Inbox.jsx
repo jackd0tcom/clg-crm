@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import NotificationList from "../Elements/NotificationList";
 
-const Inbox = ({ openTaskView }) => {
+const Inbox = ({ openTaskView, setCheckNotifications, checkNotifications }) => {
   const [notifications, setNotifications] = useState([]);
   const [clearedNotifications, setClearedNotifications] = useState();
 
@@ -14,8 +14,9 @@ const Inbox = ({ openTaskView }) => {
         if (res.data) {
           const all = res.data.filter((item) => !item.isCleared);
           const read = res.data.filter((item) => item.isCleared);
-          setNotifications(all);
           setClearedNotifications(read);
+          setNotifications(all);
+          setCheckNotifications((prev) => (prev += 1));
         }
       });
     } catch (error) {}
@@ -50,6 +51,7 @@ const Inbox = ({ openTaskView }) => {
         .then((res) => {
           if (res.status === 200) {
             fetch();
+            setCheckNotifications((prev) => (prev += 1));
           }
         });
     } catch (error) {
@@ -62,6 +64,7 @@ const Inbox = ({ openTaskView }) => {
       await axios.post("/api/notifications/mark-all-read").then((res) => {
         if (res.status === 200) {
           fetch();
+          setCheckNotifications(true);
         }
       });
     } catch (error) {
@@ -99,21 +102,23 @@ const Inbox = ({ openTaskView }) => {
           Clear all
         </button>
       </div>
-      {!showCleared ? (
-        <NotificationList
-          notifications={notifications}
-          handleRead={handleRead}
-          openTaskView={openTaskView}
-          handleCleared={handleCleared}
-        />
-      ) : (
-        <NotificationList
-          notifications={clearedNotifications}
-          handleRead={handleRead}
-          openTaskView={openTaskView}
-          handleCleared={handleCleared}
-        />
-      )}
+      <div className="inbox-lists">
+        {!showCleared ? (
+          <NotificationList
+            notifications={notifications}
+            handleRead={handleRead}
+            openTaskView={openTaskView}
+            handleCleared={handleCleared}
+          />
+        ) : (
+          <NotificationList
+            notifications={clearedNotifications}
+            handleRead={handleRead}
+            openTaskView={openTaskView}
+            handleCleared={handleCleared}
+          />
+        )}
+      </div>
     </div>
   );
 };

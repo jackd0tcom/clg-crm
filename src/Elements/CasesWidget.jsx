@@ -47,7 +47,9 @@ const CasesWidget = ({ loading, setLoading }) => {
             return <CaseListItem key={data.caseId} data={data} />;
           })
         ) : (
-          <p>You are not assigned to any cases</p>
+          <div className="no-cases">
+            <p>You are not assigned to any cases</p>
+          </div>
         )}
       </div>
     </div>

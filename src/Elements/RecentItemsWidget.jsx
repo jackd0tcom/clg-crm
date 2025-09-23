@@ -36,7 +36,7 @@ const RecentItemsWidget = ({ openTaskView, navigate }) => {
   if (recentItems.length === 0) {
     return (
       <div className="widget-container">
-        <p>Recent Items</p>
+        <p>Recents</p>
         <div className="recent-items-container">
           <p className="no-recent-items">No recent items</p>
         </div>

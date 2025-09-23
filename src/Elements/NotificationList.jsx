@@ -8,7 +8,7 @@ const NotificationList = ({
 }) => {
   return (
     <div className="notification-list-wrapper">
-      {notifications.length > 0 ? (
+      {notifications && notifications.length > 0 ? (
         notifications.map((item) => {
           return (
             <NotificationItem

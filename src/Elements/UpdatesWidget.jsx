@@ -3,7 +3,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 
-const UpdatesWidget = ({ openTaskView }) => {
+const UpdatesWidget = ({ openTaskView, setCheckNotifications }) => {
   const [updates, setUpdates] = useState([]);
   const navigate = useNavigate();
 
@@ -33,6 +33,7 @@ const UpdatesWidget = ({ openTaskView }) => {
         .then((res) => {
           if (res.status === 200) {
             fetch();
+            setCheckNotifications((prev) => (prev += 1));
           }
         });
     } catch (error) {

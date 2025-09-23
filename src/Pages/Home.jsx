@@ -15,7 +15,7 @@ import LoginButton from "../Elements/LoginButton";
 import CasesWidget from "../Elements/CasesWidget";
 import { Link } from "react-router-dom";
 
-const Home = ({ openTaskView }) => {
+const Home = ({ openTaskView, checkNotifications, setCheckNotifications }) => {
   const { user, isAuthenticated, isLoading } = useAuth0();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -55,7 +55,11 @@ const Home = ({ openTaskView }) => {
       </div>
       <div className="widget-wrapper">
         <RecentItemsWidget openTaskView={openTaskView} navigate={navigate} />
-        <UpdatesWidget openTaskView={openTaskView} />
+        <UpdatesWidget
+          openTaskView={openTaskView}
+          checkNotifications={checkNotifications}
+          setCheckNotifications={setCheckNotifications}
+        />
         <ToDoWidget openTaskView={openTaskView} />
         <CasesWidget loading={loading} setLoading={setLoading} />
       </div>

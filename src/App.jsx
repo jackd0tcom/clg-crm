@@ -28,6 +28,7 @@ function App() {
   const [refreshKey, setRefreshKey] = useState(0);
   const [userSynced, setUserSynced] = useState(false);
   const { isAuthenticated, isLoading } = useAuth0();
+  const [checkNotifications, setCheckNotifications] = useState(0);
   const location = useLocation();
   const path = location.pathname;
 
@@ -75,16 +76,34 @@ function App() {
     <>
       <Auth0Sync onSyncComplete={handleSyncComplete} />
       <div className={path.startsWith("/ ") ? `home-wrapper` : `app-wrapper`}>
-        {isAuthenticated && <Nav />}
+        {isAuthenticated && <Nav checkNotifications={checkNotifications} />}
         <div className="page-wrapper">
           {isLoading && !userSynced ? (
             <Loader />
           ) : (
             <Routes>
-              <Route index element={<Home openTaskView={openTaskView} />} />
+              <Route 
+                index 
+                element={
+                  <Home 
+                    openTaskView={openTaskView}
+                    checkNotifications={checkNotifications}
+                    setCheckNotifications={setCheckNotifications}
+                  />
+                } 
+              />
               <Route
                 path="/login"
-                element={isAuthenticated ? <Navigate to="/" /> : <Home />}
+                element={
+                  isAuthenticated ? (
+                    <Navigate to="/" />
+                  ) : (
+                    <Home
+                      checkNotifications={checkNotifications}
+                      setCheckNotifications={setCheckNotifications}
+                    />
+                  )
+                }
               />
               <Route
                 path="/case/:caseId"
@@ -157,6 +176,8 @@ function App() {
                     <Navigate to="/login" />
                   ) : (
                     <Inbox
+                      checkNotifications={checkNotifications}
+                      setCheckNotifications={setCheckNotifications}
                       openTaskView={openTaskView}
                       refreshKey={activePage === "tasks" ? refreshKey : 0}
                     />

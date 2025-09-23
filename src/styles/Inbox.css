@@ -4,6 +4,9 @@
   display: flex;
   justify-content: space-between;
 }
+.inbox-lists {
+  padding: 15px;
+}
 .notification-list-wrapper {
   display: flex;
   flex-direction: column;
@@ -17,6 +20,7 @@
   padding: 0px 15px;
   cursor: pointer;
   font-weight: 400;
+  column-gap: 10px;
 }
 .notification-item-wrapper:hover {
   background-color: var(--root-bg-color-light);
@@ -39,6 +43,11 @@
   display: flex;
   column-gap: 5px;
   align-items: center;
+}
+.notification-item-wrapper p {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 .notification-task-wrapper i {
   font-size: 0.75rem;
@@ -110,6 +119,7 @@
   justify-content: center;
   flex-direction: column;
   margin-top: 4rem;
+  row-gap: 1rem;
 }
 .caught-up i {
   font-size: 3rem;
@@ -118,4 +128,5 @@
 .caught-up p {
   font-size: 1rem;
   font-weight: 500;
+  color: var(--grey);
 }
