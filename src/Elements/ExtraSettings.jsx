@@ -73,14 +73,16 @@ const ExtraSettings = ({
     <div className="extra-settings-wrapper" ref={dropdownRef}>
       {isVisible ? (
         !taskId ? (
-          <DropDown
-            isVisible={isVisible}
-            setIsVisible={setIsVisible}
-            data={!isArchived ? ["Archive Case"] : ["Remove From Archive"]}
-            value={value}
-            setValue={setValue}
-            handleClick={handleArchive}
-          />
+          <>
+            <DropDown
+              isVisible={isVisible}
+              setIsVisible={setIsVisible}
+              data={!isArchived ? ["Archive Case"] : ["Remove From Archive"]}
+              value={value}
+              setValue={setValue}
+              handleClick={handleArchive}
+            />
+          </>
         ) : (
           <DropDown
             isVisible={isVisible}

@@ -70,40 +70,53 @@ const PersonView = ({
   };
 
   return (
-    <div className="person-view-wrapper" ref={dropdownRef}>
-      {confirm && (
-        <Confirm
-          message={"delete this person?"}
-          handleConfirm={handleRemove}
-          setConfirm={setConfirm}
-        />
-      )}
-      <p className="person-view-header">Client</p>
-      <div className="person-view-fields">
-        {Object.entries(personObject).map(([fieldName]) => {
-          return (
-            <PersonInput
-              key={fieldName}
-              fieldName={fieldName}
-              value={data[fieldName]}
-              personId={personId}
-              refreshActivityData={refreshActivityData}
-              refreshCaseData={refreshCaseData}
-              isNewPerson={isNewPerson}
-              caseId={caseId}
-              setPersonId={setPersonId}
-              setIsNewPerson={setIsNewPerson}
-            />
-          );
-        })}
-        <div className="remove-person-button">
-          <a
+    <div className="person-view-overlay">
+      <div className="person-view-wrapper" ref={dropdownRef}>
+        <div className="person-view-header-wrapper">
+          <p className="person-view-header">Client</p>
+          <i
             onClick={() => {
-              setConfirm(true);
+              setIsAddingPerson(false);
+              onBlur();
             }}
-          >
-            Remove Person
-          </a>
+            className="fa-solid fa-xmark"
+          ></i>
+        </div>
+        <div className="person-view-fields">
+          {Object.entries(personObject).map(([fieldName]) => {
+            return (
+              <PersonInput
+                key={fieldName}
+                fieldName={fieldName}
+                value={data[fieldName]}
+                personId={personId}
+                refreshActivityData={refreshActivityData}
+                refreshCaseData={refreshCaseData}
+                isNewPerson={isNewPerson}
+                caseId={caseId}
+                setPersonId={setPersonId}
+                setIsNewPerson={setIsNewPerson}
+              />
+            );
+          })}
+
+          <div className="remove-person-button">
+            {confirm ? (
+              <Confirm
+                message={"delete this person?"}
+                handleConfirm={handleRemove}
+                setConfirm={setConfirm}
+              />
+            ) : (
+              <a
+                onClick={() => {
+                  setConfirm(true);
+                }}
+              >
+                Remove Person
+              </a>
+            )}
+          </div>
         </div>
       </div>
     </div>

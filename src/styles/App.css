@@ -123,6 +123,7 @@
   --light-border: rgb(225, 225, 225);
   --clg-green: #08331d;
   --red: #ff3f6f;
+  --dark-red: #c42f54;
   --blue: #648dff;
   --purple: #b651f5;
   --bright-green: rgb(67, 138, 100);
@@ -368,6 +369,10 @@ div.date-picker-wrapper > div > div > input[type="text"]:hover {
   font-size: 20px;
   border-radius: 50%;
   cursor: pointer;
+  color: var(--red);
+}
+.assignee-toggle-x:hover {
+  color: var(--dark-red);
 }
 .assignee-toggle-name {
   font-size: 0.75rem;
@@ -383,6 +388,10 @@ div.date-picker-wrapper > div > div > input[type="text"]:hover {
   top: 5px;
   position: absolute;
   cursor: pointer;
+  color: var(--grey);
+}
+.assignee-toggle-add-wrapper:hover {
+  color: black;
 }
 .assignee-add-container {
   width: 100%;
@@ -434,16 +443,19 @@ div.date-picker-wrapper > div > div > input[type="text"]:hover {
   margin: 0;
 }
 .confirm-modal-wrapper {
-  position: absolute;
   background-color: white;
   padding: 15px;
   z-index: 999;
   border: 1px solid var(--light-border);
   border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 .confirm-modal-buttons {
   display: flex;
   justify-content: space-between;
+  width: 50%;
 }
 .confirm-modal-buttons button {
   font-size: 0.9rem;
@@ -451,14 +463,32 @@ div.date-picker-wrapper > div > div > input[type="text"]:hover {
 #cancel {
   background-color: white;
 }
+#cancel:hover {
+  color: black;
+  background-color: var(--root-bg-color-light);
+}
 #confirm {
   background-color: var(--red);
   border: none;
   color: white;
+}
+#confirm:hover {
+  background-color: var(--dark-red);
 }
 .denied-page-wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
+}
+/* Activity */
+.activity-show-wrapper p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--dark-grey);
+  cursor: pointer;
+  margin-top: 10px;
+}
+.activity-show-wrapper p:hover {
+  color: black;
 }
