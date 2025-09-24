@@ -23,30 +23,35 @@ const users = [
     firstName: "Meg",
     lastName: "Williams",
     role: "user",
+    isAllowed: true,
   },
   {
     username: "jenn_paralegal",
     firstName: "Jenn",
     lastName: "Davis",
     role: "user",
+    isAllowed: true,
   },
   {
     username: "mike_partner",
     firstName: "Mike",
     lastName: "Thompson",
     role: "admin",
+    isAllowed: true,
   },
   {
     username: "lisa_associate",
     firstName: "Lisa",
     lastName: "Rodriguez",
     role: "user",
+    isAllowed: true,
   },
   {
     username: "hannah_associate",
     firstName: "Hannah",
     lastName: "Ball",
     role: "user",
+    isAllowed: true,
   },
 ];
 

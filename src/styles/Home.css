@@ -271,10 +271,28 @@
   overflow: scroll;
 }
 
+.updates-widget > div > div > div.notification-item-span p {
+  max-width: 250px;
+}
+
+@media screen and (max-width: 1200px) {
+  .updates-widget
+    > div
+    > div
+    > div.notification-item-span
+    > div
+    > .notification-item-title {
+    max-width: 135px;
+  }
+}
+
 /* To Do Widget */
 .widget-tasklist {
   margin-top: 2.5rem;
   font-weight: 400;
+}
+.widget-tasklist .tasks-list-row {
+  max-height: 22vh;
 }
 
 /* Cases Widget */

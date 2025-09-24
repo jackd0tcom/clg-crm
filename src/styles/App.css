@@ -259,6 +259,7 @@ h5 {
 }
 .priority-icon-wrapper {
   padding: 5px;
+  max-width: 200px;
 }
 .priority-icon-wrapper:hover {
   background-color: var(--root-bg-color-light);
@@ -309,12 +310,38 @@ h5 {
 /* Date Picker */
 div.date-picker-wrapper > div > div > input[type="text"] {
   border: none;
-  padding: 5px;
+  padding: 8px;
   cursor: pointer;
+  background-color: unset;
+  outline: none;
 }
-div.date-picker-wrapper > div > div > input[type="text"]:hover {
+.date-picker-wrapper:hover {
   background-color: var(--root-bg-color-light);
   border-radius: 5px;
+}
+.date-picker-wrapper {
+  display: flex;
+  align-items: center;
+  max-width: 200px;
+  border: 1px solid var(--light-border);
+  border-radius: 5px;
+}
+.date-picker-wrapper i {
+  color: var(--grey);
+}
+.react-datepicker__day--selected,
+.react-datepicker__day--in-selecting-range,
+.react-datepicker__day--in-range,
+.react-datepicker__month-text--selected,
+.react-datepicker__month-text--in-selecting-range,
+.react-datepicker__month-text--in-range,
+.react-datepicker__quarter-text--selected,
+.react-datepicker__quarter-text--in-selecting-range,
+.react-datepicker__quarter-text--in-range,
+.react-datepicker__year-text--selected,
+.react-datepicker__year-text--in-selecting-range,
+.react-datepicker__year-text--in-range {
+  background-color: var(--bright-green) !important;
 }
 
 /* Notes */
@@ -334,8 +361,9 @@ div.date-picker-wrapper > div > div > input[type="text"]:hover {
 .assignee-list-wrapper {
   display: flex;
   column-gap: 10px;
-  align-items: top;
+  align-items: start;
   position: relative;
+  min-height: 30px;
 }
 .new-case-assignee-placeholder p {
   font-size: 0.9rem;
@@ -397,6 +425,15 @@ div.date-picker-wrapper > div > div > input[type="text"]:hover {
   width: 100%;
   position: relative;
 }
+.no-users-found {
+  color: var(--grey);
+  font-size: 0.9rem;
+}
+.no-users-found:hover {
+  background-color: unset !important;
+  border: unset !important;
+  cursor: default !important;
+}
 
 /* AssigneeAddToggle */
 .assignee-add-toggle-wrapper {
@@ -413,6 +450,9 @@ div.date-picker-wrapper > div > div > input[type="text"]:hover {
   background-color: white;
   row-gap: 10px;
   z-index: 999;
+  max-width: 150px;
+  overflow: scroll;
+  max-height: 225px;
 }
 .assignee-add-toggle-wrapper p:nth-child(1) {
   margin: 0;

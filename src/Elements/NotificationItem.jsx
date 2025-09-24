@@ -48,8 +48,10 @@ const NotificationItem = ({
               noBg={true}
             />
           )}
-          {!isTask && <i className="fa-solid fa-briefcase"></i>}
-          <p>{!isTask ? data.case.title : data.task.title}</p>
+          {!isTask && <i className="fa-solid fa-briefcase case-icon"></i>}
+          <p className="notification-item-title">
+            {!isTask ? data.case.title : data.task.title}
+          </p>
         </div>
         <p>{data.message}</p>
       </div>

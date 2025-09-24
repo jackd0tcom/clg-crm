@@ -441,6 +441,7 @@ export default {
             userId: {
               [Op.notIn]: excludedUserIds,
             },
+            isAllowed: true,
           },
         });
 

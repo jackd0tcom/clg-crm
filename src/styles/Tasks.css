@@ -258,35 +258,39 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.25);
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
 }
+.nav-placeholder {
+  width: 10%;
+}
 
 .task-view-wrapper {
-  min-height: calc(100vh - 30px);
+  min-height: calc(100vh - 70px);
   background-color: white;
   width: 80%;
   height: 85%;
+  max-width: 1200px;
   border-radius: 5px;
   border: 1px solid var(--light-border);
-  display: flex;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  width: 100%;
   justify-content: space-between;
+  position: relative;
 }
 .task-view-details {
   color: black;
   padding: 15px;
-  margin-top: 10px;
-  width: 50%;
   display: flex;
   flex-direction: column;
   row-gap: 10px;
 }
 .task-view-activity-wrapper {
   color: black;
-  width: 40%;
   border-left: 1px solid var(--light-border);
   padding: 0px 15px;
   background-color: var(--root-bg-color-light);
@@ -294,6 +298,13 @@
 .task-view-header {
   display: flex;
   justify-content: space-between;
+}
+.task-view-header h3 {
+  color: var(--grey);
+  font-size: 0.9rem;
+}
+.task-view-header .drop-down-wrapper {
+  left: 51%;
 }
 .task-input-wrapper input {
   width: calc(100% - 10px);
@@ -317,7 +328,7 @@
   position: relative;
 }
 #move-case-icon {
-  color: var(--dark-grey);
+  color: var(--grey);
   font-size: 0.9rem;
   cursor: pointer;
 }
@@ -326,11 +337,16 @@
   color: var(--dark-grey);
   font-size: 0.9rem;
 }
-
+.move-task-wrapper {
+  font-size: 0.8rem;
+}
+#move-case-icon:hover {
+  color: black;
+}
 .task-stats-wrapper {
   display: grid;
   grid-template-columns: 1fr 3fr 1fr 3fr;
-  row-gap: 2rem;
+  row-gap: 1.25rem;
   column-gap: 1rem;
   grid-template-rows: 1fr 1fr;
   align-items: center;
@@ -353,7 +369,7 @@
   margin-top: 10%;
 }
 .task-notes textarea {
-  min-height: 20vh;
+  min-height: 40vh;
   border: 1px solid var(--light-border);
   border-radius: 5px;
 }
@@ -363,10 +379,12 @@
   align-items: center;
   grid-template-columns: 0.25fr 3fr 0.75fr;
   column-gap: 5px;
-  padding: 10px 5px;
+  padding: 10px;
   margin-left: -5px;
   margin-right: -5px;
   border-radius: 5px;
+  background-color: white;
+  border-bottom: 1px solid var(--light-border);
 }
 .task-list-item-condensed:hover {
   background-color: var(--root-bg-color-light);
@@ -412,7 +430,7 @@
   display: flex;
   align-items: center;
   column-gap: 5px;
-  padding: 4px 2px;
+  padding: 4px 6px;
   border-radius: 5px;
   cursor: pointer;
   max-width: 120px;

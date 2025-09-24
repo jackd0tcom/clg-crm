@@ -95,7 +95,7 @@ const Nav = ({ checkNotifications }) => {
                   isActive ? "active-nav nav-button" : "inactive-nav nav-button"
                 }
               >
-                <i className="fa-regular fa-calendar"></i>
+                <i className="fa-solid fa-calendar-days"></i>
                 Calendar
               </NavLink>
             </div>

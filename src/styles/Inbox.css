@@ -29,6 +29,10 @@
   display: grid;
   width: 90%;
   grid-template-columns: 1fr 2fr;
+  gap: 2rem;
+}
+.case-icon {
+  padding: 4px 6px;
 }
 .read {
   color: var(--grey);
@@ -44,7 +48,8 @@
   column-gap: 5px;
   align-items: center;
 }
-.notification-item-wrapper p {
+.notification-item-wrapper p,
+.notification-task-wrapper p {
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;

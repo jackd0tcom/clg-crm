@@ -28,7 +28,9 @@ const AssigneeAddToggle = ({
           );
         })
       ) : (
-        <div className="assignee-add-toggle-item">No other users found.</div>
+        <div className="assignee-add-toggle-item no-users-found">
+          No other users found.
+        </div>
       )}
     </div>
   );

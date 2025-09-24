@@ -120,11 +120,11 @@
   flex-direction: column;
 }
 .case-card-task-list {
-  border: 1px solid var(--light-border);
-  padding: 5px 10px;
-  border-radius: 5px;
   height: 100%;
   overflow: scroll;
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--light-border);
 }
 
 /* Case page */
@@ -354,6 +354,8 @@ div.case-task-container
   display: flex;
   align-items: center;
   gap: 8px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--light-border);
 }
 
 .case-activity-container {
@@ -470,6 +472,8 @@ div.case-task-container
 .add-person-button {
   cursor: pointer;
   color: var(--grey);
+  font-size: 0.7rem;
+  display: flex;
 }
 .add-person-button:hover {
   color: black;

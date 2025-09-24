@@ -50,6 +50,7 @@ const DueDatePicker = ({
           onDateChange(date);
         }}
       />
+      <i className="fa-solid fa-calendar-days"></i>
     </div>
   );
 };
