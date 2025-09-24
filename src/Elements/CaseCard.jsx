@@ -1,9 +1,10 @@
-import { capitalize } from "../helpers/helperFunctions";
+import { capitalize, formatPracticeAreas } from "../helpers/helperFunctions";
 import TaskListItem from "../Elements/TaskListItem";
 import { Link, useNavigate } from "react-router";
 import TaskList from "./TaskList";
 import { addRecentItem } from "../helpers/recentItemsHelper";
 import { useEffect, useState } from "react";
+import PhaseIcon from "./PhaseIcon";
 
 const CaseCard = ({ data, openTaskView }) => {
   const navigate = useNavigate();
@@ -16,55 +17,29 @@ const CaseCard = ({ data, openTaskView }) => {
   }, []);
 
   const handleCaseClick = (e) => {
-    e.preventDefault();
     // Add case to recent items before navigating
     addRecentItem(data, "case");
     navigate(`/case/${data.caseId}`);
   };
 
   return (
-    <a
-      className="case-card-link"
-      href={`/case/${data.caseId}`}
-      onClick={handleCaseClick}
+    <div
+      className="case-card-wrapper"
+      onClick={() => {
+        handleCaseClick();
+        navigate(`/case/${data.caseId}`);
+      }}
     >
-      <div className="case-card-wrapper">
-        <div className="case-card-head">
-          <p className="case-card-phase">{capitalize(data.phase)}</p>
-          <h3 className="case-card-title">{data.title}</h3>
-          <div className="case-card-practice-areas">
-            {data.practiceAreas.length > 0
-              ? data.practiceAreas.map((area, idx) => {
-                  if (data.practiceAreas.length === 1) {
-                    return (
-                      <h4 className="subheading" key={area.name}>
-                        {`${capitalize(area.name)}`}
-                      </h4>
-                    );
-                  } else if (idx === data.practiceAreas.length - 1) {
-                    return (
-                      <h4 className="subheading" key={area.name}>
-                        {` & ${capitalize(area.name)}`}
-                      </h4>
-                    );
-                  } else if (idx === data.practiceAreas.length - 2) {
-                    return (
-                      <h4 className="subheading" key={area.name}>
-                        {`${capitalize(area.name)}`}
-                      </h4>
-                    );
-                  } else
-                    return (
-                      <h4 className="subheading" key={area.name}>
-                        {`${capitalize(area.name)}, `}
-                      </h4>
-                    );
-                })
-              : ""}
-          </div>
+      <div className="case-card-head">
+        <PhaseIcon phase={data.phase} />
+        <h3 className="case-card-title">{data.title}</h3>
+        <div className="case-card-practice-areas">
+          {formatPracticeAreas(data.practiceAreas)}
         </div>
-        <div className="case-card-tasks">
-          <h4>To Do:</h4>
+      </div>
+      <div className="case-card-tasks">
+        <h4>To Do:</h4>
+        <div className="case-card-task-list">
           {tasks.length > 0 ? (
             tasks.map((task) => {
               return (
@@ -76,11 +51,13 @@ const CaseCard = ({ data, openTaskView }) => {
               );
             })
           ) : (
-            <p className="no-tasks">All caught up!</p>
+            <p className="no-tasks">
+              <i className="fa-solid fa-circle-check"></i> All caught up!
+            </p>
           )}
         </div>
       </div>
-    </a>
+    </div>
   );
 };
 

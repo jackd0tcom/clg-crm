@@ -151,3 +151,35 @@ export function format(str) {
     .replace(/^./, (str) => str.toUpperCase())
     .trim();
 }
+export function formatPracticeAreas(arr) {
+  return arr.length > 0 ? (
+    arr.map((area, idx) => {
+      if (arr.length === 1) {
+        return (
+          <h4 className="subheading" key={area.name}>
+            {`${capitalize(area.name)}`}
+          </h4>
+        );
+      } else if (idx === arr.length - 1) {
+        return (
+          <h4 className="subheading" key={area.name}>
+            {` & ${capitalize(area.name)}`}
+          </h4>
+        );
+      } else if (idx === arr.length - 2) {
+        return (
+          <h4 className="subheading" key={area.name}>
+            {`${capitalize(area.name)}`}
+          </h4>
+        );
+      } else
+        return (
+          <h4 className="subheading" key={area.name}>
+            {`${capitalize(area.name)}, `}
+          </h4>
+        );
+    })
+  ) : (
+    <h4>No Practice Area Added</h4>
+  );
+}

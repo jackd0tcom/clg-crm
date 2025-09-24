@@ -14,7 +14,9 @@ const StatusIcon = ({ status, hasIcon, hasTitle, noBg }) => {
       <i className="status-icon in-progress fa-solid fa-circle-half-stroke"></i>
     ),
     blocked: <i className="status-icon blocked fa-regular fa-circle-xmark"></i>,
-    completed: <i className="status-icon completed fa-solid fa-circle"></i>,
+    completed: (
+      <i className="status-icon completed fa-solid fa-circle-check"></i>
+    ),
   };
 
   const className = {

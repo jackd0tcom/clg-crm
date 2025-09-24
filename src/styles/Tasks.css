@@ -126,11 +126,6 @@
 .filter-tag:hover {
   background-color: var(--button-active-bg-hover);
 }
-.active-filter p {
-  background-color: var(--button-active-bg);
-  color: var(--button-active-font);
-  border-color: var(--button-active-border);
-}
 .task-page-task-list-wrapper {
   margin: 15px;
 }
@@ -440,11 +435,11 @@
   font-weight: 600;
 }
 .not-started-wrapper {
-  background-color: var(--blue);
+  background-color: var(--grey);
   color: white !important;
 }
 .in-progress-wrapper {
-  background-color: var(--purple);
+  background-color: var(--blue);
   color: white !important;
 }
 .blocked-wrapper {
@@ -456,10 +451,10 @@
   color: white !important;
 }
 .colored-icons .not-started {
-  color: var(--blue);
+  color: var(--grey);
 }
 .colored-icons .in-progress {
-  color: var(--purple);
+  color: var(--blue);
 }
 .colored-icons .blocked {
   color: var(--red);

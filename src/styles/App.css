@@ -1,4 +1,4 @@
-@import "./CaseStyles.css";
+@import "./Case.css";
 @import "./Nav.css";
 @import "./Home.css";
 @import "./Tasks.css";
@@ -122,14 +122,14 @@
   --medium-border: rgb(210, 210, 210);
   --light-border: rgb(225, 225, 225);
   --clg-green: #08331d;
-  --red: rgb(231, 13, 13);
-  --blue: rgb(91, 135, 255);
-  --purple: rgb(92, 29, 227);
-  --bright-green: rgb(67, 138, 67);
-  --bright-dark-green: rgb(47, 98, 47);
-  --button-active-font: rgb(33, 98, 33);
+  --red: #ff3f6f;
+  --blue: #648dff;
+  --purple: #b651f5;
+  --bright-green: rgb(67, 138, 100);
+  --bright-dark-green: rgb(47, 98, 73);
+  --button-active-font: rgb(33, 98, 75);
   --button-active-bg: rgb(226, 255, 242);
-  --button-active-bg-hover: rgba(188, 243, 218, 0.512);
+  --button-active-bg-hover: rgb(194, 242, 220);
   --button-active-border: rgb(205, 239, 205);
   --white-bg: white;
   --gradient: linear-gradient(

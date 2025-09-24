@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import { useRef } from "react";
 import axios from "axios";
-import { capitalize } from "../helpers/helperFunctions";
+import { capitalize, formatPracticeAreas } from "../helpers/helperFunctions";
 import ProfilePic from "../Elements/ProfilePic";
 import ActivityLog from "../Elements/ActivityLog";
 import TaskList from "../Elements/TaskList";
@@ -254,19 +254,7 @@ const Case = ({ openTaskView, refreshKey }) => {
                 {isNewCase || caseData.practiceAreas.length < 1 ? (
                   <a className="case-practice-area">Add Practice Area</a>
                 ) : (
-                  caseData.practiceAreas.map((area) => {
-                    return (
-                      <a
-                        className="case-practice-area"
-                        key={area.practiceAreaId}
-                        onClick={() => {
-                          setIsAddingArea(true);
-                        }}
-                      >
-                        {capitalize(area.name)}
-                      </a>
-                    );
-                  })
+                  formatPracticeAreas(caseData.practiceAreas)
                 )}
               </div>
               {isAddingArea && (

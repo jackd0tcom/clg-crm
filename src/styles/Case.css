@@ -4,11 +4,14 @@
   width: 100%;
   height: 100%;
   overflow: scroll;
+  display: flex;
+  flex-direction: column;
 }
 .case-list {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  gap: 2rem;
+  grid-template-rows: repeat(auto-fill, 40%);
+  gap: 1rem;
   padding: 20px 15px 15px 15px;
   background-color: var(--root-bg-color-light);
   height: 100%;
@@ -27,10 +30,10 @@
   justify-content: space-evenly;
   padding: 0px 10px;
 }
-.case-filter-wrapper:hover p {
-  border: 1px solid var(--light-border);
-}
 .case-filter-section p {
+  margin: 0;
+}
+.case-filter-section {
   font-size: 0.85rem;
   padding: 6px 8px;
   margin: 0 5px;
@@ -41,15 +44,15 @@
   font-weight: 500;
   transition: 100ms;
 }
-.case-filter-section p:hover {
+.case-filter-section:hover {
   background-color: var(--button-active-bg-hover);
   color: var(--button-active-font);
   border-color: var(--button-active-border);
 }
-.active-filter p:hover {
+.active-filter:hover {
   background-color: var(--button-active-bg-hover);
 }
-.active-filter p {
+.active-filter {
   background-color: var(--button-active-bg);
   color: var(--button-active-font);
   border-color: var(--button-active-border);
@@ -71,32 +74,35 @@
 
 /* Case Card */
 
-.case-card-link {
-  height: auto;
-}
-
 .case-card-wrapper {
+  cursor: pointer;
   display: grid;
+  grid-auto-rows: 1fr 1.2fr;
   row-gap: 40px;
-  padding: 15px;
-  min-height: 30vh;
+  padding: 25px;
   border: 1px solid var(--light-border);
-  border-radius: 3px;
+  border-radius: 8px;
   color: black;
   transition: 100ms;
   background-color: white;
 }
 .case-card-wrapper:hover {
   background-color: var(--super-light-grey);
+  border-color: var(--medium-border);
 }
-.case-card-phase {
-  margin: 0;
-  font-size: 0.9rem;
-  color: var(--grey);
+.case-card-head .phase-icon-wrapper {
+  font-size: 0.8rem;
+  color: var(--dark-grey);
+  font-weight: 400;
+  margin-left: 3px;
+}
+.case-card-head .phase-icon-wrapper i {
+  font-size: 0.7rem;
 }
 .case-card-practice-areas {
   display: flex;
   margin: 5px 0px;
+  column-gap: 0.2rem;
 }
 .case-card-practice-areas h4 {
   font-size: 0.8rem;
@@ -105,22 +111,31 @@
   color: var(--grey);
 }
 .case-card-title {
-  font-size: 1.25rem;
+  font-size: 1.35rem;
   margin-top: 10px;
+  font-weight: 600;
 }
 .case-card-tasks {
   display: flex;
   flex-direction: column;
 }
+.case-card-task-list {
+  border: 1px solid var(--light-border);
+  padding: 5px 10px;
+  border-radius: 5px;
+  height: 100%;
+  overflow: scroll;
+}
 
 /* Case page */
 .case-wrapper {
-  display: flex;
-  height: 61%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   justify-content: space-between;
 }
 .case-container {
-  display: flex;
+  display: grid;
+  grid-template-rows: repeat(auto-fill, 50%);
   flex-direction: column;
   justify-content: space-between;
   height: 100%;
@@ -133,8 +148,7 @@
 }
 .case-details-container {
   margin: 15px 20px;
-  display: grid;
-  width: 53%;
+  /* display: grid; */
   grid-template-rows: 0.25fr 4fr 3fr;
 }
 .case-top-bar {
@@ -293,10 +307,13 @@ div.case-task-container
   font-size: 0.9rem;
   margin: 0;
   margin-top: 0.5rem;
+  color: var(--bright-green);
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .case-activity-container {
-  width: 40%;
   border-left: 1px solid var(--light-border);
   border-bottom: 1px solid var(--light-border);
   background-color: var(--root-bg-color-light);
@@ -346,7 +363,7 @@ div.case-task-container
   background-color: var(--root-bg-color-light);
 }
 
-.case-practice-area {
+.case-practice-areas-wrapper h4 {
   font-size: 0.9rem;
   color: var(--grey);
   font-weight: 500;

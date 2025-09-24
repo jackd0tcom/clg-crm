@@ -157,7 +157,7 @@ const TaskFilter = ({
               : "tasks-case-filter-button-active"
           }
         >
-          Completed
+          Completed {!showCompleted && <i className="fa-solid fa-xmark"></i>}
         </button>
         <div className="tasks-case-filter-wrapper">
           <button
@@ -195,7 +195,7 @@ const TaskFilter = ({
                 onClick={() => handleCaseClick(ca)}
                 title={ca.title} // Show full title on hover
               >
-                {truncateTitle(ca.title)} x
+                {truncateTitle(ca.title)} <i className="fa-solid fa-xmark"></i>
               </p>
             ))}
           </div>
