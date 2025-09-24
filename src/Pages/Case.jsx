@@ -439,7 +439,15 @@ const Case = ({ openTaskView, refreshKey }) => {
             <div className="head-wrapper">
               <div className="case-view-tasks-list-head tasks-list-head">
                 {headings.map((heading) => {
-                  return <p key={heading}>{heading}</p>;
+                  if (heading === "Status") {
+                    return <p></p>;
+                  } else if (heading === "Priority") {
+                    return (
+                      <p className="priority-heading" key={heading}>
+                        {heading}
+                      </p>
+                    );
+                  } else return <p key={heading}>{heading}</p>;
                 })}
               </div>
             </div>
@@ -447,7 +455,7 @@ const Case = ({ openTaskView, refreshKey }) => {
               caseId={caseData.caseId}
               tasks={caseData.tasks}
               headings={headings}
-              columns="0.5fr 2fr 2fr 2fr 1fr"
+              columns="0.1fr 2.15fr 2.5fr 2.3fr 1.15fr"
               openTaskView={openTaskView}
               refreshCaseData={refreshCaseData}
               refreshActivityData={refreshActivityData}

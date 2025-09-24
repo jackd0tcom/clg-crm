@@ -323,15 +323,6 @@ div.date-picker-wrapper > div > div > input[type="text"]:hover {
   margin-bottom: 0.5rem;
 }
 
-.case-notes textarea {
-  min-height: 20vh;
-  border: 1px solid var(--light-border);
-  border-radius: 5px;
-}
-.case-notes textarea:focus-visible {
-  outline: none;
-}
-
 .notes-textarea {
   width: calc(100% - 30px);
   resize: none;
