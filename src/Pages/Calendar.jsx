@@ -189,15 +189,37 @@ const Calendar = () => {
   ) : (
     <div className="calendar-wrapper">
       {!isGoogleConnected ? (
-        <div className="calendar-connect-banner">
-          <i className="fa-solid fa-link"></i>
-          <h3>Connect Google Calendar</h3>
-          <p>
-            Connect your Google Calendar to see all your tasks and events in one
-            place!
-          </p>
-          <button onClick={handleConnectGoogle}>Connect Google Calendar</button>
-        </div>
+        <>
+          <div className="calendar-connect-card">
+            <div className="calendar-connect-icon">🔗</div>
+            <h4>Connect Google Calendar</h4>
+            <p>
+              Connect your Google Calendar to sync your tasks and events
+              seamlessly. You can choose which calendar to use for your tasks.
+            </p>
+            <button onClick={handleConnectGoogle} className="connect-button">
+              Connect Google Calendar
+            </button>
+          </div>
+          <div className="settings-info">
+            <h4>How it works:</h4>
+            <ul>
+              <li>
+                When you create a task, it will automatically appear in your
+                selected calendar
+              </li>
+              <li>
+                When you edit a task's title, due date, or notes, the calendar
+                event updates automatically
+              </li>
+              <li>
+                When you delete a task, the calendar event is removed
+                automatically
+              </li>
+              <li>You can change your preferred calendar at any time</li>
+            </ul>
+          </div>
+        </>
       ) : (
         <div className="calendar-view">
           {duplicateWarning && (

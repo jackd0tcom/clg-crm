@@ -23,15 +23,16 @@
 .calendar-wrapper {
   padding: 15px;
 }
-.calendar-connect-banner {
+.calendar-connect-card {
   display: flex;
   flex-direction: column;
   align-items: center;
   border: 1px solid var(--light-border);
   border-radius: 5px;
-  padding: 2rem;
-  width: 75%;
-  margin: 4rem auto 0;
+  padding: 6rem 1rem;
+  margin: 2rem auto;
+  background-color: var(--root-bg-color-light);
+  text-align: center;
 }
 .calendar-connect-banner i {
   font-size: 2.5rem;
@@ -112,4 +113,26 @@
 
 .rbc-calendar {
   height: 85vh;
+}
+.rbc-today {
+  background-color: var(--button-active-bg);
+}
+.rbc-active {
+  box-shadow: none !important;
+}
+.rbc-off-range-bg {
+  background-color: var(--root-bg-color-light);
+}
+.rbc-month-view {
+  border-radius: 8px;
+}
+.rbc-month-header span {
+  font-weight: 400;
+}
+.rbc-row button {
+  font-weight: 400;
+  font-size: 0.9rem;
+}
+.rbc-button-group button {
+  border: unset;
 }

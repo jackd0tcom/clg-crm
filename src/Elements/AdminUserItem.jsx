@@ -44,7 +44,11 @@ const AdminUserToggle = ({ user, handleAllow, handleRoleChange }) => {
             className="role-toggle-button"
             title={`Change to ${user.role === "admin" ? "user" : "admin"}`}
           >
-            {roleLoading ? "..." : "↔"}
+            {roleLoading
+              ? "..."
+              : user.role === "admin"
+              ? "Switch to User"
+              : "Switch to Admin"}
           </button>
         </div>
       </div>

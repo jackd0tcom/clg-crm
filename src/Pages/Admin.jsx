@@ -77,6 +77,7 @@ const Admin = () => {
       <div className="admin-section">
         <div className="admin-section-header">
           <h2>Users</h2>
+          <p>View and manage your users</p>
         </div>
         <div className="users-list">
           <div className="users-list-head">
@@ -86,21 +87,23 @@ const Admin = () => {
             <p>Role</p>
             <p>Permission</p>
           </div>
-          {loading ? (
-            <Loader />
-          ) : (
-            users &&
-            users.map((user) => {
-              return (
-                <AdminUserToggle
-                  key={user.userId}
-                  user={user}
-                  handleAllow={handleAllow}
-                  handleRoleChange={handleRoleChange}
-                />
-              );
-            })
-          )}
+          <div className="admin-users-list">
+            {loading ? (
+              <Loader />
+            ) : (
+              users &&
+              users.map((user) => {
+                return (
+                  <AdminUserToggle
+                    key={user.userId}
+                    user={user}
+                    handleAllow={handleAllow}
+                    handleRoleChange={handleRoleChange}
+                  />
+                );
+              })
+            )}
+          </div>
         </div>
       </div>
     </div>

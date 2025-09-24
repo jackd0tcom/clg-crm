@@ -19,14 +19,20 @@ const NotificationItem = ({
     if (data.objectType === "task") {
       setIsTask(true);
     }
-  }, []);
+  }, [data.objectType]);
 
   const handleClick = (e) => {
     handleRead(data);
-    if (!isTask) {
+    if (!isTask && data.case) {
       nav(`/case/${data.case.caseId}`);
-    } else openTaskView(data.task);
+    } else if (isTask && data.task) {
+      openTaskView(data.task);
+    }
   };
+
+  if (!data || (!data.case && !data.task)) {
+    return null;
+  }
 
   return (
     <div
@@ -40,7 +46,7 @@ const NotificationItem = ({
     >
       <div className="notification-item-span" onClick={() => handleClick()}>
         <div className="notification-task-wrapper">
-          {isTask && (
+          {isTask && data.task && (
             <StatusIcon
               status={data.task.status}
               hasIcon={true}
@@ -50,7 +56,7 @@ const NotificationItem = ({
           )}
           {!isTask && <i className="fa-solid fa-briefcase case-icon"></i>}
           <p className="notification-item-title">
-            {!isTask ? data.case.title : data.task.title}
+            {!isTask ? (data.case?.title || "") : (data.task?.title || "")}
           </p>
         </div>
         <p>{data.message}</p>
