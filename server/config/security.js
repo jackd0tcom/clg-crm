@@ -86,8 +86,8 @@ export const helmetConfig = helmet({
       fontSrc: ["'self'", "https://fonts.gstatic.com", "https://kit.fontawesome.com", "https://ka-f.fontawesome.com"],
       imgSrc: ["'self'", "data:", "https:"],
       scriptSrc: ["'self'", "https://kit.fontawesome.com"],
-      connectSrc: ["'self'", "https://clauselawgroup.auth0.com", "https://ka-f.fontawesome.com"],
-      frameSrc: ["'self'", "https://clauselawgroup.auth0.com"],
+      connectSrc: ["'self'", "https://clauselawgroup.auth0.com", "https://dev-qysee6dr6mhj3r6y.us.auth0.com", "https://ka-f.fontawesome.com"],
+      frameSrc: ["'self'", "https://clauselawgroup.auth0.com", "https://dev-qysee6dr6mhj3r6y.us.auth0.com"],
     },
   } : false, // Disable CSP in development
   crossOriginEmbedderPolicy: false, // Disable for Vite dev server compatibility
@@ -101,10 +101,10 @@ export const sessionConfig = {
   saveUninitialized: false, // Changed to false for security
   rolling: true, // Reset expiration on activity
   cookie: {
-    secure: process.env.NODE_ENV === 'production', // HTTPS only in production
+    secure: process.env.RAILWAY_PUBLIC_DOMAIN ? true : false, // Secure only on Railway (HTTPS)
     httpOnly: true, // Prevent XSS attacks
     maxAge: 1000 * 60 * 60 * 24, // 24 hours
-    sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax', // More permissive in development
+    sameSite: process.env.RAILWAY_PUBLIC_DOMAIN ? 'strict' : 'lax', // Strict on Railway, lax for local
   },
   // Use memory store in development, but log warning in production
   store: process.env.NODE_ENV === 'production' ? undefined : undefined, // Will use default MemoryStore
