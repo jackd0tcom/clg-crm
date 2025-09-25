@@ -43,8 +43,13 @@ export const apiRateLimit = createRateLimit(
 // CORS configuration
 export const corsOptions = {
   origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
+    // Allow requests with no origin (like mobile apps, curl requests, or static assets)
+    if (!origin) {
+      console.log('🔓 CORS: Allowing request with no origin');
+      return callback(null, true);
+    }
+    
+    console.log('🔍 CORS: Checking origin:', origin);
     
     const allowedOrigins = [
       'http://localhost:5050',
@@ -57,6 +62,8 @@ export const corsOptions = {
       /^https:\/\/.*\.railway\.app$/,
     ].filter(Boolean);
     
+    console.log('🔍 CORS: Allowed origins:', allowedOrigins);
+    
     const isAllowed = allowedOrigins.some(allowedOrigin => {
       if (typeof allowedOrigin === 'string') {
         return allowedOrigin === origin;
@@ -67,8 +74,10 @@ export const corsOptions = {
     });
     
     if (isAllowed) {
+      console.log('✅ CORS: Origin allowed');
       callback(null, true);
     } else {
+      console.log('❌ CORS: Origin not allowed');
       callback(new Error('Not allowed by CORS'));
     }
   },

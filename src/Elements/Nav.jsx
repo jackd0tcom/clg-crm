@@ -45,7 +45,7 @@ const Nav = ({ checkNotifications }) => {
             <div className="nav-buttons-container">
               <img
                 className="clg-logo"
-                src="/src/assets/Clause-Law-Group-Logo-White.webp"
+                src="/Clause-Law-Group-Logo-White.webp"
                 alt="clg-logo"
               />
               <NavLink
