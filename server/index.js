@@ -1,6 +1,7 @@
 import express from "express";
 import ViteExpress from "vite-express";
 import session from "express-session";
+import cors from "cors";
 import authCtrl from "./controllers/authCtrl.js";
 import caseCtrl from "./controllers/caseCtrl.js";
 import taskCtrl from "./controllers/taskCtrl.js";
@@ -99,10 +100,54 @@ const app = express();
 const PORT = process.env.PORT || 5050;
 
 // Setup security middleware (includes body parsing, CORS, rate limiting, etc.)
-setupSecurityMiddleware(app);
+if (process.env.NODE_ENV === 'production') {
+  setupSecurityMiddleware(app);
+} else {
+  // Development: minimal middleware setup
+  console.log('🔧 Development mode: Minimal security middleware');
+  
+  // Basic middleware only
+  app.use(express.json({ limit: '10mb' }));
+  app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+  
+  // CORS for development
+  app.use(cors({
+    origin: true, // Allow all origins in development
+    credentials: true,
+  }));
+  
+  // Explicitly remove any security headers
+  app.use((req, res, next) => {
+    res.removeHeader('Content-Security-Policy');
+    res.removeHeader('X-Content-Type-Options');
+    res.removeHeader('X-Frame-Options');
+    res.removeHeader('X-XSS-Protection');
+    res.removeHeader('Referrer-Policy');
+    res.removeHeader('Strict-Transport-Security');
+    next();
+  });
+}
 
 // Session configuration
 app.use(session(sessionConfig));
+
+// Final CSP removal middleware (runs after all other middleware)
+if (process.env.NODE_ENV !== 'production') {
+  app.use((req, res, next) => {
+    // Log headers for debugging
+    
+    // Force remove CSP headers after all middleware has run
+    res.on('header', () => {
+      res.removeHeader('Content-Security-Policy');
+      res.removeHeader('X-Content-Type-Options');
+      res.removeHeader('X-Frame-Options');
+      res.removeHeader('X-XSS-Protection');
+      res.removeHeader('Referrer-Policy');
+      res.removeHeader('Strict-Transport-Security');
+    });
+    next();
+  });
+}
 
 // Endpoints
 // auth endpoints

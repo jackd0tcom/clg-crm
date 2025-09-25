@@ -79,17 +79,17 @@ export const corsOptions = {
 
 // Helmet configuration
 export const helmetConfig = helmet({
-  contentSecurityPolicy: {
+  contentSecurityPolicy: process.env.NODE_ENV === 'production' ? {
     directives: {
       defaultSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com", "https://kit.fontawesome.com"],
       imgSrc: ["'self'", "data:", "https:"],
-      scriptSrc: ["'self'"],
+      scriptSrc: ["'self'", "https://kit.fontawesome.com"],
       connectSrc: ["'self'", "https://clauselawgroup.auth0.com"],
       frameSrc: ["'self'", "https://clauselawgroup.auth0.com"],
     },
-  },
+  } : false, // Disable CSP in development
   crossOriginEmbedderPolicy: false, // Disable for Vite dev server compatibility
 });
 
@@ -104,7 +104,7 @@ export const sessionConfig = {
     secure: process.env.NODE_ENV === 'production', // HTTPS only in production
     httpOnly: true, // Prevent XSS attacks
     maxAge: 1000 * 60 * 60 * 24, // 24 hours
-    sameSite: 'strict', // CSRF protection
+    sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax', // More permissive in development
   },
 };
 
@@ -174,8 +174,22 @@ export const setupSecurityMiddleware = (app) => {
   // Request logging
   app.use(morgan('combined'));
   
-  // Security headers
-  app.use(helmetConfig);
+  // Security headers (only in production)
+  if (process.env.NODE_ENV === 'production') {
+    app.use(helmetConfig);
+  } else {
+    // Development: disable helmet completely to avoid CSP issues
+    console.log('🔧 Development mode: Security headers disabled for smooth development');
+    
+    // Explicitly remove any CSP headers that might be set elsewhere
+    app.use((req, res, next) => {
+      res.removeHeader('Content-Security-Policy');
+      res.removeHeader('X-Content-Type-Options');
+      res.removeHeader('X-Frame-Options');
+      res.removeHeader('X-XSS-Protection');
+      next();
+    });
+  }
   
   // CORS
   app.use(cors(corsOptions));
