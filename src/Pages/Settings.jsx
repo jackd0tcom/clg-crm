@@ -15,6 +15,7 @@ const Settings = () => {
   const [appCalendars, setAppCalendars] = useState([]);
   const [hasDuplicates, setHasDuplicates] = useState(false);
   const [migrating, setMigrating] = useState(false);
+  const [syncing, setSyncing] = useState(false);
   const { user } = useAuth0();
 
   useEffect(() => {

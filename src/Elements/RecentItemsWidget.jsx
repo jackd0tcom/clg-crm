@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { getRecentItems, clearRecentItems } from "../helpers/recentItemsHelper";
+import { getRecentItems, clearRecentItems, updateRecentItem } from "../helpers/recentItemsHelper";
 import { findTimeDifference } from "../helpers/helperFunctions";
 import StatusIcon from "./StatusIcon";
 import PriorityIcon from "./PriorityIcon";
 import PhaseIcon from "./PhaseIcon";
+import axios from "axios";
 
-const RecentItemsWidget = ({ openTaskView, navigate }) => {
+const RecentItemsWidget = ({ openTaskView, navigate, refreshTrigger }) => {
   const [recentItems, setRecentItems] = useState([]);
 
   useEffect(() => {
@@ -13,6 +14,13 @@ const RecentItemsWidget = ({ openTaskView, navigate }) => {
     const items = getRecentItems();
     setRecentItems(items);
   }, []);
+
+  // Refresh recent items when refreshTrigger changes
+  useEffect(() => {
+    if (refreshTrigger > 0 && recentItems.length > 0) {
+      refreshRecentItems();
+    }
+  }, [refreshTrigger]);
 
   const handleItemClick = (item) => {
     if (item.itemType === "task") {
@@ -31,6 +39,41 @@ const RecentItemsWidget = ({ openTaskView, navigate }) => {
   const handleClearHistory = () => {
     clearRecentItems();
     setRecentItems([]);
+  };
+
+  const refreshRecentItems = async () => {
+    try {
+      const currentItems = getRecentItems();
+      const updatedItems = [...currentItems];
+
+      // Update task data for all recent tasks
+      for (let i = 0; i < updatedItems.length; i++) {
+        const item = updatedItems[i];
+        if (item.itemType === "task") {
+          try {
+            const response = await axios.get(`/api/getTask/${item.taskId}`);
+            const updatedTask = response.data;
+            
+            // Update the item with fresh task data
+            updatedItems[i] = {
+              ...item,
+              ...updatedTask,
+              itemType: "task",
+              itemId: updatedTask.taskId,
+            };
+          } catch (error) {
+            console.log(`Could not refresh task ${item.taskId}:`, error);
+            // Keep the existing item if we can't fetch updated data
+          }
+        }
+      }
+
+      // Update localStorage with fresh data
+      localStorage.setItem("recentItems", JSON.stringify(updatedItems));
+      setRecentItems(updatedItems);
+    } catch (error) {
+      console.log("Error refreshing recent items:", error);
+    }
   };
 
   if (recentItems.length === 0) {

@@ -199,6 +199,7 @@
 .task-list-item p {
   overflow: hidden;
   white-space: nowrap;
+  text-overflow: ellipsis;
   margin: 8px 0;
   font-size: 0.9rem;
 }
@@ -485,4 +486,34 @@
 }
 .status-title {
   color: var(--dark-grey) !important;
+}
+
+/* Case Assignment Toggle */
+.task-case-toggle-wrapper {
+  padding: 10px;
+}
+.task-case-list-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.task-case-toggle-heading {
+  color: var(--dark-grey);
+  font-size: 0.9rem;
+  margin-bottom: 5px;
+}
+.task-case-item {
+  padding: 5px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.task-case-item:hover {
+  background-color: var(--root-bg-color-light);
+  border-radius: 5px;
+  cursor: pointer;
+}
+.task-view-case-wrapper .toggle-overlay {
+  top: 25px;
+  max-height: 250px;
 }

@@ -28,8 +28,8 @@ const Tasks = ({ openTaskView, refreshKey }) => {
       const nonCompleted = res.data.filter((ta) => ta.status !== "completed");
       const completed = res.data.filter((ta) => ta.status === "completed");
       setNotCompletedTasks(nonCompleted);
-      setTasks(nonCompleted);
       setCompletedTasks(completed);
+      setTasks(nonCompleted);
       setLoading(false);
     } catch (error) {
       console.log(error);
@@ -50,6 +50,8 @@ const Tasks = ({ openTaskView, refreshKey }) => {
   // Refetch tasks when refreshKey change
   useEffect(() => {
     if (refreshKey > 0) {
+      // Only fetch if we're not filtering by a specific case
+      // The TaskFilter component will handle filtering
       fetchTasks();
     }
   }, [refreshKey]);

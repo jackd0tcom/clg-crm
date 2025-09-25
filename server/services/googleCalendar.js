@@ -91,14 +91,24 @@ class GoogleCalendarService {
         targetCalendarId = await this.getPrimaryCalendar();
       }
       
-      const response = await this.calendar.events.list({
+      const params = {
         calendarId: targetCalendarId,
-        timeMin: timeMin || new Date().toISOString(),
-        timeMax: timeMax,
         maxResults: 100,
         singleEvents: true,
         orderBy: "startTime",
-      });
+      };
+
+      // Only add timeMin if it's provided
+      if (timeMin) {
+        params.timeMin = timeMin;
+      }
+      
+      // Only add timeMax if it's provided
+      if (timeMax) {
+        params.timeMax = timeMax;
+      }
+
+      const response = await this.calendar.events.list(params);
 
       return response.data.items || [];
     } catch (error) {

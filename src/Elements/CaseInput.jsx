@@ -33,7 +33,6 @@ const CaseInput = ({
           title.trim() !== "Untitled Case" &&
           !isCreatingCase
         ) {
-          console.log("CaseInput: Creating new case with title:", title, { isCreatingCase });
           newCase();
           return;
         }

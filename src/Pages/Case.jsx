@@ -175,7 +175,7 @@ const Case = ({ openTaskView, refreshKey }) => {
     }
 
     try {
-      console.log("Starting case creation...", { title, isCreatingCase });
+      // console.log("Starting case creation...", { title, isCreatingCase });
       setIsCreatingCase(true);
       isCreatingCaseRef.current = true;
 
@@ -184,11 +184,11 @@ const Case = ({ openTaskView, refreshKey }) => {
           ? title.trim()
           : "Untitled Case";
 
-      console.log("Creating case with title:", caseTitle);
+      // console.log("Creating case with title:", caseTitle);
       const response = await axios.post("/api/newCase", {
         title: caseTitle,
       });
-      console.log("Case created successfully:", response.data);
+      // console.log("Case created successfully:", response.data);
 
       // Navigate first, then update state
       navigate(`/case/${response.data.caseId}`);
@@ -200,7 +200,7 @@ const Case = ({ openTaskView, refreshKey }) => {
     } catch (error) {
       console.log(error);
     } finally {
-      console.log("Case creation completed, resetting flags");
+      // console.log("Case creation completed, resetting flags");
       setIsCreatingCase(false);
       isCreatingCaseRef.current = false;
     }

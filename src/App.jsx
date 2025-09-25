@@ -89,6 +89,7 @@ function App() {
                     openTaskView={openTaskView}
                     checkNotifications={checkNotifications}
                     setCheckNotifications={setCheckNotifications}
+                    refreshKey={refreshKey}
                   />
                 } 
               />

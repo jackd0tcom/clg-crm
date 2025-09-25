@@ -15,6 +15,7 @@ const TaskFilter = ({
   const [showCompleted, setShowCompleted] = useState(true);
   const dropdownRef = useRef(null);
   const hasAppliedUrlFilter = useRef(false);
+  const isUpdatingTasksInternally = useRef(false);
 
   const truncateTitle = (title) => {
     if (title && title.length > 22) {
@@ -74,6 +75,7 @@ const TaskFilter = ({
 
     if (filteredCases.length === 0) {
       // No filters active - show all original tasks
+      isUpdatingTasksInternally.current = true;
       setTasks(originalTasks);
     } else {
       // Filters active - show only tasks from filtered cases
@@ -87,16 +89,20 @@ const TaskFilter = ({
         return matchesFilter;
       });
 
+      isUpdatingTasksInternally.current = true;
       setTasks(filteredTasks);
     }
   }, [filteredCases, originalTasks]);
 
   useEffect(() => {
-    // Initialize originalTasks when tasks are first loaded
-    if (tasks.length > 0 && originalTasks.length === 0) {
+    // Only update originalTasks when we receive tasks externally (not from internal filtering)
+    if (tasks.length > 0 && !isUpdatingTasksInternally.current) {
       setOriginalTasks(tasks);
     }
-  }, [tasks, originalTasks.length]);
+    // Reset the flag after processing
+    isUpdatingTasksInternally.current = false;
+  }, [tasks]);
+
 
   useEffect(() => {
     if (
@@ -115,14 +121,19 @@ const TaskFilter = ({
       // Clear filters when no caseId or caseId is '0'
       hasAppliedUrlFilter.current = false;
       setFilteredCases([]);
+      isUpdatingTasksInternally.current = true;
       setTasks(originalTasks);
     }
   }, [paramCase?.caseId, originalTasks.length]);
 
   const handleCompleted = () => {
     if (showCompleted) {
+      isUpdatingTasksInternally.current = true;
       setTasks(completedTasks);
-    } else setTasks(notCompletedTasks);
+    } else {
+      isUpdatingTasksInternally.current = true;
+      setTasks(notCompletedTasks);
+    }
   };
 
   const handleCaseClick = (ca) => {

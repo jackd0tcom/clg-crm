@@ -72,7 +72,7 @@ const TaskInput = ({
 
     try {
       setIsSaving(true);
-      console.log("new task");
+      // console.log("new task");
       await axios
         .post("/api/newTask", {
           title: localTitle || "",
@@ -94,7 +94,7 @@ const TaskInput = ({
               refreshTasks();
             }
             if (openTaskView && res.data.taskId) {
-              console.log(res.data.taskId);
+              // console.log(res.data.taskId);
               openTaskView(res.data.taskId);
             }
           }

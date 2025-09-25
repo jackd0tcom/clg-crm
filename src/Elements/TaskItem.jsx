@@ -35,7 +35,11 @@ const TaskItem = ({
     if (task.assignees) {
       setAssignees(task.assignees);
     }
-  }, [task.assignees]);
+    // Update local status when task status changes
+    if (task.status) {
+      setStatus(task.status);
+    }
+  }, [task.assignees, task.status, task.taskId]);
 
   useEffect(() => {
     if (headings.includes("Status")) {
@@ -134,7 +138,7 @@ const TaskItem = ({
             <PriorityIcon key={index} data={value} />
           ) : key === "Status" ? (
             <StatusIcon
-              key={index}
+              key={`${task.taskId}-status-${value}`}
               status={value}
               hasIcon={true}
               hasTitle={false}

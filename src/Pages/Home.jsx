@@ -15,7 +15,7 @@ import LoginButton from "../Elements/LoginButton";
 import CasesWidget from "../Elements/CasesWidget";
 import { Link } from "react-router-dom";
 
-const Home = ({ openTaskView, checkNotifications, setCheckNotifications }) => {
+const Home = ({ openTaskView, checkNotifications, setCheckNotifications, refreshKey }) => {
   const { user, isAuthenticated, isLoading } = useAuth0();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -54,7 +54,7 @@ const Home = ({ openTaskView, checkNotifications, setCheckNotifications }) => {
         <p>{formatDateWithDay(date)}</p>
       </div>
       <div className="widget-wrapper">
-        <RecentItemsWidget openTaskView={openTaskView} navigate={navigate} />
+        <RecentItemsWidget openTaskView={openTaskView} navigate={navigate} refreshTrigger={refreshKey} />
         <UpdatesWidget
           openTaskView={openTaskView}
           checkNotifications={checkNotifications}
