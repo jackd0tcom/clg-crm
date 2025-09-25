@@ -8,7 +8,7 @@
     "initdb": "dropdb --if-exists clg-db && createdb clg-db && node server/model.js && node server/seed.js",
     "seedAdmin": "node server/seedAdmin.js",
     "seed": "node server/model.js && node server/seed.js",
-    "start": "npm run build && node server/index.js && npm run seedAdmin",
+    "start": "npm run build && node server/model.js && node server/index.js && npm run seedAdmin",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
