@@ -207,11 +207,18 @@ app.get("/api/getTaskActivities/:taskId", getTaskActivities);
 app.post("/api/createActivity", createActivity);
 app.post("/api/markAsRead", markAsRead);
 
+// Fallback for static assets in production
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static('dist'));
+}
+
 ViteExpress.listen(app, PORT, () => {
   console.log(`http://localhost:${PORT} chance baby`);
   
   // Start automated cleanup scheduler
   cleanupScheduler.start();
+}, {
+  mode: process.env.NODE_ENV === 'production' ? 'production' : 'development'
 });
 
 // calendar endpoints

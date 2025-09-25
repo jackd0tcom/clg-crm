@@ -82,11 +82,11 @@ export const helmetConfig = helmet({
   contentSecurityPolicy: process.env.NODE_ENV === 'production' ? {
     directives: {
       defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-      fontSrc: ["'self'", "https://fonts.gstatic.com", "https://kit.fontawesome.com"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://ka-f.fontawesome.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com", "https://kit.fontawesome.com", "https://ka-f.fontawesome.com"],
       imgSrc: ["'self'", "data:", "https:"],
       scriptSrc: ["'self'", "https://kit.fontawesome.com"],
-      connectSrc: ["'self'", "https://clauselawgroup.auth0.com"],
+      connectSrc: ["'self'", "https://clauselawgroup.auth0.com", "https://ka-f.fontawesome.com"],
       frameSrc: ["'self'", "https://clauselawgroup.auth0.com"],
     },
   } : false, // Disable CSP in development
