@@ -12,6 +12,10 @@ dist
 dist-ssr
 *.local
 .env
+ADMIN_SETUP.md*
+DEPLOYMENT_GUIDE.md*
+AUTOMATED_CLEANUP.md*
+GOOGLE_CALENDAR_INTEGRATION.md*
 
 # Editor directories and files
 .vscode/*

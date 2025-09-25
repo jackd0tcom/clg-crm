@@ -13,9 +13,20 @@ import cleanupCtrl from "./controllers/cleanupCtrl.js";
 import cleanupScheduler from "./services/cleanupScheduler.js";
 import adminCtrl from "./controllers/adminCtrl.js";
 import { requireAccess, requireAdmin } from "./middleware/authMiddleware.js";
+import { 
+  setupSecurityMiddleware, 
+  sessionConfig, 
+  validateEnvironment,
+  corsOptions,
+  validationRules,
+  handleValidationErrors
+} from "./config/security.js";
 
 import dotenv from "dotenv";
 dotenv.config();
+
+// Validate environment variables
+validateEnvironment();
 
 const { updatePerson, newPerson, deletePerson } = personCtrl;
 const { getUser, getUsers } = userCtrl;
@@ -85,28 +96,13 @@ const {
 
 // Express setup
 const app = express();
-const PORT = 5050;
+const PORT = process.env.PORT || 5050;
 
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
-app.use(
-  session({
-    saveUninitialized: true,
-    resave: false,
-    secret: "bigtime",
-    cookie: {
-      maxAge: 1000 * 60 * 60 * 48,
-    },
-  })
-);
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
-  );
-  next();
-});
+// Setup security middleware (includes body parsing, CORS, rate limiting, etc.)
+setupSecurityMiddleware(app);
+
+// Session configuration
+app.use(session(sessionConfig));
 
 // Endpoints
 // auth endpoints
@@ -125,17 +121,17 @@ app.delete("/api/deletePerson", deletePerson);
 // case endpoints
 app.get("/api/getCases", getCases);
 app.get("/api/getCasesWithTasks", getCasesWithTasks);
-app.get("/api/getCase/:caseId", getCase);
-app.post("/api/newCase", newCase);
+app.get("/api/getCase/:caseId", validationRules.caseId, handleValidationErrors, getCase);
+app.post("/api/newCase", validationRules.case, handleValidationErrors, newCase);
 app.post("/api/saveCase", saveCase);
-app.post("/api/updateCase", updateCase);
+app.post("/api/updateCase", validationRules.case, handleValidationErrors, updateCase);
 app.post("/api/updateCasePhase", updateCasePhase);
 app.post("/api/updateCasePriority", updateCasePriority);
 app.post("/api/updateCaseNotes", updateCaseNotes);
 app.post("/api/addCaseAssignees", addCaseAssignee);
 app.delete("/api/removeCaseAssignees", removeCaseAssignee);
-app.get("/api/getCaseNonAssignees/:caseId", getCaseNonAssignees);
-app.get("/api/archiveCase/:caseId", archiveCase);
+app.get("/api/getCaseNonAssignees/:caseId", validationRules.caseId, handleValidationErrors, getCaseNonAssignees);
+app.get("/api/archiveCase/:caseId", validationRules.caseId, handleValidationErrors, archiveCase);
 app.post("/api/addCasePracticeArea", addCasePracticeArea);
 app.post("/api/removeCasePracticeArea", removeCasePracticeArea);
 app.get("/api/getPracticeAreas", getPracticeAreas);
@@ -149,12 +145,12 @@ app.post("/api/newPerson", newPerson);
 app.get("/api/getAllTasks", getAllTasks);
 app.get("/api/getTodayTasks", getTodayTasks);
 app.get("/api/getTasksByCase/:caseId", getTasksByCase);
-app.post("/api/newTask", newTask);
+app.post("/api/newTask", validationRules.task, handleValidationErrors, newTask);
 app.post("/api/saveTask", saveTask);
-app.post("/api/updateTask", updateTask);
+app.post("/api/updateTask", validationRules.task, handleValidationErrors, updateTask);
 app.post("/api/updateTaskStatus", updateTaskStatus);
-app.get("/api/getTask/:taskId", getTask);
-app.get("/api/getTaskNonAssignees/:taskId", getTaskNonAssignees);
+app.get("/api/getTask/:taskId", validationRules.taskId, handleValidationErrors, getTask);
+app.get("/api/getTaskNonAssignees/:taskId", validationRules.taskId, handleValidationErrors, getTaskNonAssignees);
 app.post("/api/addTaskAssignees", addTaskAssignee);
 app.delete("/api/removeTaskAssignees", removeTaskAssignee);
 app.delete("/api/deleteTask", deleteTask);
