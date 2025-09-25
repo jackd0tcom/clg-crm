@@ -2,7 +2,7 @@ import { DataTypes, Model } from "sequelize";
 import url from "url";
 import connectToDb from "./db.js";
 
-const db = await connectToDb("postgresql:///clg-db");
+const db = await connectToDb(process.env.DATABASE_URL || "postgresql:///clg-db");
 
 class User extends Model {}
 User.init(

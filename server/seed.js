@@ -15,7 +15,7 @@ import {
 } from "./model.js";
 import bcrypt from "bcryptjs";
 
-const db = await connectToDB("postgresql:///clg-db");
+const db = await connectToDB(process.env.DATABASE_URL || "postgresql:///clg-db");
 
 const users = [
   {
