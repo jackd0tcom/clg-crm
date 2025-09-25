@@ -58,6 +58,8 @@ export const corsOptions = {
       // Add production domains here
       process.env.FRONTEND_URL,
       process.env.RAILWAY_PUBLIC_DOMAIN,
+      // Add HTTPS version of Railway domain if it exists
+      process.env.RAILWAY_PUBLIC_DOMAIN ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}` : null,
       // Allow Railway preview deployments
       /^https:\/\/.*\.railway\.app$/,
     ].filter(Boolean);
