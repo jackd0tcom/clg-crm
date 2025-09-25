@@ -245,20 +245,6 @@ app.get("/api/getTaskActivities/:taskId", getTaskActivities);
 app.post("/api/createActivity", createActivity);
 app.post("/api/markAsRead", markAsRead);
 
-ViteExpress.listen(
-  app,
-  PORT,
-  () => {
-    console.log(`http://localhost:${PORT} chance baby`);
-
-    // Start automated cleanup scheduler
-    cleanupScheduler.start();
-  },
-  {
-    mode: process.env.NODE_ENV === "production" ? "production" : "development",
-  }
-);
-
 // calendar endpoints
 app.post("/api/calendar/setup", setupCalendar);
 app.get("/api/calendar/auth-url", getAuthUrl);
@@ -326,3 +312,19 @@ app.post("/api/cleanup/comments", cleanupCtrl.cleanupComments);
 app.post("/api/cleanup/completed-tasks", cleanupCtrl.cleanupCompletedTasks);
 app.post("/api/cleanup/archived-cases", cleanupCtrl.cleanupArchivedCases);
 app.post("/api/cleanup/full", cleanupCtrl.runFullCleanup);
+
+
+
+ViteExpress.listen(
+  app,
+  PORT,
+  () => {
+    console.log(`live on http://localhost:${PORT} ${process.env.NODE_ENV === "production" ? "production" : "development"}`);
+
+    // Start automated cleanup scheduler
+    cleanupScheduler.start();
+  },
+  {
+    mode: process.env.NODE_ENV === "production" ? "production" : "development",
+  }
+);
