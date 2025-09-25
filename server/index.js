@@ -2,6 +2,7 @@ import express from "express";
 import ViteExpress from "vite-express";
 import session from "express-session";
 import cors from "cors";
+import path from "path";
 import authCtrl from "./controllers/authCtrl.js";
 import caseCtrl from "./controllers/caseCtrl.js";
 import taskCtrl from "./controllers/taskCtrl.js";
@@ -131,6 +132,11 @@ if (process.env.NODE_ENV === 'production') {
 // Session configuration
 app.use(session(sessionConfig));
 
+// Serve static files in production (must be before API routes)
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static('dist'));
+}
+
 // Final CSP removal middleware (runs after all other middleware)
 if (process.env.NODE_ENV !== 'production') {
   app.use((req, res, next) => {
@@ -207,9 +213,11 @@ app.get("/api/getTaskActivities/:taskId", getTaskActivities);
 app.post("/api/createActivity", createActivity);
 app.post("/api/markAsRead", markAsRead);
 
-// Fallback for static assets in production
+// Handle client-side routing in production (must be after all API routes)
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static('dist'));
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve('dist/index.html'));
+  });
 }
 
 ViteExpress.listen(app, PORT, () => {
