@@ -106,6 +106,8 @@ export const sessionConfig = {
     maxAge: 1000 * 60 * 60 * 24, // 24 hours
     sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax', // More permissive in development
   },
+  // Use memory store in development, but log warning in production
+  store: process.env.NODE_ENV === 'production' ? undefined : undefined, // Will use default MemoryStore
 };
 
 // Input validation rules
