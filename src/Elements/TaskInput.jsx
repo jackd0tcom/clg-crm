@@ -73,9 +73,16 @@ const TaskInput = ({
     try {
       setIsSaving(true);
       // console.log("new task");
+      // Validate required fields
+      if (!localTitle || localTitle.trim() === "") {
+        alert("Please enter a task title");
+        setIsSaving(false);
+        return;
+      }
+
       await axios
         .post("/api/newTask", {
-          title: localTitle || "",
+          title: localTitle.trim(),
           notes: "",
           caseId: caseId || null,
           dueDate: dueDate,
@@ -100,7 +107,16 @@ const TaskInput = ({
           }
         });
     } catch (error) {
-      console.log(error);
+      console.log("Task creation error:", error);
+      if (error.response?.data?.details) {
+        // Show validation errors
+        const validationErrors = error.response.data.details
+          .map(err => err.msg)
+          .join(', ');
+        alert(`Validation error: ${validationErrors}`);
+      } else {
+        alert("Failed to create task. Please try again.");
+      }
     } finally {
       setIsSaving(false);
     }

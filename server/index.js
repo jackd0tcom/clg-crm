@@ -175,37 +175,17 @@ app.delete("/api/deletePerson", deletePerson);
 // case endpoints
 app.get("/api/getCases", getCases);
 app.get("/api/getCasesWithTasks", getCasesWithTasks);
-app.get(
-  "/api/getCase/:caseId",
-  validationRules.caseId,
-  handleValidationErrors,
-  getCase
-);
-app.post("/api/newCase", validationRules.case, handleValidationErrors, newCase);
+app.get("/api/getCase/:caseId", getCase);
+app.post("/api/newCase", newCase);
 app.post("/api/saveCase", saveCase);
-app.post(
-  "/api/updateCase",
-  validationRules.case,
-  handleValidationErrors,
-  updateCase
-);
+app.post("/api/updateCase", updateCase);
 app.post("/api/updateCasePhase", updateCasePhase);
 app.post("/api/updateCasePriority", updateCasePriority);
 app.post("/api/updateCaseNotes", updateCaseNotes);
 app.post("/api/addCaseAssignees", addCaseAssignee);
 app.delete("/api/removeCaseAssignees", removeCaseAssignee);
-app.get(
-  "/api/getCaseNonAssignees/:caseId",
-  validationRules.caseId,
-  handleValidationErrors,
-  getCaseNonAssignees
-);
-app.get(
-  "/api/archiveCase/:caseId",
-  validationRules.caseId,
-  handleValidationErrors,
-  archiveCase
-);
+app.get("/api/getCaseNonAssignees/:caseId", getCaseNonAssignees);
+app.get("/api/archiveCase/:caseId", archiveCase);
 app.post("/api/addCasePracticeArea", addCasePracticeArea);
 app.post("/api/removeCasePracticeArea", removeCasePracticeArea);
 app.get("/api/getPracticeAreas", getPracticeAreas);
@@ -219,27 +199,12 @@ app.post("/api/newPerson", newPerson);
 app.get("/api/getAllTasks", getAllTasks);
 app.get("/api/getTodayTasks", getTodayTasks);
 app.get("/api/getTasksByCase/:caseId", getTasksByCase);
-app.post("/api/newTask", validationRules.task, handleValidationErrors, newTask);
+app.post("/api/newTask", newTask);
 app.post("/api/saveTask", saveTask);
-app.post(
-  "/api/updateTask",
-  validationRules.task,
-  handleValidationErrors,
-  updateTask
-);
+app.post("/api/updateTask", updateTask);
 app.post("/api/updateTaskStatus", updateTaskStatus);
-app.get(
-  "/api/getTask/:taskId",
-  validationRules.taskId,
-  handleValidationErrors,
-  getTask
-);
-app.get(
-  "/api/getTaskNonAssignees/:taskId",
-  validationRules.taskId,
-  handleValidationErrors,
-  getTaskNonAssignees
-);
+app.get("/api/getTask/:taskId", getTask);
+app.get("/api/getTaskNonAssignees/:taskId", getTaskNonAssignees);
 app.post("/api/addTaskAssignees", addTaskAssignee);
 app.delete("/api/removeTaskAssignees", removeTaskAssignee);
 app.delete("/api/deleteTask", deleteTask);
