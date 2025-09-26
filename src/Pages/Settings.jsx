@@ -148,16 +148,9 @@ const Settings = () => {
         "width=500,height=600,scrollbars=yes,resizable=yes"
       );
 
-      // Listen for popup close
-      const checkClosed = setInterval(() => {
-        if (popup.closed) {
-          clearInterval(checkClosed);
-          // Check connection after popup closes
-          setTimeout(() => {
-            checkGoogleConnection();
-          }, 500);
-        }
-      }, 500);
+      // Note: We rely entirely on the message system for popup communication
+      // The popup will send a success/error message when the OAuth flow completes
+      // This avoids COOP issues with popup.closed checks
     } catch (error) {
       console.error("Error connecting to Google Calendar:", error);
     }

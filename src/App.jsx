@@ -76,7 +76,7 @@ function App() {
     <>
       <Auth0Sync onSyncComplete={handleSyncComplete} />
       <div className={path.startsWith("/ ") ? `home-wrapper` : `app-wrapper`}>
-        {isAuthenticated && <Nav checkNotifications={checkNotifications} />}
+        {isAuthenticated && <Nav checkNotifications={checkNotifications} userSynced={userSynced} />}
         <div className="page-wrapper">
           {isLoading && !userSynced ? (
             <Loader />
@@ -90,6 +90,7 @@ function App() {
                     checkNotifications={checkNotifications}
                     setCheckNotifications={setCheckNotifications}
                     refreshKey={refreshKey}
+                    userSynced={userSynced}
                   />
                 } 
               />
@@ -209,6 +210,10 @@ function App() {
               />
               <Route
                 path="/google-calendar-callback"
+                element={<CalendarCallback />}
+              />
+              <Route
+                path="/calendar-callback"
                 element={<CalendarCallback />}
               />
               <Route path="/denied" element={<Denied />} />

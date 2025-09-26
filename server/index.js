@@ -127,6 +127,9 @@ if (process.env.NODE_ENV === "production") {
     res.removeHeader("X-XSS-Protection");
     res.removeHeader("Referrer-Policy");
     res.removeHeader("Strict-Transport-Security");
+    res.removeHeader("Cross-Origin-Opener-Policy");
+    res.removeHeader("Cross-Origin-Embedder-Policy");
+    res.removeHeader("Cross-Origin-Resource-Policy");
     next();
   });
 }
@@ -147,6 +150,9 @@ if (process.env.NODE_ENV !== "production") {
       res.removeHeader("X-XSS-Protection");
       res.removeHeader("Referrer-Policy");
       res.removeHeader("Strict-Transport-Security");
+      res.removeHeader("Cross-Origin-Opener-Policy");
+      res.removeHeader("Cross-Origin-Embedder-Policy");
+      res.removeHeader("Cross-Origin-Resource-Policy");
     });
     next();
   });

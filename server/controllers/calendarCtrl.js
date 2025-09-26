@@ -182,6 +182,8 @@ async function migrateUserTasksToNewCalendar(userId, oldCalendarId, newCalendarI
   }
 }
 
+export { syncExistingTasksToCalendar };
+
 export default {
   // New endpoint for calendar setup during onboarding
   setupCalendar: async (req, res) => {
@@ -211,7 +213,8 @@ export default {
 
   getAuthUrl: async (req, res) => {
     try {
-      const authUrl = googleCalendarService.getAuthUrl();
+      const userId = req.session.user?.userId;
+      const authUrl = googleCalendarService.getAuthUrl(userId);
       res.json({ authUrl });
     } catch (error) {
       console.error("Error getting auth URL:", error);
@@ -221,10 +224,12 @@ export default {
 
   handleCallback: async (req, res) => {
     try {
-      const { code } = req.body;
-      const { userId } = req.session.user;
+      const { code, userId } = req.body;
+      
+      // Use userId from request body (popup) or session (direct access)
+      const targetUserId = userId || req.session.user?.userId;
 
-      if (!userId) {
+      if (!targetUserId) {
         return res.status(401).json({ message: "User not authenticated" });
       }
 
@@ -236,7 +241,7 @@ export default {
           googleRefreshToken: tokens.refresh_token,
           googleTokenExpiry: new Date(tokens.expiry_date),
         },
-        { where: { userId } }
+        { where: { userId: targetUserId } }
       );
 
       // Initialize calendar service with new tokens
@@ -246,14 +251,14 @@ export default {
       );
 
       // Get user's preferred calendar (or default to primary)
-      const user = await User.findByPk(userId);
+      const user = await User.findByPk(targetUserId);
       const targetCalendarId = user.preferredCalendarId || 'primary';
 
       // Sync existing tasks to Google Calendar
       let syncResult = null;
       try {
-        console.log(`🔄 Starting initial sync for user ${userId}`);
-        syncResult = await syncExistingTasksToCalendar(userId, targetCalendarId);
+        console.log(`🔄 Starting initial sync for user ${targetUserId}`);
+        syncResult = await syncExistingTasksToCalendar(targetUserId, targetCalendarId);
         console.log(`✅ Initial sync completed:`, syncResult);
       } catch (syncError) {
         console.error("❌ Initial sync failed:", syncError);

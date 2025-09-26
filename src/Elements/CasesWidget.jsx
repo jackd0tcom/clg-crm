@@ -4,12 +4,15 @@ import axios from "axios";
 import CaseListItem from "./CaseListItem";
 import { useNavigate } from "react-router";
 
-const CasesWidget = ({ loading, setLoading }) => {
+const CasesWidget = ({ loading, setLoading, userSynced }) => {
   const [cases, setCases] = useState();
   const { isLoading, isAuthenticated } = useAuth0();
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Only fetch cases if user is synced
+    if (!userSynced) return;
+    
     async function fetch() {
       try {
         await axios.get("/api/getCases").then((res) => {
@@ -24,8 +27,8 @@ const CasesWidget = ({ loading, setLoading }) => {
       isAuthenticated &&
       setTimeout(() => {
         fetch();
-      }, 500);
-  }, []);
+      }, 100);
+  }, [userSynced]);
 
   return (
     <div className="widget-container">

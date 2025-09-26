@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import axios from "axios";
 
 const Auth0Sync = ({ onSyncComplete }) => {
-  const { user, isAuthenticated } = useAuth0();
+  const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -15,11 +15,21 @@ const Auth0Sync = ({ onSyncComplete }) => {
 
   const syncUser = async () => {
     try {
+      // Debug: Log the full user object to see what Auth0 provides
+      // console.log('🔍 Auth0 user object:', user);
+      
+      // Get Auth0 access token for Management API calls
+      const auth0AccessToken = await getAccessTokenSilently();
+      
+      // console.log('🔄 Syncing user with Auth0...');
+      // console.log('🔑 Auth0 access token available:', !!auth0AccessToken);
+      
       const response = await axios.post("/api/sync-auth0-user", {
         auth0Id: user.sub,
         email: user.email,
         name: user.name,
         picture: user.picture,
+        auth0AccessToken, // Pass Auth0 token for Management API calls
       });
       
       // Update Redux store with user data from sync response
@@ -40,7 +50,7 @@ const Auth0Sync = ({ onSyncComplete }) => {
       
       onSyncComplete();
     } catch (error) {
-      console.error("❌ Failed to sync user:", error);
+      // console.error("❌ Failed to sync user:", error);
       // For any error, still complete sync so app can handle it
       onSyncComplete();
     }

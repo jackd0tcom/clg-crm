@@ -1,5 +1,7 @@
 import { User } from "../model.js";
 import bcrypt from "bcryptjs";
+import googleCalendarService from "../services/googleCalendar.js";
+import { syncExistingTasksToCalendar } from "./calendarCtrl.js";
 
 export default {
   register: async (req, res) => {
@@ -93,12 +95,14 @@ export default {
   syncAuth0User: async (req, res) => {
     console.log("syncUser");
     try {
-      const { auth0Id, email, name, picture } = req.body;
+      const { auth0Id, email, name, picture, auth0AccessToken } = req.body;
 
       // Check if user exists by auth0Id
       let user = await User.findOne({ where: { auth0Id } });
+      let isNewUser = false;
 
       if (!user) {
+        isNewUser = true;
         // Create new user from Auth0 data
         const [firstName, ...lastNameParts] = name.split(" ");
 
@@ -122,6 +126,14 @@ export default {
         if (isFirstAdmin || isFirstUser) {
           console.log(`🎉 First admin user created: ${email}`);
         }
+      }
+
+      // Check if user has Google Calendar connected
+      const hasGoogleCalendar = user.googleAccessToken && user.googleRefreshToken;
+      
+      if (isNewUser && !hasGoogleCalendar) {
+        console.log(`📅 New user ${user.userId} - Google Calendar connection available via Settings page`);
+        // You could add a flag here to show a calendar setup prompt on the frontend
       }
 
       // Always sync user to session, let frontend handle access control

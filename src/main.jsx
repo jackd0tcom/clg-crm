@@ -16,7 +16,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
         authorizationParams={{
           redirect_uri: import.meta.env.VITE_AUTH0_REDIRECT_URI,
-          scope: "openid profile email",
+          scope: "openid profile email https://www.googleapis.com/auth/calendar",
         }}
       >
         <App />

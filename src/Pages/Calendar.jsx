@@ -35,21 +35,25 @@ const Calendar = () => {
   }, [isGoogleConnected]);
 
   const checkGoogleConnection = async () => {
+    // console.log('🔍 Checking Google Calendar connection...');
     setIsCheckingConnection(true);
     try {
       const res = await axios.get("/api/calendar/check-connection");
+      // console.log('📡 Connection check response:', res.data);
       if (res.data.isConnected) {
+        // console.log('✅ Google Calendar is connected');
         setIsGoogleConnected(true);
         // Get app calendar info
         fetchAppCalendarInfo();
         checkForDuplicates();
         // Don't set loading to false yet - wait for events to load
       } else {
+        // console.log('❌ Google Calendar is not connected');
         setIsGoogleConnected(false);
         setIsLoading(false); // Only set loading false if not connected
       }
     } catch (error) {
-      console.error("Error checking Google connection:", error);
+      // console.error("Error checking Google connection:", error);
       setIsGoogleConnected(false);
       setIsLoading(false); // Set loading false on error
     } finally {
@@ -62,7 +66,7 @@ const Calendar = () => {
       const res = await axios.get("/api/calendar/app-calendar");
       setAppCalendarInfo(res.data);
     } catch (error) {
-      console.error("Error fetching app calendar info:", error);
+      // console.error("Error fetching app calendar info:", error);
     }
   };
 
@@ -73,7 +77,7 @@ const Calendar = () => {
         setDuplicateWarning(res.data);
       }
     } catch (error) {
-      console.error("Error checking for duplicate calendars:", error);
+      // console.error("Error checking for duplicate calendars:", error);
     }
   };
 
@@ -102,7 +106,7 @@ const Calendar = () => {
       setEvents(googleEvents);
       setIsLoading(false); // Set loading false when events are successfully loaded
     } catch (error) {
-      console.error("Error fetching Google events:", error);
+      // console.error("Error fetching Google events:", error);
 
       // Retry logic for authentication errors
       if (error.response?.status === 401 && retryCount < 2) {
@@ -141,11 +145,17 @@ const Calendar = () => {
 
       // Listen for messages from popup
       const messageListener = (event) => {
+        console.log('📨 Received message from popup:', event.data);
+        console.log('🌐 Event origin:', event.origin);
+        console.log('🌐 Window origin:', window.location.origin);
+        
         if (event.origin !== window.location.origin) {
+          console.log('❌ Origin mismatch, ignoring message');
           return;
         }
 
         if (event.data.type === "GOOGLE_CALENDAR_AUTH_SUCCESS") {
+          console.log('✅ Google Calendar auth success received');
           window.removeEventListener("message", messageListener);
           // Wait a moment then check connection
           setTimeout(() => {
@@ -159,16 +169,9 @@ const Calendar = () => {
 
       window.addEventListener("message", messageListener);
 
-      // Fallback: check if popup closed manually
-      const checkClosed = setInterval(() => {
-        if (popup.closed) {
-          clearInterval(checkClosed);
-          window.removeEventListener("message", messageListener);
-          setTimeout(() => {
-            checkGoogleConnection();
-          }, 500);
-        }
-      }, 500);
+      // Note: We rely entirely on the message system for popup communication
+      // The popup will send a success/error message when the OAuth flow completes
+      // This avoids COOP issues with popup.closed checks
     } catch (error) {
       console.error("Error connecting to Google Calendar:", error);
     }

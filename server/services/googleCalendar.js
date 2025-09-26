@@ -16,16 +16,25 @@ class GoogleCalendarService {
     return this.oauth2Client;
   }
 
-  getAuthUrl() {
+  getAuthUrl(userId = null) {
     const oauth2Client = this._ensureOAuth2Client();
 
     const scopes = ["https://www.googleapis.com/auth/calendar"];
 
-    return oauth2Client.generateAuthUrl({
+    const authUrl = oauth2Client.generateAuthUrl({
       access_type: "offline",
       scope: scopes,
       prompt: "consent",
     });
+
+    // Add userId to the callback URL if provided
+    if (userId) {
+      const callbackUrl = new URL(authUrl);
+      callbackUrl.searchParams.set('state', userId);
+      return callbackUrl.toString();
+    }
+
+    return authUrl;
   }
 
   async getTokens(code) {

@@ -41,16 +41,9 @@ const CalendarSetup = () => {
           'width=500,height=600,scrollbars=yes,resizable=yes'
         );
 
-        // Listen for the popup to close
-        const checkClosed = setInterval(() => {
-          if (popup.closed) {
-            clearInterval(checkClosed);
-            // Check if setup is complete
-            setTimeout(() => {
-              checkSetupStatus();
-            }, 1000);
-          }
-        }, 1000);
+        // Note: We rely entirely on the message system for popup communication
+        // The popup will send a success/error message when the OAuth flow completes
+        // This avoids COOP issues with popup.closed checks
       }
     } catch (error) {
       console.error("Calendar setup error:", error);

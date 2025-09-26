@@ -3,7 +3,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 
-const UpdatesWidget = ({ openTaskView, setCheckNotifications }) => {
+const UpdatesWidget = ({ openTaskView, setCheckNotifications, userSynced }) => {
   const [updates, setUpdates] = useState([]);
   const navigate = useNavigate();
 
@@ -21,8 +21,9 @@ const UpdatesWidget = ({ openTaskView, setCheckNotifications }) => {
   };
 
   useEffect(() => {
+    if (!userSynced) return;
     fetch();
-  }, []);
+  }, [userSynced]);
 
   const handleCleared = async (notification) => {
     try {

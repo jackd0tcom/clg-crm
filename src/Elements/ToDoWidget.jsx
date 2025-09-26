@@ -3,7 +3,7 @@ import axios from "axios";
 import TaskList from "./TaskList";
 import { useNavigate } from "react-router";
 
-const ToDoWidget = ({ openTaskView }) => {
+const ToDoWidget = ({ openTaskView, userSynced }) => {
   const [tasks, setTasks] = useState([]);
   const navigate = useNavigate();
 
@@ -18,8 +18,10 @@ const ToDoWidget = ({ openTaskView }) => {
   };
 
   useEffect(() => {
+    // Only fetch tasks if user is synced
+    if (!userSynced) return;
     fetch();
-  }, []);
+  }, [userSynced]);
 
   return (
     <div className="widget-container">

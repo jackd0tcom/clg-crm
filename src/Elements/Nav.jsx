@@ -7,7 +7,7 @@ import { NavLink } from "react-router";
 import ProfilePic from "./ProfilePic";
 import { useAuth0 } from "@auth0/auth0-react";
 
-const Nav = ({ checkNotifications }) => {
+const Nav = ({ checkNotifications, userSynced }) => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
   const { isAuthenticated } = useAuth0();
@@ -15,6 +15,8 @@ const Nav = ({ checkNotifications }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (!userSynced) return;
+    
     const fetch = async () => {
       try {
         const res = await axios.get("/api/notifications");
@@ -27,7 +29,7 @@ const Nav = ({ checkNotifications }) => {
       }
     };
     fetch();
-  }, [checkNotifications]);
+  }, [checkNotifications, userSynced]);
 
   return (
     <nav className="nav-bar">

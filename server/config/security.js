@@ -102,6 +102,7 @@ export const helmetConfig = helmet({
     },
   } : false, // Disable CSP in development
   crossOriginEmbedderPolicy: false, // Disable for Vite dev server compatibility
+  crossOriginOpenerPolicy: false, // Disable to allow popup windows for OAuth flows
 });
 
 // Session security configuration

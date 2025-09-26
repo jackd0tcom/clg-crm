@@ -16,6 +16,7 @@
   "dependencies": {
     "@auth0/auth0-react": "^2.4.0",
     "@reduxjs/toolkit": "^2.5.0",
+    "auth0": "^4.30.0",
     "axios": "^1.7.9",
     "bcryptjs": "^2.4.3",
     "compression": "^1.8.1",
