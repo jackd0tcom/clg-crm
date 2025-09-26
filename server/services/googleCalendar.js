@@ -7,6 +7,18 @@ class GoogleCalendarService {
 
   _ensureOAuth2Client() {
     if (!this.oauth2Client) {
+      console.log('🔧 Google Calendar OAuth2 Client Configuration:');
+      console.log('📝 GOOGLE_CLIENT_ID:', process.env.GOOGLE_CLIENT_ID ? 'Set' : 'Missing');
+      console.log('📝 GOOGLE_CLIENT_SECRET:', process.env.GOOGLE_CLIENT_SECRET ? 'Set' : 'Missing');
+      console.log('📝 GOOGLE_REDIRECT_URI:', process.env.GOOGLE_REDIRECT_URI || 'Not set');
+      
+      if (!process.env.GOOGLE_CLIENT_ID) {
+        throw new Error('GOOGLE_CLIENT_ID environment variable is required');
+      }
+      if (!process.env.GOOGLE_CLIENT_SECRET) {
+        throw new Error('GOOGLE_CLIENT_SECRET environment variable is required');
+      }
+      
       this.oauth2Client = new google.auth.OAuth2(
         process.env.GOOGLE_CLIENT_ID,
         process.env.GOOGLE_CLIENT_SECRET,
