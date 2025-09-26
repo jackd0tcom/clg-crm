@@ -18,9 +18,8 @@ import bcrypt from "bcryptjs";
 
 const db = await connectToDB(process.env.DATABASE_URL || "postgresql:///clg-db");
 
-
-console.log("Creating practice areas...");
-const practiceAreas = await PracticeArea.bulkCreate([
+// Practice areas data
+const practiceAreasData = [
   { name: "divorce" },
   { name: "custody" },
   { name: "child support" },
@@ -44,16 +43,26 @@ const practiceAreas = await PracticeArea.bulkCreate([
   { name: "general civil litigation" },
   { name: "employment law" },
   { name: "foreign judgments" },
-]);
+];
 
-// Sync database and seed data
-await db.sync({ force: true }).then(async () => {
+try {
+  console.log("🌱 Starting production seed...");
+  
+  // Check if practice areas already exist
+  const existingAreas = await PracticeArea.count();
+  
+  if (existingAreas === 0) {
+    console.log("📋 Creating practice areas...");
+    await PracticeArea.bulkCreate(practiceAreasData);
+    console.log(`✅ Created ${practiceAreasData.length} practice areas`);
+  } else {
+    console.log(`📋 Practice areas already exist (${existingAreas} found)`);
+  }
 
-  console.log("Creating practice areas...");
-
-  await PracticeArea.bulkCreate(practiceAreas);
-
-  console.log("Database reset and seeded successfully!");
-});
-
-await db.close();
+  console.log("✅ Production seed completed successfully!");
+} catch (error) {
+  console.error("❌ Error during production seed:", error);
+  throw error;
+} finally {
+  await db.close();
+}
