@@ -75,7 +75,22 @@ const CaseList = ({ openTaskView, refreshKey }) => {
             );
           })
         ) : (
-          <p>No Active Cases</p>
+          <div className="no-active-cases">
+            <i className="fa-regular fa-folder-open"></i>
+            <div>
+              <h2>No Open Cases</h2>
+              <p>
+                Open a new one, or toggle archived cases above to see archived
+                cases
+              </p>
+            </div>
+            <a
+              className="button button-primary add-case-button"
+              onClick={() => navigate("/case/0")}
+            >
+              Open Case
+            </a>
+          </div>
         )}
       </div>
     </div>

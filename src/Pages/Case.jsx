@@ -14,6 +14,7 @@ import PersonView from "../Elements/PersonView";
 import CaseInput from "../Elements/CaseInput";
 import PracticeAreaToggle from "../Elements/PracticeAreaToggle";
 import ExtraSettings from "../Elements/ExtraSettings";
+import Loader from "../Elements/Loader";
 
 const Case = ({ openTaskView, refreshKey }) => {
   const { caseId } = useParams();
@@ -469,9 +470,7 @@ const Case = ({ openTaskView, refreshKey }) => {
       </div>
     </div>
   ) : (
-    <>
-      <p>loading...</p>
-    </>
+    <Loader/>
   );
 };
 

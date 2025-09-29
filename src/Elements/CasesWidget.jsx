@@ -12,7 +12,7 @@ const CasesWidget = ({ loading, setLoading, userSynced }) => {
   useEffect(() => {
     // Only fetch cases if user is synced
     if (!userSynced) return;
-    
+
     async function fetch() {
       try {
         await axios.get("/api/getCases").then((res) => {
@@ -50,8 +50,11 @@ const CasesWidget = ({ loading, setLoading, userSynced }) => {
             return <CaseListItem key={data.caseId} data={data} />;
           })
         ) : (
-          <div className="no-cases">
-            <p>You are not assigned to any cases</p>
+          <div className="no-active-cases-home">
+            <i className="fa-regular fa-folder-open"></i>
+            <div>
+              <p>No Open Cases</p>
+            </div>
           </div>
         )}
       </div>

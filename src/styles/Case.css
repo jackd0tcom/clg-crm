@@ -581,3 +581,20 @@ div.case-task-container
   background-color: var(--red);
   color: white;
 }
+.no-active-cases {
+  top: 20%;
+  left: 45%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  color: var(--grey);
+  row-gap: 1.5rem;
+  max-width: 25%;
+  text-align: center;
+}
+.no-active-cases i {
+  font-size: 3rem;
+  color: var(--blue);
+}
