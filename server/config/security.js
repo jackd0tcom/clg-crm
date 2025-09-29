@@ -99,6 +99,7 @@ export const helmetConfig = helmet({
       scriptSrc: ["'self'", "https://kit.fontawesome.com"],
       connectSrc: ["'self'", "https://clauselawgroup.auth0.com", "https://dev-qysee6dr6mhj3r6y.us.auth0.com", "https://ka-f.fontawesome.com"],
       frameSrc: ["'self'", "https://clauselawgroup.auth0.com", "https://dev-qysee6dr6mhj3r6y.us.auth0.com"],
+      mediaSrc: ["'self'", "https://videos.files.wordpress.com"],
     },
   } : false, // Disable CSP in development
   crossOriginEmbedderPolicy: false, // Disable for Vite dev server compatibility
