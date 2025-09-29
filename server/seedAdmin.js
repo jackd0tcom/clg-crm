@@ -6,7 +6,7 @@ dotenv.config();
 const seedAdmin = async () => {
   try {
     // Get admin email from environment variable or use default
-    const adminEmail = process.env.ADMIN_EMAIL || "jackballdev@gmail.com";
+    const adminEmail = process.env.ADMIN_EMAIL || "jack@fishbones.digital";
 
     console.log(`🔍 Looking for user with email: ${adminEmail}`);
 

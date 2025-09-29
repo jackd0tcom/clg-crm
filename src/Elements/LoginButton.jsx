@@ -6,7 +6,7 @@ const LoginButton = () => {
 
   return (
     <button className="login-button" onClick={() => loginWithRedirect()}>
-      <img src="src/assets/google-logo.png" alt="" />
+      <img src="google-logo.png" alt="google logo" />
       Continue with Google
     </button>
   );

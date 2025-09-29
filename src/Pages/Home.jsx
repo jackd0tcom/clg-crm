@@ -15,12 +15,25 @@ import LoginButton from "../Elements/LoginButton";
 import CasesWidget from "../Elements/CasesWidget";
 import { Link } from "react-router-dom";
 
-const Home = ({ openTaskView, checkNotifications, setCheckNotifications, refreshKey, userSynced }) => {
+const Home = ({
+  openTaskView,
+  checkNotifications,
+  setCheckNotifications,
+  refreshKey,
+  userSynced,
+  setClassName,
+}) => {
   const { user, isAuthenticated, isLoading } = useAuth0();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
 
   const date = new Date();
+
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      setClassName("home-wrapper");
+    }
+  }, [isLoading]);
 
   return !isAuthenticated ? (
     <section className="home-landing-section">
@@ -32,7 +45,7 @@ const Home = ({ openTaskView, checkNotifications, setCheckNotifications, refresh
           <a href="https://clauselawgroup.com" target="_blank">
             <img
               className="welcome-logo"
-              src="src/assets/Clause-Law-Group-Logo-Green.png"
+              src="Clause-Law-Group-Logo-Green.png"
               alt=""
             />
           </a>
@@ -54,7 +67,12 @@ const Home = ({ openTaskView, checkNotifications, setCheckNotifications, refresh
         <p>{formatDateWithDay(date)}</p>
       </div>
       <div className="widget-wrapper">
-        <RecentItemsWidget openTaskView={openTaskView} navigate={navigate} refreshTrigger={refreshKey} userSynced={userSynced} />
+        <RecentItemsWidget
+          openTaskView={openTaskView}
+          navigate={navigate}
+          refreshTrigger={refreshKey}
+          userSynced={userSynced}
+        />
         <UpdatesWidget
           openTaskView={openTaskView}
           checkNotifications={checkNotifications}
@@ -62,7 +80,11 @@ const Home = ({ openTaskView, checkNotifications, setCheckNotifications, refresh
           userSynced={userSynced}
         />
         <ToDoWidget openTaskView={openTaskView} userSynced={userSynced} />
-        <CasesWidget loading={loading} setLoading={setLoading} userSynced={userSynced} />
+        <CasesWidget
+          loading={loading}
+          setLoading={setLoading}
+          userSynced={userSynced}
+        />
       </div>
     </div>
   );

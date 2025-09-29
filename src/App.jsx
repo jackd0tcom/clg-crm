@@ -29,6 +29,7 @@ function App() {
   const [userSynced, setUserSynced] = useState(false);
   const { isAuthenticated, isLoading } = useAuth0();
   const [checkNotifications, setCheckNotifications] = useState(0);
+  const [className, setClassName] = useState("app-wrapper");
   const location = useLocation();
   const path = location.pathname;
 
@@ -75,24 +76,30 @@ function App() {
   ) : (
     <>
       <Auth0Sync onSyncComplete={handleSyncComplete} />
-      <div className={path.startsWith("/ ") ? `home-wrapper` : `app-wrapper`}>
-        {isAuthenticated && <Nav checkNotifications={checkNotifications} userSynced={userSynced} />}
+      <div className={className}>
+        {isAuthenticated && (
+          <Nav
+            checkNotifications={checkNotifications}
+            userSynced={userSynced}
+          />
+        )}
         <div className="page-wrapper">
           {isLoading && !userSynced ? (
             <Loader />
           ) : (
             <Routes>
-              <Route 
-                index 
+              <Route
+                index
                 element={
-                  <Home 
+                  <Home
+                    setClassName={setClassName}
                     openTaskView={openTaskView}
                     checkNotifications={checkNotifications}
                     setCheckNotifications={setCheckNotifications}
                     refreshKey={refreshKey}
                     userSynced={userSynced}
                   />
-                } 
+                }
               />
               <Route
                 path="/login"
@@ -212,10 +219,7 @@ function App() {
                 path="/google-calendar-callback"
                 element={<CalendarCallback />}
               />
-              <Route
-                path="/calendar-callback"
-                element={<CalendarCallback />}
-              />
+              <Route path="/calendar-callback" element={<CalendarCallback />} />
               <Route path="/denied" element={<Denied />} />
             </Routes>
           )}
