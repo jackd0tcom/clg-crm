@@ -25,9 +25,9 @@ User.init(
       allowNull: false,
     },
     profilePic: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: true,
-      defaultValue: "/src/assets/default-profile-pic.jpg",
+      defaultValue: "/default-profile-pic.jpg",
     },
     role: {
       type: DataTypes.ENUM("admin", "team_member", "user"),

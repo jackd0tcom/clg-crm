@@ -5,38 +5,49 @@ dotenv.config();
 
 const seedAdmin = async () => {
   try {
-    // Get admin email from environment variable or use default
-    const adminEmail = process.env.ADMIN_EMAIL || "jack@fishbones.digital";
+    // Get admin emails from environment variable (comma-separated)
+    const adminEmails = process.env.ADMIN_EMAIL ? 
+      process.env.ADMIN_EMAIL.split(',').map(e => e.trim()) : 
+      ["jack@fishbones.digital"];
 
-    console.log(`🔍 Looking for user with email: ${adminEmail}`);
+    console.log(`🔍 Looking for admin users with emails: ${adminEmails.join(', ')}`);
 
-    const user = await User.findOne({ where: { email: adminEmail } });
+    let successCount = 0;
+    let errorCount = 0;
 
-    if (user) {
-      // Update existing user to admin
-      await user.update({
-        isAllowed: true,
-        role: "admin",
-      });
+    for (const adminEmail of adminEmails) {
+      try {
+        const user = await User.findOne({ where: { email: adminEmail } });
 
-      console.log("✅ Admin user updated successfully!");
-      console.log(`   User ID: ${user.userId}`);
-      console.log(`   Email: ${user.email}`);
-      console.log(`   Role: ${user.role}`);
-      console.log(`   Access: ${user.isAllowed ? "Allowed" : "Blocked"}`);
-    } else {
-      console.log("❌ User not found in database.");
-      console.log("📋 To create your admin user:");
-      console.log("   1. Log in once with your Google account");
-      console.log("   2. Run this script again: node seedAdmin.js");
-      console.log("");
-      console.log("💡 Or set the FIRST_ADMIN_EMAIL environment variable:");
-      console.log(
-        "   FIRST_ADMIN_EMAIL=admin@yourlawfirm.com node seedAdmin.js"
-      );
+        if (user) {
+          // Update existing user to admin
+          await user.update({
+            isAllowed: true,
+            role: "admin",
+          });
+
+          console.log(`✅ Admin user updated: ${adminEmail}`);
+          console.log(`   User ID: ${user.userId}`);
+          console.log(`   Role: ${user.role}`);
+          console.log(`   Access: ${user.isAllowed ? "Allowed" : "Blocked"}`);
+          successCount++;
+        } else {
+          console.log(`❌ User not found: ${adminEmail}`);
+          console.log("📋 To create admin user:");
+          console.log("   1. Log in once with your Google account");
+          console.log("   2. Run this script again: node seedAdmin.js");
+          errorCount++;
+        }
+      } catch (error) {
+        console.error(`❌ Error updating ${adminEmail}:`, error.message);
+        errorCount++;
+      }
     }
+
+    console.log(`\n📊 Summary: ${successCount} updated, ${errorCount} errors`);
+    console.log("💡 Set multiple admin emails like: ADMIN_EMAIL=admin1@firm.com,admin2@firm.com");
   } catch (error) {
-    console.error("❌ Error seeding admin user:", error);
+    console.error("❌ Error seeding admin users:", error);
   }
 };
 

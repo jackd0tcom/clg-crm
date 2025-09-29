@@ -1,4 +1,3 @@
-
 import connectToDB from "./db.js";
 import {
   User,
@@ -14,9 +13,10 @@ import {
   PracticeArea,
   CasePracticeAreas,
 } from "./model.js";
-import bcrypt from "bcryptjs";
 
-const db = await connectToDB(process.env.DATABASE_URL || "postgresql:///clg-db");
+const db = await connectToDB(
+  process.env.DATABASE_URL || "postgresql:///clg-db"
+);
 
 // Practice areas data
 const practiceAreasData = [
@@ -47,10 +47,10 @@ const practiceAreasData = [
 
 try {
   console.log("🌱 Starting production seed...");
-  
+
   // Check if practice areas already exist
   const existingAreas = await PracticeArea.count();
-  
+
   if (existingAreas === 0) {
     console.log("📋 Creating practice areas...");
     await PracticeArea.bulkCreate(practiceAreasData);

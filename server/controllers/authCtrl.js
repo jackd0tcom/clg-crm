@@ -106,8 +106,15 @@ export default {
         // Create new user from Auth0 data
         const [firstName, ...lastNameParts] = name.split(" ");
 
-        // Check if this is the first admin user
-        const isFirstAdmin = email === process.env.ADMIN_EMAIL;
+        // Check if this is an admin user (support multiple emails)
+        const adminEmails = process.env.ADMIN_EMAIL ? 
+          process.env.ADMIN_EMAIL.split(',').map(e => e.trim()) : [];
+        const isAdmin = adminEmails.includes(email);
+        
+        console.log(`🔍 Admin check for ${email}:`);
+        console.log(`   ADMIN_EMAIL env var: "${process.env.ADMIN_EMAIL}"`);
+        console.log(`   Parsed admin emails: [${adminEmails.map(e => `"${e}"`).join(', ')}]`);
+        console.log(`   Is admin: ${isAdmin}`);
         const userCount = await User.count();
         const isFirstUser = userCount === 0;
 
@@ -118,13 +125,13 @@ export default {
           lastName: lastNameParts.join(" ") || "",
           email,
           profilePic: picture,
-          role: isFirstAdmin || isFirstUser ? "admin" : "user",
+          role: isAdmin || isFirstUser ? "admin" : "user",
           authProvider: "auth0",
-          isAllowed: isFirstAdmin || isFirstUser, // First admin or first user gets access
+          isAllowed: isAdmin || isFirstUser, // Admin emails or first user gets access
         });
 
-        if (isFirstAdmin || isFirstUser) {
-          console.log(`🎉 First admin user created: ${email}`);
+        if (isAdmin || isFirstUser) {
+          console.log(`🎉 Admin user created: ${email} (${isAdmin ? 'configured admin' : 'first user'})`);
         }
       }
 
