@@ -214,11 +214,11 @@
   z-index: 11;
   padding: 8px 16px;
   cursor: pointer;
-  border-top: 1px solid var(--light-border);
+  border-radius: 5px;
+  border: 1px solid transparent;
+  max-width: 150px;
 }
-.phase-toggle-item:first-child {
-  border-top: none;
-}
+
 .phase-icon-wrapper {
   display: flex;
   align-items: center;
@@ -226,6 +226,7 @@
 }
 .phase-toggle-item:hover {
   background-color: var(--root-bg-color-light);
+  border: 1px solid var(--light-border);
 }
 .phase-icon-wrapper p {
   margin: 0;
@@ -243,6 +244,7 @@
   border: 1px solid var(--light-border);
   border-radius: 5px;
   top: 0;
+  padding: 10px;
 }
 .case-notes {
   display: flex;
@@ -456,6 +458,12 @@ div.case-task-container
   width: 40%;
   max-height: 50vh;
   overflow: scroll;
+}
+
+.case-header .toggle-overlay {
+  left: 12px;
+  top: 50px;
+  width: 25%;
 }
 
 .case-assignee-wrapper {

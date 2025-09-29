@@ -32,7 +32,6 @@ const PhaseToggle = ({ value, onHandle, setPhase }) => {
             onClick={() => {
               onHandle("intake");
               setIsChanging(false);
-              setPhase("intake");
             }}
             className="phase-toggle-item"
           >
@@ -42,7 +41,6 @@ const PhaseToggle = ({ value, onHandle, setPhase }) => {
             onClick={() => {
               onHandle("investigation");
               setIsChanging(false);
-              setPhase("investigation");
             }}
             className="phase-toggle-item"
           >
@@ -52,7 +50,6 @@ const PhaseToggle = ({ value, onHandle, setPhase }) => {
             onClick={() => {
               onHandle("negotiation");
               setIsChanging(false);
-              setPhase("negotiation");
             }}
             className="phase-toggle-item"
           >
@@ -61,7 +58,6 @@ const PhaseToggle = ({ value, onHandle, setPhase }) => {
           <div
             onClick={() => {
               onHandle("litigation");
-              setPhase("litigation");
               setIsChanging(false);
             }}
             className="phase-toggle-item"
@@ -72,7 +68,6 @@ const PhaseToggle = ({ value, onHandle, setPhase }) => {
             onClick={() => {
               onHandle("settlement");
               setIsChanging(false);
-              setPhase("settlement");
             }}
             className="phase-toggle-item"
           >
@@ -82,7 +77,6 @@ const PhaseToggle = ({ value, onHandle, setPhase }) => {
             onClick={() => {
               onHandle("closed");
               setIsChanging(false);
-              setPhase("closed");
             }}
             className="phase-toggle-item"
           >

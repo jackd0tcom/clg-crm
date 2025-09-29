@@ -1,4 +1,5 @@
 import { useState } from "react";
+import ProfilePic from "./ProfilePic";
 
 const AdminUserToggle = ({ user, handleAllow, handleRoleChange }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -24,10 +25,11 @@ const AdminUserToggle = ({ user, handleAllow, handleRoleChange }) => {
 
   return (
     <div className="admin-user-toggle-wrapper">
-      <img
-        src={user.profilePic || "/src/assets/default-profile-pic.jpg"}
-        alt="user profile picture"
-        className="admin-user-profile-pic"
+      <ProfilePic 
+        src={user.profilePic} 
+        alt="user profile picture" 
+        size="medium"
+        className="admin-user-profile-pic" 
       />
       <p>
         {user.fullName ||

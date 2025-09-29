@@ -130,13 +130,17 @@ const Case = ({ openTaskView, refreshKey }) => {
     }
   };
 
-  const handleUpdatePhase = (phase) => {
-    try {
-      axios.post("/api/updateCasePhase", { caseId, phase }).then((res) => {
-        console.log(res);
-        refreshActivityData();
-      });
-    } catch (error) {}
+  const handleUpdatePhase = (newPhase) => {
+    if (newPhase !== phase) {
+      try {
+        axios
+          .post("/api/updateCasePhase", { caseId, phase: newPhase })
+          .then((res) => {
+            setPhase(res.data.phase);
+            refreshActivityData();
+          });
+      } catch (error) {}
+    } else return;
   };
 
   const updateNotes = () => {

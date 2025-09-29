@@ -396,6 +396,8 @@ export default {
       const oldPhase = currentCase.phase;
       await currentCase.update({ phase });
 
+      console.log(currentCase, phase);
+
       // Create activity log
       await createActivityLog({
         authorId: req.session.user.userId,
@@ -418,7 +420,7 @@ export default {
         phase
       );
 
-      res.status(200).send("Saved Case Phase Successfully");
+      res.status(200).send(currentCase);
     } catch (err) {
       console.log(err);
       res.status(500).send("Failed to Save Case Phase");

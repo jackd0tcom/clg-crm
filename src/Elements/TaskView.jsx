@@ -117,7 +117,6 @@ const TaskView = ({ taskId, setTaskId, isOpen, onClose, onTaskUpdate }) => {
   const refreshTaskData = async () => {
     try {
       await axios.get(`/api/getTask/${taskId}`).then((res) => {
-        console.log("refreshed task data");
         setTaskData(res.data);
         setTitle(res.data.title);
         setIsLoading(false);
@@ -145,42 +144,47 @@ const TaskView = ({ taskId, setTaskId, isOpen, onClose, onTaskUpdate }) => {
   };
 
   const updateStatus = async (stat) => {
-    try {
-      console.log("updating status");
-      await axios
-        .post("/api/updateTask", {
-          fieldName: "status",
-          value: stat,
-          taskId: taskData.taskId,
-        })
-        .then((res) => {
-          refreshTaskActivityData();
-          refreshTaskData();
-          if (onTaskUpdate) {
-            onTaskUpdate();
-          }
-        });
-    } catch (error) {
-      console.log(error);
-    }
+    if (stat !== status) {
+      try {
+        await axios
+          .post("/api/updateTask", {
+            fieldName: "status",
+            value: stat,
+            taskId: taskData.taskId,
+          })
+          .then((res) => {
+            setStatus(stat);
+            refreshTaskActivityData();
+            refreshTaskData();
+            if (onTaskUpdate) {
+              onTaskUpdate();
+            }
+          });
+      } catch (error) {
+        console.log(error);
+      }
+    } else return;
   };
   const updatePriority = async (stat) => {
-    try {
-      await axios
-        .post("/api/updateTask", {
-          fieldName: "priority",
-          value: stat,
-          taskId: taskData.taskId,
-        })
-        .then((res) => {
-          refreshTaskActivityData();
-          refreshTaskData();
-          if (onTaskUpdate) {
-            onTaskUpdate();
-          }
-        });
-    } catch (error) {
-      console.log(error);
+    if (stat !== priority) {
+      try {
+        await axios
+          .post("/api/updateTask", {
+            fieldName: "priority",
+            value: stat,
+            taskId: taskData.taskId,
+          })
+          .then((res) => {
+            setPriority(stat);
+            refreshTaskActivityData();
+            refreshTaskData();
+            if (onTaskUpdate) {
+              onTaskUpdate();
+            }
+          });
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
   const updateNotes = async () => {

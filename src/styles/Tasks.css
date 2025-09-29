@@ -32,6 +32,10 @@
   top: 35px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
+.no-more-cases {
+  color: var(--grey);
+  font-size: 0.9rem;
+}
 
 .dropdown-case-item {
   font-size: 0.85rem;

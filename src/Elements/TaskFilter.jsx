@@ -103,7 +103,6 @@ const TaskFilter = ({
     isUpdatingTasksInternally.current = false;
   }, [tasks]);
 
-
   useEffect(() => {
     if (
       paramCase &&
@@ -180,20 +179,24 @@ const TaskFilter = ({
 
           {byCase && (
             <div className="task-filter-dropdown" ref={dropdownRef}>
-              {caseData
-                .filter(
-                  (ca) => !filteredCases.some((c) => c.caseId === ca.caseId)
-                )
-                .map((ca) => (
-                  <p
-                    key={ca.caseId}
-                    onClick={() => handleCaseClick(ca)}
-                    className="dropdown-case-item"
-                    title={ca.title} // Show full title on hover
-                  >
-                    {truncateTitleLonger(ca.title)}
-                  </p>
-                ))}
+              {caseData && caseData.length > 0 ? (
+                caseData
+                  .filter(
+                    (ca) => !filteredCases.some((c) => c.caseId === ca.caseId)
+                  )
+                  .map((ca) => (
+                    <p
+                      key={ca.caseId}
+                      onClick={() => handleCaseClick(ca)}
+                      className="dropdown-case-item"
+                      title={ca.title} // Show full title on hover
+                    >
+                      {truncateTitleLonger(ca.title)}
+                    </p>
+                  ))
+              ) : (
+                <p className="no-more-cases">No cases available</p>
+              )}
             </div>
           )}
         </div>

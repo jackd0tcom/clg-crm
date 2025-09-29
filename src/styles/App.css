@@ -276,11 +276,9 @@ h5 {
 }
 
 /* ProfilePic component */
-.profile-pic-wrapper {
-  height: auto;
-}
 .profile-pic-wrapper img {
-  width: 25px;
+  width: 30px;
+  height: auto;
   border-radius: 50%;
 }
 

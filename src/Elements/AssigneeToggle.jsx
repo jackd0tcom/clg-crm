@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import ProfilePic from "./ProfilePic";
 
 const AssigneeToggle = ({ assignee, handleRemove, Id, isStatic }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -15,7 +16,7 @@ const AssigneeToggle = ({ assignee, handleRemove, Id, isStatic }) => {
           className="fa-solid fa-circle-xmark assignee-toggle-x"
         ></i>
       )}
-      <img className="assignee-toggle-photo" src={assignee.profilePic} alt="" />
+      <ProfilePic src={assignee.profilePic} alt={assignee.firstName} size="small" className="assignee-toggle-photo" />
       {isHovered && (
         <div className="assignee-toggle-name">{assignee.firstName}</div>
       )}

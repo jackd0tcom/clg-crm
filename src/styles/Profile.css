@@ -37,8 +37,8 @@ p {
 }
 .user-info img {
   border-radius: 50%;
-  width: 120px;
-  height: 120px;
+  width: 120px !important;
+  height: 120px !important;
 }
 .logout-button {
   margin-top: 2rem;

@@ -214,6 +214,9 @@
   cursor: pointer;
   transition: background-color 0.2s;
 }
+.recent-item-header .status-icon-wrapper {
+  padding: 0;
+}
 
 .recent-item:hover {
   background-color: var(--root-bg-color-light);

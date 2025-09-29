@@ -63,7 +63,7 @@ const TaskCaseToggle = ({
     <div className="toggle-overlay" ref={dropdownRef}>
       <div className="task-case-toggle-wrapper">
         <div className="task-case-list-wrapper">
-          <p className="task-case-toggle-heading">Cases</p>
+          <p className="task-case-toggle-heading">Assign to case:</p>
           {allCases &&
             allCases.map((current) => {
               return (
@@ -74,7 +74,9 @@ const TaskCaseToggle = ({
                       setIsMovingCase(false);
                     }}
                     className={`task-case-item ${
-                      currentCase && current.caseId === currentCase.caseId ? 'selected' : ''
+                      currentCase && current.caseId === currentCase.caseId
+                        ? "selected"
+                        : ""
                     }`}
                   >
                     {current.title}
