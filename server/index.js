@@ -22,6 +22,7 @@ import {
   corsOptions,
   validationRules,
   handleValidationErrors,
+  syncRateLimit,
 } from "./config/security.js";
 
 import dotenv from "dotenv";
@@ -118,6 +119,9 @@ if (process.env.NODE_ENV === "production") {
       credentials: true,
     })
   );
+
+  // Rate limiting for sync endpoint (even in development)
+  app.use('/api/sync-auth0-user', syncRateLimit);
 
   // Explicitly remove any security headers
   app.use((req, res, next) => {

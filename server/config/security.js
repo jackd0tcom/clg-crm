@@ -34,6 +34,13 @@ export const authRateLimit = createRateLimit(
   { error: 'Too many authentication attempts, please try again later.' }
 );
 
+// More lenient rate limiting for sync endpoints
+export const syncRateLimit = createRateLimit(
+  5 * 60 * 1000, // 5 minutes
+  20, // 20 requests per window
+  { error: 'Too many sync requests, please try again later.' }
+);
+
 // Rate limiting for API endpoints
 export const apiRateLimit = createRateLimit(
   15 * 60 * 1000, // 15 minutes
@@ -211,6 +218,7 @@ export const setupSecurityMiddleware = (app) => {
   
   // Rate limiting
   app.use('/api/auth', authRateLimit);
+  app.use('/api/sync-auth0-user', syncRateLimit); // Specific rate limit for sync endpoint
   app.use('/api', apiRateLimit);
   
   // Body parsing security

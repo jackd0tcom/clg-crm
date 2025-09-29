@@ -396,8 +396,6 @@ export default {
       const oldPhase = currentCase.phase;
       await currentCase.update({ phase });
 
-      console.log(currentCase, phase);
-
       // Create activity log
       await createActivityLog({
         authorId: req.session.user.userId,
