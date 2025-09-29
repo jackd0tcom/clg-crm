@@ -37,14 +37,14 @@ export const authRateLimit = createRateLimit(
 // More lenient rate limiting for sync endpoints
 export const syncRateLimit = createRateLimit(
   5 * 60 * 1000, // 5 minutes
-  20, // 20 requests per window
+  100, // 100 requests per window (increased for normal usage)
   { error: 'Too many sync requests, please try again later.' }
 );
 
 // Rate limiting for API endpoints
 export const apiRateLimit = createRateLimit(
   15 * 60 * 1000, // 15 minutes
-  100 // 100 requests per window
+  1200 // 1000 requests per window (much higher for normal usage)
 );
 
 // CORS configuration
