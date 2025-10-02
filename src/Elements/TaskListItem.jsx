@@ -19,7 +19,9 @@ const TaskListItem = ({ task, openTaskView }) => {
         noBg={true}
       />
       <p className="task-list-item-title">{task.title}</p>
-      <p className="task-list-item-date">{formatDateNoTime(task.dueDate)}</p>
+      <p className="task-list-item-date">
+        {task.dueDate ? formatDateNoTime(task.dueDate) : ""}
+      </p>
     </div>
   );
 };

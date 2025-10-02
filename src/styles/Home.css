@@ -276,9 +276,15 @@
   height: 85%;
   scrollbar-width: thin;
 }
+.updates-widget > div > div > div.notification-item-span {
+  grid-template-columns: repeat(2, 15vw);
+}
 
 .updates-widget > div > div > div.notification-item-span p {
   max-width: 250px;
+}
+.updates-widget .notification-task-wrapper p {
+  max-width: 150px !important;
 }
 
 @media screen and (max-width: 1200px) {

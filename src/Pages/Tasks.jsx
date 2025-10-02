@@ -107,7 +107,7 @@ const Tasks = ({ openTaskView, refreshKey }) => {
         setUpcoming((prev) => {
           return [...prev, task];
         });
-      } else if (findTimeDifference(task.dueDate)[0] === "0") {
+      } else if (findTimeDifference(task.dueDate)[0] === "0" || !task.dueDate) {
         setDueToday((prev) => {
           return [...prev, task];
         });

@@ -114,11 +114,20 @@ export default {
                   { taskId: { [Op.in]: assignedTaskIds } },
                 ],
               },
-              // Due date must be today
+              // Due date must be today OR no due date
               {
-                dueDate: {
-                  [Op.between]: [startOfDay, endOfDay],
-                },
+                [Op.or]: [
+                  {
+                    dueDate: {
+                      [Op.between]: [startOfDay, endOfDay],
+                    },
+                  },
+                  {
+                    dueDate: {
+                      [Op.is]: null,
+                    },
+                  },
+                ],
               },
             ],
           },
