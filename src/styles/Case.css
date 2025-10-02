@@ -121,7 +121,9 @@
 }
 .case-card-task-list {
   height: 100%;
-  overflow: scroll;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  scrollbar-width: thin;
   display: flex;
   flex-direction: column;
   border-top: 1px solid var(--light-border);

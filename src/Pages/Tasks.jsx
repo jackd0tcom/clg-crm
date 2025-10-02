@@ -7,16 +7,20 @@ import { useParams } from "react-router";
 import TaskFilter from "../Elements/TaskFilter";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useNavigate } from "react-router";
+import { useSelector } from "react-redux";
 
 const Tasks = ({ openTaskView, refreshKey }) => {
+  const user = useSelector((state) => state.user);
   const { isAuthenticated, isLoading } = useAuth0();
-  const [tasks, setTasks] = useState();
-  const [completedTasks, setCompletedTasks] = useState();
-  const [notCompletedTasks, setNotCompletedTasks] = useState();
+  const [tasks, setTasks] = useState([]);
+  const [originalTasks, setOriginalTasks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [filtering, setFiltering] = useState(true);
   const [dueToday, setDueToday] = useState([]);
   const [overdue, setOverdue] = useState([]);
   const [upcoming, setUpcoming] = useState([]);
+  const [showCompleted, setShowCompleted] = useState(false);
+  const [showAssigned, setShowAssigned] = useState(true);
   const columns = "0.1fr 3fr 2fr 2fr 1fr";
   const headings = ["", "Title", "Case", "Assignees", "Due Date"];
   const caseId = useParams();
@@ -25,15 +29,11 @@ const Tasks = ({ openTaskView, refreshKey }) => {
   const fetchTasks = async () => {
     try {
       const res = await axios.get("/api/getAllTasks");
-      const nonCompleted = res.data.filter((ta) => ta.status !== "completed");
-      const completed = res.data.filter((ta) => ta.status === "completed");
-      setNotCompletedTasks(nonCompleted);
-      setCompletedTasks(completed);
-      setTasks(nonCompleted);
-      setLoading(false);
+      setOriginalTasks(res.data);
+      // setTasks(res.data.filter((task) => task.status !== "completed"));
     } catch (error) {
-      console.log(error);
       setLoading(false);
+      console.log(error);
     }
   };
 
@@ -46,6 +46,36 @@ const Tasks = ({ openTaskView, refreshKey }) => {
       nav("/");
     }
   }, []);
+
+  // Handles tasks array filtering
+  useEffect(() => {
+    const nonCompletedTasks = originalTasks.filter(
+      (task) => task.status !== "completed"
+    );
+    const completedTasks = originalTasks.filter(
+      (task) => task.status === "completed"
+    );
+
+    if (!showCompleted) {
+      showAssigned
+        ? setTasks(
+            nonCompletedTasks.filter((task) =>
+              task.assignees.some((nee) => nee.userId === user.userId)
+            )
+          )
+        : setTasks(nonCompletedTasks);
+    } else if (showCompleted) {
+      showAssigned
+        ? setTasks(
+            completedTasks.filter((task) =>
+              task.assignees.some((nee) => nee.userId === user.userId)
+            )
+          )
+        : setTasks(completedTasks);
+    }
+
+    setLoading(false);
+  }, [originalTasks, showCompleted, showAssigned]);
 
   // Refetch tasks when refreshKey change
   useEffect(() => {
@@ -98,9 +128,13 @@ const Tasks = ({ openTaskView, refreshKey }) => {
         <TaskFilter
           tasks={tasks}
           setTasks={setTasks}
-          completedTasks={completedTasks}
-          notCompletedTasks={notCompletedTasks}
           paramCase={caseId}
+          filtering={filtering}
+          setFiltering={setFiltering}
+          showCompleted={showCompleted}
+          setShowCompleted={setShowCompleted}
+          showAssigned={showAssigned}
+          setShowAssigned={setShowAssigned}
         />
         <button className="new-task-button" onClick={() => openTaskView("new")}>
           New Task
@@ -114,30 +148,43 @@ const Tasks = ({ openTaskView, refreshKey }) => {
         </div>
       </div>
       <div className="task-page-task-list-wrapper">
-        <TaskList
-          openTaskView={openTaskView}
-          tasks={overdue}
-          headings={["Status", "Title", "Case", "Assignees", "Due Date"]}
-          columns={columns}
-          title={"Overdue"}
-          refreshTasks={fetchTasks}
-        />
-        <TaskList
-          openTaskView={openTaskView}
-          tasks={dueToday}
-          headings={["Status", "Title", "Case", "Assignees", "Due Date"]}
-          columns={columns}
-          title={"Due Today"}
-          refreshTasks={fetchTasks}
-        />
-        <TaskList
-          openTaskView={openTaskView}
-          tasks={upcoming}
-          headings={["Status", "Title", "Case", "Assignees", "Due Date"]}
-          columns={columns}
-          title={"Upcoming"}
-          refreshTasks={fetchTasks}
-        />
+        {showCompleted ? (
+          <TaskList
+            openTaskView={openTaskView}
+            tasks={tasks}
+            headings={["Status", "Title", "Case", "Assignees", "Due Date"]}
+            columns={columns}
+            title={"Completed"}
+            refreshTasks={fetchTasks}
+          />
+        ) : (
+          <>
+            <TaskList
+              openTaskView={openTaskView}
+              tasks={overdue}
+              headings={["Status", "Title", "Case", "Assignees", "Due Date"]}
+              columns={columns}
+              title={"Overdue"}
+              refreshTasks={fetchTasks}
+            />
+            <TaskList
+              openTaskView={openTaskView}
+              tasks={dueToday}
+              headings={["Status", "Title", "Case", "Assignees", "Due Date"]}
+              columns={columns}
+              title={"Due Today"}
+              refreshTasks={fetchTasks}
+            />
+            <TaskList
+              openTaskView={openTaskView}
+              tasks={upcoming}
+              headings={["Status", "Title", "Case", "Assignees", "Due Date"]}
+              columns={columns}
+              title={"Upcoming"}
+              refreshTasks={fetchTasks}
+            />
+          </>
+        )}
       </div>
     </div>
   );

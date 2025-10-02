@@ -1,35 +1,25 @@
 import { useState, useRef, useEffect } from "react";
+import { truncateTitle, truncateTitleLonger } from "../helpers/helperFunctions";
 import axios from "axios";
 
 const TaskFilter = ({
   tasks,
   setTasks,
   paramCase,
-  completedTasks,
-  notCompletedTasks,
+  showCompleted,
+  setShowCompleted,
+  showAssigned,
+  setShowAssigned,
 }) => {
   const [byCase, setByCase] = useState(false);
   const [caseData, setCaseData] = useState([]);
   const [filteredCases, setFilteredCases] = useState([]);
   const [originalTasks, setOriginalTasks] = useState([]);
-  const [showCompleted, setShowCompleted] = useState(true);
   const dropdownRef = useRef(null);
   const hasAppliedUrlFilter = useRef(false);
   const isUpdatingTasksInternally = useRef(false);
 
-  const truncateTitle = (title) => {
-    if (title && title.length > 22) {
-      return title.substring(0, 22) + "...";
-    }
-    return title;
-  };
-  const truncateTitleLonger = (title) => {
-    if (title && title.length > 30) {
-      return title.substring(0, 30) + "...";
-    }
-    return title;
-  };
-
+  // Handles blur
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -46,27 +36,30 @@ const TaskFilter = ({
     };
   }, [byCase]);
 
-  const fetchCases = async () => {
-    try {
-      await axios.get("/api/getCases").then((res) => {
-        setCaseData(res.data);
-        if (paramCase !== 0) {
-          const currentCase = res.data.find(
-            (data) => data.caseId === paramCase
-          );
-          if (currentCase) {
-            handleCaseClick(currentCase);
-          }
-        }
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // fetches cases for the case filter
   useEffect(() => {
+    const fetchCases = async () => {
+      try {
+        await axios.get("/api/getCases").then((res) => {
+          setCaseData(res.data);
+          console.log("cases fetched");
+          if (paramCase !== 0) {
+            const currentCase = res.data.find(
+              (data) => data.caseId === paramCase
+            );
+            if (currentCase) {
+              handleCaseClick(currentCase);
+            }
+          }
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    };
     fetchCases();
   }, []);
 
+  // Sets default case filter / handles active case filters
   useEffect(() => {
     // Only filter if we have original tasks to work with
     if (originalTasks.length === 0) {
@@ -103,6 +96,7 @@ const TaskFilter = ({
     isUpdatingTasksInternally.current = false;
   }, [tasks]);
 
+  // Case Param Filtering
   useEffect(() => {
     if (
       paramCase &&
@@ -125,16 +119,7 @@ const TaskFilter = ({
     }
   }, [paramCase?.caseId, originalTasks.length]);
 
-  const handleCompleted = () => {
-    if (showCompleted) {
-      isUpdatingTasksInternally.current = true;
-      setTasks(completedTasks);
-    } else {
-      isUpdatingTasksInternally.current = true;
-      setTasks(notCompletedTasks);
-    }
-  };
-
+  // Handles toggling a case
   const handleCaseClick = (ca) => {
     setFilteredCases((prevList) => {
       const isAlreadyFiltered = prevList.some((c) => c.caseId === ca.caseId);
@@ -156,25 +141,38 @@ const TaskFilter = ({
       <div className="filter-header">
         <button
           onClick={() => {
-            if (showCompleted) {
-              setShowCompleted(false);
-            } else setShowCompleted(true);
-            handleCompleted();
+            if (showAssigned) {
+              setShowAssigned(false);
+            } else setShowAssigned(true);
           }}
           className={
-            showCompleted
+            !showAssigned
               ? "tasks-case-filter-button"
               : "tasks-case-filter-button-active"
           }
         >
-          Completed {!showCompleted && <i className="fa-solid fa-xmark"></i>}
+          Assigned to me {showAssigned && <i className="fa-solid fa-xmark"></i>}
+        </button>
+        <button
+          onClick={() => {
+            if (showCompleted) {
+              setShowCompleted(false);
+            } else setShowCompleted(true);
+          }}
+          className={
+            !showCompleted
+              ? "tasks-case-filter-button"
+              : "tasks-case-filter-button-active"
+          }
+        >
+          Completed {showCompleted && <i className="fa-solid fa-xmark"></i>}
         </button>
         <div className="tasks-case-filter-wrapper">
           <button
             className="tasks-case-filter-button"
             onClick={() => setByCase(true)}
           >
-            Filter By Case
+            Filter by case
           </button>
 
           {byCase && (

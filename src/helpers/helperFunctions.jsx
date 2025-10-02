@@ -184,3 +184,16 @@ export function formatPracticeAreas(arr) {
   );
 }
 export function formatYourself(string) {}
+
+export const truncateTitle = (title) => {
+  if (title && title.length > 22) {
+    return title.substring(0, 22) + "...";
+  }
+  return title;
+};
+export const truncateTitleLonger = (title) => {
+  if (title && title.length > 30) {
+    return title.substring(0, 30) + "...";
+  }
+  return title;
+};
