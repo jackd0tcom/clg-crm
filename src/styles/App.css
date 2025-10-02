@@ -450,7 +450,7 @@ div.date-picker-wrapper > div > div > input[type="text"] {
   z-index: 999;
   max-width: 150px;
   overflow: scroll;
-  max-height: 225px;
+  max-height: 30vh;
 }
 .assignee-add-toggle-wrapper p:nth-child(1) {
   margin: 0;

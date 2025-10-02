@@ -183,3 +183,4 @@ export function formatPracticeAreas(arr) {
     <h4>No Practice Area Added</h4>
   );
 }
+export function formatYourself(string) {}

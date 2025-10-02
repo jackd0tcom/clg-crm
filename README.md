@@ -1,6 +1,6 @@
 # CLG CRM
 
-An internal task and case management app for Clause Law Group
+An internal task and case management app for Clause Law Group.
 
 ## Technologies
 
@@ -14,4 +14,9 @@ Built with:
 
 To install and start dev environment, run:
 
-`npm start`
+`npm i`
+`npm run dev`
+
+## Changelog
+
+View CHANGELOG.md

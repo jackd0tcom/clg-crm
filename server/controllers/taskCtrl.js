@@ -224,6 +224,12 @@ export default {
           details: "created this task",
         });
 
+        // Create task owner as assignee
+        await TaskAssignees.create({
+          taskId: newTask.taskId,
+          userId,
+        });
+
         // Sync with Google Calendar
         await syncTaskWithCalendar(newTask, userId, "create");
 
@@ -434,12 +440,11 @@ export default {
           where: { taskId },
         });
         const assignedUserIds = taskAssignees.map((ca) => ca.dataValues.userId);
-        const excludedUserIds = [...assignedUserIds, taskExists.ownerId];
 
         const nonAssignees = await User.findAll({
           where: {
             userId: {
-              [Op.notIn]: excludedUserIds,
+              [Op.notIn]: assignedUserIds,
             },
             isAllowed: true,
           },

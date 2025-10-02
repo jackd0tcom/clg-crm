@@ -1,9 +1,11 @@
 import ActivityLogItem from "./ActivityLogItem";
 import { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 
 const ActivityLog = ({ data }) => {
   const [showAll, setShowAll] = useState(true);
   const [shortList, setShortList] = useState();
+  const user = useSelector((state) => state.user);
 
   useEffect(() => {
     if (data.length > 8) {
@@ -18,14 +20,20 @@ const ActivityLog = ({ data }) => {
       <div className="activity-log-items">
         {!shortList
           ? data.map((act) => {
-              return <ActivityLogItem key={act.activityId} data={act} />;
+              return (
+                <ActivityLogItem user={user} key={act.activityId} data={act} />
+              );
             })
           : showAll
           ? data.map((act) => {
-              return <ActivityLogItem key={act.activityId} data={act} />;
+              return (
+                <ActivityLogItem user={user} key={act.activityId} data={act} />
+              );
             })
           : shortList.map((act) => {
-              return <ActivityLogItem key={act.activityId} data={act} />;
+              return (
+                <ActivityLogItem user={user} key={act.activityId} data={act} />
+              );
             })}
 
         <div

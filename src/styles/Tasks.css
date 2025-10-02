@@ -181,7 +181,8 @@
   cursor: pointer;
   padding: 5px 15px;
   max-height: 18vh;
-  overflow: scroll;
+  overflow-x: hidden;
+  scrollbar-width: thin;
 }
 .task-list-item {
   display: grid;
@@ -216,9 +217,8 @@
   height: 30px;
 }
 
-.tasks-list-row > div > div > div > img {
+.task-list-assignee-wrapper img {
   width: 25px !important;
-  height: 25px !important;
 }
 .new-task-toggle-wrapper {
   font-size: 1rem;

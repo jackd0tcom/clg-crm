@@ -4,6 +4,7 @@ import StatusIcon from "./StatusIcon";
 import { useState } from "react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
+import { useSelector } from "react-redux";
 
 const NotificationItem = ({
   data,
@@ -14,6 +15,18 @@ const NotificationItem = ({
   const [hover, setHover] = useState(false);
   const nav = useNavigate();
   const [isTask, setIsTask] = useState(false);
+  const [message, setMessage] = useState(data.message);
+  const user = useSelector((state) => state.user);
+  useEffect(() => {
+    const formatMessage = () => {
+      let name = user.firstName + " " + user.lastName;
+
+      if (message.includes(name + " ")) {
+        setMessage(message.replace(name, "You"));
+      }
+    };
+    formatMessage();
+  }, []);
 
   useEffect(() => {
     if (data.objectType === "task") {
@@ -56,10 +69,10 @@ const NotificationItem = ({
           )}
           {!isTask && <i className="fa-solid fa-briefcase case-icon"></i>}
           <p className="notification-item-title">
-            {!isTask ? (data.case?.title || "") : (data.task?.title || "")}
+            {!isTask ? data.case?.title || "" : data.task?.title || ""}
           </p>
         </div>
-        <p>{data.message}</p>
+        <p>{message}</p>
       </div>
       <div className="notification-item-button-wrapper">
         {!data.isCleared && hover ? (
