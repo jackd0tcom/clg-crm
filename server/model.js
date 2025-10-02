@@ -599,7 +599,7 @@ User.belongsToMany(ActivityLog, {
 
 if (process.argv[1] === url.fileURLToPath(import.meta.url)) {
   console.log("Syncing database...");
-  await db.sync({ force: true });
+  await db.sync({ alter: true });
   await db.close();
   console.log("Finished syncing database!");
 }

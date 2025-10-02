@@ -5,36 +5,63 @@ import { User, Task, TaskAssignees } from "../model.js";
 async function syncExistingTasksToCalendar(userId, calendarId) {
   try {
     console.log(`🔄 Syncing existing tasks to calendar for user ${userId}`);
-    
+
     // Get all tasks owned by the user
     const ownedTasks = await Task.findAll({
       where: { ownerId: userId },
-      attributes: ['taskId', 'title', 'dueDate', 'notes', 'priority', 'status', 'googleEventId']
+      attributes: [
+        "taskId",
+        "title",
+        "dueDate",
+        "notes",
+        "priority",
+        "status",
+        "googleEventId",
+      ],
     });
 
     // Get all tasks assigned to the user using the proper association
     const assignedTaskIds = await TaskAssignees.findAll({
       where: { userId },
-      attributes: ['taskId']
+      attributes: ["taskId"],
     });
-    
-    const assignedTasks = assignedTaskIds.length > 0 ? await Task.findAll({
-      where: { 
-        taskId: assignedTaskIds.map(assignment => assignment.taskId)
-      },
-      attributes: ['taskId', 'title', 'dueDate', 'notes', 'priority', 'status', 'googleEventId']
-    }) : [];
+
+    const assignedTasks =
+      assignedTaskIds.length > 0
+        ? await Task.findAll({
+            where: {
+              taskId: assignedTaskIds.map((assignment) => assignment.taskId),
+            },
+            attributes: [
+              "taskId",
+              "title",
+              "dueDate",
+              "notes",
+              "priority",
+              "status",
+              "googleEventId",
+            ],
+          })
+        : [];
 
     // Combine owned and assigned tasks, removing duplicates
     const allUserTasks = [
       ...ownedTasks,
-      ...assignedTasks.filter(task => !ownedTasks.some(owned => owned.taskId === task.taskId))
+      ...assignedTasks.filter(
+        (task) => !ownedTasks.some((owned) => owned.taskId === task.taskId)
+      ),
     ];
 
-    console.log(`📋 Found ${allUserTasks.length} tasks to sync for user ${userId}`);
+    console.log(
+      `📋 Found ${allUserTasks.length} tasks to sync for user ${userId}`
+    );
     console.log(`   - Owned tasks: ${ownedTasks.length}`);
     console.log(`   - Assigned tasks: ${assignedTasks.length}`);
-    console.log(`   - Tasks already synced: ${allUserTasks.filter(t => t.googleEventId).length}`);
+    console.log(
+      `   - Tasks already synced: ${
+        allUserTasks.filter((t) => t.googleEventId).length
+      }`
+    );
 
     let syncedCount = 0;
     let errorCount = 0;
@@ -50,23 +77,29 @@ async function syncExistingTasksToCalendar(userId, calendarId) {
         }
 
         // Create new event in the calendar
-        const eventResponse = await googleCalendarService.createEventFromTask(task, calendarId);
-        
+        const eventResponse = await googleCalendarService.createEventFromTask(
+          task,
+          calendarId
+        );
+
         // Update task with new event ID
         await task.update({ googleEventId: eventResponse.id });
-        
+
         console.log(`✅ Synced task "${task.title}" to calendar`);
         syncedCount++;
-
       } catch (taskError) {
-        console.error(`❌ Failed to sync task "${task.title}":`, taskError.message);
+        console.error(
+          `❌ Failed to sync task "${task.title}":`,
+          taskError.message
+        );
         errorCount++;
       }
     }
 
-    console.log(`🎉 Initial sync complete: ${syncedCount} tasks synced, ${skippedCount} already synced, ${errorCount} errors`);
+    console.log(
+      `🎉 Initial sync complete: ${syncedCount} tasks synced, ${skippedCount} already synced, ${errorCount} errors`
+    );
     return { syncedCount, errorCount, skippedCount };
-
   } catch (error) {
     console.error("❌ Error during initial task sync:", error);
     throw error;
@@ -74,43 +107,50 @@ async function syncExistingTasksToCalendar(userId, calendarId) {
 }
 
 // Helper function to migrate user's tasks to a new calendar
-async function migrateUserTasksToNewCalendar(userId, oldCalendarId, newCalendarId) {
+async function migrateUserTasksToNewCalendar(
+  userId,
+  oldCalendarId,
+  newCalendarId
+) {
   try {
-    // Get all tasks owned by the user
-    const ownedTasks = await Task.findAll({
-      where: { ownerId: userId },
-      attributes: ['taskId', 'title', 'dueDate', 'notes', 'priority', 'status', 'googleEventId']
-    });
-
-    // Get all tasks assigned to the user using the proper association
+    // Get all tasks assigned to the user (regardless of ownership)
     const assignedTaskIds = await TaskAssignees.findAll({
       where: { userId },
-      attributes: ['taskId']
+      attributes: ["taskId"],
     });
-    
-    const assignedTasks = assignedTaskIds.length > 0 ? await Task.findAll({
-      where: { 
-        taskId: assignedTaskIds.map(assignment => assignment.taskId)
-      },
-      attributes: ['taskId', 'title', 'dueDate', 'notes', 'priority', 'status', 'googleEventId']
-    }) : [];
 
-    // Combine owned and assigned tasks, removing duplicates
-    const allUserTasks = [
-      ...ownedTasks,
-      ...assignedTasks.filter(task => !ownedTasks.some(owned => owned.taskId === task.taskId))
-    ];
+    const assignedTasks =
+      assignedTaskIds.length > 0
+        ? await Task.findAll({
+            where: {
+              taskId: assignedTaskIds.map((assignment) => assignment.taskId),
+            },
+            attributes: [
+              "taskId",
+              "title",
+              "dueDate",
+              "notes",
+              "priority",
+              "status",
+              "googleEventId",
+            ],
+          })
+        : [];
 
-    console.log(`📋 Found ${allUserTasks.length} tasks to migrate for user ${userId}`);
-    console.log(`   - Owned tasks: ${ownedTasks.length}`);
-    console.log(`   - Assigned tasks: ${assignedTasks.length}`);
-    console.log(`   - Tasks with calendar events: ${allUserTasks.filter(t => t.googleEventId).length}`);
+    console.log(
+      `📋 Found ${assignedTasks.length} assigned tasks to migrate for user ${userId}`
+    );
+    console.log(
+      `   - Tasks with calendar events: ${
+        assignedTasks.filter((t) => t.googleEventId).length
+      }`
+    );
 
     let migratedCount = 0;
     let errorCount = 0;
     let skippedCount = 0;
 
-    for (const task of allUserTasks) {
+    for (const task of assignedTasks) {
       try {
         // Skip tasks without Google Calendar events
         if (!task.googleEventId) {
@@ -122,60 +162,92 @@ async function migrateUserTasksToNewCalendar(userId, oldCalendarId, newCalendarI
         // Delete the old event from the old calendar
         if (task.googleEventId) {
           let deletedFromOldCalendar = false;
-          
+
           // Try to delete from the old preferred calendar first
           if (oldCalendarId) {
-            console.log(`🗑️ Attempting to delete event ${task.googleEventId} from calendar ${oldCalendarId} for task "${task.title}"`);
+            console.log(
+              `🗑️ Attempting to delete event ${task.googleEventId} from calendar ${oldCalendarId} for task "${task.title}"`
+            );
             try {
-              await googleCalendarService.deleteEvent(task.googleEventId, oldCalendarId);
-              console.log(`✅ Successfully deleted old event for task "${task.title}" from calendar ${oldCalendarId}`);
+              await googleCalendarService.deleteEvent(
+                task.googleEventId,
+                oldCalendarId
+              );
+              console.log(
+                `✅ Successfully deleted old event for task "${task.title}" from calendar ${oldCalendarId}`
+              );
               deletedFromOldCalendar = true;
             } catch (deleteError) {
               // Handle different types of deletion errors
               if (deleteError.code === 404) {
-                console.log(`ℹ️ Event for task "${task.title}" not found in old calendar ${oldCalendarId}`);
+                console.log(
+                  `ℹ️ Event for task "${task.title}" not found in old calendar ${oldCalendarId}`
+                );
               } else {
-                console.warn(`⚠️ Failed to delete old event for task "${task.title}" from calendar ${oldCalendarId}:`, deleteError.message);
+                console.warn(
+                  `⚠️ Failed to delete old event for task "${task.title}" from calendar ${oldCalendarId}:`,
+                  deleteError.message
+                );
               }
             }
           }
-          
+
           // If deletion from old calendar failed and we have an oldCalendarId, try deleting from primary calendar as fallback
           if (!deletedFromOldCalendar && oldCalendarId) {
-            console.log(`🔄 Trying to delete from primary calendar as fallback for task "${task.title}"`);
+            console.log(
+              `🔄 Trying to delete from primary calendar as fallback for task "${task.title}"`
+            );
             try {
-              await googleCalendarService.deleteEvent(task.googleEventId, 'primary');
-              console.log(`✅ Successfully deleted event from primary calendar for task "${task.title}"`);
+              await googleCalendarService.deleteEvent(
+                task.googleEventId,
+                "primary"
+              );
+              console.log(
+                `✅ Successfully deleted event from primary calendar for task "${task.title}"`
+              );
             } catch (primaryDeleteError) {
               if (primaryDeleteError.code === 404) {
-                console.log(`ℹ️ Event for task "${task.title}" not found in primary calendar either`);
+                console.log(
+                  `ℹ️ Event for task "${task.title}" not found in primary calendar either`
+                );
               } else {
-                console.warn(`⚠️ Failed to delete event from primary calendar for task "${task.title}":`, primaryDeleteError.message);
+                console.warn(
+                  `⚠️ Failed to delete event from primary calendar for task "${task.title}":`,
+                  primaryDeleteError.message
+                );
               }
             }
           }
         } else {
-          console.log(`ℹ️ Skipping deletion for task "${task.title}" - no googleEventId`);
+          console.log(
+            `ℹ️ Skipping deletion for task "${task.title}" - no googleEventId`
+          );
         }
 
         // Create new event in the new calendar
-        const newEventResponse = await googleCalendarService.createEventFromTask(task, newCalendarId);
-        
+        const newEventResponse =
+          await googleCalendarService.createEventFromTask(task, newCalendarId);
+
         // Update task with new event ID (extract ID from response)
         await task.update({ googleEventId: newEventResponse.id });
-        
-        console.log(`✅ Migrated task "${task.title}" to calendar ${newCalendarId}`);
-        migratedCount++;
 
+        console.log(
+          `✅ Migrated task "${task.title}" to calendar ${newCalendarId}`
+        );
+        migratedCount++;
       } catch (taskError) {
-        console.error(`❌ Failed to migrate task "${task.title}":`, taskError.message);
+        console.error(
+          `❌ Failed to migrate task "${task.title}":`,
+          taskError.message
+        );
         errorCount++;
       }
     }
 
-    console.log(`🎉 Migration complete: ${migratedCount} tasks migrated, ${skippedCount} skipped, ${errorCount} errors`);
+    console.log(
+      `🎉 Migration complete: ${migratedCount} tasks migrated, ${skippedCount} skipped, ${errorCount} errors`
+    );
     return { migratedCount, errorCount, skippedCount };
-
   } catch (error) {
     console.error("❌ Error during task migration:", error);
     throw error;
@@ -195,18 +267,17 @@ export default {
       // For now, we'll use the existing Google OAuth flow
       // The user needs to go through the Google OAuth process first
       const authUrl = googleCalendarService.getAuthUrl();
-      
-      res.json({ 
-        success: true, 
-        message: "Please complete Google OAuth flow",
-        authUrl: authUrl
-      });
 
+      res.json({
+        success: true,
+        message: "Please complete Google OAuth flow",
+        authUrl: authUrl,
+      });
     } catch (error) {
       console.error("❌ Calendar setup error:", error);
-      res.status(500).json({ 
-        success: false, 
-        message: error.message || "Failed to set up calendar"
+      res.status(500).json({
+        success: false,
+        message: error.message || "Failed to set up calendar",
       });
     }
   },
@@ -225,7 +296,7 @@ export default {
   handleCallback: async (req, res) => {
     try {
       const { code, userId } = req.body;
-      
+
       // Use userId from request body (popup) or session (direct access)
       const targetUserId = userId || req.session.user?.userId;
 
@@ -252,13 +323,16 @@ export default {
 
       // Get user's preferred calendar (or default to primary)
       const user = await User.findByPk(targetUserId);
-      const targetCalendarId = user.preferredCalendarId || 'primary';
+      const targetCalendarId = user.preferredCalendarId || "primary";
 
       // Sync existing tasks to Google Calendar
       let syncResult = null;
       try {
         console.log(`🔄 Starting initial sync for user ${targetUserId}`);
-        syncResult = await syncExistingTasksToCalendar(targetUserId, targetCalendarId);
+        syncResult = await syncExistingTasksToCalendar(
+          targetUserId,
+          targetCalendarId
+        );
         console.log(`✅ Initial sync completed:`, syncResult);
       } catch (syncError) {
         console.error("❌ Initial sync failed:", syncError);
@@ -266,9 +340,9 @@ export default {
         syncResult = { error: syncError.message };
       }
 
-      res.json({ 
+      res.json({
         message: "Google Calendar connected successfully",
-        sync: syncResult
+        sync: syncResult,
       });
     } catch (error) {
       console.error("Error handling OAuth callback:", error);
@@ -296,12 +370,12 @@ export default {
   getCalendarEvents: async (req, res) => {
     try {
       const { timeMin, timeMax } = req.query;
-      
+
       // Check if user session exists
       if (!req.session || !req.session.user) {
         return res.status(401).json({ message: "User not authenticated" });
       }
-      
+
       const { userId } = req.session.user;
 
       if (!userId) {
@@ -315,12 +389,16 @@ export default {
         console.log(`❌ User ${userId} not found in database`);
         return res.status(404).json({ message: "User not found" });
       }
-      
-      console.log(`👤 User found: ${user.username || user.email || 'Unknown'}`);
-      console.log(`🔑 Google tokens: accessToken=${!!user.googleAccessToken}, refreshToken=${!!user.googleRefreshToken}`);
-      
+
+      console.log(`👤 User found: ${user.username || user.email || "Unknown"}`);
+      console.log(
+        `🔑 Google tokens: accessToken=${!!user.googleAccessToken}, refreshToken=${!!user.googleRefreshToken}`
+      );
+
       if (!user.googleAccessToken) {
-        console.log(`❌ User ${userId} does not have Google Calendar connected`);
+        console.log(
+          `❌ User ${userId} does not have Google Calendar connected`
+        );
         return res
           .status(400)
           .json({ message: "Google Calendar not connected" });
@@ -331,10 +409,10 @@ export default {
         user.googleAccessToken,
         user.googleRefreshToken
       );
-      
+
       if (!initSuccess) {
-        return res.status(500).json({ 
-          message: "Failed to initialize Google Calendar service" 
+        return res.status(500).json({
+          message: "Failed to initialize Google Calendar service",
         });
       }
 
@@ -344,7 +422,9 @@ export default {
         console.log("💾 Updating user tokens in database");
         await user.update({
           googleAccessToken: refreshedTokens.access_token,
-          googleTokenExpiry: refreshedTokens.expiry_date ? new Date(refreshedTokens.expiry_date) : null
+          googleTokenExpiry: refreshedTokens.expiry_date
+            ? new Date(refreshedTokens.expiry_date)
+            : null,
         });
       }
 
@@ -352,22 +432,34 @@ export default {
       let targetCalendarId = null;
       if (user.preferredCalendarId) {
         targetCalendarId = user.preferredCalendarId;
-        console.log(`📅 Fetching events from preferred calendar: ${targetCalendarId}`);
+        console.log(
+          `📅 Fetching events from preferred calendar: ${targetCalendarId}`
+        );
       } else {
         targetCalendarId = await googleCalendarService.getPrimaryCalendar();
-        console.log(`📅 Fetching events from primary calendar: ${targetCalendarId}`);
+        console.log(
+          `📅 Fetching events from primary calendar: ${targetCalendarId}`
+        );
       }
 
-      console.log(`📅 Fetching events with timeMin: ${timeMin || 'none'}, timeMax: ${timeMax || 'none'}`);
-      const events = await googleCalendarService.getEvents(timeMin, timeMax, targetCalendarId);
+      console.log(
+        `📅 Fetching events with timeMin: ${timeMin || "none"}, timeMax: ${
+          timeMax || "none"
+        }`
+      );
+      const events = await googleCalendarService.getEvents(
+        timeMin,
+        timeMax,
+        targetCalendarId
+      );
 
       console.log(`✅ Found ${events.length} events`);
       res.json({ events });
     } catch (error) {
       console.error("❌ Error fetching events:", error);
-      res.status(500).json({ 
+      res.status(500).json({
         message: "Error fetching events",
-        error: error.message 
+        error: error.message,
       });
     }
   },
@@ -396,9 +488,9 @@ export default {
 
       const googleEvent = await googleCalendarService.createEventFromTask(task);
 
-      res.json({ 
+      res.json({
         message: "Calendar event created successfully",
-        googleEventId: googleEvent.id 
+        googleEventId: googleEvent.id,
       });
     } catch (error) {
       console.error("Error creating calendar event:", error);
@@ -428,11 +520,14 @@ export default {
         user.googleRefreshToken
       );
 
-      const googleEvent = await googleCalendarService.updateEventFromTask(task, googleEventId);
+      const googleEvent = await googleCalendarService.updateEventFromTask(
+        task,
+        googleEventId
+      );
 
-      res.json({ 
+      res.json({
         message: "Calendar event updated successfully",
-        googleEvent 
+        googleEvent,
       });
     } catch (error) {
       console.error("Error updating calendar event:", error);
@@ -494,10 +589,10 @@ export default {
 
       const calendarId = await googleCalendarService.getPrimaryCalendar();
 
-      res.json({ 
+      res.json({
         message: "App calendar ready",
         calendarId: calendarId,
-        calendarName: "CLG CMS Tasks"
+        calendarName: "CLG CMS Tasks",
       });
     } catch (error) {
       console.error("Error managing app calendar:", error);
@@ -526,13 +621,14 @@ export default {
         user.googleRefreshToken
       );
 
-      const calendars = await googleCalendarService.calendar.calendarList.list();
-      const calendarList = calendars.data.items.map(cal => ({
+      const calendars =
+        await googleCalendarService.calendar.calendarList.list();
+      const calendarList = calendars.data.items.map((cal) => ({
         id: cal.id,
         name: cal.summary,
-        description: cal.description || '',
+        description: cal.description || "",
         primary: cal.primary || false,
-        accessRole: cal.accessRole
+        accessRole: cal.accessRole,
       }));
 
       res.json({ calendars: calendarList });
@@ -556,8 +652,8 @@ export default {
         return res.status(404).json({ message: "User not found" });
       }
 
-      res.json({ 
-        preferredCalendarId: user.preferredCalendarId || null
+      res.json({
+        preferredCalendarId: user.preferredCalendarId || null,
       });
     } catch (error) {
       console.error("Error getting preferred calendar:", error);
@@ -583,9 +679,9 @@ export default {
       }
 
       const oldCalendarId = user.preferredCalendarId;
-      
+
       console.log(`🔄 Calendar migration: ${oldCalendarId} → ${calendarId}`);
-      
+
       // Update user's preferred calendar
       await user.update({ preferredCalendarId: calendarId });
 
@@ -598,9 +694,15 @@ export default {
       // Migrate existing tasks if calendar changed
       let migrationResult = null;
       if (oldCalendarId && oldCalendarId !== calendarId) {
-        console.log(`🔄 Migrating tasks from ${oldCalendarId} to ${calendarId}`);
+        console.log(
+          `🔄 Migrating tasks from ${oldCalendarId} to ${calendarId}`
+        );
         try {
-          migrationResult = await migrateUserTasksToNewCalendar(userId, oldCalendarId, calendarId);
+          migrationResult = await migrateUserTasksToNewCalendar(
+            userId,
+            oldCalendarId,
+            calendarId
+          );
         } catch (migrationError) {
           console.error("❌ Migration failed:", migrationError);
           // Don't fail the entire operation if migration fails
@@ -608,10 +710,10 @@ export default {
         }
       }
 
-      res.json({ 
+      res.json({
         message: "Preferred calendar updated successfully",
         preferredCalendarId: calendarId,
-        migration: migrationResult
+        migration: migrationResult,
       });
     } catch (error) {
       console.error("Error updating preferred calendar:", error);
@@ -641,26 +743,30 @@ export default {
       );
 
       // Get primary calendar info
-      const primaryCalendarId = await googleCalendarService.getPrimaryCalendar();
-      
-      // Get calendar details
-      const calendars = await googleCalendarService.calendar.calendarList.list();
-      const primaryCalendar = calendars.data.items.find(cal => cal.id === primaryCalendarId);
+      const primaryCalendarId =
+        await googleCalendarService.getPrimaryCalendar();
 
-      res.json({ 
+      // Get calendar details
+      const calendars =
+        await googleCalendarService.calendar.calendarList.list();
+      const primaryCalendar = calendars.data.items.find(
+        (cal) => cal.id === primaryCalendarId
+      );
+
+      res.json({
         primaryCalendar: {
           id: primaryCalendar.id,
           summary: primaryCalendar.summary,
           description: primaryCalendar.description,
-          primary: primaryCalendar.primary
+          primary: primaryCalendar.primary,
         },
-        message: "Using primary calendar for task sync"
+        message: "Using primary calendar for task sync",
       });
     } catch (error) {
       console.error("Error getting primary calendar info:", error);
-      res.status(500).json({ 
+      res.status(500).json({
         message: "Error getting calendar info",
-        error: error.message 
+        error: error.message,
       });
     }
   },

@@ -474,7 +474,7 @@ const taskAssignments = [
 ];
 
 // Sync database and seed data
-await db.sync({ force: true }).then(async () => {
+await db.sync({ alter: true }).then(async () => {
   console.log("Creating users...");
   const createdUsers = await User.bulkCreate(users);
 
