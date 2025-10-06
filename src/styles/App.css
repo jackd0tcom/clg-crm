@@ -292,6 +292,9 @@ h5 {
   display: flex;
   flex-direction: column;
   row-gap: 10px;
+  max-height: 82vh;
+  overflow-y: scroll;
+  scrollbar-width: thin;
 }
 .activity-log-item-p {
   display: flex;
@@ -312,6 +315,7 @@ div.date-picker-wrapper > div > div > input[type="text"] {
   cursor: pointer;
   background-color: unset;
   outline: none;
+  width: 100%;
 }
 .date-picker-wrapper:hover {
   background-color: var(--root-bg-color-light);
@@ -326,6 +330,38 @@ div.date-picker-wrapper > div > div > input[type="text"] {
 }
 .date-picker-wrapper i {
   color: var(--grey);
+}
+
+.date-picker-wrapper {
+  z-index: 1;
+  padding: 0 5px;
+  max-width: 150px;
+}
+.react-datepicker__input-container {
+  display: flex !important;
+  align-items: center;
+}
+.react-datepicker__close-icon {
+  position: relative !important;
+  display: flex !important;
+  align-items: center;
+}
+.react-datepicker__close-icon:hover {
+  border: none;
+}
+.react-datepicker__close-icon::after {
+  background-color: unset !important;
+  color: var(--grey) !important;
+  font-size: 1.25rem !important;
+  height: auto !important;
+  width: auto !important;
+  margin-bottom: 3px;
+}
+.react-datepicker__close-icon::after:hover {
+  color: black;
+}
+.clear-date-hidden {
+  visibility: hidden;
 }
 .react-datepicker__day--selected,
 .react-datepicker__day--in-selecting-range,

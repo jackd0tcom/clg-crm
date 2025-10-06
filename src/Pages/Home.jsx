@@ -79,7 +79,7 @@ const Home = ({
           setCheckNotifications={setCheckNotifications}
           userSynced={userSynced}
         />
-        <ToDoWidget openTaskView={openTaskView} userSynced={userSynced} />
+        <ToDoWidget openTaskView={openTaskView} userSynced={userSynced} refreshKey={refreshKey} />
         <CasesWidget
           loading={loading}
           setLoading={setLoading}

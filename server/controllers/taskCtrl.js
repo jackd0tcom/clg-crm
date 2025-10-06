@@ -32,12 +32,6 @@ export default {
 
         const assignedTaskIds = assignedTasks.map((ac) => ac.taskId);
         const tasks = await Task.findAll({
-          where: {
-            [Op.or]: [
-              { ownerId: userId },
-              { taskId: { [Op.in]: assignedTaskIds } },
-            ],
-          },
           include: [
             {
               model: User,
@@ -335,12 +329,20 @@ export default {
 
         let message = `changed the ${fieldName} from ${oldValue} to ${value}`;
 
+        console.log(oldValue, value);
+
         if (fieldName === "title") {
           message = "changed the title";
         } else if (fieldName === "dueDate") {
-          message = `changed the due date from ${formatDateNoTime(
-            oldValue
-          )} to ${formatDateNoTime(value)}`;
+          if (value && oldValue) {
+            message = `changed the due date from ${formatDateNoTime(
+              oldValue
+            )} to ${formatDateNoTime(value)}`;
+          } else if (!value && oldValue) {
+            message = "removed the due date";
+          } else if (!oldValue && value) {
+            message = `changed the due date to ${formatDateNoTime(value)}`;
+          }
         } else if (fieldName === "caseId") {
           message = `assigned the task to ${newCase.title}`;
         }

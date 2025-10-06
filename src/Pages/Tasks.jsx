@@ -19,6 +19,7 @@ const Tasks = ({ openTaskView, refreshKey }) => {
   const [dueToday, setDueToday] = useState([]);
   const [overdue, setOverdue] = useState([]);
   const [upcoming, setUpcoming] = useState([]);
+  const [noDueDate, setNoDueDate] = useState([]);
   const [showCompleted, setShowCompleted] = useState(false);
   const [showAssigned, setShowAssigned] = useState(true);
   const columns = "0.1fr 3fr 2fr 2fr 1fr";
@@ -101,13 +102,18 @@ const Tasks = ({ openTaskView, refreshKey }) => {
     setDueToday([]);
     setOverdue([]);
     setUpcoming([]);
+    setNoDueDate([]); // Add this line to clear noDueDate array
 
     tasks.forEach((task) => {
-      if (findTimeDifference(task.dueDate)[0] === "1") {
+      if (!task.dueDate) {
+        setNoDueDate((prev) => {
+          return [...prev, task];
+        });
+      } else if (findTimeDifference(task.dueDate)[0] === "1") {
         setUpcoming((prev) => {
           return [...prev, task];
         });
-      } else if (findTimeDifference(task.dueDate)[0] === "0" || !task.dueDate) {
+      } else if (findTimeDifference(task.dueDate)[0] === "0") {
         setDueToday((prev) => {
           return [...prev, task];
         });
@@ -159,6 +165,14 @@ const Tasks = ({ openTaskView, refreshKey }) => {
           />
         ) : (
           <>
+            <TaskList
+              openTaskView={openTaskView}
+              tasks={noDueDate}
+              headings={["Status", "Title", "Case", "Assignees", "Due Date"]}
+              columns={columns}
+              title={"No Due Date"}
+              refreshTasks={fetchTasks}
+            />
             <TaskList
               openTaskView={openTaskView}
               tasks={overdue}

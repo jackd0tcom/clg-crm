@@ -318,6 +318,12 @@
   padding: 15px;
   color: var(--dark-grey);
 }
+.add-case-button-home {
+  padding: 3px 6px !important;
+}
+.add-case-button-home i {
+  font-size: 0.75rem;
+}
 .case-widget-container {
   display: flex;
   flex-direction: column;

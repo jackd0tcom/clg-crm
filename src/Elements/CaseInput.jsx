@@ -107,7 +107,7 @@ const CaseInput = ({
         }}
         onBlur={handleBlur}
         onKeyDown={handleEnter}
-        placeholder="Enter case title..."
+        placeholder="Add case title"
       />
     </div>
   );

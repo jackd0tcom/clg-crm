@@ -600,3 +600,8 @@ div.case-task-container
   font-size: 3rem;
   color: var(--blue);
 }
+@media screen and (min-width: 1800px) {
+  .case-list {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+  }
+}

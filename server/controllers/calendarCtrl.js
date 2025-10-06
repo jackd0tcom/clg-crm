@@ -1,5 +1,6 @@
 import googleCalendarService from "../services/googleCalendar.js";
 import { User, Task, TaskAssignees } from "../model.js";
+import { Op } from "sequelize";
 
 // Helper function to sync existing tasks to Google Calendar on first connection
 async function syncExistingTasksToCalendar(userId, calendarId) {
@@ -31,6 +32,9 @@ async function syncExistingTasksToCalendar(userId, calendarId) {
         ? await Task.findAll({
             where: {
               taskId: assignedTaskIds.map((assignment) => assignment.taskId),
+              status: {
+                [Op.not]: "completed",
+              },
             },
             attributes: [
               "taskId",
@@ -124,6 +128,9 @@ async function migrateUserTasksToNewCalendar(
         ? await Task.findAll({
             where: {
               taskId: assignedTaskIds.map((assignment) => assignment.taskId),
+              status: {
+                [Op.not]: "completed",
+              },
             },
             attributes: [
               "taskId",

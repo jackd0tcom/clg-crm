@@ -3,14 +3,14 @@ import axios from "axios";
 import TaskList from "./TaskList";
 import { useNavigate } from "react-router";
 
-const ToDoWidget = ({ openTaskView, userSynced }) => {
+const ToDoWidget = ({ openTaskView, userSynced, refreshKey }) => {
   const [tasks, setTasks] = useState([]);
   const navigate = useNavigate();
 
   const fetch = async () => {
     try {
       await axios.get("/api/getTodayTasks").then((res) => {
-        setTasks(res.data);
+        setTasks(res.data.filter((task) => task.status !== "completed"));
       });
     } catch (error) {
       console.log(error);
@@ -21,7 +21,7 @@ const ToDoWidget = ({ openTaskView, userSynced }) => {
     // Only fetch tasks if user is synced
     if (!userSynced) return;
     fetch();
-  }, [userSynced]);
+  }, [userSynced, refreshKey]);
 
   return (
     <div className="widget-container">
@@ -34,10 +34,10 @@ const ToDoWidget = ({ openTaskView, userSynced }) => {
         <TaskList
           tasks={tasks}
           openTaskView={openTaskView}
-          headings={["Title", "Case", "Due Date"]}
+          headings={["Status", "Title", "Case", "Due Date"]}
           title={"Due Today"}
           refreshTasks={fetch}
-          columns={"3fr 2fr 1.2fr"}
+          columns={"0.1fr 1.5fr 2fr 0.7fr"}
         />
       </div>
     </div>

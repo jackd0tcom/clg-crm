@@ -11,29 +11,32 @@ const DueDatePicker = ({
   onTaskUpdate,
 }) => {
   const [dueDate, setDueDate] = useState(currentDate);
+  const [hover, setHover] = useState(false);
 
   const onDateChange = async (date) => {
     try {
       if (taskId) {
-        await axios
-          .post("/api/updateTask", {
-            fieldName: "dueDate",
-            value: date,
-            taskId,
-          })
-          .then((res) => {
-            if (refreshTaskActivityData) {
-              refreshTaskActivityData();
-            }
-            if (onTaskUpdate) {
-              onTaskUpdate();
-            }
-          });
-      } else {
-        // For new tasks, just update the local state
-        setDueDate(date);
-        if (onTaskUpdate) {
-          onTaskUpdate();
+        if (date !== currentDate) {
+          await axios
+            .post("/api/updateTask", {
+              fieldName: "dueDate",
+              value: date,
+              taskId,
+            })
+            .then((res) => {
+              if (refreshTaskActivityData) {
+                refreshTaskActivityData();
+              }
+              if (onTaskUpdate) {
+                onTaskUpdate();
+              }
+            });
+        } else {
+          // For new tasks, just update the local state
+          setDueDate(date);
+          if (onTaskUpdate) {
+            onTaskUpdate();
+          }
         }
       }
     } catch (error) {
@@ -42,15 +45,21 @@ const DueDatePicker = ({
   };
 
   return (
-    <div className="date-picker-wrapper">
+    <div
+      className="date-picker-wrapper"
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+    >
+      <i className="fa-solid fa-calendar-days"></i>
       <DatePicker
         selected={dueDate}
+        isClearable
         onChange={(date) => {
+          console.log("changed");
           setDueDate(date);
           onDateChange(date);
         }}
       />
-      <i className="fa-solid fa-calendar-days"></i>
     </div>
   );
 };

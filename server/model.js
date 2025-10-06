@@ -2,7 +2,9 @@ import { DataTypes, Model } from "sequelize";
 import url from "url";
 import connectToDb from "./db.js";
 
-const db = await connectToDb(process.env.DATABASE_URL || "postgresql:///clg-db");
+const db = await connectToDb(
+  process.env.DATABASE_URL || "postgresql:///clg-db"
+);
 
 class User extends Model {}
 User.init(
@@ -176,6 +178,7 @@ Task.init(
     dueDate: {
       type: DataTypes.DATE,
       allowNull: true,
+      defaultValue: null,
     },
     priority: {
       type: DataTypes.ENUM("low", "normal", "high", "urgent"),

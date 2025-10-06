@@ -1,4 +1,9 @@
 /* Tasks page */
+.tasks-page-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
 .tasks-page-head {
   display: flex;
   justify-content: space-between;
@@ -132,6 +137,9 @@
 }
 .task-page-task-list-wrapper {
   margin: 15px;
+  height: 100%;
+  overflow-y: scroll;
+  scrollbar-width: thin;
 }
 .task-list {
   display: grid;
@@ -180,7 +188,6 @@
   flex-direction: column;
   cursor: pointer;
   padding: 5px 15px;
-  max-height: 18vh;
   overflow-x: hidden;
   scrollbar-width: thin;
 }
@@ -387,10 +394,6 @@
   column-gap: 20px;
   align-items: center;
   position: relative;
-}
-
-.date-picker-wrapper {
-  z-index: 1;
 }
 .task-notes {
   margin-top: 10%;

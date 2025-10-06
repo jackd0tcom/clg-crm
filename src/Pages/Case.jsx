@@ -57,7 +57,7 @@ const Case = ({ openTaskView, refreshKey }) => {
 
         setPhase("intake");
         setNotes("");
-        setTitle("Untitled Case");
+        setTitle("");
         setCurrentAreas([]);
         setActivityData([]);
         return;
@@ -470,7 +470,7 @@ const Case = ({ openTaskView, refreshKey }) => {
       </div>
     </div>
   ) : (
-    <Loader/>
+    <Loader />
   );
 };
 
