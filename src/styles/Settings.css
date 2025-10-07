@@ -164,6 +164,16 @@
 .calendar-selection {
   margin-bottom: 20px;
 }
+.calendar-select-wrapper {
+  display: flex;
+  justify-content: space-between;
+  column-gap: 3vw;
+  margin-top: 1rem;
+  align-self: flex-end;
+}
+.calendar-selection p {
+  color: var(--dark-grey);
+}
 
 .calendar-selection label {
   display: block;
@@ -172,8 +182,8 @@
 }
 
 .calendar-select {
-  width: 100%;
-  padding: 12px 15px;
+  width: 80%;
+  padding: 8px;
   border: 2px solid #e9ecef;
   border-radius: 6px;
   font-size: 1rem;
@@ -184,7 +194,6 @@
 
 .calendar-select:focus {
   outline: none;
-  border-color: #667eea;
 }
 
 .selected-calendar-info {
@@ -206,34 +215,76 @@
   font-size: 0.9rem;
 }
 
-.save-section {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
 .save-button {
-  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  max-width: 250px;
+  background-color: var(--bright-green);
   color: white;
   border: none;
-  padding: 12px 24px;
+  padding: 12px;
   border-radius: 6px;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   align-self: flex-start;
+  font-size: 0.9rem;
 }
-
-.save-button:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
-}
-
 .save-button:disabled {
-  opacity: 0.6;
+  background-color: transparent;
+  border: 1px solid var(--light-border);
+  color: var(--light-grey);
   cursor: not-allowed;
-  transform: none;
+}
+.save-button:hover:disabled {
+  background-color: transparent;
+  border: 1px solid var(--light-border);
+  color: var(--light-grey);
+  cursor: not-allowed;
+}
+
+.save-button:hover {
+  border: none;
+  color: white;
+  background-color: var(--bright-dark-green);
+}
+
+.calendar-settings-container {
+  margin-top: 2rem;
+}
+
+.calendar-settings-item {
+  display: grid;
+  grid-template-columns: 5fr 1fr;
+  column-gap: 10vw;
+  align-items: center;
+  padding: 10px 0px;
+  border-bottom: 1px solid var(--light-border);
+}
+
+.calendar-settings-item p {
+  color: var(--dark-grey);
+}
+
+.calendar-settings-item button {
+  font-size: 0.9rem;
+}
+.sync-button {
+  color: var(--grey);
+  border: 1px solid var(--dark-grey);
+  padding: 6px 12px;
+}
+.sync-button:hover {
+  background-color: var(--grey);
+  color: white;
+}
+.disconnect-calendar {
+  color: var(--dark-red);
+  border: 1px solid var(--dark-red);
+  padding: 6px 12px;
+}
+.disconnect-calendar:hover {
+  background-color: var(--dark-red);
+  color: white;
 }
 
 .message {
@@ -243,6 +294,7 @@
   font-size: 0.9rem;
   white-space: pre-line;
   line-height: 1.4;
+  margin-top: 1rem;
 }
 
 .message.success {

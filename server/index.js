@@ -88,6 +88,8 @@ const {
   getPreferredCalendar,
   updatePreferredCalendar,
   checkAppCalendars,
+  disconnectCalendar,
+  syncAllTasks,
 } = calendarCtrl;
 const {
   getNotifications,
@@ -234,6 +236,8 @@ app.post("/api/calendar/preferred-calendar", updatePreferredCalendar);
 app.post("/api/calendar/create-task-event", createTaskEvent);
 app.post("/api/calendar/update-task-event", updateTaskEvent);
 app.post("/api/calendar/delete-task-event", deleteTaskEvent);
+app.post("/api/calendar/disconnect", disconnectCalendar);
+app.post("/api/calendar/sync-tasks", syncAllTasks);
 
 // notification endpoints
 app.get("/api/notifications", getNotifications);

@@ -8,6 +8,7 @@ const Settings = () => {
   const [isGoogleConnected, setIsGoogleConnected] = useState(false);
   const [calendars, setCalendars] = useState([]);
   const [selectedCalendar, setSelectedCalendar] = useState("");
+  const [originalCalendar, setOriginalCalendar] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isChanging, setIsChanging] = useState(false);
@@ -15,11 +16,25 @@ const Settings = () => {
   const [appCalendars, setAppCalendars] = useState([]);
   const [hasDuplicates, setHasDuplicates] = useState(false);
   const [migrating, setMigrating] = useState(false);
-  const [syncing, setSyncing] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [isDisconnecting, setIsDisconnecting] = useState(false);
   const { user } = useAuth0();
 
   useEffect(() => {
     checkGoogleConnection();
+  }, []);
+
+  useEffect(() => {
+    const handleCalendarReconnect = (event) => {
+      if (event.data.type === "GOOGLE_CALENDAR_AUTH_SUCCESS") {
+        console.log("✅ Calendar reconnected via popup");
+        // Refresh the connection status
+        checkGoogleConnection();
+      }
+    };
+
+    window.addEventListener("message", handleCalendarReconnect);
+    return () => window.removeEventListener("message", handleCalendarReconnect);
   }, []);
 
   const checkGoogleConnection = async () => {
@@ -52,12 +67,14 @@ const Settings = () => {
 
       // Use preferred calendar if set, otherwise default to primary
       if (preferredRes.data.preferredCalendarId) {
+        setOriginalCalendar(preferredRes.data.preferredCalendarId);
         setSelectedCalendar(preferredRes.data.preferredCalendarId);
       } else {
         const primaryCalendar = calendarsRes.data.calendars.find(
           (cal) => cal.primary
         );
         if (primaryCalendar) {
+          setOriginalCalendar(primaryCalendar.id);
           setSelectedCalendar(primaryCalendar.id);
         }
       }
@@ -124,6 +141,7 @@ const Settings = () => {
 
         setMessage(messageText);
       }, 500);
+      setOriginalCalendar(selectedCalendar);
 
       // Clear message after 5 seconds
       setTimeout(() => setMessage(""), 5000);
@@ -156,6 +174,65 @@ const Settings = () => {
     }
   };
 
+  const handleDisconnectCalendar = async () => {
+    if (
+      !window.confirm(
+        "Are you sure you want to disconnect Google Calendar? Your tasks will no longer sync to your calendar."
+      )
+    ) {
+      return;
+    }
+
+    try {
+      setIsDisconnecting(true);
+      await axios.post("/api/calendar/disconnect");
+
+      // Update state to reflect disconnected status
+      setIsGoogleConnected(false);
+      setCalendars([]);
+      setSelectedCalendar(originalCalendar);
+      setMessage("✅ Google Calendar disconnected successfully");
+
+      setTimeout(() => setMessage(""), 3000);
+    } catch (error) {
+      console.error("Error disconnecting Google Calendar:", error);
+      setMessage("❌ Failed to disconnect calendar. Please try again.");
+      setTimeout(() => setMessage(""), 5000);
+    } finally {
+      setIsDisconnecting(false);
+    }
+  };
+
+  const handleSyncTasks = async () => {
+    try {
+      setIsSyncing(true);
+      setMessage("🔄 Syncing tasks to Google Calendar...");
+
+      const response = await axios.post("/api/calendar/sync-tasks");
+
+      if (response.data.success) {
+        const { syncedCount, skippedCount, errorCount } = response.data;
+        let messageText = `✅ Sync complete!\n`;
+        messageText += `   • ${syncedCount} tasks synced\n`;
+        messageText += `   • ${skippedCount} tasks already synced\n`;
+        if (errorCount > 0) {
+          messageText += `   • ${errorCount} tasks failed`;
+        }
+        setMessage(messageText);
+      } else {
+        setMessage("❌ Failed to sync tasks. Please try again.");
+      }
+
+      setTimeout(() => setMessage(""), 5000);
+    } catch (error) {
+      console.error("Error syncing tasks:", error);
+      setMessage("❌ Failed to sync tasks. Please try again.");
+      setTimeout(() => setMessage(""), 5000);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
   if (isLoading) {
     return <Loader />;
   }
@@ -176,10 +253,6 @@ const Settings = () => {
           <div className="calendar-connect-card">
             <div className="calendar-connect-icon">🔗</div>
             <h4>Connect Google Calendar</h4>
-            <p>
-              Connect your Google Calendar to sync your tasks and events
-              seamlessly. You can choose which calendar to use for your tasks.
-            </p>
             <button onClick={handleConnectGoogle} className="connect-button">
               Connect Google Calendar
             </button>
@@ -193,33 +266,34 @@ const Settings = () => {
 
             <div className="calendar-selection">
               <label htmlFor="calendar-select">
-                <strong>Select Google Calendar for tasks:</strong>
+                <strong>Select Google Calendar for tasks</strong>
               </label>
-              <select
-                id="calendar-select"
-                value={selectedCalendar}
-                onChange={(e) => handleCalendarChange(e.target.value)}
-                className="calendar-select"
-              >
-                {calendars.map((calendar) => (
-                  <option key={calendar.id} value={calendar.id}>
-                    {calendar.name} {calendar.primary && "(Primary)"}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {isChanging && (
-              <div className="save-section">
+              <p>
+                Connect your Google Calendar to sync your tasks and events
+                seamlessly. You can choose which calendar to use for your tasks.
+              </p>
+              <div className="calendar-select-wrapper">
+                <select
+                  id="calendar-select"
+                  value={selectedCalendar}
+                  onChange={(e) => handleCalendarChange(e.target.value)}
+                  className="calendar-select"
+                >
+                  {calendars.map((calendar) => (
+                    <option key={calendar.id} value={calendar.id}>
+                      {calendar.name} {calendar.primary && "(Primary)"}
+                    </option>
+                  ))}
+                </select>
                 <button
                   onClick={saveCalendarPreference}
-                  disabled={isSaving || !selectedCalendar}
+                  disabled={isSaving || selectedCalendar === originalCalendar}
                   className="save-button"
                 >
                   {isSaving ? "Saving..." : "Save Calendar Preference"}
                 </button>
               </div>
-            )}
+            </div>
 
             {message && (
               <div
@@ -230,6 +304,38 @@ const Settings = () => {
                 {message}
               </div>
             )}
+            <div className="calendar-settings-container">
+              <label htmlFor="sync-tasks">
+                <strong>Google Calendar Settings</strong>
+              </label>
+              <div className="calendar-settings-item">
+                <p>
+                  Manually sync calendar settings to override any existing
+                  tasks, and resync new tasks.
+                </p>
+                <button
+                  className="sync-button"
+                  onClick={handleSyncTasks}
+                  disabled={isSyncing}
+                >
+                  {isSyncing ? "Syncing..." : "Sync Tasks"}
+                </button>
+              </div>
+              <div className="calendar-settings-item">
+                <p>
+                  Disconnect Google Calendar if you no longer want to sync tasks
+                  on Google Calendar, or if you have an issue and need to reset
+                  the connection.
+                </p>
+                <button
+                  className="disconnect-calendar"
+                  onClick={handleDisconnectCalendar}
+                  disabled={isDisconnecting}
+                >
+                  {isDisconnecting ? "Disconnecting..." : "Disconnect Calendar"}
+                </button>
+              </div>
+            </div>
           </div>
         )}
         <div className="settings-info">

@@ -11,23 +11,23 @@ export const syncTaskWithCalendar = async (task, userId, action) => {
       return;
     }
 
-    // Initialize calendar service
-    const initSuccess = await googleCalendarService.initializeCalendar(
+    // Initialize calendar service - returns calendar instance
+    const { calendar, refreshedTokens } = await googleCalendarService.initializeCalendar(
       user.googleAccessToken,
       user.googleRefreshToken
     );
     
-    if (!initSuccess) {
+    if (!calendar) {
       console.error("Failed to initialize calendar service for task sync");
       return;
     }
 
-    // Check if tokens were refreshed and update database
-    const refreshedTokens = googleCalendarService.getRefreshedTokens();
+    // Update tokens if refreshed
     if (refreshedTokens) {
       console.log("💾 Updating user tokens in database (task sync)");
       await user.update({
         googleAccessToken: refreshedTokens.access_token,
+        googleRefreshToken: refreshedTokens.refresh_token,
         googleTokenExpiry: refreshedTokens.expiry_date ? new Date(refreshedTokens.expiry_date) : null
       });
     }
@@ -39,14 +39,14 @@ export const syncTaskWithCalendar = async (task, userId, action) => {
       console.log(`Using user's preferred calendar: ${targetCalendarId}`);
     } else {
       // Fall back to primary calendar if no preference is set
-      targetCalendarId = await googleCalendarService.getPrimaryCalendar();
+      targetCalendarId = await googleCalendarService.getPrimaryCalendar(calendar);
       console.log(`Using primary calendar: ${targetCalendarId}`);
     }
 
     switch (action) {
       case 'create':
-        // Create calendar event for new task
-        const googleEvent = await googleCalendarService.createEventFromTask(task, targetCalendarId);
+        // Create calendar event for new task - pass calendar instance
+        const googleEvent = await googleCalendarService.createEventFromTask(calendar, task, targetCalendarId);
         
         // Update task with googleEventId
         await task.update({ googleEventId: googleEvent.id });
@@ -57,7 +57,7 @@ export const syncTaskWithCalendar = async (task, userId, action) => {
       case 'update':
         // Update calendar event if task has googleEventId
         if (task.googleEventId) {
-          await googleCalendarService.updateEventFromTask(task, task.googleEventId, targetCalendarId);
+          await googleCalendarService.updateEventFromTask(calendar, task, task.googleEventId, targetCalendarId);
           console.log(`Updated calendar event for task: ${task.title}`);
         }
         break;
@@ -65,7 +65,7 @@ export const syncTaskWithCalendar = async (task, userId, action) => {
       case 'delete':
         // Delete calendar event if task has googleEventId
         if (task.googleEventId) {
-          await googleCalendarService.deleteEvent(task.googleEventId, targetCalendarId);
+          await googleCalendarService.deleteEvent(calendar, task.googleEventId, targetCalendarId);
           console.log(`Deleted calendar event for task: ${task.title}`);
         }
         break;

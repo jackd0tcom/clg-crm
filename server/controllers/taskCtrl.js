@@ -233,6 +233,7 @@ export default {
           userId,
         });
 
+        console.log("newTask dueDate", newTask.dueDate);
         // Sync with Google Calendar
         await syncTaskWithCalendar(newTask, userId, "create");
 
@@ -357,8 +358,23 @@ export default {
           });
         }
 
-        // Sync with Google Calendar (only for certain fields that affect calendar events)
-        if (["title", "dueDate", "notes"].includes(fieldName)) {
+        // Sync with Google Calendar based on status changes
+        if (fieldName === "status" && value === "completed") {
+          // Task marked as completed - delete from calendar
+          await syncTaskWithCalendar(
+            currentTask,
+            req.session.user.userId,
+            "delete"
+          );
+        } else if (fieldName === "status" && oldValue === "completed") {
+          // Task unmarked from completed - create in calendar
+          await syncTaskWithCalendar(
+            currentTask,
+            req.session.user.userId,
+            "create"
+          );
+        } else if (["title", "dueDate", "notes"].includes(fieldName)) {
+          // Other fields that affect calendar events - update
           await syncTaskWithCalendar(
             currentTask,
             req.session.user.userId,

@@ -3,7 +3,7 @@ import { User, Task, TaskAssignees } from "../model.js";
 import { Op } from "sequelize";
 
 // Helper function to sync existing tasks to Google Calendar on first connection
-async function syncExistingTasksToCalendar(userId, calendarId) {
+async function syncExistingTasksToCalendar(userId, calendarId, calendar) {
   try {
     console.log(`🔄 Syncing existing tasks to calendar for user ${userId}`);
 
@@ -80,8 +80,9 @@ async function syncExistingTasksToCalendar(userId, calendarId) {
           continue;
         }
 
-        // Create new event in the calendar
+        // Create new event in the calendar - pass calendar instance
         const eventResponse = await googleCalendarService.createEventFromTask(
+          calendar,
           task,
           calendarId
         );
@@ -114,7 +115,8 @@ async function syncExistingTasksToCalendar(userId, calendarId) {
 async function migrateUserTasksToNewCalendar(
   userId,
   oldCalendarId,
-  newCalendarId
+  newCalendarId,
+  calendar
 ) {
   try {
     // Get all tasks assigned to the user (regardless of ownership)
@@ -177,6 +179,7 @@ async function migrateUserTasksToNewCalendar(
             );
             try {
               await googleCalendarService.deleteEvent(
+                calendar,
                 task.googleEventId,
                 oldCalendarId
               );
@@ -206,6 +209,7 @@ async function migrateUserTasksToNewCalendar(
             );
             try {
               await googleCalendarService.deleteEvent(
+                calendar,
                 task.googleEventId,
                 "primary"
               );
@@ -233,7 +237,7 @@ async function migrateUserTasksToNewCalendar(
 
         // Create new event in the new calendar
         const newEventResponse =
-          await googleCalendarService.createEventFromTask(task, newCalendarId);
+          await googleCalendarService.createEventFromTask(calendar, task, newCalendarId);
 
         // Update task with new event ID (extract ID from response)
         await task.update({ googleEventId: newEventResponse.id });
@@ -322,11 +326,27 @@ export default {
         { where: { userId: targetUserId } }
       );
 
-      // Initialize calendar service with new tokens
-      await googleCalendarService.initializeCalendar(
+      // Initialize calendar service with new tokens - returns calendar instance
+      const { calendar, refreshedTokens } = await googleCalendarService.initializeCalendar(
         tokens.access_token,
         tokens.refresh_token
       );
+
+      if (!calendar) {
+        return res.status(500).json({ message: "Failed to initialize Google Calendar" });
+      }
+
+      // Update user with refreshed tokens if available
+      if (refreshedTokens) {
+        await User.update(
+          {
+            googleAccessToken: refreshedTokens.access_token,
+            googleRefreshToken: refreshedTokens.refresh_token,
+            googleTokenExpiry: refreshedTokens.expiry_date ? new Date(refreshedTokens.expiry_date) : null,
+          },
+          { where: { userId: targetUserId } }
+        );
+      }
 
       // Get user's preferred calendar (or default to primary)
       const user = await User.findByPk(targetUserId);
@@ -338,7 +358,8 @@ export default {
         console.log(`🔄 Starting initial sync for user ${targetUserId}`);
         syncResult = await syncExistingTasksToCalendar(
           targetUserId,
-          targetCalendarId
+          targetCalendarId,
+          calendar
         );
         console.log(`✅ Initial sync completed:`, syncResult);
       } catch (syncError) {
@@ -412,23 +433,23 @@ export default {
       }
 
       console.log(`🔧 Initializing calendar service for user ${userId}`);
-      const initSuccess = await googleCalendarService.initializeCalendar(
+      const { calendar, refreshedTokens } = await googleCalendarService.initializeCalendar(
         user.googleAccessToken,
         user.googleRefreshToken
       );
 
-      if (!initSuccess) {
+      if (!calendar) {
         return res.status(500).json({
           message: "Failed to initialize Google Calendar service",
         });
       }
 
-      // Check if tokens were refreshed and update database
-      const refreshedTokens = googleCalendarService.getRefreshedTokens();
+      // Update tokens if refreshed
       if (refreshedTokens) {
         console.log("💾 Updating user tokens in database");
         await user.update({
           googleAccessToken: refreshedTokens.access_token,
+          googleRefreshToken: refreshedTokens.refresh_token,
           googleTokenExpiry: refreshedTokens.expiry_date
             ? new Date(refreshedTokens.expiry_date)
             : null,
@@ -443,7 +464,7 @@ export default {
           `📅 Fetching events from preferred calendar: ${targetCalendarId}`
         );
       } else {
-        targetCalendarId = await googleCalendarService.getPrimaryCalendar();
+        targetCalendarId = await googleCalendarService.getPrimaryCalendar(calendar);
         console.log(
           `📅 Fetching events from primary calendar: ${targetCalendarId}`
         );
@@ -455,6 +476,7 @@ export default {
         }`
       );
       const events = await googleCalendarService.getEvents(
+        calendar,
         timeMin,
         timeMax,
         targetCalendarId
@@ -487,13 +509,25 @@ export default {
           .status(400)
           .json({ message: "Google Calendar not connected" });
       }
-
-      await googleCalendarService.initializeCalendar(
+      const { calendar, refreshedTokens } = await googleCalendarService.initializeCalendar(
         user.googleAccessToken,
         user.googleRefreshToken
       );
+      
+      if (!calendar) {
+        return res.status(500).json({ message: "Failed to initialize calendar" });
+      }
+      
+      // Update tokens if refreshed
+      if (refreshedTokens) {
+        await user.update({
+          googleAccessToken: refreshedTokens.access_token,
+          googleRefreshToken: refreshedTokens.refresh_token,
+          googleTokenExpiry: refreshedTokens.expiry_date ? new Date(refreshedTokens.expiry_date) : null
+        });
+      }
 
-      const googleEvent = await googleCalendarService.createEventFromTask(task);
+      const googleEvent = await googleCalendarService.createEventFromTask(calendar, task);
 
       res.json({
         message: "Calendar event created successfully",
@@ -522,12 +556,26 @@ export default {
           .json({ message: "Google Calendar not connected" });
       }
 
-      await googleCalendarService.initializeCalendar(
+      const { calendar, refreshedTokens } = await googleCalendarService.initializeCalendar(
         user.googleAccessToken,
         user.googleRefreshToken
       );
+      
+      if (!calendar) {
+        return res.status(500).json({ message: "Failed to initialize calendar" });
+      }
+      
+      // Update tokens if refreshed
+      if (refreshedTokens) {
+        await user.update({
+          googleAccessToken: refreshedTokens.access_token,
+          googleRefreshToken: refreshedTokens.refresh_token,
+          googleTokenExpiry: refreshedTokens.expiry_date ? new Date(refreshedTokens.expiry_date) : null
+        });
+      }
 
       const googleEvent = await googleCalendarService.updateEventFromTask(
+        calendar,
         task,
         googleEventId
       );
@@ -559,12 +607,25 @@ export default {
           .json({ message: "Google Calendar not connected" });
       }
 
-      await googleCalendarService.initializeCalendar(
+      const { calendar, refreshedTokens } = await googleCalendarService.initializeCalendar(
         user.googleAccessToken,
         user.googleRefreshToken
       );
+      
+      if (!calendar) {
+        return res.status(500).json({ message: "Failed to initialize calendar" });
+      }
+      
+      // Update tokens if refreshed
+      if (refreshedTokens) {
+        await user.update({
+          googleAccessToken: refreshedTokens.access_token,
+          googleRefreshToken: refreshedTokens.refresh_token,
+          googleTokenExpiry: refreshedTokens.expiry_date ? new Date(refreshedTokens.expiry_date) : null
+        });
+      }
 
-      await googleCalendarService.deleteEvent(googleEventId);
+      await googleCalendarService.deleteEvent(calendar, googleEventId, calendarId);
 
       res.json({ message: "Calendar event deleted successfully" });
     } catch (error) {
@@ -589,12 +650,25 @@ export default {
           .json({ message: "Google Calendar not connected" });
       }
 
-      await googleCalendarService.initializeCalendar(
+      const { calendar, refreshedTokens } = await googleCalendarService.initializeCalendar(
         user.googleAccessToken,
         user.googleRefreshToken
       );
+      
+      if (!calendar) {
+        return res.status(500).json({ message: "Failed to initialize calendar" });
+      }
+      
+      // Update tokens if refreshed
+      if (refreshedTokens) {
+        await user.update({
+          googleAccessToken: refreshedTokens.access_token,
+          googleRefreshToken: refreshedTokens.refresh_token,
+          googleTokenExpiry: refreshedTokens.expiry_date ? new Date(refreshedTokens.expiry_date) : null
+        });
+      }
 
-      const calendarId = await googleCalendarService.getPrimaryCalendar();
+      const calendarId = await googleCalendarService.getPrimaryCalendar(calendar);
 
       res.json({
         message: "App calendar ready",
@@ -623,13 +697,25 @@ export default {
           .json({ message: "Google Calendar not connected" });
       }
 
-      await googleCalendarService.initializeCalendar(
+      const { calendar, refreshedTokens } = await googleCalendarService.initializeCalendar(
         user.googleAccessToken,
         user.googleRefreshToken
       );
+      
+      if (!calendar) {
+        return res.status(500).json({ message: "Failed to initialize calendar" });
+      }
+      
+      // Update tokens if refreshed
+      if (refreshedTokens) {
+        await user.update({
+          googleAccessToken: refreshedTokens.access_token,
+          googleRefreshToken: refreshedTokens.refresh_token,
+          googleTokenExpiry: refreshedTokens.expiry_date ? new Date(refreshedTokens.expiry_date) : null
+        });
+      }
 
-      const calendars =
-        await googleCalendarService.calendar.calendarList.list();
+      const calendars = await calendar.calendarList.list();
       const calendarList = calendars.data.items.map((cal) => ({
         id: cal.id,
         name: cal.summary,
@@ -693,10 +779,25 @@ export default {
       await user.update({ preferredCalendarId: calendarId });
 
       // Initialize calendar service with user's tokens
-      await googleCalendarService.initializeCalendar(
+      const { calendar, refreshedTokens } = await googleCalendarService.initializeCalendar(
         user.googleAccessToken,
         user.googleRefreshToken
       );
+      
+      if (!calendar) {
+        return res.status(500).json({ message: "Failed to initialize calendar" });
+      }
+      
+      // Update tokens if refreshed
+      if (refreshedTokens) {
+        await user.update({
+          googleAccessToken: refreshedTokens.access_token,
+          googleRefreshToken: refreshedTokens.refresh_token,
+          googleTokenExpiry: refreshedTokens.expiry_date ? new Date(refreshedTokens.expiry_date) : null
+        });
+      }
+      
+     
 
       // Migrate existing tasks if calendar changed
       let migrationResult = null;
@@ -708,7 +809,8 @@ export default {
           migrationResult = await migrateUserTasksToNewCalendar(
             userId,
             oldCalendarId,
-            calendarId
+            calendarId,
+            calendar
           );
         } catch (migrationError) {
           console.error("❌ Migration failed:", migrationError);
@@ -744,18 +846,30 @@ export default {
           .json({ message: "Google Calendar not connected" });
       }
 
-      await googleCalendarService.initializeCalendar(
+      const { calendar, refreshedTokens } = await googleCalendarService.initializeCalendar(
         user.googleAccessToken,
         user.googleRefreshToken
       );
+      
+      if (!calendar) {
+        return res.status(500).json({ message: "Failed to initialize calendar" });
+      }
+      
+      // Update tokens if refreshed
+      if (refreshedTokens) {
+        await user.update({
+          googleAccessToken: refreshedTokens.access_token,
+          googleRefreshToken: refreshedTokens.refresh_token,
+          googleTokenExpiry: refreshedTokens.expiry_date ? new Date(refreshedTokens.expiry_date) : null
+        });
+      }
 
       // Get primary calendar info
       const primaryCalendarId =
-        await googleCalendarService.getPrimaryCalendar();
+        await googleCalendarService.getPrimaryCalendar(calendar);
 
       // Get calendar details
-      const calendars =
-        await googleCalendarService.calendar.calendarList.list();
+      const calendars = await calendar.calendarList.list();
       const primaryCalendar = calendars.data.items.find(
         (cal) => cal.id === primaryCalendarId
       );
@@ -774,6 +888,115 @@ export default {
       res.status(500).json({
         message: "Error getting calendar info",
         error: error.message,
+      });
+    }
+  },
+
+  // Disconnect Google Calendar
+  disconnectCalendar: async (req, res) => {
+    try {
+      const { userId } = req.session.user;
+
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+
+      const user = await User.findByPk(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Clear all Google Calendar-related data
+      await user.update({
+        googleAccessToken: null,
+        googleRefreshToken: null,
+        googleTokenExpiry: null,
+        preferredCalendarId: null,
+      });
+
+      console.log(`✅ Google Calendar disconnected for user ${userId}`);
+
+      res.json({
+        message: "Google Calendar disconnected successfully",
+        success: true,
+      });
+    } catch (error) {
+      console.error("Error disconnecting Google Calendar:", error);
+      res.status(500).json({
+        message: "Error disconnecting calendar",
+        error: error.message,
+      });
+    }
+  },
+
+  // Manual sync of all user tasks to Google Calendar
+  syncAllTasks: async (req, res) => {
+    try {
+      const { userId } = req.session.user;
+
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+
+      const user = await User.findByPk(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      if (!user.googleAccessToken) {
+        return res.status(400).json({ 
+          message: "Google Calendar not connected",
+          success: false 
+        });
+      }
+
+      console.log(`🔄 Manual sync requested for user ${userId}`);
+
+      // Initialize calendar service
+      const { calendar, refreshedTokens } = await googleCalendarService.initializeCalendar(
+        user.googleAccessToken,
+        user.googleRefreshToken
+      );
+
+      if (!calendar) {
+        return res.status(500).json({ 
+          message: "Failed to initialize Google Calendar",
+          success: false 
+        });
+      }
+
+      // Update tokens if refreshed
+      if (refreshedTokens) {
+        await user.update({
+          googleAccessToken: refreshedTokens.access_token,
+          googleRefreshToken: refreshedTokens.refresh_token,
+          googleTokenExpiry: refreshedTokens.expiry_date ? new Date(refreshedTokens.expiry_date) : null,
+        });
+      }
+
+      // Get user's preferred calendar
+      const targetCalendarId = user.preferredCalendarId || "primary";
+
+      // Sync all tasks
+      const syncResult = await syncExistingTasksToCalendar(
+        userId,
+        targetCalendarId,
+        calendar
+      );
+
+      console.log(`✅ Manual sync completed for user ${userId}:`, syncResult);
+
+      res.json({
+        message: "Tasks synced successfully",
+        success: true,
+        ...syncResult,
+      });
+    } catch (error) {
+      console.error("Error syncing tasks:", error);
+      res.status(500).json({
+        message: "Error syncing tasks to calendar",
+        error: error.message,
+        success: false,
       });
     }
   },

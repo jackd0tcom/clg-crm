@@ -2,34 +2,33 @@ import { google } from "googleapis";
 
 class GoogleCalendarService {
   constructor() {
-    this.oauth2Client = null;
+    // No longer storing oauth2Client or calendar as instance properties
+    // Each request will create its own client to avoid cross-user contamination
   }
 
-  _ensureOAuth2Client() {
-    if (!this.oauth2Client) {
-      console.log('🔧 Google Calendar OAuth2 Client Configuration:');
-      console.log('📝 GOOGLE_CLIENT_ID:', process.env.GOOGLE_CLIENT_ID ? 'Set' : 'Missing');
-      console.log('📝 GOOGLE_CLIENT_SECRET:', process.env.GOOGLE_CLIENT_SECRET ? 'Set' : 'Missing');
-      console.log('📝 GOOGLE_REDIRECT_URI:', process.env.GOOGLE_REDIRECT_URI || 'Not set');
-      
-      if (!process.env.GOOGLE_CLIENT_ID) {
-        throw new Error('GOOGLE_CLIENT_ID environment variable is required');
-      }
-      if (!process.env.GOOGLE_CLIENT_SECRET) {
-        throw new Error('GOOGLE_CLIENT_SECRET environment variable is required');
-      }
-      
-      this.oauth2Client = new google.auth.OAuth2(
-        process.env.GOOGLE_CLIENT_ID,
-        process.env.GOOGLE_CLIENT_SECRET,
-        process.env.GOOGLE_REDIRECT_URI
-      );
+  _createOAuth2Client() {
+    // Always create a NEW client - never reuse to avoid cross-user issues
+    console.log('🔧 Creating new Google Calendar OAuth2 Client');
+    console.log('📝 GOOGLE_CLIENT_ID:', process.env.GOOGLE_CLIENT_ID ? 'Set' : 'Missing');
+    console.log('📝 GOOGLE_CLIENT_SECRET:', process.env.GOOGLE_CLIENT_SECRET ? 'Set' : 'Missing');
+    console.log('📝 GOOGLE_REDIRECT_URI:', process.env.GOOGLE_REDIRECT_URI || 'Not set');
+    
+    if (!process.env.GOOGLE_CLIENT_ID) {
+      throw new Error('GOOGLE_CLIENT_ID environment variable is required');
     }
-    return this.oauth2Client;
+    if (!process.env.GOOGLE_CLIENT_SECRET) {
+      throw new Error('GOOGLE_CLIENT_SECRET environment variable is required');
+    }
+    
+    return new google.auth.OAuth2(
+      process.env.GOOGLE_CLIENT_ID,
+      process.env.GOOGLE_CLIENT_SECRET,
+      process.env.GOOGLE_REDIRECT_URI
+    );
   }
 
   getAuthUrl(userId = null) {
-    const oauth2Client = this._ensureOAuth2Client();
+    const oauth2Client = this._createOAuth2Client();
 
     const scopes = ["https://www.googleapis.com/auth/calendar"];
 
@@ -51,7 +50,7 @@ class GoogleCalendarService {
 
   async getTokens(code) {
     try {
-      const oauth2Client = this._ensureOAuth2Client();
+      const oauth2Client = this._createOAuth2Client();
       const { tokens } = await oauth2Client.getToken(code);
       return tokens;
     } catch (error) {
@@ -62,13 +61,14 @@ class GoogleCalendarService {
 
   async initializeCalendar(accessToken, refreshToken) {
     try {
-      const oauth2Client = this._ensureOAuth2Client();
+      const oauth2Client = this._createOAuth2Client();
       oauth2Client.setCredentials({
         access_token: accessToken,
         refresh_token: refreshToken,
       });
 
       // Force token refresh to ensure we have valid credentials
+      let refreshedTokens = null;
       if (refreshToken) {
         try {
           console.log("🔄 Refreshing Google Calendar tokens...");
@@ -76,40 +76,37 @@ class GoogleCalendarService {
           oauth2Client.setCredentials(credentials);
           console.log("✅ Tokens refreshed successfully");
           
-          // Store the refreshed tokens for potential future use
-          this.refreshedTokens = credentials;
+          // Return refreshed tokens so controller can save them
+          refreshedTokens = credentials;
         } catch (refreshError) {
           console.warn("⚠️ Token refresh failed, using provided tokens:", refreshError.message);
           // Continue with provided tokens if refresh fails
         }
       }
 
-      this.calendar = google.calendar({
+      const calendar = google.calendar({
         version: "v3",
         auth: oauth2Client,
       });
-      return true;
+      
+      // Return both the calendar instance and refreshed tokens
+      return { calendar, refreshedTokens };
     } catch (error) {
       console.error("Error initializing calendar:", error);
-      return false;
+      return { calendar: null, refreshedTokens: null };
     }
   }
 
-  // Get refreshed tokens if available
-  getRefreshedTokens() {
-    return this.refreshedTokens || null;
-  }
-
-  async getEvents(timeMin, timeMax, calendarId = null) {
+  async getEvents(calendar, timeMin, timeMax, calendarId = null) {
     try {
-      if (!this.calendar) {
-        throw new Error("Calendar service not initialized. Call initializeCalendar() first.");
+      if (!calendar) {
+        throw new Error("Calendar instance is required");
       }
       
       // Use provided calendarId or fall back to primary calendar
       let targetCalendarId = calendarId;
       if (!targetCalendarId) {
-        targetCalendarId = await this.getPrimaryCalendar();
+        targetCalendarId = await this.getPrimaryCalendar(calendar);
       }
       
       const params = {
@@ -129,7 +126,7 @@ class GoogleCalendarService {
         params.timeMax = timeMax;
       }
 
-      const response = await this.calendar.events.list(params);
+      const response = await calendar.events.list(params);
 
       return response.data.items || [];
     } catch (error) {
@@ -150,13 +147,13 @@ class GoogleCalendarService {
 
 
   // Get the user's primary calendar
-  async getPrimaryCalendar() {
+  async getPrimaryCalendar(calendar) {
     try {
-      if (!this.calendar) {
-        throw new Error("Calendar service not initialized. Call initializeCalendar() first.");
+      if (!calendar) {
+        throw new Error("Calendar instance is required");
       }
       
-      const calendars = await this.calendar.calendarList.list();
+      const calendars = await calendar.calendarList.list();
       const primaryCalendar = calendars.data.items.find(cal => cal.primary === true);
       
       if (!primaryCalendar) {
@@ -172,16 +169,20 @@ class GoogleCalendarService {
   }
 
   // Legacy method - now just returns primary calendar
-  async getOrCreateAppCalendar(userId = 'default') {
+  async getOrCreateAppCalendar(calendar, userId = 'default') {
     console.log(`📅 Using primary calendar for user ${userId} (simplified approach)`);
-    return await this.getPrimaryCalendar();
+    return await this.getPrimaryCalendar(calendar);
   }
 
   // Create a calendar event from a task (using primary calendar)
-  async createEventFromTask(task, calendarId = null) {
+  async createEventFromTask(calendar, task, calendarId = null) {
     try {
+      if (!calendar) {
+        throw new Error("Calendar instance is required");
+      }
+      
       // Use primary calendar if not provided
-      const targetCalendarId = calendarId || await this.getPrimaryCalendar();
+      const targetCalendarId = calendarId || await this.getPrimaryCalendar(calendar);
       
       const event = {
         summary: task.title,
@@ -202,7 +203,7 @@ class GoogleCalendarService {
         }
       };
 
-      const response = await this.calendar.events.insert({
+      const response = await calendar.events.insert({
         calendarId: targetCalendarId,
         resource: event,
       });
@@ -215,10 +216,14 @@ class GoogleCalendarService {
   }
 
   // Update a calendar event from a task (using primary calendar)
-  async updateEventFromTask(task, googleEventId, calendarId = null) {
+  async updateEventFromTask(calendar, task, googleEventId, calendarId = null) {
     try {
+      if (!calendar) {
+        throw new Error("Calendar instance is required");
+      }
+      
       // Use primary calendar if not provided
-      const targetCalendarId = calendarId || await this.getPrimaryCalendar();
+      const targetCalendarId = calendarId || await this.getPrimaryCalendar(calendar);
       
       const event = {
         summary: task.title,
@@ -239,7 +244,7 @@ class GoogleCalendarService {
         }
       };
 
-      const response = await this.calendar.events.update({
+      const response = await calendar.events.update({
         calendarId: targetCalendarId,
         eventId: googleEventId,
         resource: event,
@@ -253,12 +258,16 @@ class GoogleCalendarService {
   }
 
   // Delete a calendar event (using primary calendar)
-  async deleteEvent(googleEventId, calendarId = null) {
+  async deleteEvent(calendar, googleEventId, calendarId = null) {
     try {
-      // Use primary calendar if not provided
-      const targetCalendarId = calendarId || await this.getPrimaryCalendar();
+      if (!calendar) {
+        throw new Error("Calendar instance is required");
+      }
       
-      await this.calendar.events.delete({
+      // Use primary calendar if not provided
+      const targetCalendarId = calendarId || await this.getPrimaryCalendar(calendar);
+      
+      await calendar.events.delete({
         calendarId: targetCalendarId,
         eventId: googleEventId,
       });
