@@ -257,6 +257,12 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   margin: 0;
+  max-width: 300px;
+}
+@media screen and (min-width: 1400px) {
+  .recent-item-title {
+    max-width: 350px;
+  }
 }
 
 .recent-item-case {
