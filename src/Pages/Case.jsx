@@ -234,25 +234,13 @@ const Case = ({ openTaskView, refreshKey }) => {
               <div
                 className="case-practice-areas-wrapper"
                 onClick={() => {
-                  console.log("Practice area clicked:", {
-                    caseId: caseData?.caseId,
-                    isCreatingCase,
-                    isCreatingCaseRef: isCreatingCaseRef.current,
-                  });
                   if (!caseData?.caseId && !isCreatingCaseRef.current) {
                     console.log("Practice area: Creating new case...");
                     newCase().then(() => {
                       setIsAddingArea(true);
                     });
                   } else if (caseData?.caseId) {
-                    console.log(
-                      "Practice area: Opening practice area toggle for existing case"
-                    );
                     setIsAddingArea(true);
-                  } else {
-                    console.log(
-                      "Practice area: Case creation in progress, skipping..."
-                    );
                   }
                 }}
               >

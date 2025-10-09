@@ -803,4 +803,51 @@ export default {
       res.status(400).send(error);
     }
   },
+  newPracticeArea: async (req, res) => {
+    try {
+      console.log("newCasePracticeArea");
+      if (!req.session.user) {
+        return res.status(401).send("User not authenticated");
+      }
+
+      const { name } = req.body;
+
+      const existingArea = await PracticeArea.findOne({ where: { name } });
+
+      let newArea;
+
+      if (!existingArea) {
+        newArea = await PracticeArea.create({
+          name,
+          isActive: true,
+        });
+      } else res.status(500).send("practice area already exists");
+      res.status(201).json(newArea);
+    } catch (error) {
+      console.log(error);
+      res.status(500).send("Failed to add case practice area");
+    }
+  },
+  removePracticeArea: async (req, res) => {
+    try {
+      console.log("removeCasePracticeArea");
+      if (!req.session.user) {
+        return res.status(401).send("User not authenticated");
+      }
+
+      const { id } = req.body;
+
+      const existingArea = await PracticeArea.findOne({
+        where: { practiceAreaId: id },
+      });
+
+      if (existingArea) {
+        await existingArea.destroy();
+      } else res.status(500).send("practice area doesn't exist");
+      res.status(200).send(existingArea);
+    } catch (error) {
+      console.log(error);
+      res.status(500).send("Failed to add case practice area");
+    }
+  },
 };

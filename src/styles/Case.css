@@ -422,6 +422,34 @@ div.case-task-container
 }
 
 /* Practice Area toggle */
+.practice-area-list-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+  color: var(--light-grey);
+  padding-right: 10px;
+}
+#edit-areas:hover {
+  color: black;
+  cursor: pointer;
+}
+#delete-area {
+  color: var(--red);
+}
+#delete-area:hover {
+  color: var(--dark-red);
+}
+.practice-area-item input {
+  padding: 6px 6px;
+  width: 100%;
+  border: 1px solid var(--light-border);
+  border-radius: 5px;
+}
+.practice-area-item input:focus-visible {
+  outline: none;
+}
+
 .practice-area-item {
   cursor: pointer;
   display: flex;

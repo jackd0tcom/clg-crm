@@ -52,6 +52,8 @@ const {
   removeCasePracticeArea,
   getLatestCase,
   archiveCase,
+  newPracticeArea,
+  removePracticeArea,
 } = caseCtrl;
 const {
   getAllTasks,
@@ -123,7 +125,7 @@ if (process.env.NODE_ENV === "production") {
   );
 
   // Rate limiting for sync endpoint (even in development)
-  app.use('/api/sync-auth0-user', syncRateLimit);
+  app.use("/api/sync-auth0-user", syncRateLimit);
 
   // Explicitly remove any security headers
   app.use((req, res, next) => {
@@ -196,6 +198,8 @@ app.post("/api/addCasePracticeArea", addCasePracticeArea);
 app.post("/api/removeCasePracticeArea", removeCasePracticeArea);
 app.get("/api/getPracticeAreas", getPracticeAreas);
 app.get("/api/getLatestCase", getLatestCase);
+app.post("/api/newPracticeArea", newPracticeArea);
+app.delete("/api/removePracticeArea", removePracticeArea);
 
 // Person endpoints
 app.post("/api/updatePerson", updatePerson);
@@ -292,13 +296,15 @@ app.post("/api/cleanup/completed-tasks", cleanupCtrl.cleanupCompletedTasks);
 app.post("/api/cleanup/archived-cases", cleanupCtrl.cleanupArchivedCases);
 app.post("/api/cleanup/full", cleanupCtrl.runFullCleanup);
 
-
-
 ViteExpress.listen(
   app,
   PORT,
   () => {
-    console.log(`live on http://localhost:${PORT} ${process.env.NODE_ENV === "production" ? "production" : "development"}`);
+    console.log(
+      `live on http://localhost:${PORT} ${
+        process.env.NODE_ENV === "production" ? "production" : "development"
+      }`
+    );
 
     // Start automated cleanup scheduler
     cleanupScheduler.start();
