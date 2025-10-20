@@ -1,6 +1,7 @@
 import ActivityLogItem from "./ActivityLogItem";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
+// import CommentInput from "./CommentInput";
 
 const ActivityLog = ({ data }) => {
   const [showAll, setShowAll] = useState(true);
@@ -16,37 +17,52 @@ const ActivityLog = ({ data }) => {
 
   return (
     <div className="activity-log-wrapper">
-      <h2>Activity</h2>
-      <div className="activity-log-items">
-        {!shortList
-          ? data.map((act) => {
-              return (
-                <ActivityLogItem user={user} key={act.activityId} data={act} />
-              );
-            })
-          : showAll
-          ? data.map((act) => {
-              return (
-                <ActivityLogItem user={user} key={act.activityId} data={act} />
-              );
-            })
-          : shortList.map((act) => {
-              return (
-                <ActivityLogItem user={user} key={act.activityId} data={act} />
-              );
-            })}
+      <div>
+        <h2>Activity</h2>
+        <div className="activity-log-items">
+          {!shortList
+            ? data.map((act) => {
+                return (
+                  <ActivityLogItem
+                    user={user}
+                    key={act.activityId}
+                    data={act}
+                  />
+                );
+              })
+            : showAll
+            ? data.map((act) => {
+                return (
+                  <ActivityLogItem
+                    user={user}
+                    key={act.activityId}
+                    data={act}
+                  />
+                );
+              })
+            : shortList.map((act) => {
+                return (
+                  <ActivityLogItem
+                    user={user}
+                    key={act.activityId}
+                    data={act}
+                  />
+                );
+              })}
 
-        <div
-          onClick={() => {
-            if (!showAll) {
-              setShowAll(true);
-            } else setShowAll(false);
-          }}
-          className="activity-show-wrapper"
-        >
-          {shortList && <p>{!showAll ? "See All Activity" : "See Less"}</p>}
+          <div
+            onClick={() => {
+              if (!showAll) {
+                setShowAll(true);
+              } else setShowAll(false);
+            }}
+            className="activity-show-wrapper"
+          >
+            {shortList && <p>{!showAll ? "See All Activity" : "See Less"}</p>}
+          </div>
         </div>
       </div>
+      {/* <CommentInput /> */}
     </div>
   );
 };

@@ -288,6 +288,12 @@ h5 {
   justify-content: space-between;
   column-gap: 10px;
 }
+.activity-log-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - 1rem);
+  justify-content: space-between;
+}
 .activity-log-items {
   display: flex;
   flex-direction: column;
@@ -306,6 +312,33 @@ h5 {
 }
 .activity-log-dot {
   font-size: 5px;
+}
+
+/* Comment Input */
+
+.comment-input-wrapper {
+  display: flex;
+  padding: 12px 12px;
+  width: calc(100% - 2rem);
+  border: 1px solid var(--light-border);
+  border-radius: 5px;
+  background-color: white;
+}
+.comment-input-wrapper input {
+  height: 100%;
+  width: 100%;
+  border: none;
+  outline: none;
+}
+
+#comment-enter-icon {
+  color: var(--grey);
+  font-size: 0.9rem;
+  margin-top: 2px;
+  cursor: pointer;
+}
+#comment-enter-icon:hover {
+  color: var(--bright-dark-green);
 }
 
 /* Date Picker */
