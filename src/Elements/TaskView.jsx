@@ -368,7 +368,11 @@ const TaskView = ({ taskId, setTaskId, isOpen, onClose, onTaskUpdate }) => {
               </div>
             </div>
             <div className="task-view-activity-wrapper">
-              <ActivityLog data={activities} />
+              <ActivityLog
+                data={activities}
+                objectId={taskId}
+                objectType={"task"}
+              />
             </div>
           </>
         ) : (

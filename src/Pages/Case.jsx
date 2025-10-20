@@ -417,7 +417,11 @@ const Case = ({ openTaskView, refreshKey }) => {
           </div>
         </div>
         <div className="case-activity-container">
-          <ActivityLog data={activityData} />
+          <ActivityLog
+            data={activityData}
+            objectId={caseId}
+            objectType={"case"}
+          />
         </div>
       </div>
       <div className="case-task-container">

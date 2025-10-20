@@ -14,6 +14,8 @@ import notificationsCtrl from "./controllers/notificationsCtrl.js";
 import cleanupCtrl from "./controllers/cleanupCtrl.js";
 import cleanupScheduler from "./services/cleanupScheduler.js";
 import adminCtrl from "./controllers/adminCtrl.js";
+import commentCtrl from "./controllers/commentCtrl.js";
+
 import { requireAccess, requireAdmin } from "./middleware/authMiddleware.js";
 import {
   setupSecurityMiddleware,
@@ -33,6 +35,7 @@ validateEnvironment();
 
 const { updatePerson, newPerson, deletePerson } = personCtrl;
 const { getUser, getUsers } = userCtrl;
+const { createComment } = commentCtrl;
 
 const {
   getCases,
@@ -249,6 +252,9 @@ app.post("/api/notifications/mark-read", markAsRead);
 app.post("/api/notifications/mark-clear", markAsCleared);
 app.get("/api/notifications/unread-count", getUnreadCount);
 app.post("/api/notifications/mark-all-read", markAllAsRead);
+
+// Comment endpoints
+app.post("/api/createComment", createComment);
 
 // user access check endpoint
 app.get("/api/user/check-access", adminCtrl.checkUserAccess);

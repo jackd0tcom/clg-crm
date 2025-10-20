@@ -8,6 +8,37 @@
 @import "./Profile.css";
 @import "./Admin.css";
 
+#root {
+  --root-bg-color-dark: rgb(18, 18, 18);
+  --main-bg-color-dark: rgb(26, 26, 26);
+  --root-bg-color-light: rgb(246, 246, 246);
+  --super-light-grey: rgb(252, 252, 252);
+  --main-bg-color-light: rgb(255, 255, 255);
+  --light-grey: rgb(161, 161, 161);
+  --grey: rgb(109, 109, 109);
+  --dark-grey: rgb(54, 54, 54);
+  --medium-border: rgb(210, 210, 210);
+  --light-border: rgb(225, 225, 225);
+  --clg-green: #08331d;
+  --red: #ff3f6f;
+  --dark-red: #c42f54;
+  --blue: #648dff;
+  --purple: #b651f5;
+  --bright-green: rgb(67, 138, 100);
+  --bright-dark-green: rgb(47, 98, 73);
+  --button-active-font: rgb(33, 98, 75);
+  --button-active-bg: rgb(226, 255, 242);
+  --button-active-bg-hover: rgb(194, 242, 220);
+  --button-active-border: rgb(205, 239, 205);
+  --white-bg: white;
+  --gradient: linear-gradient(
+    90deg,
+    rgba(42, 123, 155, 1) 0%,
+    rgba(87, 199, 133, 1) 50%,
+    rgba(237, 221, 83, 1) 100%
+  );
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     background-color: var(--root-bg-color-light);
@@ -33,6 +64,9 @@
     background-color: var(--root-bg-color-dark);
     color: white;
   }
+  .app-wrapper {
+    background-image: url("../assets/clg-crm-bg.jpg");
+  }
   .page-wrapper {
     background-color: var(--main-bg-color-dark);
   }
@@ -45,6 +79,27 @@
   }
   .inactive-nav {
     color: white;
+  }
+  #root {
+    --root-bg-color-light: #0a0a0a;
+    --light-border: #2a2a2a;
+    --super-light-grey: #171717;
+  }
+  .widget-container,
+  .widget-header,
+  .case-card-wrapper,
+  .notes-textarea,
+  .task-view-wrapper {
+    background-color: #0a0a0a !important;
+  }
+  .comment-input-wrapper {
+    background-color: #3b3b3b !important;
+  }
+  .case-card-head,
+  .phase-icon-wrapper,
+  .notes-heading,
+  .tasks-list-head p {
+    color: white !important;
   }
 }
 
@@ -110,36 +165,6 @@
 }
 
 /* General */
-#root {
-  --root-bg-color-dark: rgb(18, 18, 18);
-  --main-bg-color-dark: rgb(26, 26, 26);
-  --root-bg-color-light: rgb(246, 246, 246);
-  --super-light-grey: rgb(252, 252, 252);
-  --main-bg-color-light: rgb(255, 255, 255);
-  --light-grey: rgb(161, 161, 161);
-  --grey: rgb(109, 109, 109);
-  --dark-grey: rgb(54, 54, 54);
-  --medium-border: rgb(210, 210, 210);
-  --light-border: rgb(225, 225, 225);
-  --clg-green: #08331d;
-  --red: #ff3f6f;
-  --dark-red: #c42f54;
-  --blue: #648dff;
-  --purple: #b651f5;
-  --bright-green: rgb(67, 138, 100);
-  --bright-dark-green: rgb(47, 98, 73);
-  --button-active-font: rgb(33, 98, 75);
-  --button-active-bg: rgb(226, 255, 242);
-  --button-active-bg-hover: rgb(194, 242, 220);
-  --button-active-border: rgb(205, 239, 205);
-  --white-bg: white;
-  --gradient: linear-gradient(
-    90deg,
-    rgba(42, 123, 155, 1) 0%,
-    rgba(87, 199, 133, 1) 50%,
-    rgba(237, 221, 83, 1) 100%
-  );
-}
 
 a {
   text-decoration: none;

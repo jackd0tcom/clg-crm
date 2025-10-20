@@ -1,9 +1,9 @@
 import ActivityLogItem from "./ActivityLogItem";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-// import CommentInput from "./CommentInput";
+import CommentInput from "./CommentInput";
 
-const ActivityLog = ({ data }) => {
+const ActivityLog = ({ data, objectType, objectId }) => {
   const [showAll, setShowAll] = useState(true);
   const [shortList, setShortList] = useState();
   const user = useSelector((state) => state.user);
@@ -62,7 +62,7 @@ const ActivityLog = ({ data }) => {
           </div>
         </div>
       </div>
-      {/* <CommentInput /> */}
+      <CommentInput objectType={objectType} objectId={objectId} />
     </div>
   );
 };

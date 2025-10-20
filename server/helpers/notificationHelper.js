@@ -742,3 +742,53 @@ export const notifyCaseUnassigned = async (
     console.error("Error creating case unassignment notifications:", error);
   }
 };
+
+/**
+ * Create notifications for comment creation
+ * @param {Object} object - Case or Task object
+ * @param {number} actorId - The user who created the comment
+ * @param {string} actorName - The name of the user who created the comment
+ */
+export const notifyCommentCreated = async ({ object, actorId, actorName }) => {
+  try {
+    console.log(
+      `🔔 Creating comment creation notifications for ${object.objectType} ${object.objectId}`
+    );
+
+    let recipients;
+
+    if (object.objectType === "case") {
+      console.log("case");
+      recipients = await getCaseNotificationRecipients(
+        object.objectId,
+        actorId
+      );
+    } else
+      recipients = await getTaskNotificationRecipients(
+        object.objectId,
+        actorId
+      );
+
+    console.log(
+      `📋 Found ${recipients.length} recipients for comment creation`
+    );
+
+    for (const recipient of recipients) {
+      if (recipient.userId === actorId) {
+        return;
+      }
+      // Everyone gets notified of every comment
+      else
+        await createNotification(
+          recipient.userId,
+          NOTIFICATION_TYPES.COMMENT_ADDED,
+          object.objectType,
+          object.objectId,
+          `${actorName} added a new comment "${object.content}"`
+        );
+      console.log(`📢 Notified owner ${recipient.userId} of comment creation`);
+    }
+  } catch (error) {
+    console.error("Error creating comment creation notifications:", error);
+  }
+};

@@ -1,4 +1,10 @@
-import { ActivityLog, User, ActivityReaders, Person } from "../model.js";
+import {
+  ActivityLog,
+  User,
+  ActivityReaders,
+  Person,
+  Comment,
+} from "../model.js";
 import { Op } from "sequelize";
 
 export default {
@@ -92,13 +98,49 @@ export default {
               "lastName",
               "profilePic",
             ],
-            required: false, // This makes it a LEFT JOIN
+            required: false,
           },
         ],
-        order: [["createdAt", "DESC"]],
       });
 
-      res.status(200).json(activities);
+      // Get all comments for this case
+      const comments = await Comment.findAll({
+        where: {
+          objectType: "case",
+          objectId: caseId,
+        },
+        include: [
+          {
+            model: User,
+            as: "author",
+            attributes: [
+              "userId",
+              "username",
+              "firstName",
+              "lastName",
+              "profilePic",
+            ],
+          },
+        ],
+      });
+
+      // Add a type discriminator to each item
+      const activitiesWithType = activities.map((a) => ({
+        ...a.toJSON(),
+        itemType: "activity",
+      }));
+
+      const commentsWithType = comments.map((c) => ({
+        ...c.toJSON(),
+        itemType: "comment",
+      }));
+
+      // Merge and sort by createdAt descending
+      const combinedFeed = [...activitiesWithType, ...commentsWithType].sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      );
+
+      res.status(200).json(combinedFeed);
     } catch (error) {
       console.log(error);
       res.status(500).send("Error fetching case activities");
