@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
 
-const CommentInput = ({ objectType, objectId }) => {
+const CommentInput = ({ objectType, objectId, refreshActivityData }) => {
   const [comment, setComment] = useState("");
 
   const createComment = async () => {
@@ -11,6 +11,8 @@ const CommentInput = ({ objectType, objectId }) => {
         objectId,
         content: comment,
       });
+      setComment("");
+      refreshActivityData();
       console.log(res);
     } catch (error) {
       console.log(error);

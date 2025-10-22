@@ -312,6 +312,7 @@ h5 {
   display: flex;
   justify-content: space-between;
   column-gap: 10px;
+  padding: 1px 10px;
 }
 .activity-log-wrapper {
   display: flex;
@@ -323,7 +324,7 @@ h5 {
   display: flex;
   flex-direction: column;
   row-gap: 10px;
-  max-height: 82vh;
+  max-height: 50vh;
   overflow-y: scroll;
   scrollbar-width: thin;
 }
@@ -364,6 +365,43 @@ h5 {
 }
 #comment-enter-icon:hover {
   color: var(--bright-dark-green);
+}
+
+/* Comment Items */
+.comment-item-wrapper {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--light-border);
+  border-radius: 5px;
+  background-color: white;
+  margin: 2px 0px;
+}
+.comment-item-header {
+  display: flex;
+  align-items: center;
+  column-gap: 1rem;
+  justify-content: space-between;
+  padding: 10px;
+  border-bottom: 1px solid var(--light-border);
+}
+.comment-item-header-user {
+  display: flex;
+  align-items: center;
+  column-gap: 10px;
+  font-size: 0.9rem;
+}
+#comment-profile-pic {
+  width: 25px;
+  height: auto;
+  border-radius: 50%;
+}
+.comment-item-date {
+  font-size: 0.8rem;
+  color: var(--grey);
+}
+.comment-item-comment {
+  padding: 10px;
+  font-size: 0.9rem;
 }
 
 /* Date Picker */

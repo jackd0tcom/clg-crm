@@ -1,4 +1,5 @@
 import ActivityLogItem from "./ActivityLogItem";
+import CommentItem from "./CommentItem";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import CommentInput from "./CommentInput";
@@ -11,7 +12,7 @@ const ActivityLog = ({ data, objectType, objectId }) => {
   useEffect(() => {
     if (data.length > 8) {
       setShowAll(false);
-      setShortList(data.slice(0, 7));
+      setShortList(data.slice(data.length - 7, data.length));
     }
   }, [data]);
 
@@ -22,32 +23,41 @@ const ActivityLog = ({ data, objectType, objectId }) => {
         <div className="activity-log-items">
           {!shortList
             ? data.map((act) => {
-                return (
-                  <ActivityLogItem
-                    user={user}
-                    key={act.activityId}
-                    data={act}
-                  />
-                );
+                if (act.itemType === "comment") {
+                  return <CommentItem data={act} />;
+                } else
+                  return (
+                    <ActivityLogItem
+                      user={user}
+                      key={act.activityId}
+                      data={act}
+                    />
+                  );
               })
             : showAll
             ? data.map((act) => {
-                return (
-                  <ActivityLogItem
-                    user={user}
-                    key={act.activityId}
-                    data={act}
-                  />
-                );
+                if (act.itemType === "comment") {
+                  return <CommentItem data={act} />;
+                } else
+                  return (
+                    <ActivityLogItem
+                      user={user}
+                      key={act.activityId}
+                      data={act}
+                    />
+                  );
               })
             : shortList.map((act) => {
-                return (
-                  <ActivityLogItem
-                    user={user}
-                    key={act.activityId}
-                    data={act}
-                  />
-                );
+                if (act.itemType === "comment") {
+                  return <CommentItem data={act} />;
+                } else
+                  return (
+                    <ActivityLogItem
+                      user={user}
+                      key={act.activityId}
+                      data={act}
+                    />
+                  );
               })}
 
           <div

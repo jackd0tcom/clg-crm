@@ -137,7 +137,7 @@ export default {
 
       // Merge and sort by createdAt descending
       const combinedFeed = [...activitiesWithType, ...commentsWithType].sort(
-        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
       );
 
       res.status(200).json(combinedFeed);
