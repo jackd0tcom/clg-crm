@@ -102,12 +102,12 @@ export function findTimeDifference(data) {
     }
 
     // Tomorrow
-    if (futureDays === 1) {
+    if (futureDays === 0) {
       return "1Tomorrow";
     }
 
     // Within current work week (next 7 days)
-    if (futureDays <= 7) {
+    if (futureDays <= 6) {
       const dayNames = [
         "1Sunday",
         "1Monday",
@@ -121,7 +121,7 @@ export function findTimeDifference(data) {
     }
 
     // Farther in the future - use formatDateNoTime
-    return "0" + formatDateNoTime(data);
+    return "1" + formatDateNoTime(data);
   }
 
   // For past dates (positive diffInMs)

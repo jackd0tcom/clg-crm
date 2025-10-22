@@ -245,7 +245,9 @@ const Case = ({ openTaskView, refreshKey }) => {
                 }}
               >
                 {isNewCase || caseData.practiceAreas.length < 1 ? (
-                  <a className="case-practice-area">Add Practice Area</a>
+                  <a className="case-practice-area no-area">
+                    Add Practice Area
+                  </a>
                 ) : (
                   formatPracticeAreas(caseData.practiceAreas)
                 )}
