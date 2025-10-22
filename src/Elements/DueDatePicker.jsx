@@ -16,28 +16,33 @@ const DueDatePicker = ({
   const onDateChange = async (date) => {
     try {
       if (taskId) {
-        if (date !== currentDate) {
-          await axios
-            .post("/api/updateTask", {
-              fieldName: "dueDate",
-              value: date,
-              taskId,
-            })
-            .then((res) => {
-              if (refreshTaskActivityData) {
-                refreshTaskActivityData();
-              }
-              if (onTaskUpdate) {
-                onTaskUpdate();
-              }
-            });
-        } else {
-          // For new tasks, just update the local state
-          setDueDate(date);
-          if (onTaskUpdate) {
-            onTaskUpdate();
+        if (currentDate) {
+          if (date) {
+            const current = new Date(currentDate);
+            if (
+              date.getFullYear() === current.getFullYear() &&
+              date.getMonth() === current.getMonth() &&
+              date.getDate() === current.getDate()
+            ) {
+              return;
+            }
           }
         }
+        await axios
+          .post("/api/updateTask", {
+            fieldName: "dueDate",
+            value: date,
+            taskId,
+          })
+          .then((res) => {
+            setDueDate(date);
+            if (refreshTaskActivityData) {
+              refreshTaskActivityData();
+            }
+            if (onTaskUpdate) {
+              onTaskUpdate();
+            }
+          });
       }
     } catch (error) {
       console.log(error);
@@ -55,7 +60,6 @@ const DueDatePicker = ({
         selected={dueDate}
         isClearable
         onChange={(date) => {
-          console.log("changed");
           setDueDate(date);
           onDateChange(date);
         }}
