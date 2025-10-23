@@ -314,19 +314,34 @@ h5 {
   column-gap: 10px;
   padding: 1px 10px;
 }
+.task-view-activity-wrapper .activity-log-wrapper {
+  max-height: 85vh;
+}
+@media screen and (max-height: 900px) {
+  .task-view-activity-wrapper .activity-log-wrapper {
+    max-height: 80vh;
+  }
+}
+@media screen and (max-height: 730px) {
+  .task-view-activity-wrapper .activity-log-wrapper {
+    max-height: 75vh;
+  }
+}
 .activity-log-wrapper {
   display: flex;
   flex-direction: column;
   height: calc(100% - 1rem);
-  justify-content: space-between;
+  max-height: 60vh;
+  overflow: hidden;
+  margin-bottom: 70px;
 }
 .activity-log-items {
   display: flex;
   flex-direction: column;
   row-gap: 10px;
-  max-height: 43vh;
   overflow-y: scroll;
   scrollbar-width: thin;
+  height: 100%;
 }
 .activity-log-item-p {
   display: flex;

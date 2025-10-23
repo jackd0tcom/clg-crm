@@ -132,6 +132,7 @@
 /* Case page */
 .case-container {
   display: grid;
+  grid-template-rows: 1.75fr 1fr;
   height: 100%;
   overflow-y: scroll;
 }
@@ -139,7 +140,6 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0;
-  height: 100%;
   position: relative;
 }
 .case-task-container {

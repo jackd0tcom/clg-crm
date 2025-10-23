@@ -13,7 +13,6 @@ const CommentInput = ({ objectType, objectId, refreshActivityData }) => {
       });
       setComment("");
       refreshActivityData();
-      console.log(res);
     } catch (error) {
       console.log(error);
     }
@@ -30,7 +29,6 @@ const CommentInput = ({ objectType, objectId, refreshActivityData }) => {
         }}
         onKeyDown={(e) => {
           if (e.key === "Enter" && !e.shiftKey) {
-            console.log(e.key);
             e.preventDefault();
             createComment();
           }

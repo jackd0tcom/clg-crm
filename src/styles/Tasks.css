@@ -319,6 +319,7 @@
   border-left: 1px solid var(--light-border);
   padding: 0px 15px;
   background-color: var(--root-bg-color-light);
+  position: relative;
 }
 .task-view-header {
   display: flex;

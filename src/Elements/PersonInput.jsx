@@ -1,3 +1,4 @@
+import Input from "react-phone-number-input";
 import { format } from "../helpers/helperFunctions";
 import { useState, useEffect } from "react";
 import { useRef } from "react";
@@ -19,6 +20,14 @@ const PersonInput = ({
   const [isSaving, setIsSaving] = useState(false);
   const inputRef = useRef(null);
   const isSavingRef = useRef(false);
+
+  const checkNumber = () => {
+    if (fieldName === "phoneNumber") {
+      const number = input;
+      setInput(number.slice(1));
+      console.log(number.slice());
+    }
+  };
 
   const saveInput = async () => {
     // Prevent duplicate saves
@@ -121,22 +130,36 @@ const PersonInput = ({
       <label className="person-input-label" id={fieldName}>
         {format(fieldName)}
       </label>
-      <input
-        onChange={(e) => {
-          setInput(e.target.value);
-          setCount((prevCount) => prevCount + 1);
-        }}
-        id={fieldName}
-        name={fieldName}
-        type="text"
-        value={input}
-        onBlur={handleBlur}
-        onKeyDown={handleEnter}
-        onAnimationStart={handleAnimationStart}
-        ref={inputRef}
-        className="person-input-field"
-        autoComplete="on"
-      />
+      {fieldName === "phoneNumber" ? (
+        <Input
+          international={false}
+          country="US"
+          value={input}
+          onChange={(e) => {
+            console.log(e);
+            setInput(e);
+            setCount((prevCount) => prevCount + 1);
+          }}
+          onBlur={checkNumber}
+        />
+      ) : (
+        <input
+          onChange={(e) => {
+            setInput(e.target.value);
+            setCount((prevCount) => prevCount + 1);
+          }}
+          id={fieldName}
+          name={fieldName}
+          type="text"
+          value={input}
+          onBlur={handleBlur}
+          onKeyDown={handleEnter}
+          onAnimationStart={handleAnimationStart}
+          ref={inputRef}
+          className="person-input-field"
+          autoComplete="on"
+        />
+      )}
     </div>
   );
 };

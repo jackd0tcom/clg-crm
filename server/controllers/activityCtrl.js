@@ -189,7 +189,44 @@ export default {
         order: [["createdAt", "DESC"]],
       });
 
-      res.status(200).json(activities);
+      // Get all comments for this task
+      const comments = await Comment.findAll({
+        where: {
+          objectType: "task",
+          objectId: taskId,
+        },
+        include: [
+          {
+            model: User,
+            as: "author",
+            attributes: [
+              "userId",
+              "username",
+              "firstName",
+              "lastName",
+              "profilePic",
+            ],
+          },
+        ],
+      });
+
+      // Add a type discriminator to each item
+      const activitiesWithType = activities.map((a) => ({
+        ...a.toJSON(),
+        itemType: "activity",
+      }));
+
+      const commentsWithType = comments.map((c) => ({
+        ...c.toJSON(),
+        itemType: "comment",
+      }));
+
+      // Merge and sort by createdAt descending
+      const combinedFeed = [...activitiesWithType, ...commentsWithType].sort(
+        (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+      );
+
+      res.status(200).json(combinedFeed);
     } catch (error) {
       console.log(error);
       res.status(500).send("Error fetching case activities");
