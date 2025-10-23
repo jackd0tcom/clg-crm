@@ -372,6 +372,7 @@ const TaskView = ({ taskId, setTaskId, isOpen, onClose, onTaskUpdate }) => {
                 data={activities}
                 objectId={taskId}
                 objectType={"task"}
+                refreshActivityData={refreshTaskActivityData}
               />
             </div>
           </>

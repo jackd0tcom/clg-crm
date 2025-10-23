@@ -24,9 +24,16 @@ const CommentInput = ({ objectType, objectId, refreshActivityData }) => {
       className="comment-input-wrapper
   "
     >
-      <input
+      <textarea
         onChange={(e) => {
           setComment(e.target.value);
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && !e.shiftKey) {
+            console.log(e.key);
+            e.preventDefault();
+            createComment();
+          }
         }}
         value={comment}
         type="text"

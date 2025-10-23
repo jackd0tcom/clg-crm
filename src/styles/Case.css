@@ -213,7 +213,8 @@
 /* Phase */
 .phase-toggle-item {
   z-index: 11;
-  padding: 8px 16px;
+  padding: 6px 12px;
+  margin-bottom: 5px;
   cursor: pointer;
   border-radius: 5px;
   border: 1px solid transparent;
@@ -370,6 +371,7 @@ div.case-task-container
   overflow-y: auto;
   scrollbar-width: none;
   height: 100%;
+  position: relative;
 }
 .case-stats-wrapper {
   display: grid;

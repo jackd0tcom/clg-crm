@@ -324,7 +324,7 @@ h5 {
   display: flex;
   flex-direction: column;
   row-gap: 10px;
-  max-height: 50vh;
+  max-height: 43vh;
   overflow-y: scroll;
   scrollbar-width: thin;
 }
@@ -343,24 +343,31 @@ h5 {
 /* Comment Input */
 
 .comment-input-wrapper {
+  position: absolute;
+  bottom: 10px;
+  width: calc(100% - 4rem);
   display: flex;
   padding: 12px 12px;
-  width: calc(100% - 2rem);
   border: 1px solid var(--light-border);
   border-radius: 5px;
   background-color: white;
+  column-gap: 1rem;
+  align-items: flex-end;
+  box-shadow: 0px -10px 0px 0px var(--root-bg-color-light);
 }
-.comment-input-wrapper input {
-  height: 100%;
+.comment-input-wrapper textarea {
   width: 100%;
   border: none;
   outline: none;
+  field-sizing: content;
+  resize: none;
+  font-family: inherit;
 }
 
 #comment-enter-icon {
   color: var(--grey);
   font-size: 0.9rem;
-  margin-top: 2px;
+  margin-bottom: 2px;
   cursor: pointer;
 }
 #comment-enter-icon:hover {
@@ -401,7 +408,7 @@ h5 {
 }
 .comment-item-comment {
   padding: 10px;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
 }
 
 /* Date Picker */
@@ -652,13 +659,29 @@ div.date-picker-wrapper > div > div > input[type="text"] {
   flex-direction: column;
 }
 /* Activity */
-.activity-show-wrapper p {
+.activity-show-wrapper {
+  background-color: var(--root-bg-color-light);
+  width: calc(100% - 3rem);
+  padding-bottom: 10px;
+  display: flex;
+  align-items: center;
+  column-gap: 5px;
+}
+.activity-show-wrapper p,
+.activity-show-wrapper i {
   margin: 0;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: var(--dark-grey);
   cursor: pointer;
   margin-top: 10px;
 }
+.activity-show-wrapper i {
+  font-size: 0.7rem;
+}
+.activity-show-wrapper p:hover,
 .activity-show-wrapper p:hover {
   color: black;
+}
+#activity-heading {
+  margin-bottom: 3px;
 }
