@@ -2,19 +2,21 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 
 const CommentInput = ({ objectType, objectId, refreshActivityData }) => {
-  const [comment, setComment] = useState("");
+  const [comment, setComment] = useState();
 
   const createComment = async () => {
-    try {
-      const res = await axios.post("/api/createComment", {
-        objectType,
-        objectId,
-        content: comment,
-      });
-      setComment("");
-      refreshActivityData();
-    } catch (error) {
-      console.log(error);
+    if (comment !== " ") {
+      try {
+        const res = await axios.post("/api/createComment", {
+          objectType,
+          objectId,
+          content: comment,
+        });
+        setComment("");
+        refreshActivityData();
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
