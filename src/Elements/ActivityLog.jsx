@@ -11,7 +11,7 @@ const ActivityLog = ({ data, objectType, objectId, refreshActivityData }) => {
   const activityLogRef = useRef(null);
 
   useEffect(() => {
-    if (data.length > 8) {
+    if (data.length > 10) {
       setShowAll(false);
       setShortList(data.slice(data.length - 10, data.length));
     }

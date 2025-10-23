@@ -368,7 +368,6 @@ div.case-task-container
   background-color: var(--root-bg-color-light);
   border-radius: 5px;
   padding: 0px 20px;
-  overflow-y: auto;
   scrollbar-width: none;
   height: 100%;
   position: relative;
