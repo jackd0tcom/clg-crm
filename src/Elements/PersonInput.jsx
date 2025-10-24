@@ -1,4 +1,4 @@
-import Input from "react-phone-number-input";
+// import Input from "react-phone-number-input";
 import { format } from "../helpers/helperFunctions";
 import { useState, useEffect } from "react";
 import { useRef } from "react";
@@ -130,36 +130,22 @@ const PersonInput = ({
       <label className="person-input-label" id={fieldName}>
         {format(fieldName)}
       </label>
-      {fieldName === "phoneNumber" ? (
-        <Input
-          international={false}
-          country="US"
-          value={input}
-          onChange={(e) => {
-            console.log(e);
-            setInput(e);
-            setCount((prevCount) => prevCount + 1);
-          }}
-          onBlur={checkNumber}
-        />
-      ) : (
-        <input
-          onChange={(e) => {
-            setInput(e.target.value);
-            setCount((prevCount) => prevCount + 1);
-          }}
-          id={fieldName}
-          name={fieldName}
-          type="text"
-          value={input}
-          onBlur={handleBlur}
-          onKeyDown={handleEnter}
-          onAnimationStart={handleAnimationStart}
-          ref={inputRef}
-          className="person-input-field"
-          autoComplete="on"
-        />
-      )}
+      <input
+        onChange={(e) => {
+          setInput(e.target.value);
+          setCount((prevCount) => prevCount + 1);
+        }}
+        id={fieldName}
+        name={fieldName}
+        type="text"
+        value={input}
+        onBlur={handleBlur}
+        onKeyDown={handleEnter}
+        onAnimationStart={handleAnimationStart}
+        ref={inputRef}
+        className="person-input-field"
+        autoComplete="on"
+      />
     </div>
   );
 };
