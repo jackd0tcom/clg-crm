@@ -1,6 +1,6 @@
 import InputMask from "react-input-mask";
 
-const SSNInput = ({
+const DOBInput = ({
   input,
   setInput,
   handleBlur,
@@ -11,17 +11,18 @@ const SSNInput = ({
   return (
     <InputMask
       className="person-input-field"
-      mask="999 99 9999"
+      mask="9999-99-99"
       value={input}
       onChange={(e) => {
+        console.log(e.target.value);
         setInput(e.target.value);
         setCount((prevCount) => prevCount + 1);
       }}
       inputRef={inputRef}
       onBlur={handleBlur}
       onKeyDown={handleEnter}
-      placeholder={"000 00 0000"}
+      placeholder={"1999-01-01"}
     ></InputMask>
   );
 };
-export default SSNInput;
+export default DOBInput;

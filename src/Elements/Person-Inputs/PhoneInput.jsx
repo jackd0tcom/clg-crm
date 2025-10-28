@@ -21,6 +21,7 @@ const PhoneInput = ({
       inputRef={inputRef}
       onBlur={handleBlur}
       onKeyDown={handleEnter}
+      placeholder={"(123) 456 - 7890"}
     ></InputMask>
   );
 };

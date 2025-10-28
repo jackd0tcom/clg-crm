@@ -2,8 +2,10 @@ import { format } from "../../helpers/helperFunctions";
 import { useState, useEffect } from "react";
 import { useRef } from "react";
 import axios from "axios";
+import InputMask from "react-input-mask";
 import PhoneInput from "./PhoneInput";
 import SSNInput from "./SSNInput";
+import DOBInput from "./DOBInput";
 
 const PersonInput = ({
   fieldName,
@@ -21,8 +23,45 @@ const PersonInput = ({
   const [isSaving, setIsSaving] = useState(false);
   const inputRef = useRef(null);
   const isSavingRef = useRef(false);
+  const masks = {
+    firstName: null,
+    lastName: null,
+    address: null,
+    city: null,
+    state: "aa",
+    zip: "99999",
+    phoneNumber: "(999) 999 - 9999",
+    dob: "9999-99-99",
+    county: null,
+    SSN: "999 99 9999",
+  };
+  const placeholders = {
+    firstName: "John",
+    lastName: "Doe",
+    address: "1234 Cherry Ln",
+    city: "Los Angeles",
+    state: "CA",
+    zip: "12345",
+    phoneNumber: "(123) 456 - 7890",
+    dob: "1999-01-01",
+    county: "Los Angeles",
+    SSN: "123 56 7890",
+  };
+  const formats = {
+    firstName: "a",
+    lastName: "a",
+    address: "*",
+    city: "a",
+    state: null,
+    zip: null,
+    phoneNumber: null,
+    dob: null,
+    county: "a",
+    SSN: null,
+  };
 
   const saveNumber = async () => {
+    console.log("save Number");
     // Prevent duplicate saves
     if (isSavingRef.current || count === 0) {
       return;
@@ -74,6 +113,7 @@ const PersonInput = ({
     if (isSavingRef.current || count === 0) {
       return;
     }
+    console.log("save input", input);
 
     if (value === input) {
       return;
@@ -99,6 +139,7 @@ const PersonInput = ({
         await axios
           .post("/api/updatePerson", { personId, fieldName, value: input })
           .then((res) => {
+            console.log("saved", res.data);
             if (res.status === 200) {
               refreshActivityData();
               refreshCaseData();
@@ -123,6 +164,7 @@ const PersonInput = ({
     }
   };
 
+  // Sets up save timer
   useEffect(() => {
     clearSaveTimer();
     saveTimer.current = setTimeout(() => {
@@ -138,7 +180,7 @@ const PersonInput = ({
   const handleBlur = () => {
     clearSaveTimer();
     if (!isSavingRef.current) {
-      if (fieldName === "phoneNumber" || "SSN") {
+      if (fieldName === "phoneNumber" || fieldName === "SSN") {
         saveNumber();
       } else saveInput();
     }
@@ -148,7 +190,7 @@ const PersonInput = ({
     if (e.key === "Enter") {
       clearSaveTimer();
       if (!isSavingRef.current) {
-        if (fieldName === "phoneNumber" || "SSN") {
+        if (fieldName === "phoneNumber" || fieldName === "SSN") {
           saveNumber();
         } else saveInput();
       }
@@ -178,42 +220,20 @@ const PersonInput = ({
       <label className="person-input-label" id={fieldName}>
         {format(fieldName)}
       </label>
-      {fieldName === "phoneNumber" ? (
-        <PhoneInput
-          input={input}
-          setInput={setInput}
-          handleBlur={handleBlur}
-          handleEnter={handleEnter}
-          inputRef={inputRef}
-          setCount={setCount}
-        />
-      ) : fieldName === "SSN" ? (
-        <SSNInput
-          input={input}
-          setInput={setInput}
-          handleBlur={handleBlur}
-          handleEnter={handleEnter}
-          inputRef={inputRef}
-          setCount={setCount}
-        />
-      ) : (
-        <input
-          onChange={(e) => {
-            setInput(e.target.value);
-            setCount((prevCount) => prevCount + 1);
-          }}
-          id={fieldName}
-          name={fieldName}
-          type="text"
-          value={input}
-          onBlur={handleBlur}
-          onKeyDown={handleEnter}
-          onAnimationStart={handleAnimationStart}
-          ref={inputRef}
-          className="person-input-field"
-          autoComplete="on"
-        />
-      )}
+      <InputMask
+        className="person-input-field"
+        mask={masks[fieldName]}
+        value={input}
+        onChange={(e) => {
+          setInput(e.target.value);
+          setCount((prevCount) => prevCount + 1);
+        }}
+        formatChars={formats[fieldName]}
+        inputRef={inputRef}
+        onBlur={handleBlur}
+        onKeyDown={handleEnter}
+        placeholder={placeholders[fieldName]}
+      ></InputMask>
     </div>
   );
 };
