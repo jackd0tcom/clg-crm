@@ -324,6 +324,11 @@
   padding: 15px;
   color: var(--dark-grey);
 }
+.cases-number {
+  font-size: 0.9rem;
+  color: var(--light-grey);
+  margin-left: 5px;
+}
 .add-case-button-home {
   padding: 3px 6px !important;
 }

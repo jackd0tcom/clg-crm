@@ -1,4 +1,4 @@
-import PersonInput from "./PersonInput";
+import PersonInput from "./Person-Inputs/PersonInput";
 import axios from "axios";
 import { useState, useEffect, useRef } from "react";
 import Confirm from "./ConfirmModal";

@@ -38,6 +38,7 @@ const CasesWidget = ({ loading, setLoading, userSynced }) => {
           className="widget-container-heading"
         >
           My Cases
+          <span className="cases-number">{`(${cases.length})`}</span>
         </p>
         <a
           className="button button-primary add-case-button-home"
