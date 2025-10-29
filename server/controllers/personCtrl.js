@@ -47,7 +47,7 @@ export default {
       res.status(200).send("Saved Person Successfully");
     } catch (err) {
       console.log(err);
-      res.status(500).send("Failed to update person", err);
+      res.status(500).send(err);
     }
   },
   newPerson: async (req, res) => {

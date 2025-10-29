@@ -8,7 +8,7 @@ import Loader from "../Elements/Loader";
 
 const CaseList = ({ openTaskView, refreshKey }) => {
   const navigate = useNavigate();
-  const [cases, setCases] = useState();
+  const [cases, setCases] = useState([]);
   const [originalCases, setOriginalCases] = useState();
   const [isFetched, setIsFetched] = useState(false);
   const [showArchived, setShowArchived] = useState(false);
@@ -41,7 +41,12 @@ const CaseList = ({ openTaskView, refreshKey }) => {
   ) : (
     <div className="case-list-wrapper">
       <div className="case-list-head">
-        <h1 className="section-heading">My Cases</h1>
+        <div className="case-list-head-heading-wrapper">
+          <h1 className="section-heading">My Cases</h1>
+          <div className="case-count-wrapper">
+            <p className="case-count">{cases.length} Open Cases</p>
+          </div>
+        </div>
         <CaseFilter
           cases={cases}
           setCases={setCases}

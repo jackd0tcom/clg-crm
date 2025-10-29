@@ -131,40 +131,11 @@ const PersonInput = ({
     }
   };
 
-  const saveTimer = useRef(null);
-
-  const clearSaveTimer = () => {
-    if (saveTimer.current) {
-      clearTimeout(saveTimer.current);
-      saveTimer.current = null;
-    }
-  };
-
-  // Sets up save timer
-  useEffect(() => {
-    clearSaveTimer();
-    saveTimer.current = setTimeout(() => {
-      // Allow saving even if input is empty (user might have deleted the value)
-      if (input !== undefined && !isSavingRef.current && count > 0) {
-        if (fieldName === "phoneNumber" || fieldName === "SSN") {
-          const data = input.replace(/[^0-9]/g, "");
-          saveInput(data);
-        } else {
-          saveInput(input);
-        }
-      }
-    }, 2000);
-    return () => {
-      clearSaveTimer();
-    };
-  }, [input]);
-
   const handleBlur = () => {
     setEditing(false);
     if (count === 0) {
       return;
     }
-    clearSaveTimer();
     if (!isSavingRef.current) {
       if (fieldName === "phoneNumber" || fieldName === "SSN") {
         const data = input.replace(/[^0-9]/g, "");
@@ -179,14 +150,19 @@ const PersonInput = ({
       return;
     }
     if (e.key === "Enter") {
-      clearSaveTimer();
       if (!isSavingRef.current) {
-        if (fieldName === "phoneNumber" || fieldName === "SSN") {
+        if (
+          fieldName === "phoneNumber" ||
+          fieldName === "SSN" ||
+          fieldName === "zip"
+        ) {
           const data = input.replace(/[^0-9]/g, "");
           saveInput(data);
         } else saveInput(input);
       }
-      inputRef.current.blur();
+      if (inputRef.current) {
+        inputRef.current.blur();
+      }
     }
   };
 
@@ -197,13 +173,7 @@ const PersonInput = ({
       // Trigger save immediately when autofill occurs
       setInput(e.target.value);
       setCount((prevCount) => prevCount + 1);
-      clearSaveTimer();
-      // Save immediately after autofill
-      setTimeout(() => {
-        if (!isSavingRef.current) {
-          saveInput();
-        }
-      }, 100);
+      setEditing(true);
     }
   };
 
@@ -245,7 +215,7 @@ const PersonInput = ({
           placeholder={placeholders[fieldName]}
         ></InputMask>
         {editing && (
-          <p onClick={() => handleBlur} className="person-input-save">
+          <p onClick={handleBlur} className="person-input-save">
             Save
           </p>
         )}

@@ -33,13 +33,17 @@ const CasesWidget = ({ loading, setLoading, userSynced }) => {
   return (
     <div className="widget-container">
       <div className="widget-header">
-        <p
-          onClick={() => navigate("/cases")}
-          className="widget-container-heading"
-        >
-          My Cases
-          <span className="cases-number">{`(${cases.length})`}</span>
-        </p>
+        <div className="case-widget-header">
+          <p
+            onClick={() => navigate("/cases")}
+            className="widget-container-heading"
+          >
+            My Cases
+          </p>
+          <div className="case-count-wrapper">
+            <p className="case-count">{cases.length} Open Cases</p>
+          </div>
+        </div>
         <a
           className="button button-primary add-case-button-home"
           onClick={() => navigate("/case/0")}

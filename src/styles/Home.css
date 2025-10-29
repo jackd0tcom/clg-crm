@@ -324,6 +324,11 @@
   padding: 15px;
   color: var(--dark-grey);
 }
+.case-widget-header {
+  display: flex;
+  align-items: center;
+  column-gap: 15px;
+}
 .cases-number {
   font-size: 0.9rem;
   color: var(--light-grey);

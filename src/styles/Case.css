@@ -23,6 +23,20 @@
   padding: 15px 15px 10px;
   border-bottom: 1px solid var(--light-border);
 }
+.case-list-head-heading-wrapper {
+  display: flex;
+  align-items: center;
+  column-gap: 1rem;
+}
+.case-count-wrapper {
+  padding: 5px 10px;
+  border-radius: 5px;
+  background-color: var(--root-bg-color-light);
+}
+.case-count {
+  font-size: 0.8rem;
+  color: var(--dark-grey);
+}
 
 /* Case Filter */
 .case-filter-wrapper {
