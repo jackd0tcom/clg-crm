@@ -3,9 +3,6 @@ import { useState, useEffect } from "react";
 import { useRef } from "react";
 import axios from "axios";
 import InputMask from "react-input-mask";
-import PhoneInput from "./PhoneInput";
-import SSNInput from "./SSNInput";
-import DOBInput from "./DOBInput";
 
 const PersonInput = ({
   fieldName,
@@ -18,11 +15,21 @@ const PersonInput = ({
   setPersonId,
   setIsNewPerson,
 }) => {
+  const [originalValue, setOriginalValue] = useState(value);
   const [input, setInput] = useState(value);
   const [count, setCount] = useState(0);
+  const [editing, setEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState(false);
   const inputRef = useRef(null);
   const isSavingRef = useRef(false);
+
+  // Sync originalValue with the prop value when it changes externally
+  useEffect(() => {
+    setOriginalValue(value);
+    setInput(value);
+  }, [value]);
   const masks = {
     firstName: null,
     lastName: null,
@@ -36,15 +43,15 @@ const PersonInput = ({
     SSN: "999 99 9999",
   };
   const placeholders = {
-    firstName: "John",
-    lastName: "Doe",
-    address: "1234 Cherry Ln",
-    city: "Los Angeles",
-    state: "CA",
+    firstName: "First Name",
+    lastName: "Last Name",
+    address: "Addresss",
+    city: "City",
+    state: "PA",
     zip: "12345",
-    phoneNumber: "(123) 456 - 7890",
-    dob: "1999-01-01",
-    county: "Los Angeles",
+    phoneNumber: "(000) 000 - 0000",
+    dob: "2000-01-01",
+    county: "County",
     SSN: "123 56 7890",
   };
   const formats = {
@@ -60,18 +67,20 @@ const PersonInput = ({
     SSN: null,
   };
 
-  const saveNumber = async () => {
-    console.log("save Number");
+  const saveInput = async (data) => {
     // Prevent duplicate saves
     if (isSavingRef.current || count === 0) {
       return;
     }
 
-    const number = input.replace(/[^0-9]/g, "");
-
-    if (value === number) {
+    // Normalize values for comparison (handle null/undefined/empty string)
+    const normalizedValue = String(originalValue || "");
+    const normalizedData = String(data || "");
+    if (normalizedValue === normalizedData) {
       return;
     }
+
+    console.log(originalValue, "save input", data);
 
     isSavingRef.current = true;
     setIsSaving(true);
@@ -79,75 +88,42 @@ const PersonInput = ({
     try {
       if (isNewPerson) {
         await axios
-          .post("/api/newPerson", { caseId, fieldName, value: number })
+          .post("/api/newPerson", { caseId, fieldName, value: data })
           .then((res) => {
             if (res.status === 200) {
+              setOriginalValue(data);
               refreshActivityData();
               refreshCaseData();
               setCount(0);
               setIsNewPerson(false);
               setPersonId(res.data.personId);
+              setSuccess(true);
+              setTimeout(() => {
+                setSuccess(false);
+              }, 2000);
             }
           });
       } else {
         await axios
-          .post("/api/updatePerson", { personId, fieldName, value: number })
+          .post("/api/updatePerson", { personId, fieldName, value: data })
           .then((res) => {
             if (res.status === 200) {
+              setOriginalValue(data);
               refreshActivityData();
               refreshCaseData();
               setCount(0);
+              setSuccess(true);
+              setTimeout(() => {
+                setSuccess(false);
+              }, 2000);
             }
           });
       }
     } catch (error) {
-      console.log(error);
-    } finally {
-      isSavingRef.current = false;
-      setIsSaving(false);
-    }
-  };
-
-  const saveInput = async () => {
-    // Prevent duplicate saves
-    if (isSavingRef.current || count === 0) {
-      return;
-    }
-    console.log("save input", input);
-
-    if (value === input) {
-      return;
-    }
-
-    isSavingRef.current = true;
-    setIsSaving(true);
-
-    try {
-      if (isNewPerson) {
-        await axios
-          .post("/api/newPerson", { caseId, fieldName, value: input })
-          .then((res) => {
-            if (res.status === 200) {
-              refreshActivityData();
-              refreshCaseData();
-              setCount(0);
-              setIsNewPerson(false);
-              setPersonId(res.data.personId);
-            }
-          });
-      } else {
-        await axios
-          .post("/api/updatePerson", { personId, fieldName, value: input })
-          .then((res) => {
-            console.log("saved", res.data);
-            if (res.status === 200) {
-              refreshActivityData();
-              refreshCaseData();
-              setCount(0);
-            }
-          });
-      }
-    } catch (error) {
+      setError(true);
+      setTimeout(() => {
+        setError(false);
+      }, 2000);
       console.log(error);
     } finally {
       isSavingRef.current = false;
@@ -168,31 +144,47 @@ const PersonInput = ({
   useEffect(() => {
     clearSaveTimer();
     saveTimer.current = setTimeout(() => {
-      if (value && !isSavingRef.current) {
-        saveInput();
+      // Allow saving even if input is empty (user might have deleted the value)
+      if (input !== undefined && !isSavingRef.current && count > 0) {
+        if (fieldName === "phoneNumber" || fieldName === "SSN") {
+          const data = input.replace(/[^0-9]/g, "");
+          saveInput(data);
+        } else {
+          saveInput(input);
+        }
       }
     }, 2000);
     return () => {
       clearSaveTimer();
     };
-  }, [value]);
+  }, [input]);
 
   const handleBlur = () => {
+    setEditing(false);
+    if (count === 0) {
+      return;
+    }
     clearSaveTimer();
     if (!isSavingRef.current) {
       if (fieldName === "phoneNumber" || fieldName === "SSN") {
-        saveNumber();
-      } else saveInput();
+        const data = input.replace(/[^0-9]/g, "");
+        saveInput(data);
+      } else saveInput(input);
     }
   };
 
   const handleEnter = (e) => {
+    setEditing(false);
+    if (count === 0) {
+      return;
+    }
     if (e.key === "Enter") {
       clearSaveTimer();
       if (!isSavingRef.current) {
         if (fieldName === "phoneNumber" || fieldName === "SSN") {
-          saveNumber();
-        } else saveInput();
+          const data = input.replace(/[^0-9]/g, "");
+          saveInput(data);
+        } else saveInput(input);
       }
       inputRef.current.blur();
     }
@@ -217,23 +209,47 @@ const PersonInput = ({
 
   return (
     <div className="person-input-wrapper">
-      <label className="person-input-label" id={fieldName}>
-        {format(fieldName)}
-      </label>
-      <InputMask
-        className="person-input-field"
-        mask={masks[fieldName]}
-        value={input}
-        onChange={(e) => {
-          setInput(e.target.value);
-          setCount((prevCount) => prevCount + 1);
-        }}
-        formatChars={formats[fieldName]}
-        inputRef={inputRef}
-        onBlur={handleBlur}
-        onKeyDown={handleEnter}
-        placeholder={placeholders[fieldName]}
-      ></InputMask>
+      <div className="person-input-label-wrapper">
+        <label className="person-input-label" id={fieldName}>
+          {format(fieldName)}
+        </label>
+        {success && (
+          <p className="person-save-message">
+            Saved <i className="fa-solid fa-check"></i>
+          </p>
+        )}
+        {error && (
+          <p className="person-error-message">
+            Not Saved <i className="fa-solid fa-exclamation"></i>
+          </p>
+        )}
+      </div>
+      <div className="person-input-container">
+        <InputMask
+          className="person-input-field"
+          mask={masks[fieldName]}
+          value={input}
+          onChange={(e) => {
+            const newValue = e.target.value;
+            // Normalize both values to strings for proper comparison
+            const normalizedNewValue = String(newValue || "");
+            const normalizedOriginalValue = String(originalValue || "");
+            setEditing(normalizedNewValue !== normalizedOriginalValue);
+            setInput(newValue);
+            setCount((prevCount) => prevCount + 1);
+          }}
+          formatChars={formats[fieldName]}
+          inputRef={inputRef}
+          onBlur={handleBlur}
+          onKeyDown={handleEnter}
+          placeholder={placeholders[fieldName]}
+        ></InputMask>
+        {editing && (
+          <p onClick={() => handleBlur} className="person-input-save">
+            Save
+          </p>
+        )}
+      </div>
     </div>
   );
 };

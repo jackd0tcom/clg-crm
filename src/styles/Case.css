@@ -555,8 +555,10 @@ div.case-task-container
   border: 1px solid var(--light-border);
   border-radius: 5px;
   z-index: 999;
-  padding: 20px 20px 6rem;
-  width: 40%;
+  padding: 2rem 2rem 4rem;
+  width: 50%;
+  min-width: 500px;
+  max-width: 650px;
 }
 .person-view-header-wrapper {
   display: flex;
@@ -572,25 +574,90 @@ div.case-task-container
 .person-view-header-wrapper i {
   cursor: pointer;
 }
+.person-view-header-wrapper i:hover {
+  color: black;
+}
 .person-view-fields {
   display: grid;
   grid-template-columns: 1fr 1fr;
   column-gap: 20px;
   row-gap: 20px;
 }
+.person-input-label-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.person-save-message {
+  font-size: 0.8rem;
+  color: var(--bright-dark-green);
+  display: flex;
+  align-items: center;
+  column-gap: 3px;
+  font-weight: 500;
+}
+.person-save-message i {
+  font-size: 0.6rem;
+  padding: 4px 3px;
+  background-color: var(--button-active-border);
+  color: var(--button-active-font);
+  border-radius: 20px;
+}
+.person-error-message {
+  font-size: 0.8rem;
+  color: var(--dark-red);
+  display: flex;
+  align-items: center;
+  column-gap: 3px;
+  font-weight: 500;
+}
+.person-error-message i {
+  font-size: 0.6rem;
+  padding: 4px 3px;
+  background-color: var(--dark-red);
+  color: white;
+  border-radius: 20px;
+}
 .person-input-wrapper {
   display: flex;
   flex-direction: column;
 }
-.person-input-field {
-  padding: 5px;
+.person-input-container {
+  padding: 8px 12px;
   margin-top: 5px;
   border: 1px solid var(--light-border);
   border-radius: 3px;
   outline: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
-.person-input-field:hover {
+.person-input-container:hover {
   background-color: var(--root-bg-color-light);
+}
+.person-input-field {
+  padding: 3px 0;
+  border: none;
+  font-size: 0.9rem;
+  background-color: transparent;
+  outline: none;
+  width: 100%;
+}
+.person-input-field::placeholder {
+  color: var(--light-grey);
+  opacity: 0.5;
+}
+.person-input-save {
+  font-size: 0.8rem;
+  padding: 0px 6px;
+  border-radius: 5px;
+  background-color: var(--bright-green);
+  color: white;
+  margin-right: -5px;
+}
+.person-input-save:hover {
+  background-color: var(--bright-dark-green);
+  cursor: pointer;
 }
 
 .person-input-label {
@@ -612,6 +679,26 @@ div.case-task-container
 .remove-person-button a:hover {
   background-color: var(--red);
   color: white;
+}
+.remove-person-button .confirm-modal-wrapper {
+  row-gap: 2rem;
+  padding: 2rem;
+}
+.remove-person-button .confirm-modal-wrapper .confirm-modal-buttons {
+  column-gap: 2rem;
+  width: 100%;
+  justify-content: center;
+}
+.confirm-modal-overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.5);
 }
 .no-active-cases {
   top: 20%;

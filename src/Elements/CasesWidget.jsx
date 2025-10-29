@@ -5,7 +5,7 @@ import CaseListItem from "./CaseListItem";
 import { useNavigate } from "react-router";
 
 const CasesWidget = ({ loading, setLoading, userSynced }) => {
-  const [cases, setCases] = useState();
+  const [cases, setCases] = useState([]);
   const { isLoading, isAuthenticated } = useAuth0();
   const navigate = useNavigate();
 

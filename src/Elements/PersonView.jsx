@@ -102,11 +102,13 @@ const PersonView = ({
 
           <div className="remove-person-button">
             {confirm ? (
-              <Confirm
-                message={"delete this person?"}
-                handleConfirm={handleRemove}
-                setConfirm={setConfirm}
-              />
+              <div className="confirm-modal-overlay">
+                <Confirm
+                  message={"delete this person?"}
+                  handleConfirm={handleRemove}
+                  setConfirm={setConfirm}
+                />
+              </div>
             ) : (
               <a
                 onClick={() => {

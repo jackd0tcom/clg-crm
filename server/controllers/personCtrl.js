@@ -4,6 +4,7 @@ import {
   ACTIVITY_ACTIONS,
   capitalize,
   format,
+  spaceOut,
 } from "../helpers/activityHelper.js";
 
 export default {
@@ -23,7 +24,9 @@ export default {
       }
 
       const oldValue = currentPerson[fieldName];
-      let message = `updated ${currentPerson.firstName}'s ${fieldName}`;
+      let message = `updated ${currentPerson.firstName}'s ${spaceOut(
+        fieldName
+      )}`;
       if (oldValue === null) {
         message = `added ${format(fieldName).toLowerCase()} to ${
           currentPerson.firstName
@@ -44,7 +47,7 @@ export default {
       res.status(200).send("Saved Person Successfully");
     } catch (err) {
       console.log(err);
-      res.status(500).send("Failed to update person");
+      res.status(500).send("Failed to update person", err);
     }
   },
   newPerson: async (req, res) => {
