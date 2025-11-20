@@ -48,7 +48,7 @@ const CasesWidget = ({ loading, setLoading, userSynced }) => {
           className="button button-primary add-case-button-home"
           onClick={() => navigate("/case/0")}
         >
-          <i class="fa-solid fa-plus"></i>
+          <i className="fa-solid fa-plus"></i>
         </a>
       </div>
       <div className="case-widget-container">

@@ -140,8 +140,17 @@ Person.init(
       allowNull: true,
     },
     SSN: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
       allowNull: true,
+      validate: {
+        isNumeric: {
+          msg: "SSN must contain only digits.",
+        },
+        len: {
+          args: [9, 9],
+          msg: "SSN must be 9 digits.",
+        },
+      },
     },
   },
   {

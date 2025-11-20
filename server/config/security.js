@@ -3,24 +3,28 @@
  * Centralized security settings for the CLG CRM application
  */
 
-import express from 'express';
-import helmet from 'helmet';
-import rateLimit from 'express-rate-limit';
-import cors from 'cors';
-import { body, param, validationResult } from 'express-validator';
-import mongoSanitize from 'express-mongo-sanitize';
-import xss from 'xss-clean';
-import hpp from 'hpp';
-import compression from 'compression';
-import morgan from 'morgan';
+import express from "express";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
+import cors from "cors";
+import { body, param, validationResult } from "express-validator";
+import mongoSanitize from "express-mongo-sanitize";
+import xss from "xss-clean";
+import hpp from "hpp";
+import compression from "compression";
+import morgan from "morgan";
 
 // Rate limiting configurations
-export const createRateLimit = (windowMs = 15 * 60 * 1000, max = 100, message) => {
+export const createRateLimit = (
+  windowMs = 15 * 60 * 1000,
+  max = 100,
+  message
+) => {
   return rateLimit({
     windowMs,
     max,
     message: message || {
-      error: 'Too many requests from this IP, please try again later.',
+      error: "Too many requests from this IP, please try again later.",
     },
     standardHeaders: true,
     legacyHeaders: false,
@@ -31,14 +35,14 @@ export const createRateLimit = (windowMs = 15 * 60 * 1000, max = 100, message) =
 export const authRateLimit = createRateLimit(
   15 * 60 * 1000, // 15 minutes
   5, // 5 requests per window
-  { error: 'Too many authentication attempts, please try again later.' }
+  { error: "Too many authentication attempts, please try again later." }
 );
 
 // More lenient rate limiting for sync endpoints
 export const syncRateLimit = createRateLimit(
   5 * 60 * 1000, // 5 minutes
   100, // 100 requests per window (increased for normal usage)
-  { error: 'Too many sync requests, please try again later.' }
+  { error: "Too many sync requests, please try again later." }
 );
 
 // Rate limiting for API endpoints
@@ -52,71 +56,97 @@ export const corsOptions = {
   origin: function (origin, callback) {
     // Allow requests with no origin (like mobile apps, curl requests, or static assets)
     if (!origin) {
-      console.log('🔓 CORS: Allowing request with no origin');
+      // console.log('🔓 CORS: Allowing request with no origin');
       return callback(null, true);
     }
-    
-    console.log('🔍 CORS: Checking origin:', origin);
-    
+
+    console.log("🔍 CORS: Checking origin:", origin);
+
     const allowedOrigins = [
-      'http://localhost:5050',
-      'http://localhost:3000',
-      'http://localhost:5173',
+      "http://localhost:5050",
+      "http://localhost:3000",
+      "http://localhost:5173",
       // Add production domains here
       process.env.FRONTEND_URL,
       process.env.RAILWAY_PUBLIC_DOMAIN,
       // Add HTTPS version of Railway domain if it exists
-      process.env.RAILWAY_PUBLIC_DOMAIN ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}` : null,
+      process.env.RAILWAY_PUBLIC_DOMAIN
+        ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`
+        : null,
       // Allow Railway preview deployments
       /^https:\/\/.*\.railway\.app$/,
     ].filter(Boolean);
-    
-    console.log('🔍 CORS: Allowed origins:', allowedOrigins);
-    
-    const isAllowed = allowedOrigins.some(allowedOrigin => {
-      if (typeof allowedOrigin === 'string') {
+
+    // console.log('🔍 CORS: Allowed origins:', allowedOrigins);
+
+    const isAllowed = allowedOrigins.some((allowedOrigin) => {
+      if (typeof allowedOrigin === "string") {
         return allowedOrigin === origin;
       } else if (allowedOrigin instanceof RegExp) {
         return allowedOrigin.test(origin);
       }
       return false;
     });
-    
+
     if (isAllowed) {
-      console.log('✅ CORS: Origin allowed');
+      console.log("✅ CORS: Origin allowed");
       callback(null, true);
     } else {
-      console.log('❌ CORS: Origin not allowed');
-      callback(new Error('Not allowed by CORS'));
+      console.log("❌ CORS: Origin not allowed");
+      callback(new Error("Not allowed by CORS"));
     }
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
 };
 
 // Helmet configuration
 export const helmetConfig = helmet({
-  contentSecurityPolicy: process.env.NODE_ENV === 'production' ? {
-    directives: {
-      defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://ka-f.fontawesome.com"],
-      fontSrc: ["'self'", "https://fonts.gstatic.com", "https://kit.fontawesome.com", "https://ka-f.fontawesome.com"],
-      imgSrc: ["'self'", "data:", "https:"],
-      scriptSrc: ["'self'", "https://kit.fontawesome.com"],
-      connectSrc: ["'self'", "https://clauselawgroup.auth0.com", "https://dev-qysee6dr6mhj3r6y.us.auth0.com", "https://ka-f.fontawesome.com"],
-      frameSrc: ["'self'", "https://clauselawgroup.auth0.com", "https://dev-qysee6dr6mhj3r6y.us.auth0.com"],
-      mediaSrc: ["'self'", "https://videos.files.wordpress.com"],
-    },
-  } : false, // Disable CSP in development
+  contentSecurityPolicy:
+    process.env.NODE_ENV === "production"
+      ? {
+          directives: {
+            defaultSrc: ["'self'"],
+            styleSrc: [
+              "'self'",
+              "'unsafe-inline'",
+              "https://fonts.googleapis.com",
+              "https://ka-f.fontawesome.com",
+            ],
+            fontSrc: [
+              "'self'",
+              "https://fonts.gstatic.com",
+              "https://kit.fontawesome.com",
+              "https://ka-f.fontawesome.com",
+            ],
+            imgSrc: ["'self'", "data:", "https:"],
+            scriptSrc: ["'self'", "https://kit.fontawesome.com"],
+            connectSrc: [
+              "'self'",
+              "https://clauselawgroup.auth0.com",
+              "https://dev-qysee6dr6mhj3r6y.us.auth0.com",
+              "https://ka-f.fontawesome.com",
+            ],
+            frameSrc: [
+              "'self'",
+              "https://clauselawgroup.auth0.com",
+              "https://dev-qysee6dr6mhj3r6y.us.auth0.com",
+            ],
+            mediaSrc: ["'self'", "https://videos.files.wordpress.com"],
+          },
+        }
+      : false, // Disable CSP in development
   crossOriginEmbedderPolicy: false, // Disable for Vite dev server compatibility
   crossOriginOpenerPolicy: false, // Disable to allow popup windows for OAuth flows
 });
 
 // Session security configuration
 export const sessionConfig = {
-  name: 'clg-session',
-  secret: process.env.SESSION_SECRET || 'your-super-secret-session-key-change-in-production',
+  name: "clg-session",
+  secret:
+    process.env.SESSION_SECRET ||
+    "your-super-secret-session-key-change-in-production",
   resave: false,
   saveUninitialized: false, // Changed to false for security
   rolling: true, // Reset expiration on activity
@@ -124,53 +154,58 @@ export const sessionConfig = {
     secure: process.env.RAILWAY_PUBLIC_DOMAIN ? true : false, // Secure only on Railway (HTTPS)
     httpOnly: true, // Prevent XSS attacks
     maxAge: 1000 * 60 * 60 * 24, // 24 hours
-    sameSite: process.env.RAILWAY_PUBLIC_DOMAIN ? 'strict' : 'lax', // Strict on Railway, lax for local
+    sameSite: process.env.RAILWAY_PUBLIC_DOMAIN ? "strict" : "lax", // Strict on Railway, lax for local
   },
   // Use memory store in development, but log warning in production
-  store: process.env.NODE_ENV === 'production' ? undefined : undefined, // Will use default MemoryStore
+  store: process.env.NODE_ENV === "production" ? undefined : undefined, // Will use default MemoryStore
 };
 
 // Input validation rules
 export const validationRules = {
   // Task validation
   task: [
-    body('title').trim().isLength({ min: 1, max: 255 }).escape(),
-    body('notes').optional().trim().isLength({ max: 5000 }).escape(),
-    body('priority').optional().isIn(['low', 'normal', 'high', 'urgent']),
-    body('status').optional().isIn(['not started', 'in progress', 'blocked', 'completed']),
-    body('dueDate').optional().isISO8601(),
-    body('caseId').optional().isInt({ min: 1 }),
+    body("title").trim().isLength({ min: 1, max: 255 }).escape(),
+    body("notes").optional().trim().isLength({ max: 5000 }).escape(),
+    body("priority").optional().isIn(["low", "normal", "high", "urgent"]),
+    body("status")
+      .optional()
+      .isIn(["not started", "in progress", "blocked", "completed"]),
+    body("dueDate").optional().isISO8601(),
+    body("caseId").optional().isInt({ min: 1 }),
   ],
-  
+
   // Case validation
   case: [
-    body('title').trim().isLength({ min: 1, max: 255 }).escape(),
-    body('description').optional().trim().isLength({ max: 5000 }).escape(),
-    body('priority').optional().isIn(['low', 'normal', 'high', 'urgent']),
-    body('phase').optional().isIn(['intake', 'investigation', 'negotiation', 'litigation', 'settlement', 'closed']),
-    body('practiceAreas').optional().isArray(),
+    body("title").trim().isLength({ min: 1, max: 255 }).escape(),
+    body("description").optional().trim().isLength({ max: 5000 }).escape(),
+    body("priority").optional().isIn(["low", "normal", "high", "urgent"]),
+    body("phase")
+      .optional()
+      .isIn([
+        "intake",
+        "investigation",
+        "negotiation",
+        "litigation",
+        "settlement",
+        "closed",
+      ]),
+    body("practiceAreas").optional().isArray(),
   ],
-  
+
   // User validation
   user: [
-    body('email').isEmail().normalizeEmail(),
-    body('name').trim().isLength({ min: 1, max: 100 }).escape(),
+    body("email").isEmail().normalizeEmail(),
+    body("name").trim().isLength({ min: 1, max: 100 }).escape(),
   ],
-  
+
   // ID parameter validation
-  id: [
-    param('id').isInt({ min: 1 }),
-  ],
-  
+  id: [param("id").isInt({ min: 1 })],
+
   // Task ID validation
-  taskId: [
-    param('taskId').isInt({ min: 1 }),
-  ],
-  
+  taskId: [param("taskId").isInt({ min: 1 })],
+
   // Case ID validation
-  caseId: [
-    param('caseId').isInt({ min: 1 }),
-  ],
+  caseId: [param("caseId").isInt({ min: 1 })],
 };
 
 // Validation error handler
@@ -178,7 +213,7 @@ export const handleValidationErrors = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({
-      error: 'Validation failed',
+      error: "Validation failed",
       details: errors.array(),
     });
   }
@@ -188,52 +223,57 @@ export const handleValidationErrors = (req, res, next) => {
 // Security middleware setup
 export const setupSecurityMiddleware = (app) => {
   // Trust proxy for accurate IP addresses
-  app.set('trust proxy', 1);
-  
+  app.set("trust proxy", 1);
+
   // Compression middleware
   app.use(compression());
-  
+
   // Request logging
-  app.use(morgan('combined'));
-  
+  app.use(morgan("combined"));
+
   // Security headers (only in production)
-  if (process.env.NODE_ENV === 'production') {
+  if (process.env.NODE_ENV === "production") {
     app.use(helmetConfig);
   } else {
     // Development: disable helmet completely to avoid CSP issues
-    console.log('🔧 Development mode: Security headers disabled for smooth development');
-    
+    console.log(
+      "🔧 Development mode: Security headers disabled for smooth development"
+    );
+
     // Explicitly remove any CSP headers that might be set elsewhere
     app.use((req, res, next) => {
-      res.removeHeader('Content-Security-Policy');
-      res.removeHeader('X-Content-Type-Options');
-      res.removeHeader('X-Frame-Options');
-      res.removeHeader('X-XSS-Protection');
+      res.removeHeader("Content-Security-Policy");
+      res.removeHeader("X-Content-Type-Options");
+      res.removeHeader("X-Frame-Options");
+      res.removeHeader("X-XSS-Protection");
       next();
     });
   }
-  
+
   // CORS
   app.use(cors(corsOptions));
-  
+
   // Rate limiting
-  app.use('/api/auth', authRateLimit);
-  app.use('/api/sync-auth0-user', syncRateLimit); // Specific rate limit for sync endpoint
-  app.use('/api', apiRateLimit);
-  
+  app.use("/api/auth", authRateLimit);
+  app.use("/api/sync-auth0-user", syncRateLimit); // Specific rate limit for sync endpoint
+  app.use("/api", apiRateLimit);
+
   // Body parsing security
-  app.use(express.json({ limit: '10mb' }));
-  app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-  
+  app.use(express.json({ limit: "10mb" }));
+  app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+
   // Data sanitization
   app.use(mongoSanitize()); // Prevent NoSQL injection
   app.use(xss()); // Prevent XSS attacks
   app.use(hpp()); // Prevent parameter pollution
-  
+
   // Request size limiting
   app.use((req, res, next) => {
-    if (req.headers['content-length'] && parseInt(req.headers['content-length']) > 10 * 1024 * 1024) {
-      return res.status(413).json({ error: 'Request entity too large' });
+    if (
+      req.headers["content-length"] &&
+      parseInt(req.headers["content-length"]) > 10 * 1024 * 1024
+    ) {
+      return res.status(413).json({ error: "Request entity too large" });
     }
     next();
   });
@@ -242,32 +282,32 @@ export const setupSecurityMiddleware = (app) => {
 // Environment variable validation
 export const validateEnvironment = () => {
   const requiredVars = [
-    'SESSION_SECRET',
-    'DATABASE_URL',
-    'AUTH0_DOMAIN',
-    'AUTH0_CLIENT_ID',
-    'AUTH0_CLIENT_SECRET',
-    'ADMIN_EMAIL',
+    "SESSION_SECRET",
+    "DATABASE_URL",
+    "AUTH0_DOMAIN",
+    "AUTH0_CLIENT_ID",
+    "AUTH0_CLIENT_SECRET",
+    "ADMIN_EMAIL",
   ];
-  
-  const missing = requiredVars.filter(varName => !process.env[varName]);
-  
+
+  const missing = requiredVars.filter((varName) => !process.env[varName]);
+
   if (missing.length > 0) {
-    console.error('❌ Missing required environment variables:', missing);
-    console.log('📋 Please set the following environment variables:');
-    missing.forEach(varName => {
+    console.error("❌ Missing required environment variables:", missing);
+    console.log("📋 Please set the following environment variables:");
+    missing.forEach((varName) => {
       console.log(`   - ${varName}`);
     });
-    console.log('📖 See RAILWAY_DEPLOYMENT.md for setup instructions');
-    
+    console.log("📖 See RAILWAY_DEPLOYMENT.md for setup instructions");
+
     // Don't exit in production, just warn
-    if (process.env.NODE_ENV !== 'production') {
+    if (process.env.NODE_ENV !== "production") {
       process.exit(1);
     }
   }
-  
-  console.log('✅ Environment variables validated');
-  console.log(`🚀 Running in ${process.env.NODE_ENV || 'development'} mode`);
+
+  console.log("✅ Environment variables validated");
+  console.log(`🚀 Running in ${process.env.NODE_ENV || "development"} mode`);
 };
 
 // Security logging

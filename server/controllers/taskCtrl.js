@@ -330,7 +330,7 @@ export default {
 
         let message = `changed the ${fieldName} from ${oldValue} to ${value}`;
 
-        console.log(oldValue, value);
+        // console.log(oldValue, value);
 
         if (fieldName === "title") {
           message = "changed the title";
