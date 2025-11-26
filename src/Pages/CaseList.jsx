@@ -5,13 +5,17 @@ import CaseCard from "../Elements/CaseCard";
 import CaseFilter from "../Elements/CaseFilter";
 import CaseListSearch from "../Elements/CaseListSearch";
 import Loader from "../Elements/Loader";
+import { useSelector } from "react-redux";
 
 const CaseList = ({ openTaskView, refreshKey }) => {
   const navigate = useNavigate();
+  const userStore = useSelector((state) => state.user);
   const [cases, setCases] = useState([]);
   const [originalCases, setOriginalCases] = useState();
+  const [allCases, setAllCases] = useState();
   const [isFetched, setIsFetched] = useState(false);
   const [showArchived, setShowArchived] = useState(false);
+  const [showAll, setShowAll] = useState(false);
 
   const fetchCases = async () => {
     try {
@@ -19,7 +23,12 @@ const CaseList = ({ openTaskView, refreshKey }) => {
       // Filter out archived cases before setting initial state
       const nonArchivedCases = res.data.filter((a) => !a.isArchived);
       setCases(nonArchivedCases);
-      setOriginalCases(res.data); // Keep original data for filtering
+      setAllCases(nonArchivedCases);
+      setOriginalCases(
+        res.data.filter((ca) =>
+          ca.assignees?.some((nee) => nee.userId === userStore.userId)
+        )
+      ); // Keep original data for filtering
       setIsFetched(true);
     } catch (error) {
       console.log(error);
@@ -27,8 +36,10 @@ const CaseList = ({ openTaskView, refreshKey }) => {
   };
 
   useEffect(() => {
-    fetchCases();
-  }, []);
+    if (userStore.userId) {
+      fetchCases();
+    }
+  }, [userStore.userId]);
 
   useEffect(() => {
     if (refreshKey > 0) {
@@ -53,6 +64,9 @@ const CaseList = ({ openTaskView, refreshKey }) => {
           originalCases={originalCases}
           showArchived={showArchived}
           setShowArchived={setShowArchived}
+          showAll={showAll}
+          setShowAll={setShowAll}
+          allCases={allCases}
         />
         <CaseListSearch
           cases={cases}

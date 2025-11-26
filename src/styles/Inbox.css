@@ -1,3 +1,6 @@
+.inbox-wrapper {
+  height: 100%;
+}
 .inbox-header {
   padding: 15px;
   border-bottom: 1px solid var(--light-border);
@@ -5,7 +8,10 @@
   justify-content: space-between;
 }
 .inbox-lists {
-  padding: 15px;
+  margin: 15px;
+  max-height: calc(100% - 100px);
+  overflow-y: scroll;
+  scrollbar-width: thin;
 }
 .notification-list-wrapper {
   display: flex;
@@ -21,6 +27,9 @@
   cursor: pointer;
   font-weight: 400;
   column-gap: 10px;
+}
+.notification-item-title {
+  max-width: 50%;
 }
 .notification-item-wrapper:hover {
   background-color: var(--root-bg-color-light);
@@ -56,6 +65,8 @@
 }
 .notification-task-wrapper i {
   font-size: 0.75rem;
+  color: var(--dark-grey);
+  margin-top: 2px;
 }
 .clear-notification {
   background-color: var(--bright-green);

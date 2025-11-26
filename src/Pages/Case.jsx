@@ -404,6 +404,10 @@ const Case = ({ openTaskView, refreshKey }) => {
                     isNewCase={isNewCase}
                   />
                 </div>
+                <div className="case-stats-container">
+                  <h4>Tribunal</h4>
+                </div>
+                <div className="case-stats-container"></div>
               </div>
             </div>
             <div className="case-notes">

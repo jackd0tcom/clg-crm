@@ -33,10 +33,7 @@ export default {
         const assignedCaseIds = assignedCases.map((ac) => ac.caseId);
         const cases = await Case.findAll({
           where: {
-            [Op.or]: [
-              { ownerId: userId },
-              { caseId: { [Op.in]: assignedCaseIds } },
-            ],
+            [Op.or]: [{ caseId: { [Op.in]: assignedCaseIds } }],
             isArchived: false,
           },
           include: [
@@ -82,10 +79,10 @@ export default {
       // Get cases where user is owner OR assigned
       const cases = await Case.findAll({
         where: {
-          [Op.or]: [
-            { ownerId: userId },
-            { caseId: { [Op.in]: assignedCaseIds } },
-          ],
+          // [Op.or]: [
+          //   { ownerId: userId },
+          //   { caseId: { [Op.in]: assignedCaseIds } },
+          // ],
         },
         include: [
           {
@@ -615,7 +612,7 @@ export default {
           where: { caseId },
         });
         const assignedUserIds = caseAssignees.map((ca) => ca.dataValues.userId);
-        const excludedUserIds = [...assignedUserIds, caseExists.ownerId];
+        const excludedUserIds = [...assignedUserIds];
 
         const nonAssignees = await User.findAll({
           where: {

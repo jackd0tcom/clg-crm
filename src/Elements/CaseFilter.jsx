@@ -6,6 +6,9 @@ const CaseFilter = ({
   originalCases,
   showArchived,
   setShowArchived,
+  showAll,
+  setShowAll,
+  allCases,
 }) => {
   const [isLatest, setIsLatest] = useState(true);
   const [nonArchivedCases, setNonArchivedCases] = useState([]);
@@ -28,6 +31,15 @@ const CaseFilter = ({
       setActive("updated");
     }
   }, [showArchived]);
+
+  // Update active state when showAll changes
+  useEffect(() => {
+    if (showAll) {
+      setActive("all");
+    } else {
+      setActive("updated");
+    }
+  }, [showAll]);
 
   const byDate = () => {
     const filteredCases = showArchived
@@ -87,6 +99,16 @@ const CaseFilter = ({
     }
   };
 
+  const handleShowAll = () => {
+    if (showAll) {
+      setCases(originalCases);
+      setShowAll(false);
+    } else {
+      setCases(allCases);
+      setShowAll(true);
+    }
+  };
+
   return (
     <div className="case-filter-wrapper">
       <div
@@ -135,7 +157,19 @@ const CaseFilter = ({
             setActive("archive");
           }}
         >
-          {!showArchived ? "Show Archived" : "Hide Archived"}
+          Show Archived
+        </p>
+      </div>
+      <div
+        className={`case-filter-section ${active === "all" && "active-filter"}`}
+      >
+        <p
+          onClick={() => {
+            handleShowAll();
+            setActive("all");
+          }}
+        >
+          Show All
         </p>
       </div>
     </div>
