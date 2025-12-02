@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import Loader from "../Elements/Loader";
-import CalendarDisplay from "../Elements/CalendarDisplay";
+import Loader from "../Elements/UI/Loader";
+import CalendarDisplay from "../Elements/Calendar/CalendarDisplay";
 
 const Calendar = () => {
   const [events, setEvents] = useState([]);

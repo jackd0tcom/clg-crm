@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import AdminUserToggle from "../Elements/AdminUserItem";
+import AdminUserToggle from "../Elements/Admin/AdminUserItem";
 import { useAuth0 } from "@auth0/auth0-react";
-import Loader from "../Elements/Loader";
+import Loader from "../Elements/UI/Loader";
 
 const Admin = () => {
   const [users, setUsers] = useState([]);

@@ -3,18 +3,19 @@ import { useParams, useNavigate } from "react-router";
 import { useRef } from "react";
 import axios from "axios";
 import { capitalize, formatPracticeAreas } from "../helpers/helperFunctions";
-import ProfilePic from "../Elements/ProfilePic";
-import ActivityLog from "../Elements/ActivityLog";
-import TaskList from "../Elements/TaskList";
+import ProfilePic from "../Elements/UI/ProfilePic";
+import ActivityLog from "../Elements/UI/ActivityLog";
+import TaskList from "../Elements/TaskList/TaskList";
 import { Link } from "react-router";
-import Notes from "../Elements/Notes";
-import PhaseToggle from "../Elements/PhaseToggle";
-import AssigneeList from "../Elements/AssigneeList";
-import PersonView from "../Elements/PersonView";
-import CaseInput from "../Elements/CaseInput";
-import PracticeAreaToggle from "../Elements/PracticeAreaToggle";
-import ExtraSettings from "../Elements/ExtraSettings";
-import Loader from "../Elements/Loader";
+import Notes from "../Elements/UI/Notes";
+import PhaseToggle from "../Elements/Case/PhaseToggle";
+import AssigneeList from "../Elements/Assignee/AssigneeList";
+import PersonView from "../Elements/Case/PersonView";
+import CaseInput from "../Elements/Case/CaseInput";
+import PracticeAreaToggle from "../Elements/Case/PracticeAreaToggle";
+import ExtraSettings from "../Elements/UI/ExtraSettings";
+import SOLInput from "../Elements/Case/SOLInput";
+import Loader from "../Elements/UI/Loader";
 
 const Case = ({ openTaskView, refreshKey }) => {
   const { caseId } = useParams();
@@ -35,6 +36,7 @@ const Case = ({ openTaskView, refreshKey }) => {
   const [isNewPerson, setIsNewPerson] = useState(false);
   const [isArchived, setIsArchived] = useState(false);
   const [isCreatingCase, setIsCreatingCase] = useState(false);
+  const [currentSOL, setCurrentSOl] = useState(null);
   const dropdownRef = useRef(null);
   const isCreatingCaseRef = useRef(false);
 
@@ -54,10 +56,10 @@ const Case = ({ openTaskView, refreshKey }) => {
           assignees: [],
           tasks: [],
         });
-
         setPhase("intake");
         setNotes("");
         setTitle("");
+        setCurrentSOl(null);
         setCurrentAreas([]);
         setActivityData([]);
         return;
@@ -71,6 +73,7 @@ const Case = ({ openTaskView, refreshKey }) => {
         setPhase(caseResponse.data.phase);
         setNotes(caseResponse.data.notes);
         setTitle(caseResponse.data.title);
+        setCurrentSOl(caseResponse.data.sol);
         setCurrentAreas(caseResponse.data.practiceAreas);
         setIsArchived(caseResponse.data.isArchived);
       }
@@ -405,9 +408,16 @@ const Case = ({ openTaskView, refreshKey }) => {
                   />
                 </div>
                 <div className="case-stats-container">
-                  <h4>Tribunal</h4>
+                  <h4>SOL</h4>
                 </div>
-                <div className="case-stats-container"></div>
+                <div className="case-stats-container">
+                  <SOLInput
+                    currentSOL={currentSOL}
+                    caseId={caseId}
+                    refreshActivityData={refreshActivityData}
+                    setCurrentSOL={setCurrentSOl}
+                  />
+                </div>
               </div>
             </div>
             <div className="case-notes">

@@ -7,6 +7,7 @@ import {
   ACTIVITY_ACTIONS,
   capitalize,
   format,
+  formatDateNoTime,
 } from "../helpers/activityHelper.js";
 
 import {
@@ -348,13 +349,25 @@ export default {
       const oldValue = currentCase[fieldName];
       await currentCase.update({ [fieldName]: value });
 
+      let message = `changed the ${fieldName} from ${oldValue} to ${value}`;
+
+      if (fieldName === "sol") {
+        if (!value) {
+          message = `removed the SOL`;
+        } else if (!oldValue) {
+          message = `added an SOL`;
+        } else {
+          message = `changed the SOL from ${formatDateNoTime(oldValue)} to ${formatDateNoTime(value)}`;
+        }
+      }
+
       // Create activity log
       await createActivityLog({
         authorId: req.session.user.userId,
         objectType: "case",
         objectId: parseInt(caseId),
         action: ACTIVITY_ACTIONS.CASE_UPDATED,
-        details: `changed the ${fieldName} from ${oldValue} to ${value}`,
+        details: message,
       });
 
       // Create notifications for case update

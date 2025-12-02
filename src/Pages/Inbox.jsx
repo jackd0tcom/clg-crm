@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import NotificationList from "../Elements/NotificationList";
+import NotificationList from "../Elements/Inbox/NotificationList";
 
 const Inbox = ({ openTaskView, setCheckNotifications, checkNotifications }) => {
   const [notifications, setNotifications] = useState([]);

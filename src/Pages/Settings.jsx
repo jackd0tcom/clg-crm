@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import Loader from "../Elements/Loader";
+import Loader from "../Elements/UI/Loader";
 import "../styles/Settings.css";
 import { useAuth0 } from "@auth0/auth0-react";
 

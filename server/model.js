@@ -246,6 +246,11 @@ Case.init(
       ),
       defaultValue: "intake",
     },
+    sol: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      defaultValue: null,
+    },
     isArchived: {
       type: DataTypes.BOOLEAN,
       allowNull: false,

@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import Loader from "../Elements/Loader";
-import TaskList from "../Elements/TaskList";
+import Loader from "../Elements/UI/Loader";
+import TaskList from "../Elements/TaskList/TaskList";
 import { findTimeDifference } from "../helpers/helperFunctions";
 import { useParams } from "react-router";
-import TaskFilter from "../Elements/TaskFilter";
+import TaskFilter from "../Elements/TaskList/TaskFilter";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useNavigate } from "react-router";
 import { useSelector } from "react-redux";

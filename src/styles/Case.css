@@ -733,6 +733,33 @@ div.case-task-container
   font-size: 3rem;
   color: var(--blue);
 }
+.sol-input-wrapper {
+  display: flex;
+  align-items: center;
+  max-width: 200px;
+  border: 1px solid var(--light-border);
+  border-radius: 5px;
+  z-index: 1;
+  padding: 0 5px;
+  max-width: 150px;
+}
+.sol-input-wrapper:hover {
+  background-color: var(--root-bg-color-light);
+  border-radius: 5px;
+}
+.sol-input-wrapper i {
+  color: var(--grey);
+}
+
+div.sol-input-wrapper > div > div > input[type="text"] {
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  background-color: unset;
+  outline: none;
+  width: 100%;
+}
+
 @media screen and (min-width: 1800px) {
   .case-list {
     grid-template-columns: 1fr 1fr 1fr 1fr;

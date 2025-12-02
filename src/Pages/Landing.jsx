@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useState } from "react";
-import Login from "../Elements/Login";
-import Register from "../Elements/Register";
+import Login from "../Elements/Auth/Login";
+import Register from "../Elements/Auth/Register";
 import { useDispatch } from "react-redux";
 
 const Landing = () => {

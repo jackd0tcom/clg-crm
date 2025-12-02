@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import axios from "axios";
-import CaseCard from "../Elements/CaseCard";
-import CaseFilter from "../Elements/CaseFilter";
-import CaseListSearch from "../Elements/CaseListSearch";
-import Loader from "../Elements/Loader";
+import CaseCard from "../Elements/CaseList/CaseCard";
+import CaseFilter from "../Elements/CaseList/CaseFilter";
+import CaseListSearch from "../Elements/CaseList/CaseListSearch";
+import Loader from "../Elements/UI/Loader";
 import { useSelector } from "react-redux";
 
 const CaseList = ({ openTaskView, refreshKey }) => {

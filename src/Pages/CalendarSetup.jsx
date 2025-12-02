@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import axios from "axios";
-import Loader from "../Elements/Loader";
+import Loader from "../Elements/UI/Loader";
 import "../styles/CalendarSetup.css";
 
 const CalendarSetup = () => {
