@@ -1,177 +1,173 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const CaseFilter = ({
-  cases,
   setCases,
   originalCases,
-  showArchived,
-  setShowArchived,
-  showAll,
-  setShowAll,
+  archivedCases,
+  nonArchivedCases,
   allCases,
+  oldestFirst,
 }) => {
-  const [isLatest, setIsLatest] = useState(true);
-  const [nonArchivedCases, setNonArchivedCases] = useState([]);
-  const [active, setActive] = useState("updated");
+  const [isFiltering, setIsFiltering] = useState(false);
+  const dropdownRef = useRef(null);
+  const [activeFilter, setActiveFilter] = useState(
+    <span>
+      Last Updated <i className="case-filter-icon fa-solid fa-arrow-up"></i>
+    </span>
+  );
 
-  // Initialize nonArchivedCases for the "Last Updated" filter
   useEffect(() => {
-    if (originalCases && originalCases.length > 0) {
-      // Set nonArchivedCases for the "Last Updated" filter
-      const list = originalCases.filter((a) => !a.isArchived);
-      setNonArchivedCases(list);
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsFiltering(false);
+      }
+    };
+    if (isFiltering) {
+      document.addEventListener("mousedown", handleClickOutside);
     }
-  }, [originalCases]);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isFiltering]);
 
-  // Update active state when showArchived changes
-  useEffect(() => {
-    if (showArchived) {
-      setActive("archive");
-    } else {
-      setActive("updated");
-    }
-  }, [showArchived]);
-
-  // Update active state when showAll changes
-  useEffect(() => {
-    if (showAll) {
-      setActive("all");
-    } else {
-      setActive("updated");
-    }
-  }, [showAll]);
-
-  const byDate = () => {
-    const filteredCases = showArchived
-      ? originalCases.filter((a) => a.isArchived)
-      : originalCases.filter((a) => !a.isArchived);
-
-    if (isLatest) {
-      const sortedCases = [...filteredCases].sort(
+  const byDate = (latest) => {
+    if (latest) {
+      const sortedCases = [...nonArchivedCases].sort(
         (a, b) =>
           new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
       );
       setCases(sortedCases);
-      setIsLatest(false);
     } else {
-      const sortedCases = [...filteredCases].sort(
+      const sortedCases = [...nonArchivedCases].sort(
         (a, b) =>
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
       setCases(sortedCases);
-      setIsLatest(true);
-    }
-  };
-
-  const byPriority = () => {
-    const filteredCases = showArchived
-      ? originalCases.filter((a) => a.isArchived)
-      : originalCases.filter((a) => !a.isArchived);
-
-    if (isPriority) {
-      const priorityOrder = { high: 3, normal: 2, low: 1 };
-      const sortedCases = [...filteredCases].sort(
-        (a, b) => priorityOrder[b.priority] - priorityOrder[a.priority]
-      );
-      setCases(sortedCases);
-      setIsPriority(false);
-    } else {
-      const priorityOrder = { high: 3, normal: 2, low: 1 };
-      const sortedCases = [...filteredCases].sort(
-        (a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]
-      );
-      setCases(sortedCases);
-      setIsPriority(true);
-    }
-  };
-
-  const handleArchived = () => {
-    if (showArchived) {
-      const nonArchivedCases = [...originalCases].filter((a) => !a.isArchived);
-      setCases(nonArchivedCases);
-      setShowArchived(false);
-      // setActive("updated") is now handled by useEffect
-    } else {
-      const archivedCases = [...originalCases].filter((a) => a.isArchived);
-      setCases(archivedCases);
-      setShowArchived(true);
-      // setActive("archive") is now handled by useEffect
-    }
-  };
-
-  const handleShowAll = () => {
-    if (showAll) {
-      setCases(originalCases);
-      setShowAll(false);
-    } else {
-      setCases(allCases);
-      setShowAll(true);
     }
   };
 
   return (
     <div className="case-filter-wrapper">
-      <div
-        className={`case-filter-section ${
-          active === "updated" && "active-filter"
-        }`}
+      <p className="sort-by">Sort By</p>
+      <button
+        className="case-filter-button"
+        onClick={() =>
+          !isFiltering ? setIsFiltering(true) : setIsFiltering(false)
+        }
       >
-        <p
-          onClick={() => {
-            setCases(nonArchivedCases);
-            setActive("updated");
-          }}
-        >
-          Last Updated{" "}
-        </p>
-      </div>
-      <div
-        className={`case-filter-section ${
-          active === "date" && "active-filter"
-        }`}
-      >
-        <p
-          onClick={() => {
-            byDate();
-            setActive("date");
-          }}
-        >
-          Date Opened{" "}
-          <span>
-            {isLatest ? (
-              <i className="fa-solid fa-arrow-up"></i>
-            ) : (
-              <i className="fa-solid fa-arrow-down"></i>
+        {activeFilter}
+      </button>
+      {isFiltering && (
+        <div className="case-filter-dropdown-wrapper" ref={dropdownRef}>
+          <div
+            className="case-filter-dropdown-item"
+            onClick={() => {
+              setActiveFilter(
+                <span>
+                  Last Updated{" "}
+                  <i className="case-filter-icon fa-solid fa-arrow-up"></i>
+                </span>
+              );
+              setCases(nonArchivedCases);
+            }}
+          >
+            <span>
+              Last Updated{" "}
+              <i className="case-filter-icon fa-solid fa-arrow-up"></i>
+            </span>
+            {activeFilter.props.children[0] === "Last Updated" && (
+              <i className="case-filter-check fa-solid fa-check"></i>
             )}
-          </span>
-        </p>
-      </div>
-      <div
-        className={`case-filter-section ${
-          active === "archive" && "active-filter"
-        }`}
-      >
-        <p
-          onClick={() => {
-            handleArchived();
-            setActive("archive");
-          }}
-        >
-          Show Archived
-        </p>
-      </div>
-      <div
-        className={`case-filter-section ${active === "all" && "active-filter"}`}
-      >
-        <p
-          onClick={() => {
-            handleShowAll();
-            setActive("all");
-          }}
-        >
-          Show All
-        </p>
-      </div>
+          </div>
+          <div
+            className="case-filter-dropdown-item"
+            onClick={() => {
+              setActiveFilter(
+                <span>
+                  Last Updated{" "}
+                  <i className="case-filter-icon fa-solid fa-arrow-down"></i>
+                </span>
+              );
+              setCases(oldestFirst);
+            }}
+          >
+            {" "}
+            <span>
+              Last Updated{" "}
+              <i className="case-filter-icon fa-solid fa-arrow-down"></i>
+            </span>
+            {activeFilter === "updated-down" && (
+              <i className="case-filter-check fa-solid fa-check"></i>
+            )}
+          </div>
+          <div
+            className="case-filter-dropdown-item"
+            onClick={() => {
+              setActiveFilter(
+                <span>
+                  Date Opened{" "}
+                  <i className="case-filter-icon fa-solid fa-arrow-up"></i>
+                </span>
+              );
+              byDate(false);
+            }}
+          >
+            {" "}
+            <span>
+              Date Opened{" "}
+              <i className="case-filter-icon fa-solid fa-arrow-up"></i>
+            </span>
+            {activeFilter === "opened-up" && (
+              <i className="case-filter-check fa-solid fa-check"></i>
+            )}
+          </div>
+          <div
+            className="case-filter-dropdown-item"
+            onClick={() => {
+              setActiveFilter(
+                <span>
+                  Date Opened{" "}
+                  <i className="case-filter-icon fa-solid fa-arrow-down"></i>
+                </span>
+              );
+              byDate(true);
+            }}
+          >
+            {" "}
+            <span>
+              Date Opened{" "}
+              <i className="case-filter-icon fa-solid fa-arrow-down"></i>
+            </span>
+            {activeFilter === "opened-down" && (
+              <i className="case-filter-check fa-solid fa-check"></i>
+            )}
+          </div>
+          <div
+            className="case-filter-dropdown-item"
+            onClick={() => {
+              setActiveFilter("Show Archived");
+              setCases(archivedCases);
+            }}
+          >
+            Show Archived{" "}
+            {activeFilter === "archive" && (
+              <i className="case-filter-check fa-solid fa-check"></i>
+            )}
+          </div>
+          <div
+            className="case-filter-dropdown-item"
+            onClick={() => {
+              setActiveFilter("Show All");
+              setCases(allCases);
+            }}
+          >
+            Show All{" "}
+            {activeFilter === "all" && (
+              <i className="case-filter-check fa-solid fa-check"></i>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

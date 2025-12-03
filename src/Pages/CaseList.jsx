@@ -15,15 +15,37 @@ const CaseList = ({ openTaskView, refreshKey }) => {
   const [allCases, setAllCases] = useState();
   const [isFetched, setIsFetched] = useState(false);
   const [showArchived, setShowArchived] = useState(false);
-  const [showAll, setShowAll] = useState(false);
+  const [archivedCases, setArchivedCases] = useState([]);
+  const [nonArchivedCases, setNonArchivedCases] = useState([]);
+  const [oldestFirst, setOldestFirst] = useState([]);
 
   const fetchCases = async () => {
     try {
       const res = await axios.get("/api/getCasesWithTasks");
       // Filter out archived cases before setting initial state
       const nonArchivedCases = res.data.filter((a) => !a.isArchived);
+      const archivedCases = res.data.filter((a) => a.isArchived);
+      // initial load should be last updated non archived cases assigned to user
       setCases(nonArchivedCases);
+      // allCases for seeing cases that the user might not be assigned to.
       setAllCases(nonArchivedCases);
+      // nonArchived cases === last updated cases that user is assigned to
+      setNonArchivedCases(
+        nonArchivedCases.filter((ca) =>
+          ca.assignees?.some((nee) => nee.userId === userStore.userId)
+        )
+      );
+      // oldest first cases
+      setOldestFirst(
+        nonArchivedCases
+          .filter((ca) =>
+            ca.assignees?.some((nee) => nee.userId === userStore.userId)
+          )
+          .reverse()
+      );
+      // archived cases
+      setArchivedCases(archivedCases);
+      //
       setOriginalCases(
         res.data.filter((ca) =>
           ca.assignees?.some((nee) => nee.userId === userStore.userId)
@@ -59,14 +81,13 @@ const CaseList = ({ openTaskView, refreshKey }) => {
           </div>
         </div>
         <CaseFilter
-          cases={cases}
           setCases={setCases}
           originalCases={originalCases}
           showArchived={showArchived}
-          setShowArchived={setShowArchived}
-          showAll={showAll}
-          setShowAll={setShowAll}
           allCases={allCases}
+          archivedCases={archivedCases}
+          nonArchivedCases={nonArchivedCases}
+          oldestFirst={oldestFirst}
         />
         <CaseListSearch
           cases={cases}
