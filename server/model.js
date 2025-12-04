@@ -251,6 +251,11 @@ Case.init(
       allowNull: true,
       defaultValue: null,
     },
+    tribunal: {
+      type: DataTypes.ENUM("county 1", "county 2", "county 3", "county 4"),
+      allowNull: true,
+      defaultValue: null,
+    },
     isArchived: {
       type: DataTypes.BOOLEAN,
       allowNull: false,

@@ -442,7 +442,7 @@ div.case-task-container
 }
 .case-stats-wrapper {
   display: grid;
-  grid-template-columns: 0.75fr 4fr;
+  grid-template-columns: 1fr 3fr 1fr 3fr;
   margin-top: 1rem;
   width: 100%;
   gap: 1rem;
@@ -801,6 +801,20 @@ div.case-task-container
 }
 .sol-input-wrapper i {
   color: var(--grey);
+}
+.tribunal-toggle-button {
+  background-color: unset;
+  border: none;
+  font-size: 0.9rem;
+  padding: 6px 12px;
+  width: 100%;
+  text-align: left;
+  max-width: 150px;
+}
+.tribunal-toggle-button:hover {
+  color: black;
+  border: 1px solid var(--light-border);
+  background-color: var(--root-bg-color-light);
 }
 
 div.sol-input-wrapper > div > div > input[type="text"] {
