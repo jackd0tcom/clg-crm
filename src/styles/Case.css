@@ -90,6 +90,10 @@
 .case-filter-dropdown-item:hover {
   background-color: var(--root-bg-color-light);
 }
+.case-filter-subtext {
+  font-size: 0.7rem;
+  color: var(--grey);
+}
 .case-filter-check {
   font-size: 0.8rem;
   color: var(--bright-dark-green);

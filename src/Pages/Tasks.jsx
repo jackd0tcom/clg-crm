@@ -22,8 +22,8 @@ const Tasks = ({ openTaskView, refreshKey }) => {
   const [noDueDate, setNoDueDate] = useState([]);
   const [showCompleted, setShowCompleted] = useState(false);
   const [showAssigned, setShowAssigned] = useState(true);
-  const columns = "0.1fr 3fr 2fr 2fr 1fr";
-  const headings = ["", "Title", "Case", "Assignees", "Due Date"];
+  const columns = "0.2fr 3fr 3fr 2fr 2fr 1fr";
+  const headings = ["", "Title", "Case", "Assignees", "Priority", "Due Date"];
   const [currentSort, setCurrentSort] = useState("Due Date");
   const [isSorting, setIsSorting] = useState(false);
   const dropdownRef = useRef(null);
@@ -126,7 +126,7 @@ const Tasks = ({ openTaskView, refreshKey }) => {
     setDueToday([]);
     setOverdue([]);
     setUpcoming([]);
-    setNoDueDate([]); // Add this line to clear noDueDate array
+    setNoDueDate([]);
 
     tasks.forEach((task) => {
       if (!task.dueDate) {
@@ -149,6 +149,7 @@ const Tasks = ({ openTaskView, refreshKey }) => {
     });
   };
 
+  const priorities = ["low", "normal", "high"];
   const sort = (param) => {
     if (!tasks || tasks.length <= 0) {
       return;
@@ -195,6 +196,22 @@ const Tasks = ({ openTaskView, refreshKey }) => {
           )
         );
         break;
+      case "highPriority":
+        setTasks(
+          tasksArr.sort(
+            (a, b) =>
+              priorities.indexOf(b.priority) - priorities.indexOf(a.priority)
+          )
+        );
+        break;
+      case "lowPriority":
+        setTasks(
+          tasksArr.sort(
+            (a, b) =>
+              priorities.indexOf(a.priority) - priorities.indexOf(b.priority)
+          )
+        );
+        break;
       default:
         setTasks(
           tasksArr.sort(
@@ -238,6 +255,7 @@ const Tasks = ({ openTaskView, refreshKey }) => {
                 onClick={() => {
                   sort("dueDate");
                   setCurrentSort("Due Date");
+                  setIsSorting(false);
                 }}
               >
                 Due Date
@@ -250,6 +268,7 @@ const Tasks = ({ openTaskView, refreshKey }) => {
                 onClick={() => {
                   sort("lastUpdated");
                   setCurrentSort("Last Updated");
+                  setIsSorting(false);
                 }}
               >
                 <p>
@@ -265,6 +284,7 @@ const Tasks = ({ openTaskView, refreshKey }) => {
                 onClick={() => {
                   sort("firstUpdated");
                   setCurrentSort("First Updated");
+                  setIsSorting(false);
                 }}
               >
                 <p>
@@ -280,6 +300,7 @@ const Tasks = ({ openTaskView, refreshKey }) => {
                 onClick={() => {
                   sort("lastCreated");
                   setCurrentSort("Last Created");
+                  setIsSorting(false);
                 }}
               >
                 <p>
@@ -295,6 +316,7 @@ const Tasks = ({ openTaskView, refreshKey }) => {
                 onClick={() => {
                   sort("firstCreated");
                   setCurrentSort("First Created");
+                  setIsSorting(false);
                 }}
               >
                 <p>
@@ -302,6 +324,32 @@ const Tasks = ({ openTaskView, refreshKey }) => {
                   <span className="tasks-sort-subtext">(old - new)</span>
                 </p>
                 {currentSort === "First Created" && (
+                  <i className="case-filter-check fa-solid fa-check"></i>
+                )}
+              </div>{" "}
+              <div
+                className="tasks-sort-dropdown-item"
+                onClick={() => {
+                  sort("highPriority");
+                  setCurrentSort("High Priority");
+                  setIsSorting(false);
+                }}
+              >
+                <p>High Priority</p>
+                {currentSort === "High Priority" && (
+                  <i className="case-filter-check fa-solid fa-check"></i>
+                )}
+              </div>
+              <div
+                className="tasks-sort-dropdown-item"
+                onClick={() => {
+                  sort("lowPriority");
+                  setCurrentSort("Low Priority");
+                  setIsSorting(false);
+                }}
+              >
+                <p>Low Priority</p>
+                {currentSort === "Low Priority" && (
                   <i className="case-filter-check fa-solid fa-check"></i>
                 )}
               </div>
@@ -324,7 +372,14 @@ const Tasks = ({ openTaskView, refreshKey }) => {
           <TaskList
             openTaskView={openTaskView}
             tasks={tasks}
-            headings={["Status", "Title", "Case", "Assignees", "Due Date"]}
+            headings={[
+              "Status",
+              "Title",
+              "Case",
+              "Assignees",
+              "Priority",
+              "Due Date",
+            ]}
             columns={columns}
             title={"Completed"}
             refreshTasks={fetchTasks}
@@ -334,7 +389,14 @@ const Tasks = ({ openTaskView, refreshKey }) => {
             <TaskList
               openTaskView={openTaskView}
               tasks={noDueDate}
-              headings={["Status", "Title", "Case", "Assignees", "Due Date"]}
+              headings={[
+                "Status",
+                "Title",
+                "Case",
+                "Assignees",
+                "Priority",
+                "Due Date",
+              ]}
               columns={columns}
               title={"No Due Date"}
               refreshTasks={fetchTasks}
@@ -342,7 +404,14 @@ const Tasks = ({ openTaskView, refreshKey }) => {
             <TaskList
               openTaskView={openTaskView}
               tasks={overdue}
-              headings={["Status", "Title", "Case", "Assignees", "Due Date"]}
+              headings={[
+                "Status",
+                "Title",
+                "Case",
+                "Assignees",
+                "Priority",
+                "Due Date",
+              ]}
               columns={columns}
               title={"Overdue"}
               refreshTasks={fetchTasks}
@@ -350,7 +419,14 @@ const Tasks = ({ openTaskView, refreshKey }) => {
             <TaskList
               openTaskView={openTaskView}
               tasks={dueToday}
-              headings={["Status", "Title", "Case", "Assignees", "Due Date"]}
+              headings={[
+                "Status",
+                "Title",
+                "Case",
+                "Assignees",
+                "Priority",
+                "Due Date",
+              ]}
               columns={columns}
               title={"Due Today"}
               refreshTasks={fetchTasks}
@@ -358,7 +434,14 @@ const Tasks = ({ openTaskView, refreshKey }) => {
             <TaskList
               openTaskView={openTaskView}
               tasks={upcoming}
-              headings={["Status", "Title", "Case", "Assignees", "Due Date"]}
+              headings={[
+                "Status",
+                "Title",
+                "Case",
+                "Assignees",
+                "Priority",
+                "Due Date",
+              ]}
               columns={columns}
               title={"Upcoming"}
               refreshTasks={fetchTasks}

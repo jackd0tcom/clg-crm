@@ -123,7 +123,10 @@ const CaseFilter = ({
               setIsFiltering(false);
             }}
           >
-            <span>Date Opened (new - old) </span>
+            <span>
+              Date Opened{" "}
+              <span className="case-filter-subtext">(new - old)</span>{" "}
+            </span>
             {currentFilter === "opened-up" && (
               <i className="case-filter-check fa-solid fa-check"></i>
             )}
@@ -143,7 +146,10 @@ const CaseFilter = ({
             }}
           >
             {" "}
-            <span>Date Opened (old - new)</span>
+            <span>
+              Date Opened{" "}
+              <span className="case-filter-subtext">(old - new)</span>
+            </span>
             {currentFilter === "opened-down" && (
               <i className="case-filter-check fa-solid fa-check"></i>
             )}

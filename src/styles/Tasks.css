@@ -190,7 +190,7 @@
 }
 .task-list {
   display: grid;
-  grid-template-columns: 0.1fr 3fr 2fr 2fr 1fr;
+  grid-template-columns: 0.2fr 3fr 3fr 2fr 2fr 1fr;
   column-gap: 10px;
   margin: 15px 30px;
   border-bottom: 1px solid var(--light-border);
@@ -285,6 +285,11 @@
   padding-left: 10px;
   font-size: 0.9rem;
 }
+.task-list-item .priority-icon-wrapper p {
+  margin: 0;
+  padding: 0;
+}
+
 .new-task-toggle-wrapper-active {
   font-size: 1rem;
   color: var(--dark-grey);
