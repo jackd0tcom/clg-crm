@@ -45,7 +45,6 @@ const TaskFilter = ({
       try {
         await axios.get("/api/getCases").then((res) => {
           setCaseData(res.data);
-          console.log("cases fetched");
           if (paramCase !== 0) {
             const currentCase = res.data.find(
               (data) => data.caseId === paramCase
@@ -146,7 +145,9 @@ const TaskFilter = ({
           onClick={() => {
             if (showAssigned) {
               setShowAssigned(false);
-            } else setShowAssigned(true);
+            } else {
+              setShowAssigned(true);
+            }
           }}
           className={
             !showAssigned

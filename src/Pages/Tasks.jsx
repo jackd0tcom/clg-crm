@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import Loader from "../Elements/UI/Loader";
 import TaskList from "../Elements/TaskList/TaskList";
@@ -24,8 +24,26 @@ const Tasks = ({ openTaskView, refreshKey }) => {
   const [showAssigned, setShowAssigned] = useState(true);
   const columns = "0.1fr 3fr 2fr 2fr 1fr";
   const headings = ["", "Title", "Case", "Assignees", "Due Date"];
+  const [currentSort, setCurrentSort] = useState("Due Date");
+  const [isSorting, setIsSorting] = useState(false);
+  const dropdownRef = useRef(null);
   const caseId = useParams();
   const nav = useNavigate();
+
+  // Handles blur
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsSorting(false);
+      }
+    };
+    if (isSorting) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isSorting]);
 
   const fetchTasks = async () => {
     try {
@@ -38,10 +56,12 @@ const Tasks = ({ openTaskView, refreshKey }) => {
     }
   };
 
+  // Initial task fetching and sorting, useTimeout to give auth a little buffer on page reloads
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
       setTimeout(() => {
         fetchTasks();
+        sort("dueDate");
       }, 100);
     } else if (!isLoading && !isAuthenticated) {
       nav("/");
@@ -78,15 +98,17 @@ const Tasks = ({ openTaskView, refreshKey }) => {
     setLoading(false);
   }, [originalTasks, showCompleted, showAssigned]);
 
-  // Refetch tasks when refreshKey change
+  // Refetch tasks when refreshKey change aka when you close TaskView
   useEffect(() => {
     if (refreshKey > 0) {
       // Only fetch if we're not filtering by a specific case
       // The TaskFilter component will handle filtering
       fetchTasks();
+      sort(currentSort);
     }
   }, [refreshKey]);
 
+  // Formats tasks on change of filter
   useEffect(() => {
     if (tasks && tasks.length > 0) {
       format();
@@ -95,9 +117,11 @@ const Tasks = ({ openTaskView, refreshKey }) => {
       setDueToday([]);
       setOverdue([]);
       setUpcoming([]);
+      setNoDueDate([]);
     }
   }, [tasks]);
 
+  // Separates tasks into their respective groups based on dueDate
   const format = () => {
     setDueToday([]);
     setOverdue([]);
@@ -114,7 +138,6 @@ const Tasks = ({ openTaskView, refreshKey }) => {
           return [...prev, task];
         });
       } else if (findTimeDifference(task.dueDate)[0] === "0") {
-        console.log(findTimeDifference(task.dueDate[0]));
         setDueToday((prev) => {
           return [...prev, task];
         });
@@ -124,6 +147,63 @@ const Tasks = ({ openTaskView, refreshKey }) => {
         });
       }
     });
+  };
+
+  const sort = (param) => {
+    if (!tasks || tasks.length <= 0) {
+      return;
+    }
+    let tasksArr = tasks;
+    switch (param) {
+      case "dueDate":
+        setTasks(
+          tasksArr.sort(
+            (a, b) =>
+              new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
+          )
+        );
+        break;
+      case "lastUpdated":
+        setTasks(
+          tasksArr.sort(
+            (a, b) =>
+              new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+          )
+        );
+        break;
+      case "firstUpdated":
+        setTasks(
+          tasksArr.sort(
+            (a, b) =>
+              new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime()
+          )
+        );
+        break;
+      case "lastCreated":
+        setTasks(
+          tasksArr.sort(
+            (a, b) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          )
+        );
+        break;
+      case "firstCreated":
+        setTasks(
+          tasksArr.sort(
+            (a, b) =>
+              new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          )
+        );
+        break;
+      default:
+        setTasks(
+          tasksArr.sort(
+            (a, b) =>
+              new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
+          )
+        );
+    }
+    format();
   };
 
   return loading ? (
@@ -143,11 +223,96 @@ const Tasks = ({ openTaskView, refreshKey }) => {
           showAssigned={showAssigned}
           setShowAssigned={setShowAssigned}
         />
+        <div className="tasks-sort-wrapper">
+          <p className="sort-by">Sort by</p>
+          <button
+            onClick={() => setIsSorting(true)}
+            className="tasks-sort-button"
+          >
+            {currentSort}
+          </button>
+          {isSorting && (
+            <div className="tasks-sort-dropdown" ref={dropdownRef}>
+              <div
+                className="tasks-sort-dropdown-item"
+                onClick={() => {
+                  sort("dueDate");
+                  setCurrentSort("Due Date");
+                }}
+              >
+                Due Date
+                {currentSort === "Due Date" && (
+                  <i className="case-filter-check fa-solid fa-check"></i>
+                )}
+              </div>
+              <div
+                className="tasks-sort-dropdown-item"
+                onClick={() => {
+                  sort("lastUpdated");
+                  setCurrentSort("Last Updated");
+                }}
+              >
+                <p>
+                  Updated{" "}
+                  <span className="tasks-sort-subtext">(new - old)</span>
+                </p>
+                {currentSort === "Last Updated" && (
+                  <i className="case-filter-check fa-solid fa-check"></i>
+                )}
+              </div>
+              <div
+                className="tasks-sort-dropdown-item"
+                onClick={() => {
+                  sort("firstUpdated");
+                  setCurrentSort("First Updated");
+                }}
+              >
+                <p>
+                  Updated{" "}
+                  <span className="tasks-sort-subtext">(old - new)</span>
+                </p>
+                {currentSort === "First Updated" && (
+                  <i className="case-filter-check fa-solid fa-check"></i>
+                )}
+              </div>
+              <div
+                className="tasks-sort-dropdown-item"
+                onClick={() => {
+                  sort("lastCreated");
+                  setCurrentSort("Last Created");
+                }}
+              >
+                <p>
+                  Created{" "}
+                  <span className="tasks-sort-subtext">(new - old)</span>
+                </p>
+                {currentSort === "Last Created" && (
+                  <i className="case-filter-check fa-solid fa-check"></i>
+                )}
+              </div>
+              <div
+                className="tasks-sort-dropdown-item"
+                onClick={() => {
+                  sort("firstCreated");
+                  setCurrentSort("First Created");
+                }}
+              >
+                <p>
+                  Created{" "}
+                  <span className="tasks-sort-subtext">(old - new)</span>
+                </p>
+                {currentSort === "First Created" && (
+                  <i className="case-filter-check fa-solid fa-check"></i>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
         <button className="new-task-button" onClick={() => openTaskView("new")}>
           New Task
         </button>
       </div>
-      <div className="task-list">
+      <div className="task-list task-list-head-wrapper">
         <div className="tasks-list-head">
           {headings.map((heading) => {
             return <p key={heading}>{heading}</p>;
