@@ -10,12 +10,16 @@ const CaseFilter = ({
 }) => {
   const [isFiltering, setIsFiltering] = useState(false);
   const dropdownRef = useRef(null);
+  // Used to determine which option gets the checkmark icon
+  const [currentFilter, setCurrentFilter] = useState("updated-down");
+  // Used to populate the button text, is an html element
   const [activeFilter, setActiveFilter] = useState(
     <span>
-      Last Updated <i className="case-filter-icon fa-solid fa-arrow-up"></i>
+      Last Updated <i className="case-filter-icon fa-solid fa-arrow-down"></i>
     </span>
   );
 
+  // Handles blur
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -30,6 +34,7 @@ const CaseFilter = ({
     };
   }, [isFiltering]);
 
+  // Only filter option with a handler function, sorts the data here instead of in CaseList.jsx
   const byDate = (latest) => {
     if (latest) {
       const sortedCases = [...nonArchivedCases].sort(
@@ -65,17 +70,19 @@ const CaseFilter = ({
               setActiveFilter(
                 <span>
                   Last Updated{" "}
-                  <i className="case-filter-icon fa-solid fa-arrow-up"></i>
+                  <i className="case-filter-icon fa-solid fa-arrow-down"></i>
                 </span>
               );
               setCases(nonArchivedCases);
+              setCurrentFilter("updated-down");
+              setIsFiltering(false);
             }}
           >
             <span>
               Last Updated{" "}
-              <i className="case-filter-icon fa-solid fa-arrow-up"></i>
+              <i className="case-filter-icon fa-solid fa-arrow-down"></i>
             </span>
-            {activeFilter.props.children[0] === "Last Updated" && (
+            {currentFilter === "updated-down" && (
               <i className="case-filter-check fa-solid fa-check"></i>
             )}
           </div>
@@ -85,18 +92,39 @@ const CaseFilter = ({
               setActiveFilter(
                 <span>
                   Last Updated{" "}
-                  <i className="case-filter-icon fa-solid fa-arrow-down"></i>
+                  <i className="case-filter-icon fa-solid fa-arrow-up"></i>
                 </span>
               );
               setCases(oldestFirst);
+              setCurrentFilter("updated-up");
+              setIsFiltering(false);
             }}
           >
             {" "}
             <span>
               Last Updated{" "}
-              <i className="case-filter-icon fa-solid fa-arrow-down"></i>
+              <i className="case-filter-icon fa-solid fa-arrow-up"></i>
             </span>
-            {activeFilter === "updated-down" && (
+            {currentFilter === "updated-up" && (
+              <i className="case-filter-check fa-solid fa-check"></i>
+            )}
+          </div>
+          <div
+            className="case-filter-dropdown-item"
+            onClick={() => {
+              setActiveFilter(
+                <span>
+                  Date Opened{" "}
+                  <i className="case-filter-icon fa-solid fa-arrow-down"></i>
+                </span>
+              );
+              byDate(false);
+              setCurrentFilter("opened-up");
+              setIsFiltering(false);
+            }}
+          >
+            <span>Date Opened (new - old) </span>
+            {currentFilter === "opened-up" && (
               <i className="case-filter-check fa-solid fa-check"></i>
             )}
           </div>
@@ -109,48 +137,14 @@ const CaseFilter = ({
                   <i className="case-filter-icon fa-solid fa-arrow-up"></i>
                 </span>
               );
-              byDate(false);
-            }}
-          >
-            {" "}
-            <span>
-              Date Opened{" "}
-              <i className="case-filter-icon fa-solid fa-arrow-up"></i>
-            </span>
-            {activeFilter === "opened-up" && (
-              <i className="case-filter-check fa-solid fa-check"></i>
-            )}
-          </div>
-          <div
-            className="case-filter-dropdown-item"
-            onClick={() => {
-              setActiveFilter(
-                <span>
-                  Date Opened{" "}
-                  <i className="case-filter-icon fa-solid fa-arrow-down"></i>
-                </span>
-              );
               byDate(true);
+              setCurrentFilter("opened-down");
+              setIsFiltering(false);
             }}
           >
             {" "}
-            <span>
-              Date Opened{" "}
-              <i className="case-filter-icon fa-solid fa-arrow-down"></i>
-            </span>
-            {activeFilter === "opened-down" && (
-              <i className="case-filter-check fa-solid fa-check"></i>
-            )}
-          </div>
-          <div
-            className="case-filter-dropdown-item"
-            onClick={() => {
-              setActiveFilter("Show Archived");
-              setCases(archivedCases);
-            }}
-          >
-            Show Archived{" "}
-            {activeFilter === "archive" && (
+            <span>Date Opened (old - new)</span>
+            {currentFilter === "opened-down" && (
               <i className="case-filter-check fa-solid fa-check"></i>
             )}
           </div>
@@ -159,10 +153,26 @@ const CaseFilter = ({
             onClick={() => {
               setActiveFilter("Show All");
               setCases(allCases);
+              setCurrentFilter("all");
+              setIsFiltering(false);
             }}
           >
             Show All{" "}
-            {activeFilter === "all" && (
+            {currentFilter === "all" && (
+              <i className="case-filter-check fa-solid fa-check"></i>
+            )}
+          </div>
+          <div
+            className="case-filter-dropdown-item"
+            onClick={() => {
+              setActiveFilter("Show Archived");
+              setCases(archivedCases);
+              setCurrentFilter("archived");
+              setIsFiltering(false);
+            }}
+          >
+            Show Archived{" "}
+            {currentFilter === "archived" && (
               <i className="case-filter-check fa-solid fa-check"></i>
             )}
           </div>
