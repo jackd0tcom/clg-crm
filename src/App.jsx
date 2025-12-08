@@ -71,7 +71,14 @@ function App() {
     setRefreshKey((prev) => prev + 1);
   }, []);
 
-  return isAuthenticated && userSynced && !userStore.isAllowed ? (
+  // Only show Denied if: authenticated, synced, AND we have confirmed user data with isAllowed === false
+  const shouldShowDenied =
+    isAuthenticated &&
+    userSynced &&
+    userStore.userId !== null && // Ensure Redux store has been updated with user data
+    userStore.isAllowed === false; // Explicit false check (not just falsy)
+
+  return shouldShowDenied ? (
     <Denied />
   ) : (
     <>
