@@ -251,11 +251,6 @@ Case.init(
       allowNull: true,
       defaultValue: null,
     },
-    tribunal: {
-      type: DataTypes.ENUM("county 1", "county 2", "county 3", "county 4"),
-      allowNull: true,
-      defaultValue: null,
-    },
     isArchived: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
@@ -264,6 +259,52 @@ Case.init(
   },
   {
     modelName: "case",
+    sequelize: db,
+    timestamps: true,
+  }
+);
+
+class Tribunal extends Model {}
+Tribunal.init(
+  {
+    tribunalId: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+    },
+    isActive: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
+    },
+  },
+  {
+    modelName: "tribunal",
+    sequelize: db,
+    timestamps: true,
+  }
+);
+
+// Junction table for case-practice area relationships
+class CaseTribunal extends Model {}
+CaseTribunal.init(
+  {
+    caseId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    tribunalId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+  },
+  {
+    modelName: "caseTribunal",
     sequelize: db,
     timestamps: true,
   }
@@ -560,6 +601,18 @@ PracticeArea.belongsToMany(Case, {
   foreignKey: "practiceAreaId",
   otherKey: "caseId",
 });
+Case.belongsToMany(Tribunal, {
+  through: CaseTribunal,
+  as: "tribunal",
+  foreignKey: "caseId",
+  otherKey: "tribunalId",
+});
+Tribunal.belongsToMany(Case, {
+  through: CaseTribunal,
+  as: "cases",
+  foreignKey: "tribunalId",
+  otherKey: "caseId",
+});
 // Case has many people involved
 Case.hasMany(Person, { foreignKey: "caseId", as: "people" });
 Person.belongsTo(Case, { foreignKey: "caseId" });
@@ -639,4 +692,6 @@ export {
   ActivityReaders,
   PracticeArea,
   CasePracticeAreas,
+  Tribunal,
+  CaseTribunal,
 };

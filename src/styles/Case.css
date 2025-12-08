@@ -802,9 +802,36 @@ div.case-task-container
 .sol-input-wrapper i {
   color: var(--grey);
 }
+.tribunal-toggle-wrapper {
+  position: relative;
+}
+.tribunal-toggle-dropdown {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  top: 110%;
+  background-color: white;
+  border: 1px solid var(--light-border);
+  border-radius: 5px;
+  min-width: 175px;
+  z-index: 999;
+}
+.tribunal-dropdown-item {
+  font-size: 0.85rem;
+  padding: 8px 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+.tribunal-dropdown-item:hover {
+  background-color: var(--root-bg-color-light);
+}
+
 .tribunal-toggle-button {
   background-color: unset;
-  border: none;
+  border: 1px solid transparent;
   font-size: 0.9rem;
   padding: 6px 12px;
   width: 100%;

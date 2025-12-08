@@ -37,7 +37,7 @@ const Case = ({ openTaskView, refreshKey }) => {
   const [isArchived, setIsArchived] = useState(false);
   const [isCreatingCase, setIsCreatingCase] = useState(false);
   const [currentSOL, setCurrentSOl] = useState(null);
-  const [currentTribunal, setCurrentTribunal] = useState(null);
+  const [currentTribunal, setCurrentTribunal] = useState();
   const dropdownRef = useRef(null);
   const isCreatingCaseRef = useRef(false);
 
@@ -412,6 +412,7 @@ const Case = ({ openTaskView, refreshKey }) => {
                 </div>
                 <div className="case-stats-container">
                   <h4>SOL</h4>
+                  <h4>Tribunal</h4>
                 </div>
                 <div className="case-stats-container">
                   <SOLInput
@@ -420,11 +421,6 @@ const Case = ({ openTaskView, refreshKey }) => {
                     refreshActivityData={refreshActivityData}
                     setCurrentSOL={setCurrentSOl}
                   />
-                </div>
-                <div className="case-stats-container">
-                  <h4>Tribunal</h4>
-                </div>
-                <div className="case-stats-container">
                   <TribunalToggle
                     currentTribunal={currentTribunal}
                     setCurrentTribunal={setCurrentTribunal}

@@ -1,7 +1,14 @@
 import { User, Case } from "../model.js";
 import { Op } from "sequelize";
 import { CaseAssignees } from "../model.js";
-import { Task, Person, PracticeArea, CasePracticeAreas } from "../model.js";
+import {
+  Task,
+  Person,
+  PracticeArea,
+  CasePracticeAreas,
+  Tribunal,
+  CaseTribunal,
+} from "../model.js";
 import {
   createActivityLog,
   ACTIVITY_ACTIONS,
@@ -285,6 +292,12 @@ export default {
               through: { attributes: [] },
               attributes: ["practiceAreaId", "name"],
             },
+            {
+              model: Tribunal,
+              as: "tribunal",
+              through: { attributes: [] },
+              attributes: ["tribunalId", "name"],
+            },
           ],
         });
 
@@ -319,10 +332,19 @@ export default {
         });
 
         const people = await Person.findAll({ where: { caseId } });
+
+        // Transform tribunal array to single object (or null)
+        const caseData = foundCase.toJSON();
+        const tribunal =
+          Array.isArray(caseData.tribunal) && caseData.tribunal.length > 0
+            ? caseData.tribunal[0]
+            : null;
+
         const data = {
-          ...foundCase.toJSON(),
-          tasks: tasks,
-          people: people,
+          ...caseData,
+          tribunal, // Single object instead of array
+          tasks: tasks.map((task) => task.toJSON()),
+          people: people.map((person) => person.toJSON()),
         };
 
         res.send(data);
@@ -357,7 +379,9 @@ export default {
         } else if (!oldValue) {
           message = `added an SOL`;
         } else {
-          message = `changed the SOL from ${formatDateNoTime(oldValue)} to ${formatDateNoTime(value)}`;
+          message = `changed the SOL from ${formatDateNoTime(
+            oldValue
+          )} to ${formatDateNoTime(value)}`;
         }
       }
 
@@ -753,6 +777,67 @@ export default {
     } catch (error) {
       console.log(error);
       res.status(400).send(error);
+    }
+  },
+  getTribunals: async (req, res) => {
+    try {
+      console.log("getTribunals");
+      if (req.session.user) {
+        const tribunals = await Tribunal.findAll({});
+        res.send(tribunals);
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(400).send(error);
+    }
+  },
+  updateCaseTribunal: async (req, res) => {
+    try {
+      console.log("updateCaseTribunal");
+      if (!req.session.user) {
+        return res.status(401).send("User not authenticated");
+      }
+
+      const { caseId, tribunalId } = req.body;
+
+      const caseExists = await Case.findByPk(caseId);
+      if (!caseExists) {
+        return res.status(404).send("Case not found");
+      }
+
+      const tribunalExists = await Tribunal.findByPk(tribunalId);
+      if (!tribunalExists) {
+        return res.status(404).send("Tribunal area not found");
+      }
+
+      // Use findOrCreate - handles both create and update in one operation
+      const [assignment, created] = await CaseTribunal.findOrCreate({
+        where: { caseId },
+        defaults: { caseId, tribunalId },
+      });
+
+      // If it already existed, update it
+      if (!created && assignment.tribunalId !== tribunalId) {
+        await CaseTribunal.update({ tribunalId }, { where: { caseId } });
+        // Fetch the updated record
+        const updatedAssignment = await CaseTribunal.findOne({
+          where: { caseId },
+        });
+        assignment.tribunalId = updatedAssignment.tribunalId;
+      }
+
+      res.status(created ? 201 : 200).json(assignment);
+
+      await createActivityLog({
+        authorId: req.session.user.userId,
+        objectType: "case",
+        objectId: parseInt(caseId),
+        action: ACTIVITY_ACTIONS.CASE_TRIBUNAL_UPDATED,
+        details: `updated the tribunal`,
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).send("Failed to update case tribunal");
     }
   },
   archiveCase: async (req, res) => {

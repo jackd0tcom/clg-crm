@@ -1,6 +1,5 @@
 import { capitalize } from "../../helpers/helperFunctions";
 import { useState, useEffect, useRef } from "react";
-import PhaseIcon from "./PhaseIcon";
 import axios from "axios";
 
 const TribunalToggle = ({
@@ -10,6 +9,7 @@ const TribunalToggle = ({
   refreshActivityData,
 }) => {
   const [isChanging, setIsChanging] = useState(false);
+  const [tribunalList, setTribunalList] = useState([]);
   const dropdownRef = useRef(null);
 
   // Handles blur
@@ -29,32 +29,42 @@ const TribunalToggle = ({
     };
   }, [isChanging]);
 
-  const handleTribunalChange = async (tribunal) => {
+  useEffect(() => {
+    try {
+      axios.get("/api/getTribunals").then((res) => setTribunalList(res.data));
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
+
+  const handleTribunalChange = async (tribunalId, tribunalName) => {
     try {
       if (!caseId) {
+        console.log("returning due to no case Id");
         return;
       }
-      if (currentTribunal && tribunal) {
-        if (tribunal === currentTribunal) {
+      if (currentTribunal && currentTribunal.tribunalId && tribunalId) {
+        if (tribunalId === currentTribunal.tribunalId) {
+          console.log("returning due to no change in tribunalId");
           return;
         }
       }
       await axios
-        .post("/api/updateCase", {
-          fieldName: "tribunal",
-          value: tribunal,
+        .post("/api/updateCaseTribunal", {
           caseId,
+          tribunalId,
         })
         .then((res) => {
-          console.log(res.data);
-          if (res.status === 200) {
-            setCurrentTribunal(tribunal);
+          if (res.status) {
+            setCurrentTribunal({ tribunalId, name: tribunalName });
           }
           if (refreshActivityData) {
             refreshActivityData();
           }
         });
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -63,11 +73,26 @@ const TribunalToggle = ({
         className="tribunal-toggle-button"
         onClick={() => setIsChanging(true)}
       >
-        {!currentTribunal ? "Set Tribunal" : currentTribunal}
+        {currentTribunal?.name
+          ? capitalize(currentTribunal.name)
+          : "Set Tribunal"}
       </button>
       {isChanging && (
         <div className="tribunal-toggle-dropdown" ref={dropdownRef}>
-          <div className="tribunal-dropdown-item"></div>
+          {tribunalList &&
+            tribunalList.length > 0 &&
+            tribunalList.map((tri) => (
+              <div
+                key={`tribunal-${tri.tribunalId}`}
+                className="tribunal-dropdown-item"
+                onClick={() => handleTribunalChange(tri.tribunalId, tri.name)}
+              >
+                {capitalize(tri.name)}
+                {currentTribunal && currentTribunal.name === tri.name && (
+                  <i className="fa-solid fa-check"></i>
+                )}
+              </div>
+            ))}
         </div>
       )}
     </div>
