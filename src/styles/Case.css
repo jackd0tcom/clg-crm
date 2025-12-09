@@ -262,14 +262,12 @@
   border-radius: 3px;
   min-width: 175px;
   min-height: 120px;
-  padding: 5px;
   z-index: 99999;
 }
 .drop-down-item {
-  padding: 5px;
+  padding: 6px 12px;
   font-size: 0.85rem;
   cursor: pointer;
-  border-radius: 5px;
 }
 .extra-settings-wrapper {
   z-index: 999;
@@ -279,6 +277,27 @@
 }
 
 /* Phase */
+.phase-toggle-dropdown {
+  position: absolute;
+  background-color: white;
+  z-index: 10;
+  top: 110%;
+  border: 1px solid var(--light-border);
+  border-radius: 5px;
+  min-width: 175px;
+}
+.phase-toggle-button {
+  border: 1px solid transparent;
+  background-color: unset;
+  padding: 6px 12px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+.phase-toggle-button:hover {
+  color: black;
+  background-color: var(--root-bg-color-light);
+  border: 1px solid var(--light-border);
+}
 .phase-toggle-item {
   z-index: 11;
   padding: 6px 12px;
@@ -287,16 +306,16 @@
   border-radius: 5px;
   border: 1px solid transparent;
   max-width: 150px;
+  font-size: 0.9rem;
+}
+.phase-toggle-item:hover {
+  background-color: var(--root-bg-color-light);
 }
 
 .phase-icon-wrapper {
   display: flex;
   align-items: center;
   column-gap: 8px;
-}
-.phase-toggle-item:hover {
-  background-color: var(--root-bg-color-light);
-  border: 1px solid var(--light-border);
 }
 .phase-icon-wrapper p {
   margin: 0;
@@ -306,15 +325,6 @@
 }
 .phase-toggle-wrapper {
   position: relative;
-}
-.phase-toggle-dropdown {
-  position: absolute;
-  background-color: white;
-  z-index: 10;
-  border: 1px solid var(--light-border);
-  border-radius: 5px;
-  top: 0;
-  padding: 10px;
 }
 .case-notes {
   display: flex;
@@ -442,7 +452,7 @@ div.case-task-container
 }
 .case-stats-wrapper {
   display: grid;
-  grid-template-columns: 0.75fr 4fr;
+  grid-template-columns: 1fr 3fr 1fr 3fr;
   margin-top: 1rem;
   width: 100%;
   gap: 1rem;
@@ -451,6 +461,7 @@ div.case-task-container
   display: grid;
   grid-template-rows: 1fr 1fr;
   align-items: center;
+  gap: 10px;
 }
 .case-title-input {
   width: calc(100% - 10px);
@@ -801,6 +812,46 @@ div.case-task-container
 }
 .sol-input-wrapper i {
   color: var(--grey);
+}
+.tribunal-toggle-wrapper {
+  position: relative;
+}
+.tribunal-toggle-dropdown {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  top: 110%;
+  background-color: white;
+  border: 1px solid var(--light-border);
+  border-radius: 5px;
+  min-width: 175px;
+  z-index: 999;
+}
+.tribunal-dropdown-item {
+  font-size: 0.85rem;
+  padding: 8px 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+.tribunal-dropdown-item:hover {
+  background-color: var(--root-bg-color-light);
+}
+
+.tribunal-toggle-button {
+  background-color: unset;
+  border: 1px solid transparent;
+  font-size: 0.9rem;
+  padding: 6px 12px;
+  text-align: left;
+  max-width: 150px;
+}
+.tribunal-toggle-button:hover {
+  color: black;
+  border: 1px solid var(--light-border);
+  background-color: var(--root-bg-color-light);
 }
 
 div.sol-input-wrapper > div > div > input[type="text"] {

@@ -12,10 +12,13 @@ import {
   ActivityReaders,
   PracticeArea,
   CasePracticeAreas,
+  Tribunal,
 } from "./model.js";
 import bcrypt from "bcryptjs";
 
-const db = await connectToDB(process.env.DATABASE_URL || "postgresql:///clg-db");
+const db = await connectToDB(
+  process.env.DATABASE_URL || "postgresql:///clg-db"
+);
 
 const users = [
   {
@@ -80,6 +83,17 @@ const practiceAreas = await PracticeArea.bulkCreate([
   { name: "general civil litigation" },
   { name: "employment law" },
   { name: "foreign judgments" },
+]);
+
+// Tribunal
+const tribunal = await Tribunal.bulkCreate([
+  { name: "wayne" },
+  { name: "pike" },
+  { name: "monroe" },
+  { name: "carbon" },
+  { name: "luzerne" },
+  { name: "lackawanna" },
+  { name: "susquehanna" },
 ]);
 
 // Create cases

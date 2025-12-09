@@ -1,9 +1,18 @@
 import { capitalize } from "../../helpers/helperFunctions";
 import { useState, useEffect, useRef } from "react";
+import axios from "axios";
 
-const TribunalToggle = ({ value, onHandle, setPhase }) => {
+const TribunalToggle = ({
+  currentTribunal,
+  setCurrentTribunal,
+  caseId,
+  refreshActivityData,
+}) => {
   const [isChanging, setIsChanging] = useState(false);
+  const [tribunalList, setTribunalList] = useState([]);
   const dropdownRef = useRef(null);
+
+  // Handles blur
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -20,67 +29,71 @@ const TribunalToggle = ({ value, onHandle, setPhase }) => {
     };
   }, [isChanging]);
 
+  useEffect(() => {
+    try {
+      axios.get("/api/getTribunals").then((res) => setTribunalList(res.data));
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
+
+  const handleTribunalChange = async (tribunalId, tribunalName) => {
+    try {
+      if (!caseId) {
+        console.log("returning due to no case Id");
+        return;
+      }
+      if (currentTribunal && currentTribunal.tribunalId && tribunalId) {
+        if (tribunalId === currentTribunal.tribunalId) {
+          console.log("returning due to no change in tribunalId");
+          return;
+        }
+      }
+      await axios
+        .post("/api/updateCaseTribunal", {
+          caseId,
+          tribunalId,
+        })
+        .then((res) => {
+          if (res.status) {
+            setCurrentTribunal({ tribunalId, name: tribunalName });
+          }
+          if (refreshActivityData) {
+            refreshActivityData();
+          }
+          setIsChanging(false);
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
-    <div className="phase-toggle-wrapper">
-      <div className="phase-toggle-item" onClick={() => setIsChanging(true)}>
-        <PhaseIcon phase={value} />
-      </div>
+    <div className="tribunal-toggle-wrapper">
+      <button
+        className="tribunal-toggle-button"
+        onClick={() => setIsChanging(true)}
+      >
+        {currentTribunal?.name
+          ? capitalize(currentTribunal.name)
+          : "Set Tribunal"}
+      </button>
       {isChanging && (
-        <div className="phase-toggle-dropdown" ref={dropdownRef}>
-          <div
-            onClick={() => {
-              onHandle("intake");
-              setIsChanging(false);
-            }}
-            className="phase-toggle-item"
-          >
-            <PhaseIcon phase={"intake"} />
-          </div>
-          <div
-            onClick={() => {
-              onHandle("investigation");
-              setIsChanging(false);
-            }}
-            className="phase-toggle-item"
-          >
-            <PhaseIcon phase={"investigation"} />
-          </div>
-          <div
-            onClick={() => {
-              onHandle("negotiation");
-              setIsChanging(false);
-            }}
-            className="phase-toggle-item"
-          >
-            <PhaseIcon phase={"negotiation"} />
-          </div>
-          <div
-            onClick={() => {
-              onHandle("litigation");
-              setIsChanging(false);
-            }}
-            className="phase-toggle-item"
-          >
-            <PhaseIcon phase={"litigation"} />
-          </div>
-          <div
-            onClick={() => {
-              onHandle("settlement");
-              setIsChanging(false);
-            }}
-            className="phase-toggle-item"
-          >
-            <PhaseIcon phase={"settlement"} />
-          </div>
-          <div
-            onClick={() => {
-              onHandle("closed");
-              setIsChanging(false);
-            }}
-            className="phase-toggle-item"
-          >
-            <PhaseIcon phase={"closed"} />
-          </div>
+        <div className="tribunal-toggle-dropdown" ref={dropdownRef}>
+          {tribunalList &&
+            tribunalList.length > 0 &&
+            tribunalList.map((tri) => (
+              <div
+                key={`tribunal-${tri.tribunalId}`}
+                className="tribunal-dropdown-item"
+                onClick={() => handleTribunalChange(tri.tribunalId, tri.name)}
+              >
+                {capitalize(tri.name)}
+                {currentTribunal && currentTribunal.name === tri.name && (
+                  <i className="fa-solid fa-check"></i>
+                )}
+              </div>
+            ))}
         </div>
       )}
     </div>

@@ -57,6 +57,8 @@ const {
   archiveCase,
   newPracticeArea,
   removePracticeArea,
+  getTribunals,
+  updateCaseTribunal,
 } = caseCtrl;
 const {
   getAllTasks,
@@ -203,6 +205,8 @@ app.get("/api/getPracticeAreas", getPracticeAreas);
 app.get("/api/getLatestCase", getLatestCase);
 app.post("/api/newPracticeArea", newPracticeArea);
 app.delete("/api/removePracticeArea", removePracticeArea);
+app.get("/api/getTribunals", getTribunals);
+app.post("/api/updateCaseTribunal", updateCaseTribunal);
 
 // Person endpoints
 app.post("/api/updatePerson", updatePerson);

@@ -12,6 +12,8 @@ import {
   ActivityReaders,
   PracticeArea,
   CasePracticeAreas,
+  Tribunal,
+  CaseTribunal,
 } from "./model.js";
 
 const db = await connectToDB(
@@ -45,6 +47,17 @@ const practiceAreasData = [
   { name: "foreign judgments" },
 ];
 
+// Tribunals data
+const tribunalData = [
+  { name: "wayne" },
+  { name: "pike" },
+  { name: "monroe" },
+  { name: "carbon" },
+  { name: "luzerne" },
+  { name: "lackawanna" },
+  { name: "susquehanna" },
+];
+
 try {
   console.log("🌱 Starting production seed...");
 
@@ -57,6 +70,17 @@ try {
     console.log(`✅ Created ${practiceAreasData.length} practice areas`);
   } else {
     console.log(`📋 Practice areas already exist (${existingAreas} found)`);
+  }
+
+  // Check if tribunals already exist
+  const existingTribunal = await Tribunal.count();
+
+  if (existingTribunal === 0) {
+    console.log("Creating tribunal");
+    await Tribunal.bulkCreate(tribunalData);
+    console.log("Created tribunal areas succesfully");
+  } else {
+    console.log(`Tribunals already exist, (${existingTribunal}) found`);
   }
 
   console.log("✅ Production seed completed successfully!");

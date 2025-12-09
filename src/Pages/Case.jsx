@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router";
 import { useRef } from "react";
 import axios from "axios";
 import { capitalize, formatPracticeAreas } from "../helpers/helperFunctions";
-import ProfilePic from "../Elements/UI/ProfilePic";
+import TribunalToggle from "../Elements/Case/TribunalToggle";
 import ActivityLog from "../Elements/UI/ActivityLog";
 import TaskList from "../Elements/TaskList/TaskList";
 import { Link } from "react-router";
@@ -37,6 +37,7 @@ const Case = ({ openTaskView, refreshKey }) => {
   const [isArchived, setIsArchived] = useState(false);
   const [isCreatingCase, setIsCreatingCase] = useState(false);
   const [currentSOL, setCurrentSOl] = useState(null);
+  const [currentTribunal, setCurrentTribunal] = useState();
   const dropdownRef = useRef(null);
   const isCreatingCaseRef = useRef(false);
 
@@ -62,6 +63,7 @@ const Case = ({ openTaskView, refreshKey }) => {
         setCurrentSOl(null);
         setCurrentAreas([]);
         setActivityData([]);
+        setCurrentTribunal(null);
         return;
       } else {
         const caseResponse = await axios.get(`/api/getCase/${caseId}`);
@@ -76,6 +78,7 @@ const Case = ({ openTaskView, refreshKey }) => {
         setCurrentSOl(caseResponse.data.sol);
         setCurrentAreas(caseResponse.data.practiceAreas);
         setIsArchived(caseResponse.data.isArchived);
+        setCurrentTribunal(caseResponse.data.tribunal);
       }
     } catch (error) {
       console.log(error);
@@ -409,6 +412,7 @@ const Case = ({ openTaskView, refreshKey }) => {
                 </div>
                 <div className="case-stats-container">
                   <h4>SOL</h4>
+                  <h4>Tribunal</h4>
                 </div>
                 <div className="case-stats-container">
                   <SOLInput
@@ -416,6 +420,12 @@ const Case = ({ openTaskView, refreshKey }) => {
                     caseId={caseId}
                     refreshActivityData={refreshActivityData}
                     setCurrentSOL={setCurrentSOl}
+                  />
+                  <TribunalToggle
+                    currentTribunal={currentTribunal}
+                    setCurrentTribunal={setCurrentTribunal}
+                    caseId={caseId}
+                    refreshActivityData={refreshActivityData}
                   />
                 </div>
               </div>
