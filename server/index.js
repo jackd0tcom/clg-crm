@@ -3,6 +3,7 @@ import ViteExpress from "vite-express";
 import session from "express-session";
 import cors from "cors";
 import path from "path";
+import { initializeSocketIO } from "./socketServer.js";
 import authCtrl from "./controllers/authCtrl.js";
 import caseCtrl from "./controllers/caseCtrl.js";
 import taskCtrl from "./controllers/taskCtrl.js";
@@ -171,6 +172,11 @@ if (process.env.NODE_ENV !== "production") {
   });
 }
 
+// Socket Setup
+const { io, httpServer } = initializeSocketIO(app);
+// Make io available globally (for use in controllers)
+global.io = io;
+
 // Endpoints
 // auth endpoints
 app.post("/api/register", register);
@@ -306,20 +312,15 @@ app.post("/api/cleanup/completed-tasks", cleanupCtrl.cleanupCompletedTasks);
 app.post("/api/cleanup/archived-cases", cleanupCtrl.cleanupArchivedCases);
 app.post("/api/cleanup/full", cleanupCtrl.runFullCleanup);
 
-ViteExpress.listen(
-  app,
-  PORT,
-  () => {
-    console.log(
-      `live on http://localhost:${PORT} ${
-        process.env.NODE_ENV === "production" ? "production" : "development"
-      }`
-    );
+// Replace ViteExpress.listen with httpServer.listen
+httpServer.listen(PORT, () => {
+  console.log(
+    `🚀 Server live on http://localhost:${PORT} ${
+      process.env.NODE_ENV === "production" ? "production" : "development"
+    }`
+  );
+  console.log(`🔌 Socket.io initialized`);
 
-    // Start automated cleanup scheduler
-    cleanupScheduler.start();
-  },
-  {
-    mode: process.env.NODE_ENV === "production" ? "production" : "development",
-  }
-);
+  // Start automated cleanup scheduler
+  cleanupScheduler.start();
+});
