@@ -16,6 +16,8 @@ import PracticeAreaToggle from "../Elements/Case/PracticeAreaToggle";
 import ExtraSettings from "../Elements/UI/ExtraSettings";
 import SOLInput from "../Elements/Case/SOLInput";
 import Loader from "../Elements/UI/Loader";
+import DetailsTab from "../Elements/Case/DetailsTab";
+import ClientTab from "../Elements/Case/ClientTab";
 
 const Case = ({ openTaskView, refreshKey }) => {
   const { caseId } = useParams();
@@ -38,6 +40,7 @@ const Case = ({ openTaskView, refreshKey }) => {
   const [isCreatingCase, setIsCreatingCase] = useState(false);
   const [currentSOL, setCurrentSOl] = useState(null);
   const [currentTribunal, setCurrentTribunal] = useState();
+  const [currentTab, setCurrentTab] = useState("details");
   const dropdownRef = useRef(null);
   const isCreatingCaseRef = useRef(false);
 
@@ -85,8 +88,11 @@ const Case = ({ openTaskView, refreshKey }) => {
     }
   };
 
+  // Fetches init data, timeout fixes page reload infinite loader rendering bug
   useEffect(() => {
-    getData();
+    setTimeout(() => {
+      getData();
+    }, 100);
   }, [caseId]);
 
   // Refetch case data when refreshKey changes (when tasks are updated)
@@ -96,6 +102,7 @@ const Case = ({ openTaskView, refreshKey }) => {
     }
   }, [refreshKey]);
 
+  // Handles blur
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -153,7 +160,6 @@ const Case = ({ openTaskView, refreshKey }) => {
   const updateNotes = () => {
     try {
       axios.post("/api/updateCaseNotes", { caseId, notes }).then((res) => {
-        console.log(res);
         setCount(0);
       });
     } catch (error) {}
@@ -217,7 +223,9 @@ const Case = ({ openTaskView, refreshKey }) => {
     }
   };
 
-  return caseData ? (
+  return !caseData ? (
+    <Loader />
+  ) : (
     <div className="case-container">
       <div className="case-wrapper">
         <div className="case-details-container">
@@ -237,40 +245,6 @@ const Case = ({ openTaskView, refreshKey }) => {
           <div className="case-card">
             <div className="case-header">
               {isArchived && <h3>Archived</h3>}
-              <div
-                className="case-practice-areas-wrapper"
-                onClick={() => {
-                  if (!caseData?.caseId && !isCreatingCaseRef.current) {
-                    console.log("Practice area: Creating new case...");
-                    newCase().then(() => {
-                      setIsAddingArea(true);
-                    });
-                  } else if (caseData?.caseId) {
-                    setIsAddingArea(true);
-                  }
-                }}
-              >
-                {isNewCase || caseData.practiceAreas.length < 1 ? (
-                  <a className="case-practice-area no-area">
-                    Add Practice Area
-                  </a>
-                ) : (
-                  formatPracticeAreas(caseData.practiceAreas)
-                )}
-              </div>
-              {isAddingArea && (
-                <PracticeAreaToggle
-                  currentAreas={currentAreas}
-                  setCurrentAreas={setCurrentAreas}
-                  newPracticeArea={newPracticeArea}
-                  setNewPracticeArea={setNewPracticeArea}
-                  caseId={caseId}
-                  refreshCaseData={refreshCaseData}
-                  refreshActivityData={refreshActivityData}
-                  isAddingArea={isAddingArea}
-                  setIsAddingArea={setIsAddingArea}
-                />
-              )}
               <CaseInput
                 title={title}
                 setTitle={setTitle}
@@ -281,164 +255,190 @@ const Case = ({ openTaskView, refreshKey }) => {
                 newCase={newCase}
                 isCreatingCase={isCreatingCase}
               />
-              <div className="case-persons-wrapper">
-                {personView && selectedPerson && (
-                  <PersonView
-                    onBlur={handleOnBlur}
-                    refreshActivityData={refreshActivityData}
-                    refreshCaseData={refreshCaseData}
-                    data={selectedPerson}
-                    caseId={caseId}
-                    isNewPerson={false}
-                    isAddingPerson={isAddingPerson}
-                    setIsAddingPerson={setIsAddingPerson}
-                    onClose={() => {
-                      setPersonView(false);
-                      setSelectedPerson(null);
-                    }}
-                  />
-                )}
-                {isAddingPerson && (
-                  <PersonView
-                    data={{
-                      firstName: "",
-                      lastName: "",
-                      address: "",
-                      city: "",
-                      state: "",
-                      zip: "",
-                      phoneNumber: "",
-                      dob: "",
-                      county: "",
-                    }}
-                    ref={dropdownRef}
-                    onBlur={handleOnBlur}
-                    refreshActivityData={refreshActivityData}
-                    refreshCaseData={refreshCaseData}
-                    caseId={caseId}
-                    isNewPerson={isNewPerson}
-                    setIsNewPerson={setIsNewPerson}
-                    isAddingPerson={isAddingPerson}
-                    setIsAddingPerson={setIsAddingPerson}
-                  />
-                )}
-                <div className="case-persons-names-wrapper">
-                  {caseData.people.length > 0 &&
-                    caseData.people.map((person, idx) => {
-                      if (caseData.people.length === 1) {
-                        return (
-                          <a
-                            key={person.personId}
-                            className="case-person-link"
-                            onClick={() => handlePersonClick(person)}
-                          >{`${person.firstName} ${
-                            person.lastName ? person.lastName : ""
-                          }`}</a>
-                        );
-                      } else if (idx === caseData.people.length - 1) {
-                        return (
-                          <span
-                            className="case-person-amp"
-                            key={person.personId}
-                          >
-                            {" "}
-                            &{" "}
-                            <a
-                              className="case-person-link"
-                              onClick={() => handlePersonClick(person)}
-                            >{`${person.firstName} ${
-                              person.lastName ? person.lastName : ""
-                            }`}</a>
-                          </span>
-                        );
-                      } else if (idx === caseData.people.length - 2) {
-                        return (
-                          <a
-                            key={person.personId}
-                            className="case-person-link"
-                            onClick={() => handlePersonClick(person)}
-                          >{`${person.firstName} ${
-                            person.lastName ? person.lastName : ""
-                          }`}</a>
-                        );
-                      } else
-                        return (
-                          <a
-                            key={person.personId}
-                            className="case-person-link"
-                            onClick={() => handlePersonClick(person)}
-                          >{`${person.firstName} ${
-                            person.lastName ? person.lastName : ""
-                          }, `}</a>
-                        );
-                    })}
-                  {caseData.people.length === 0 && (
-                    <p
+              <div className="case-tabs-wrapper">
+                <h4
+                  onClick={() => setCurrentTab("details")}
+                  className={
+                    currentTab === "details"
+                      ? "case-tab-heading active-tab"
+                      : "case-tab-heading"
+                  }
+                >
+                  Details
+                </h4>
+                <h4
+                  onClick={() => setCurrentTab("client")}
+                  className={
+                    currentTab === "client"
+                      ? "case-tab-heading active-tab"
+                      : "case-tab-heading"
+                  }
+                >
+                  Client
+                </h4>
+                <h4
+                  onClick={() => setCurrentTab("opposing")}
+                  className={
+                    currentTab === "opposing"
+                      ? "case-tab-heading active-tab"
+                      : "case-tab-heading"
+                  }
+                >
+                  Opposing
+                </h4>
+              </div>
+              {currentTab === "details" && (
+                <DetailsTab
+                  caseData={caseData}
+                  phase={phase}
+                  handleUpdatePhase={handleUpdatePhase}
+                  setPhase={setPhase}
+                  refreshActivityData={refreshActivityData}
+                  refreshCaseData={refreshCaseData}
+                  isNewCase={isNewCase}
+                  currentSOL={currentSOL}
+                  caseId={caseId}
+                  setCurrentSOL={setCurrentSOl}
+                  currentTribunal={currentTribunal}
+                  setCurrentTribunal={setCurrentTribunal}
+                  notes={notes}
+                  handleUpdateNotes={handleUpdateNotes}
+                  Notes={Notes}
+                  count={count}
+                  setCount={setCount}
+                  updateNotes={updateNotes}
+                  newCase={newCase}
+                  currentAreas={currentAreas}
+                  setCurrentAreas={setCurrentAreas}
+                  newPracticeArea={newPracticeArea}
+                  setNewPracticeArea={setNewPracticeArea}
+                  isAddingArea={isAddingArea}
+                  setIsAddingArea={setIsAddingArea}
+                />
+              )}
+              {currentTab === "client" && (
+                <ClientTab
+                  caseData={caseData}
+                  refreshActivityData={refreshActivityData}
+                  refreshCaseData={refreshCaseData}
+                  caseId={caseId}
+                />
+              )}
+              {/* {currentTab === "client" && (
+                <div className="case-client-tab-wrapper">
+                  <div className="case-persons-wrapper">
+                    {personView && selectedPerson && (
+                      <PersonView
+                        onBlur={handleOnBlur}
+                        refreshActivityData={refreshActivityData}
+                        refreshCaseData={refreshCaseData}
+                        data={selectedPerson}
+                        caseId={caseId}
+                        isNewPerson={false}
+                        isAddingPerson={isAddingPerson}
+                        setIsAddingPerson={setIsAddingPerson}
+                        onClose={() => {
+                          setPersonView(false);
+                          setSelectedPerson(null);
+                        }}
+                      />
+                    )}
+                    {isAddingPerson && (
+                      <PersonView
+                        data={{
+                          firstName: "",
+                          lastName: "",
+                          address: "",
+                          city: "",
+                          state: "",
+                          zip: "",
+                          phoneNumber: "",
+                          dob: "",
+                          county: "",
+                        }}
+                        ref={dropdownRef}
+                        onBlur={handleOnBlur}
+                        refreshActivityData={refreshActivityData}
+                        refreshCaseData={refreshCaseData}
+                        caseId={caseId}
+                        isNewPerson={isNewPerson}
+                        setIsNewPerson={setIsNewPerson}
+                        isAddingPerson={isAddingPerson}
+                        setIsAddingPerson={setIsAddingPerson}
+                      />
+                    )}
+                    <div className="case-persons-names-wrapper">
+                      {caseData.people.length > 0 &&
+                        caseData.people.map((person, idx) => {
+                          if (caseData.people.length === 1) {
+                            return (
+                              <a
+                                key={person.personId}
+                                className="case-person-link"
+                                onClick={() => handlePersonClick(person)}
+                              >{`${person.firstName} ${
+                                person.lastName ? person.lastName : ""
+                              }`}</a>
+                            );
+                          } else if (idx === caseData.people.length - 1) {
+                            return (
+                              <span
+                                className="case-person-amp"
+                                key={person.personId}
+                              >
+                                {" "}
+                                &{" "}
+                                <a
+                                  className="case-person-link"
+                                  onClick={() => handlePersonClick(person)}
+                                >{`${person.firstName} ${
+                                  person.lastName ? person.lastName : ""
+                                }`}</a>
+                              </span>
+                            );
+                          } else if (idx === caseData.people.length - 2) {
+                            return (
+                              <a
+                                key={person.personId}
+                                className="case-person-link"
+                                onClick={() => handlePersonClick(person)}
+                              >{`${person.firstName} ${
+                                person.lastName ? person.lastName : ""
+                              }`}</a>
+                            );
+                          } else
+                            return (
+                              <a
+                                key={person.personId}
+                                className="case-person-link"
+                                onClick={() => handlePersonClick(person)}
+                              >{`${person.firstName} ${
+                                person.lastName ? person.lastName : ""
+                              }, `}</a>
+                            );
+                        })}
+                      {caseData.people.length === 0 && (
+                        <p
+                          onClick={() => {
+                            setIsAddingPerson(true);
+                            setIsNewPerson(true);
+                          }}
+                          className="add-person-p"
+                        >
+                          Add Person
+                        </p>
+                      )}
+                    </div>
+                    <i
+                      className="fa-solid fa-circle-plus add-person-button"
                       onClick={() => {
                         setIsAddingPerson(true);
                         setIsNewPerson(true);
                       }}
-                      className="add-person-p"
-                    >
-                      Add Person
-                    </p>
-                  )}
+                    ></i>
+                  </div>
                 </div>
-                <i
-                  className="fa-solid fa-circle-plus add-person-button"
-                  onClick={() => {
-                    setIsAddingPerson(true);
-                    setIsNewPerson(true);
-                  }}
-                ></i>
-              </div>
-              <div className="case-stats-wrapper">
-                <div className="case-stats-container">
-                  <h4>Phase</h4>
-                  <h4>Assignees</h4>
-                </div>
-                <div className="case-stats-container">
-                  <PhaseToggle
-                    value={phase}
-                    onHandle={handleUpdatePhase}
-                    setPhase={setPhase}
-                  />
-                  <AssigneeList
-                    assignees={caseData.assignees}
-                    caseId={caseData.caseId}
-                    onActivityUpdate={refreshActivityData}
-                    isNewCase={isNewCase}
-                  />
-                </div>
-                <div className="case-stats-container">
-                  <h4>SOL</h4>
-                  <h4>Tribunal</h4>
-                </div>
-                <div className="case-stats-container">
-                  <SOLInput
-                    currentSOL={currentSOL}
-                    caseId={caseId}
-                    refreshActivityData={refreshActivityData}
-                    setCurrentSOL={setCurrentSOl}
-                  />
-                  <TribunalToggle
-                    currentTribunal={currentTribunal}
-                    setCurrentTribunal={setCurrentTribunal}
-                    caseId={caseId}
-                    refreshActivityData={refreshActivityData}
-                  />
-                </div>
-              </div>
-            </div>
-            <div className="case-notes">
-              <Notes
-                value={notes}
-                onChange={handleUpdateNotes}
-                setNotes={Notes}
-                count={count}
-                setCount={setCount}
-                updateNotes={updateNotes}
-              />
+              )} */}
             </div>
           </div>
         </div>
@@ -488,8 +488,6 @@ const Case = ({ openTaskView, refreshKey }) => {
         </div>
       </div>
     </div>
-  ) : (
-    <Loader />
   );
 };
 
