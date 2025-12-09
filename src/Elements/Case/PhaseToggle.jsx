@@ -23,9 +23,12 @@ const PhaseToggle = ({ value, onHandle, setPhase }) => {
 
   return (
     <div className="phase-toggle-wrapper">
-      <div className="phase-toggle-item" onClick={() => setIsChanging(true)}>
+      <button
+        className="phase-toggle-button"
+        onClick={() => setIsChanging(true)}
+      >
         <PhaseIcon phase={value} />
-      </div>
+      </button>
       {isChanging && (
         <div className="phase-toggle-dropdown" ref={dropdownRef}>
           <div

@@ -61,6 +61,7 @@ const TribunalToggle = ({
           if (refreshActivityData) {
             refreshActivityData();
           }
+          setIsChanging(false);
         });
     } catch (error) {
       console.log(error);

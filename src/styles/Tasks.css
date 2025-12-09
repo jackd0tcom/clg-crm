@@ -506,16 +506,18 @@
 }
 .status-toggle-dropdown {
   position: absolute;
-  top: 0;
+  top: 120%;
   z-index: 999;
   background-color: white;
   min-width: 150px;
   border-radius: 5px;
   border: 1px solid var(--light-border);
-  padding: 10px;
   display: flex;
   flex-direction: column;
   row-gap: 5px;
+}
+.dropdown-status {
+  padding: 6px 3px;
 }
 .dropdown-status:hover {
   background-color: var(--root-bg-color-light);
