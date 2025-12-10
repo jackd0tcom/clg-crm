@@ -5,7 +5,6 @@ import Confirm from "../UI/ConfirmModal";
 
 const PersonView = ({
   data,
-  onBlur,
   refreshActivityData,
   refreshCaseData,
   isNewPerson,
@@ -44,7 +43,6 @@ const PersonView = ({
           if (res.status === 200) {
             refreshActivityData();
             refreshCaseData();
-            onBlur();
           }
         });
     } catch (error) {

@@ -287,159 +287,44 @@ const Case = ({ openTaskView, refreshKey }) => {
                   Opposing
                 </h4>
               </div>
-              {currentTab === "details" && (
-                <DetailsTab
-                  caseData={caseData}
-                  phase={phase}
-                  handleUpdatePhase={handleUpdatePhase}
-                  setPhase={setPhase}
-                  refreshActivityData={refreshActivityData}
-                  refreshCaseData={refreshCaseData}
-                  isNewCase={isNewCase}
-                  currentSOL={currentSOL}
-                  caseId={caseId}
-                  setCurrentSOL={setCurrentSOl}
-                  currentTribunal={currentTribunal}
-                  setCurrentTribunal={setCurrentTribunal}
-                  notes={notes}
-                  handleUpdateNotes={handleUpdateNotes}
-                  Notes={Notes}
-                  count={count}
-                  setCount={setCount}
-                  updateNotes={updateNotes}
-                  newCase={newCase}
-                  currentAreas={currentAreas}
-                  setCurrentAreas={setCurrentAreas}
-                  newPracticeArea={newPracticeArea}
-                  setNewPracticeArea={setNewPracticeArea}
-                  isAddingArea={isAddingArea}
-                  setIsAddingArea={setIsAddingArea}
-                />
-              )}
-              {currentTab === "client" && (
-                <ClientTab
-                  caseData={caseData}
-                  refreshActivityData={refreshActivityData}
-                  refreshCaseData={refreshCaseData}
-                  caseId={caseId}
-                />
-              )}
-              {/* {currentTab === "client" && (
-                <div className="case-client-tab-wrapper">
-                  <div className="case-persons-wrapper">
-                    {personView && selectedPerson && (
-                      <PersonView
-                        onBlur={handleOnBlur}
-                        refreshActivityData={refreshActivityData}
-                        refreshCaseData={refreshCaseData}
-                        data={selectedPerson}
-                        caseId={caseId}
-                        isNewPerson={false}
-                        isAddingPerson={isAddingPerson}
-                        setIsAddingPerson={setIsAddingPerson}
-                        onClose={() => {
-                          setPersonView(false);
-                          setSelectedPerson(null);
-                        }}
-                      />
-                    )}
-                    {isAddingPerson && (
-                      <PersonView
-                        data={{
-                          firstName: "",
-                          lastName: "",
-                          address: "",
-                          city: "",
-                          state: "",
-                          zip: "",
-                          phoneNumber: "",
-                          dob: "",
-                          county: "",
-                        }}
-                        ref={dropdownRef}
-                        onBlur={handleOnBlur}
-                        refreshActivityData={refreshActivityData}
-                        refreshCaseData={refreshCaseData}
-                        caseId={caseId}
-                        isNewPerson={isNewPerson}
-                        setIsNewPerson={setIsNewPerson}
-                        isAddingPerson={isAddingPerson}
-                        setIsAddingPerson={setIsAddingPerson}
-                      />
-                    )}
-                    <div className="case-persons-names-wrapper">
-                      {caseData.people.length > 0 &&
-                        caseData.people.map((person, idx) => {
-                          if (caseData.people.length === 1) {
-                            return (
-                              <a
-                                key={person.personId}
-                                className="case-person-link"
-                                onClick={() => handlePersonClick(person)}
-                              >{`${person.firstName} ${
-                                person.lastName ? person.lastName : ""
-                              }`}</a>
-                            );
-                          } else if (idx === caseData.people.length - 1) {
-                            return (
-                              <span
-                                className="case-person-amp"
-                                key={person.personId}
-                              >
-                                {" "}
-                                &{" "}
-                                <a
-                                  className="case-person-link"
-                                  onClick={() => handlePersonClick(person)}
-                                >{`${person.firstName} ${
-                                  person.lastName ? person.lastName : ""
-                                }`}</a>
-                              </span>
-                            );
-                          } else if (idx === caseData.people.length - 2) {
-                            return (
-                              <a
-                                key={person.personId}
-                                className="case-person-link"
-                                onClick={() => handlePersonClick(person)}
-                              >{`${person.firstName} ${
-                                person.lastName ? person.lastName : ""
-                              }`}</a>
-                            );
-                          } else
-                            return (
-                              <a
-                                key={person.personId}
-                                className="case-person-link"
-                                onClick={() => handlePersonClick(person)}
-                              >{`${person.firstName} ${
-                                person.lastName ? person.lastName : ""
-                              }, `}</a>
-                            );
-                        })}
-                      {caseData.people.length === 0 && (
-                        <p
-                          onClick={() => {
-                            setIsAddingPerson(true);
-                            setIsNewPerson(true);
-                          }}
-                          className="add-person-p"
-                        >
-                          Add Person
-                        </p>
-                      )}
-                    </div>
-                    <i
-                      className="fa-solid fa-circle-plus add-person-button"
-                      onClick={() => {
-                        setIsAddingPerson(true);
-                        setIsNewPerson(true);
-                      }}
-                    ></i>
-                  </div>
-                </div>
-              )} */}
             </div>
+            {currentTab === "details" && (
+              <DetailsTab
+                caseData={caseData}
+                phase={phase}
+                handleUpdatePhase={handleUpdatePhase}
+                setPhase={setPhase}
+                refreshActivityData={refreshActivityData}
+                refreshCaseData={refreshCaseData}
+                isNewCase={isNewCase}
+                currentSOL={currentSOL}
+                caseId={caseId}
+                setCurrentSOL={setCurrentSOl}
+                currentTribunal={currentTribunal}
+                setCurrentTribunal={setCurrentTribunal}
+                notes={notes}
+                handleUpdateNotes={handleUpdateNotes}
+                Notes={Notes}
+                count={count}
+                setCount={setCount}
+                updateNotes={updateNotes}
+                newCase={newCase}
+                currentAreas={currentAreas}
+                setCurrentAreas={setCurrentAreas}
+                newPracticeArea={newPracticeArea}
+                setNewPracticeArea={setNewPracticeArea}
+                isAddingArea={isAddingArea}
+                setIsAddingArea={setIsAddingArea}
+              />
+            )}
+            {currentTab === "client" && (
+              <ClientTab
+                caseData={caseData}
+                refreshActivityData={refreshActivityData}
+                refreshCaseData={refreshCaseData}
+                caseId={caseId}
+              />
+            )}
           </div>
         </div>
         <div className="case-activity-container">

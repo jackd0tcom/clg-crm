@@ -8,24 +8,43 @@ const ClientTab = ({
   caseId,
 }) => {
   const [currentTab, setCurrentTab] = useState(
-    caseData ? caseData.people[0].personId : 0
+    caseData.people.length > 0 ? caseData.people[0].personId : 0
   );
   const [tabs, setTabs] = useState([...caseData.people]);
-  const [currentPerson, setCurrentPerson] = useState(caseData.people[0]);
+  const [currentPerson, setCurrentPerson] = useState(
+    caseData.people.length > 0 ? caseData.people[0] : {}
+  );
   const [isNewPerson, setIsNewPerson] = useState(false);
 
   // Sync tabs and currentPerson with updated caseData
   useEffect(() => {
-    if (caseData?.people) {
-      setTabs([...caseData.people]);
+    if (caseData?.people.length > 0) {
+      const hasDummyTab = tabs.some((tab) => tab.personId === "dummy");
 
-      // If we're viewing an existing person (not a new one), update currentPerson
-      if (!isNewPerson && currentTab !== 0) {
-        const updatedPerson = caseData.people.find(
-          (p) => p.personId === currentTab
-        );
-        if (updatedPerson) {
-          setCurrentPerson(updatedPerson);
+      // Syncs dummy tab data with newly created person
+      if (hasDummyTab && !isNewPerson) {
+        const newPerson = caseData.people[caseData.people.length - 1];
+        setTabs(caseData.people);
+        setCurrentTab(newPerson.personId);
+        setCurrentPerson(newPerson);
+      } else {
+        // Preserve dummy tab if it exists, otherwise sync normally
+        const dummyTab = tabs.find((tab) => tab.personId === "dummy");
+        if (dummyTab) {
+          // Keep the dummy tab and add it to the synced tabs
+          setTabs([...caseData.people, dummyTab]);
+        } else {
+          setTabs([...caseData.people]);
+        }
+
+        // If we're viewing an existing person (not a new one), update currentPerson
+        if (!isNewPerson && currentTab !== 0 && currentTab !== "dummy") {
+          const updatedPerson = caseData.people.find(
+            (p) => p.personId === currentTab
+          );
+          if (updatedPerson) {
+            setCurrentPerson(updatedPerson);
+          }
         }
       }
     }
@@ -35,13 +54,25 @@ const ClientTab = ({
     <div className="case-client-tab-wrapper">
       <div className="client-tabs-wrapper">
         {tabs.map((tab) => {
+          const displayName =
+            tab.personId === "dummy"
+              ? tab.firstName
+                ? `${tab.firstName} ${tab.lastName || ""}`.trim()
+                : "New Person"
+              : `${tab.firstName || ""} ${tab.lastName || ""}`.trim();
+
           return (
             <h4
               onClick={() => {
-                const person = tabs.find((p) => p.personId === tab.personId);
-                if (person) {
+                if (tab.personId === "dummy") {
+                  // It's a dummy tab
+                  setCurrentTab("dummy");
+                  setCurrentPerson(tab);
+                  setIsNewPerson(true);
+                } else {
+                  // Real person tab
                   setCurrentTab(tab.personId);
-                  setCurrentPerson(person);
+                  setCurrentPerson(tab);
                   setIsNewPerson(false);
                 }
               }}
@@ -51,12 +82,29 @@ const ClientTab = ({
                   ? "client-tab-heading active-tab"
                   : "client-tab-heading"
               }
-            >{`${tab.firstName} ${tab.lastName}`}</h4>
+            >
+              {displayName || "Unnamed"}
+            </h4>
           );
         })}
         <h4
           onClick={() => {
+            const emptyPersonObject = {
+              firstName: "",
+              lastName: "",
+              address: "",
+              city: "",
+              state: "",
+              zip: "",
+              phoneNumber: "",
+              dob: "",
+              county: "",
+              SSN: "",
+              personId: "dummy",
+            };
             setIsNewPerson(true);
+            setTabs((prevTabs) => [...prevTabs, emptyPersonObject]);
+            setCurrentTab("dummy");
             setCurrentPerson({
               firstName: "",
               lastName: "",
@@ -77,7 +125,28 @@ const ClientTab = ({
       </div>
       {caseData && tabs <= 0 && (
         <div className="add-person-page">
-          <button>Add Person</button>
+          <button
+            onClick={() => {
+              const emptyPersonObject = {
+                firstName: "",
+                lastName: "",
+                address: "",
+                city: "",
+                state: "",
+                zip: "",
+                phoneNumber: "",
+                dob: "",
+                county: "",
+                SSN: "",
+              };
+              setIsNewPerson(true);
+              setTabs((prevTabs) => [...prevTabs, emptyPersonObject]);
+              setCurrentTab(tabs[tabs.length]);
+              setCurrentPerson(emptyPersonObject);
+            }}
+          >
+            Add Person
+          </button>
         </div>
       )}
       <PersonView
@@ -86,6 +155,7 @@ const ClientTab = ({
         refreshCaseData={refreshCaseData}
         caseId={caseId}
         isNewPerson={isNewPerson}
+        setIsNewPerson={setIsNewPerson}
       />
     </div>
   );
