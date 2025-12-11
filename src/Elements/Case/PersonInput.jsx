@@ -14,6 +14,7 @@ const PersonInput = ({
   caseId,
   setPersonId,
   setIsNewPerson,
+  type,
 }) => {
   const [originalValue, setOriginalValue] = useState(value);
   const [input, setInput] = useState(value);
@@ -88,7 +89,7 @@ const PersonInput = ({
     try {
       if (isNewPerson) {
         await axios
-          .post("/api/newPerson", { caseId, fieldName, value: data })
+          .post("/api/newPerson", { caseId, fieldName, value: data, type })
           .then((res) => {
             if (res.status === 200) {
               setOriginalValue(data);

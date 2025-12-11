@@ -41,6 +41,7 @@ const Case = ({ openTaskView, refreshKey }) => {
   const [currentSOL, setCurrentSOl] = useState(null);
   const [currentTribunal, setCurrentTribunal] = useState();
   const [currentTab, setCurrentTab] = useState("details");
+  const [clients, setClients] = useState([]);
   const dropdownRef = useRef(null);
   const isCreatingCaseRef = useRef(false);
 
@@ -67,6 +68,7 @@ const Case = ({ openTaskView, refreshKey }) => {
         setCurrentAreas([]);
         setActivityData([]);
         setCurrentTribunal(null);
+        setClients([]);
         return;
       } else {
         const caseResponse = await axios.get(`/api/getCase/${caseId}`);
@@ -82,6 +84,9 @@ const Case = ({ openTaskView, refreshKey }) => {
         setCurrentAreas(caseResponse.data.practiceAreas);
         setIsArchived(caseResponse.data.isArchived);
         setCurrentTribunal(caseResponse.data.tribunal);
+        setClients(
+          caseResponse.data.people.filter((person) => person.type === "client")
+        );
       }
     } catch (error) {
       console.log(error);
@@ -102,24 +107,6 @@ const Case = ({ openTaskView, refreshKey }) => {
     }
   }, [refreshKey]);
 
-  // Handles blur
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsAddingArea(false);
-        setIsAddingPerson(false);
-      }
-    };
-
-    if (isAddingArea || isAddingPerson) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isAddingArea, isAddingPerson]);
-
   const refreshActivityData = async () => {
     try {
       const activityResponse = await axios.get(
@@ -139,6 +126,9 @@ const Case = ({ openTaskView, refreshKey }) => {
       setNotes(caseResponse.data.notes);
       setCurrentAreas(caseResponse.data.practiceAreas);
       setIsArchived(caseResponse.data.isArchived);
+      setClients(
+        caseResponse.data.people.filter((person) => person.type === "client")
+      );
     } catch (error) {
       console.log(error);
     }
@@ -169,16 +159,6 @@ const Case = ({ openTaskView, refreshKey }) => {
     if (count >= 75) {
       updateNotes();
     }
-  };
-
-  const handlePersonClick = (person) => {
-    setSelectedPerson(person);
-    setPersonView(true);
-  };
-  const handleOnBlur = () => {
-    setPersonView(false);
-    setSelectedPerson("");
-    setIsAddingPerson(false);
   };
 
   const newCase = async () => {
@@ -277,6 +257,16 @@ const Case = ({ openTaskView, refreshKey }) => {
                   Client
                 </h4>
                 <h4
+                  onClick={() => setCurrentTab("adverse")}
+                  className={
+                    currentTab === "adverse"
+                      ? "case-tab-heading active-tab"
+                      : "case-tab-heading"
+                  }
+                >
+                  Adverse Party
+                </h4>
+                <h4
                   onClick={() => setCurrentTab("opposing")}
                   className={
                     currentTab === "opposing"
@@ -284,7 +274,7 @@ const Case = ({ openTaskView, refreshKey }) => {
                       : "case-tab-heading"
                   }
                 >
-                  Opposing
+                  Opposing Council
                 </h4>
               </div>
             </div>
@@ -319,7 +309,7 @@ const Case = ({ openTaskView, refreshKey }) => {
             )}
             {currentTab === "client" && (
               <ClientTab
-                caseData={caseData}
+                clients={clients}
                 refreshActivityData={refreshActivityData}
                 refreshCaseData={refreshCaseData}
                 caseId={caseId}

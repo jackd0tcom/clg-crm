@@ -10,6 +10,7 @@ const PersonView = ({
   isNewPerson,
   setIsNewPerson,
   caseId,
+  type,
 }) => {
   const [personId, setPersonId] = useState(data.personId);
   const [confirm, setConfirm] = useState(false);
@@ -66,6 +67,7 @@ const PersonView = ({
               caseId={caseId}
               setPersonId={setPersonId}
               setIsNewPerson={setIsNewPerson}
+              type={type}
             />
           );
         })}

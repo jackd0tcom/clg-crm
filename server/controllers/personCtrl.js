@@ -53,8 +53,11 @@ export default {
   newPerson: async (req, res) => {
     try {
       console.log("newPerson");
-      const { caseId, fieldName, value } = req.body;
+      const { caseId, fieldName, value, type } = req.body;
       const newPerson = await Person.create({ caseId, [fieldName]: value });
+      await newPerson.update({ type: type });
+
+      console.log(newPerson);
 
       await createActivityLog({
         authorId: req.session.user.userId,

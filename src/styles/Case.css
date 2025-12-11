@@ -584,6 +584,8 @@ div.case-task-container
   display: flex;
   border-bottom: 1px solid var(--light-border);
   margin-bottom: 15px;
+  overflow-x: scroll;
+  scrollbar-width: none;
 }
 .case-tab-heading {
   margin: 0px;
@@ -591,6 +593,8 @@ div.case-task-container
   border-radius: 10px 10px 0 0;
   cursor: pointer;
   border-bottom: 2px solid transparent;
+  user-select: none;
+  white-space: nowrap;
 }
 .case-tab-heading:hover {
   background-color: var(--light-border);

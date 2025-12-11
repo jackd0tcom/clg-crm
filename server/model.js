@@ -152,6 +152,14 @@ Person.init(
         },
       },
     },
+    email: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    type: {
+      type: DataTypes.ENUM("client", "opposing"),
+      allowNull: true,
+    },
   },
   {
     modelName: "person",

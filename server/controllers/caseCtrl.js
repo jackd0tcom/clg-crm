@@ -331,7 +331,10 @@ export default {
           ],
         });
 
-        const people = await Person.findAll({ where: { caseId } });
+        const people = await Person.findAll({
+          where: { caseId },
+          order: [["personId", "ASC"]],
+        });
 
         // Transform tribunal array to single object (or null)
         const caseData = foundCase.toJSON();
