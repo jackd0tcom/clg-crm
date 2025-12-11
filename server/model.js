@@ -153,11 +153,11 @@ Person.init(
       },
     },
     email: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: true,
     },
     type: {
-      type: DataTypes.ENUM("client", "opposing"),
+      type: DataTypes.ENUM("client", "adverse", "opposing"),
       allowNull: true,
     },
   },

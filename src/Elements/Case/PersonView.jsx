@@ -11,6 +11,7 @@ const PersonView = ({
   setIsNewPerson,
   caseId,
   type,
+  objectTemplate,
 }) => {
   const [personId, setPersonId] = useState(data.personId);
   const [confirm, setConfirm] = useState(false);
@@ -20,19 +21,6 @@ const PersonView = ({
       setPersonId(data.personId);
     }
   }, [data?.personId]);
-
-  const personObject = {
-    firstName: "",
-    lastName: "",
-    address: "",
-    city: "",
-    state: "",
-    zip: "",
-    phoneNumber: "",
-    dob: "",
-    county: "",
-    SSN: "",
-  };
 
   const handleRemove = async () => {
     try {
@@ -54,7 +42,7 @@ const PersonView = ({
   return (
     <div className="person-view-wrapper">
       <div className="person-view-fields">
-        {Object.entries(personObject).map(([fieldName]) => {
+        {Object.entries(objectTemplate).map(([fieldName]) => {
           return (
             <PersonInput
               key={fieldName}

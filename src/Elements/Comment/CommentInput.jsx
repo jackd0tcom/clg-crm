@@ -26,6 +26,7 @@ const CommentInput = ({ objectType, objectId, refreshActivityData }) => {
   "
     >
       <textarea
+        spellCheck={true}
         onChange={(e) => {
           setComment(e.target.value);
         }}

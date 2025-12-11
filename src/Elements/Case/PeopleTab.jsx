@@ -1,19 +1,20 @@
 import { useState, useEffect, useMemo } from "react";
 import PersonView from "./PersonView";
 
-const ClientTab = ({
-  clients,
+const PeopleTab = ({
+  people,
   refreshActivityData,
   refreshCaseData,
   caseId,
+  type,
 }) => {
   const [currentTab, setCurrentTab] = useState(
-    clients.length > 0 ? clients[0].personId : 0
+    people.length > 0 ? people[0].personId : 0
   );
   const [isNewPerson, setIsNewPerson] = useState(false);
 
-  // Empty person object template
-  const emptyPersonObject = {
+  let emptyPersonObject = {};
+  const clientObject = {
     firstName: "",
     lastName: "",
     address: "",
@@ -27,14 +28,50 @@ const ClientTab = ({
     personId: "dummy",
     type: "client",
   };
+  const adverseObject = {
+    firstName: "",
+    lastName: "",
+    address: "",
+    city: "",
+    state: "",
+    zip: "",
+    phoneNumber: "",
+    email: "",
+    personId: "dummy",
+    type: "adverse",
+  };
+  const opposingObject = {
+    firstName: "",
+    lastName: "",
+    address: "",
+    city: "",
+    state: "",
+    zip: "",
+    phoneNumber: "",
+    email: "",
+    personId: "dummy",
+    type: "adverse",
+  };
+  if (type === "client") {
+    emptyPersonObject = clientObject;
+  }
+  if (type === "adverse") {
+    emptyPersonObject = adverseObject;
+  }
+  if (type === "opposing") {
+    emptyPersonObject = opposingObject;
+  }
+  const personViewObject = emptyPersonObject;
+  delete personViewObject.personId;
+  delete personViewObject.type;
 
-  // Derive tabs from clients + conditionally add dummy tab
+  // Derive tabs from people + conditionally add dummy tab
   const tabs = useMemo(() => {
     if (isNewPerson) {
-      return [...clients, emptyPersonObject];
+      return [...people, emptyPersonObject];
     }
-    return clients;
-  }, [clients, isNewPerson]);
+    return people;
+  }, [people, isNewPerson]);
 
   // Derive currentPerson from currentTab
   const currentPerson = useMemo(() => {
@@ -47,20 +84,20 @@ const ClientTab = ({
   // Handle deletion: if current tab was deleted, switch to last person
   useEffect(() => {
     if (!isNewPerson && currentTab !== 0 && currentTab !== "dummy") {
-      const currentExists = clients.find((p) => p.personId === currentTab);
-      if (!currentExists && clients.length > 0) {
-        setCurrentTab(clients[clients.length - 1].personId);
-      } else if (!currentExists && clients.length === 0) {
+      const currentExists = people.find((p) => p.personId === currentTab);
+      if (!currentExists && people.length > 0) {
+        setCurrentTab(people[people.length - 1].personId);
+      } else if (!currentExists && people.length === 0) {
         setCurrentTab(0);
       }
     }
-  }, [clients.length, isNewPerson, currentTab, clients]);
+  }, [people.length, isNewPerson, currentTab, people]);
 
   useEffect(() => {
     if (currentTab === "dummy" && !isNewPerson) {
-      setCurrentTab(clients[clients.length - 1].personId);
+      setCurrentTab(people[people.length - 1].personId);
     }
-  }, [clients]);
+  }, [people]);
 
   const handleTabClick = (tab) => {
     if (tab.personId === "dummy") {
@@ -106,7 +143,7 @@ const ClientTab = ({
           +
         </h4>
       </div>
-      {clients && tabs.length === 0 && (
+      {people && tabs.length === 0 && (
         <div className="add-person-page">
           <button onClick={handleAddPerson}>Add Person</button>
         </div>
@@ -118,10 +155,11 @@ const ClientTab = ({
         caseId={caseId}
         isNewPerson={isNewPerson}
         setIsNewPerson={setIsNewPerson}
-        type={"client"}
+        type={type}
+        objectTemplate={personViewObject}
       />
     </div>
   );
 };
 
-export default ClientTab;
+export default PeopleTab;

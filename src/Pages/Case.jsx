@@ -1,23 +1,15 @@
-import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router";
-import { useRef } from "react";
+import { useEffect, useState, useRef } from "react";
+import { useParams, useNavigate, Link } from "react-router";
 import axios from "axios";
-import { capitalize, formatPracticeAreas } from "../helpers/helperFunctions";
-import TribunalToggle from "../Elements/Case/TribunalToggle";
 import ActivityLog from "../Elements/UI/ActivityLog";
 import TaskList from "../Elements/TaskList/TaskList";
-import { Link } from "react-router";
 import Notes from "../Elements/UI/Notes";
-import PhaseToggle from "../Elements/Case/PhaseToggle";
-import AssigneeList from "../Elements/Assignee/AssigneeList";
-import PersonView from "../Elements/Case/PersonView";
 import CaseInput from "../Elements/Case/CaseInput";
-import PracticeAreaToggle from "../Elements/Case/PracticeAreaToggle";
 import ExtraSettings from "../Elements/UI/ExtraSettings";
-import SOLInput from "../Elements/Case/SOLInput";
 import Loader from "../Elements/UI/Loader";
 import DetailsTab from "../Elements/Case/DetailsTab";
-import ClientTab from "../Elements/Case/ClientTab";
+import PeopleTab from "../Elements/Case/PeopleTab";
+import AdverseOpposingTab from "../Elements/Case/AdverseTab";
 
 const Case = ({ openTaskView, refreshKey }) => {
   const { caseId } = useParams();
@@ -42,6 +34,9 @@ const Case = ({ openTaskView, refreshKey }) => {
   const [currentTribunal, setCurrentTribunal] = useState();
   const [currentTab, setCurrentTab] = useState("details");
   const [clients, setClients] = useState([]);
+  const [adverse, setAdverse] = useState([]);
+  const [opposing, setOpposing] = useState([]);
+  const [adverseOpposing, setAdverseOpposing] = useState([]);
   const dropdownRef = useRef(null);
   const isCreatingCaseRef = useRef(false);
 
@@ -69,6 +64,7 @@ const Case = ({ openTaskView, refreshKey }) => {
         setActivityData([]);
         setCurrentTribunal(null);
         setClients([]);
+        setAdverseOpposing([]);
         return;
       } else {
         const caseResponse = await axios.get(`/api/getCase/${caseId}`);
@@ -86,6 +82,14 @@ const Case = ({ openTaskView, refreshKey }) => {
         setCurrentTribunal(caseResponse.data.tribunal);
         setClients(
           caseResponse.data.people.filter((person) => person.type === "client")
+        );
+        setAdverse(
+          caseResponse.data.people.filter((person) => person.type === "adverse")
+        );
+        setOpposing(
+          caseResponse.data.people.filter(
+            (person) => person.type === "opposing"
+          )
         );
       }
     } catch (error) {
@@ -128,6 +132,12 @@ const Case = ({ openTaskView, refreshKey }) => {
       setIsArchived(caseResponse.data.isArchived);
       setClients(
         caseResponse.data.people.filter((person) => person.type === "client")
+      );
+      setAdverse(
+        caseResponse.data.people.filter((person) => person.type === "adverse")
+      );
+      setOpposing(
+        caseResponse.data.people.filter((person) => person.type === "opposing")
       );
     } catch (error) {
       console.log(error);
@@ -211,7 +221,6 @@ const Case = ({ openTaskView, refreshKey }) => {
         <div className="case-details-container">
           <div className="case-top-bar">
             <Link to="/cases">
-              {" "}
               <i className="fa-solid fa-arrow-left"></i>
             </Link>
             <ExtraSettings
@@ -308,11 +317,30 @@ const Case = ({ openTaskView, refreshKey }) => {
               />
             )}
             {currentTab === "client" && (
-              <ClientTab
-                clients={clients}
+              <PeopleTab
+                people={clients}
                 refreshActivityData={refreshActivityData}
                 refreshCaseData={refreshCaseData}
                 caseId={caseId}
+                type={"client"}
+              />
+            )}
+            {currentTab === "adverse" && (
+              <PeopleTab
+                people={adverse}
+                refreshActivityData={refreshActivityData}
+                refreshCaseData={refreshCaseData}
+                caseId={caseId}
+                type={"adverse"}
+              />
+            )}
+            {currentTab === "opposing" && (
+              <PeopleTab
+                people={opposing}
+                refreshActivityData={refreshActivityData}
+                refreshCaseData={refreshCaseData}
+                caseId={caseId}
+                type={"opposing"}
               />
             )}
           </div>
@@ -339,7 +367,7 @@ const Case = ({ openTaskView, refreshKey }) => {
               <div className="case-view-tasks-list-head tasks-list-head">
                 {headings.map((heading) => {
                   if (heading === "Status") {
-                    return <p></p>;
+                    return <p key="status"></p>;
                   } else if (heading === "Priority") {
                     return (
                       <p className="priority-heading" key={heading}>
