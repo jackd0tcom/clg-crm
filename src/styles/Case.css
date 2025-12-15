@@ -796,7 +796,7 @@ div.case-task-container
   border-radius: 3px;
   outline: none;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   background-color: white;
 }
@@ -827,6 +827,7 @@ div.case-task-container
   background-color: var(--bright-green);
   color: white;
   margin-right: -5px;
+  margin-top: 2px;
 }
 .person-input-save:hover {
   background-color: var(--bright-dark-green);
