@@ -71,8 +71,17 @@ const ExtraSettings = ({
 
   return (
     <div className="extra-settings-wrapper" ref={dropdownRef}>
-      {isVisible ? (
-        !taskId ? (
+      <a
+        onClick={() => {
+          if (!isVisible) {
+            setIsVisible(true);
+          } else setIsVisible(false);
+        }}
+      >
+        ...
+      </a>
+      {isVisible &&
+        (!taskId ? (
           <>
             <DropDown
               isVisible={isVisible}
@@ -92,16 +101,7 @@ const ExtraSettings = ({
             setValue={setValue}
             handleClick={handleDelete}
           />
-        )
-      ) : (
-        <a
-          onClick={() => {
-            setIsVisible(true);
-          }}
-        >
-          ...
-        </a>
-      )}
+        ))}
     </div>
   );
 };

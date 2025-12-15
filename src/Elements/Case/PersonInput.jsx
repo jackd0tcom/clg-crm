@@ -54,6 +54,7 @@ const PersonInput = ({
     dob: "2000-01-01",
     county: "County",
     SSN: "123 56 7890",
+    email: "Email",
   };
   const formats = {
     firstName: "a",
@@ -196,25 +197,69 @@ const PersonInput = ({
         )}
       </div>
       <div className="person-input-container">
-        <InputMask
-          className="person-input-field"
-          mask={masks[fieldName]}
-          value={input}
-          onChange={(e) => {
-            const newValue = e.target.value;
-            // Normalize both values to strings for proper comparison
-            const normalizedNewValue = String(newValue || "");
-            const normalizedOriginalValue = String(originalValue || "");
-            setEditing(normalizedNewValue !== normalizedOriginalValue);
-            setInput(newValue);
-            setCount((prevCount) => prevCount + 1);
-          }}
-          formatChars={formats[fieldName]}
-          inputRef={inputRef}
-          onBlur={handleBlur}
-          onKeyDown={handleEnter}
-          placeholder={placeholders[fieldName]}
-        ></InputMask>
+        {fieldName !== "email" && (
+          <InputMask
+            className="person-input-field"
+            mask={masks[fieldName]}
+            value={input}
+            onChange={(e) => {
+              const newValue = e.target.value;
+              // Normalize both values to strings for proper comparison
+              const normalizedNewValue = String(newValue || "");
+              const normalizedOriginalValue = String(originalValue || "");
+              setEditing(normalizedNewValue !== normalizedOriginalValue);
+              setInput(newValue);
+              setCount((prevCount) => prevCount + 1);
+            }}
+            formatChars={formats[fieldName]}
+            inputRef={inputRef}
+            onBlur={handleBlur}
+            onKeyDown={handleEnter}
+            placeholder={placeholders[fieldName]}
+          ></InputMask>
+        )}
+        {type === "adverse" && fieldName === "email" && (
+          <InputMask
+            className="person-input-field"
+            mask={masks[fieldName]}
+            value={input}
+            onChange={(e) => {
+              const newValue = e.target.value;
+              // Normalize both values to strings for proper comparison
+              const normalizedNewValue = String(newValue || "");
+              const normalizedOriginalValue = String(originalValue || "");
+              setEditing(normalizedNewValue !== normalizedOriginalValue);
+              setInput(newValue);
+              setCount((prevCount) => prevCount + 1);
+            }}
+            formatChars={formats[fieldName]}
+            inputRef={inputRef}
+            onBlur={handleBlur}
+            onKeyDown={handleEnter}
+            placeholder={placeholders[fieldName]}
+          ></InputMask>
+        )}
+        {type === "opposing" && fieldName === "email" && (
+          <textarea
+            id="person-input-textarea"
+            className="person-input-field"
+            value={input}
+            onChange={(e) => {
+              const newValue = e.target.value;
+              // Normalize both values to strings for proper comparison
+              const normalizedNewValue = String(newValue || "");
+              const normalizedOriginalValue = String(originalValue || "");
+              setEditing(normalizedNewValue !== normalizedOriginalValue);
+              setInput(newValue);
+              setCount((prevCount) => prevCount + 1);
+            }}
+            formatChars={formats[fieldName]}
+            inputRef={inputRef}
+            onBlur={handleBlur}
+            onKeyDown={handleEnter}
+            placeholder={placeholders[fieldName]}
+          ></textarea>
+        )}
         {editing && (
           <p onClick={handleBlur} className="person-input-save">
             Save

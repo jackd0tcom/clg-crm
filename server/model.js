@@ -159,6 +159,7 @@ Person.init(
     type: {
       type: DataTypes.ENUM("client", "adverse", "opposing"),
       allowNull: true,
+      defaultValue: "client",
     },
   },
   {

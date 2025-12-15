@@ -135,7 +135,7 @@ const PeopleTab = ({
                   : "client-tab-heading"
               }
             >
-              {displayName || "Unnamed"}
+              {displayName || "New Person"}
             </h4>
           );
         })}
@@ -148,16 +148,18 @@ const PeopleTab = ({
           <button onClick={handleAddPerson}>Add Person</button>
         </div>
       )}
-      <PersonView
-        data={currentPerson}
-        refreshActivityData={refreshActivityData}
-        refreshCaseData={refreshCaseData}
-        caseId={caseId}
-        isNewPerson={isNewPerson}
-        setIsNewPerson={setIsNewPerson}
-        type={type}
-        objectTemplate={personViewObject}
-      />
+      {people && tabs.length !== 0 && (
+        <PersonView
+          data={currentPerson}
+          refreshActivityData={refreshActivityData}
+          refreshCaseData={refreshCaseData}
+          caseId={caseId}
+          isNewPerson={isNewPerson}
+          setIsNewPerson={setIsNewPerson}
+          type={type}
+          objectTemplate={personViewObject}
+        />
+      )}
     </div>
   );
 };

@@ -9,7 +9,6 @@ import ExtraSettings from "../Elements/UI/ExtraSettings";
 import Loader from "../Elements/UI/Loader";
 import DetailsTab from "../Elements/Case/DetailsTab";
 import PeopleTab from "../Elements/Case/PeopleTab";
-import AdverseOpposingTab from "../Elements/Case/AdverseTab";
 
 const Case = ({ openTaskView, refreshKey }) => {
   const { caseId } = useParams();
