@@ -256,7 +256,6 @@ const PersonInput = ({
             formatChars={formats[fieldName]}
             inputRef={inputRef}
             onBlur={handleBlur}
-            onKeyDown={handleEnter}
             placeholder={placeholders[fieldName]}
           ></textarea>
         )}
