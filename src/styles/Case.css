@@ -643,6 +643,40 @@ div.case-task-container
   align-items: center;
   column-gap: 10px;
 }
+.add-person-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  gap: 1rem;
+  max-width: 300px;
+  margin: 0 auto;
+}
+.add-person-page p {
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--grey);
+}
+.add-person-page i {
+  font-size: 2rem;
+  color: #f4f7ff;
+  padding: 15px;
+  background-color: var(--blue);
+  border-radius: 50%;
+}
+.add-person-page-button {
+  cursor: pointer;
+  color: white;
+  background-color: var(--blue);
+  font-size: 0.8rem;
+  display: flex;
+  border: 1px solid transparent;
+  transition: 200ms;
+}
+.add-person-page-button:hover {
+  color: white;
+  background-color: var(--dark-blue);
+}
 .add-person-button {
   cursor: pointer;
   color: var(--grey);

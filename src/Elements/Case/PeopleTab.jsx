@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import PersonView from "./PersonView";
+import { capitalize } from "../../helpers/helperFunctions";
 
 const PeopleTab = ({
   people,
@@ -13,6 +14,8 @@ const PeopleTab = ({
   );
   const [isNewPerson, setIsNewPerson] = useState(false);
 
+  let emptyPageMessage =
+    "To add a new client to this case, click the button below, or the + button above";
   let emptyPersonObject = {};
   const clientObject = {
     firstName: "",
@@ -57,9 +60,13 @@ const PeopleTab = ({
   }
   if (type === "adverse") {
     emptyPersonObject = adverseObject;
+    emptyPageMessage =
+      "To add a new person to the adverse party, click the button below, or the + button above";
   }
   if (type === "opposing") {
     emptyPersonObject = opposingObject;
+    emptyPageMessage =
+      "To add a new person to the opposing party, click the button below, or the + button above";
   }
   const personViewObject = emptyPersonObject;
   delete personViewObject.personId;
@@ -145,7 +152,11 @@ const PeopleTab = ({
       </div>
       {people && tabs.length === 0 && (
         <div className="add-person-page">
-          <button onClick={handleAddPerson}>Add Person</button>
+          <i className="fa-solid fa-person"></i>
+          <p>{emptyPageMessage}</p>
+          <button className="add-person-page-button" onClick={handleAddPerson}>
+            Add Person
+          </button>
         </div>
       )}
       {people && tabs.length !== 0 && (
