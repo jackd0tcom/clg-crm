@@ -19,6 +19,7 @@ import Inbox from "./Pages/Inbox.jsx";
 import { addRecentItem } from "./helpers/recentItemsHelper";
 import Admin from "./Pages/Admin.jsx";
 import Denied from "./Pages/Denied.jsx";
+import Reports from "./Pages/Reports.jsx";
 
 function App() {
   const userStore = useSelector((state) => state.user);
@@ -177,6 +178,12 @@ function App() {
                 path="/profile"
                 element={
                   !isAuthenticated ? <Navigate to="/login" /> : <Profile />
+                }
+              />
+              <Route
+                path="/reports"
+                element={
+                  !isAuthenticated ? <Navigate to="/login" /> : <Reports />
                 }
               />
               <Route

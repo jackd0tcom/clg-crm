@@ -15,6 +15,7 @@ import cleanupCtrl from "./controllers/cleanupCtrl.js";
 import cleanupScheduler from "./services/cleanupScheduler.js";
 import adminCtrl from "./controllers/adminCtrl.js";
 import commentCtrl from "./controllers/commentCtrl.js";
+import reportsCtrl from "./controllers/reportsCtrl.js";
 
 import { requireAccess, requireAdmin } from "./middleware/authMiddleware.js";
 import {
@@ -105,6 +106,7 @@ const {
   getUnreadCount,
   markAllAsRead,
 } = notificationsCtrl;
+const { getReportCases } = reportsCtrl;
 
 // Express setup
 const app = express();
@@ -256,6 +258,9 @@ app.post("/api/notifications/mark-read", markAsRead);
 app.post("/api/notifications/mark-clear", markAsCleared);
 app.get("/api/notifications/unread-count", getUnreadCount);
 app.post("/api/notifications/mark-all-read", markAllAsRead);
+
+// Reports endpoints
+app.get("/api/getReportCases", getReportCases);
 
 // Comment endpoints
 app.post("/api/createComment", createComment);
