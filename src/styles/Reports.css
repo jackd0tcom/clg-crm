@@ -38,6 +38,25 @@
   cursor: pointer;
   transition: 200ms;
 }
+.report-filter-date-select {
+  display: flex;
+  font-size: 0.9rem;
+  border: 1px solid var(--light-border);
+  border-radius: 5px;
+  overflow: hidden;
+}
+.report-filter-date-select p:last-child {
+  padding: 5px 14px 5px 10px;
+}
+.report-filter-date-select p:first-child {
+  padding: 5px 10px 5px 14px;
+}
+.report-filter-date-select p:hover {
+  background-color: var(--light-grey);
+  cursor: pointer;
+  transition: 200ms;
+}
+
 .active-type {
   background-color: var(--root-bg-color-light);
 }

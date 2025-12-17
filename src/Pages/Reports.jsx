@@ -22,7 +22,6 @@ const Reports = () => {
       try {
         await axios.get("/api/getReportCases").then((res) => {
           if (res.statusText === "OK") {
-            console.log(res.data);
             setCaseData(res.data);
           }
         });
@@ -35,7 +34,6 @@ const Reports = () => {
       try {
         await axios.get("/api/getReportTasks").then((res) => {
           if (res.statusText === "OK") {
-            console.log(res.data);
             setTaskData(res.data);
           }
         });
@@ -44,7 +42,6 @@ const Reports = () => {
       }
     };
 
-    console.log("hydrating...");
     fetchCases();
     fetchTasks();
     setTimeout(() => {
@@ -59,19 +56,32 @@ const Reports = () => {
 
   // Main data manipulator
   const processedData = useMemo(() => {
-    console.log("processing..", filter);
+    console.log("processing..");
     // setup data variable
     let data = filter.type === "cases" ? caseData : taskData;
 
     // filter data
     data = data.filter((item) => {
-      // filter logic
+      // Date range
+      if (filter.dateRange.start && item.createdAt < filter.dateRange.start) {
+        return false;
+      }
+      if (filter.dateRange.end && item.createdAt > filter.dateRange.start) {
+        return false;
+      }
+
+      // No filters added - see all items
       return true;
     });
 
     // sort data
     const sorted = [...data].sort((a, b) => {
-      // sort logic
+      // dateOpened
+      if (filter.sortBy === "dateOpened") {
+        if (filter.sortOrder === "desc") {
+          return a - b;
+        }
+      }
     });
 
     return sorted;
