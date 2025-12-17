@@ -43,4 +43,25 @@ export default {
       res.status(500).send("Error fetching cases");
     }
   },
+  getReportTasks: async (req, res) => {
+    try {
+      console.log("getTasks");
+      if (req.session.user) {
+        const tasks = await Task.findAll({
+          where: {
+            status: {
+              [Op.ne]: "completed",
+            },
+          },
+        });
+
+        res.send(tasks);
+      } else {
+        res.status(401).send("User not authenticated");
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(500).send("Error fetching cases");
+    }
+  },
 };

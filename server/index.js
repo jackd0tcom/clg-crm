@@ -106,7 +106,7 @@ const {
   getUnreadCount,
   markAllAsRead,
 } = notificationsCtrl;
-const { getReportCases } = reportsCtrl;
+const { getReportCases, getReportTasks } = reportsCtrl;
 
 // Express setup
 const app = express();
@@ -261,6 +261,7 @@ app.post("/api/notifications/mark-all-read", markAllAsRead);
 
 // Reports endpoints
 app.get("/api/getReportCases", getReportCases);
+app.get("/api/getReportTasks", getReportTasks);
 
 // Comment endpoints
 app.post("/api/createComment", createComment);

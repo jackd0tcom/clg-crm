@@ -1,35 +1,99 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import axios from "axios";
+import ReportBreakdown from "../Elements/Reports/ReportBreakdown";
+import ReportChart from "../Elements/Reports/ReportChart";
+import ReportFilter from "../Elements/Reports/ReportFilter";
+import Loader from "../Elements/UI/Loader";
 
 const Reports = () => {
+  const [isLoading, setIsLoading] = useState(true);
   const [caseData, setCaseData] = useState([]);
   const [taskData, setTaskData] = useState([]);
-  const [showCases, setShowCases] = useState(false);
-  const [currentData, setCurrentData] = useState([]);
+  const [filter, setFilter] = useState({
+    type: "cases",
+    dateRange: { start: null, end: null },
+    sortBy: "dateOpened",
+    sortOrder: "desc",
+  });
 
-  const fetchCases = async () => {
-    try {
-      await axios.get("/api/getReportCases").then((res) => {
-        if (res.statusText === "OK") {
-          setCaseData(res.data);
-        }
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  // Initial data hydration - default to showing cases
+  // Initial data hydration
   useEffect(() => {
+    const fetchCases = async () => {
+      try {
+        await axios.get("/api/getReportCases").then((res) => {
+          if (res.statusText === "OK") {
+            console.log(res.data);
+            setCaseData(res.data);
+          }
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    const fetchTasks = async () => {
+      try {
+        await axios.get("/api/getReportTasks").then((res) => {
+          if (res.statusText === "OK") {
+            console.log(res.data);
+            setTaskData(res.data);
+          }
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    console.log("hydrating...");
     fetchCases();
+    fetchTasks();
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 200);
   }, []);
 
-  return (
-    <div className="reports-page-wrapper">
+  let columns;
+  if (filter.type === "cases") {
+    columns = "2fr 1fr 1fr 1fr";
+  } else columns = "2fr 1fr 1fr 1fr";
+
+  // Main data manipulator
+  const processedData = useMemo(() => {
+    console.log("processing..", filter);
+    // setup data variable
+    let data = filter.type === "cases" ? caseData : taskData;
+
+    // filter data
+    data = data.filter((item) => {
+      // filter logic
+      return true;
+    });
+
+    // sort data
+    const sorted = [...data].sort((a, b) => {
+      // sort logic
+    });
+
+    return sorted;
+  }, [filter]);
+
+  return isLoading ? (
+    <Loader />
+  ) : (
+    <div className="report-page-wrapper">
       <div className="case-list-head">
         <div className="case-list-head-heading-wrapper">
           <h1 className="section-heading">Reports</h1>
         </div>
+      </div>
+      <div className="report-body">
+        <ReportFilter filter={filter} setFilter={setFilter} />
+        <ReportChart data={processedData} />
+        <ReportBreakdown
+          data={processedData}
+          columns={columns}
+          type={filter.type}
+        />
       </div>
     </div>
   );
