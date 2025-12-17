@@ -3,7 +3,7 @@ import { formatDateNoTime, capitalize } from "../../helpers/helperFunctions";
 import StatusIcon from "../Task/StatusIcon";
 import { useState } from "react";
 import { useEffect } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 const NotificationItem = ({

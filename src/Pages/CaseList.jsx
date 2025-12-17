@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import CaseCard from "../Elements/CaseList/CaseCard";
 import CaseFilter from "../Elements/CaseList/CaseFilter";

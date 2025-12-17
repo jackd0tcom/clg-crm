@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import TaskList from "../TaskList/TaskList";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 
 const ToDoWidget = ({ openTaskView, userSynced, refreshKey }) => {
   const [tasks, setTasks] = useState([]);

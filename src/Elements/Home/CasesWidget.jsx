@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import axios from "axios";
 import CaseListItem from "../CaseList/CaseListItem";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 
 const CasesWidget = ({ loading, setLoading, userSynced }) => {
   const [cases, setCases] = useState([]);

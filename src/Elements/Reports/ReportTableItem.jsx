@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 import PhaseIcon from "../Case/PhaseIcon";
 import { formatDateNoTime } from "../../helpers/helperFunctions";
 import PriorityIcon from "../Task/PriorityIcon";
@@ -14,23 +14,22 @@ const ReportTableItem = ({ data, type, columns }) => {
         <p>{data.title}</p>
         {type === "cases" ? (
           <>
-            <p>{<PhaseIcon phase={data.phase} />}</p>
+            {<PhaseIcon phase={data.phase} />}
             <p>{data.sol || ""}</p>
             <p>{formatDateNoTime(data.createdAt)}</p>
           </>
         ) : (
           <>
-            <p>
-              {
-                <StatusIcon
-                  status={data.status}
-                  hasIcon={true}
-                  noBg={true}
-                  hasTitle={true}
-                />
-              }
-            </p>
-            <p>{<PriorityIcon data={data.priority} />}</p>
+            {
+              <StatusIcon
+                status={data.status}
+                hasIcon={true}
+                noBg={true}
+                hasTitle={true}
+              />
+            }
+
+            {<PriorityIcon data={data.priority} />}
             <p>{formatDateNoTime(data.createdAt)}</p>
           </>
         )}

@@ -1,5 +1,5 @@
 import "./styles/App.css";
-import { Route, Routes, Navigate, useLocation } from "react-router";
+import { Route, Routes, Navigate, useLocation } from "react-router-dom";
 import Home from "./Pages/Home.jsx";
 import { useSelector } from "react-redux";
 import { useEffect, useState, useCallback } from "react";

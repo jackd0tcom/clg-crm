@@ -1,5 +1,5 @@
 import { capitalize } from "../../helpers/helperFunctions";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { addRecentItem } from "../../helpers/recentItemsHelper";
 import PhaseIcon from "../Case/PhaseIcon";
 

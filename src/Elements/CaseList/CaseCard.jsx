@@ -1,6 +1,6 @@
 import { capitalize, formatPracticeAreas } from "../../helpers/helperFunctions";
 import TaskListItem from "../TaskList/TaskListItem";
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router-dom";
 import TaskList from "../TaskList/TaskList";
 import { addRecentItem } from "../../helpers/recentItemsHelper";
 import { useEffect, useState } from "react";

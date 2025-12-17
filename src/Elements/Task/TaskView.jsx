@@ -3,7 +3,7 @@ import Loader from "../UI/Loader";
 import axios from "axios";
 import ActivityLog from "../UI/ActivityLog";
 import TaskInput from "./TaskInput";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import AssigneeList from "../Assignee/AssigneeList";
 import DueDatePicker from "./DueDatePicker";
 import StatusToggle from "./StatusToggle";

@@ -3,10 +3,10 @@ import axios from "axios";
 import Loader from "../Elements/UI/Loader";
 import TaskList from "../Elements/TaskList/TaskList";
 import { findTimeDifference } from "../helpers/helperFunctions";
-import { useParams } from "react-router";
+import { useParams } from "react-router-dom";
 import TaskFilter from "../Elements/TaskList/TaskFilter";
 import { useAuth0 } from "@auth0/auth0-react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 const Tasks = ({ openTaskView, refreshKey }) => {

@@ -17,13 +17,13 @@ const ReportFilter = ({ filter, setFilter }) => {
       <div className="report-filter-type-select">
         <p
           onClick={() => setFilter({ ...filter, type: "cases" })}
-          className={filter.type === "cases" && "active-type"}
+          className={filter.type === "cases" ? "active-type" : undefined}
         >
           Cases
         </p>
         <p
           onClick={() => setFilter({ ...filter, type: "tasks" })}
-          className={filter.type === "tasks" && "active-type"}
+          className={filter.type === "cases" ? "active-type" : undefined}
         >
           Tasks
         </p>

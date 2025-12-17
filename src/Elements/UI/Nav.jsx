@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { NavLink } from "react-router";
+import { NavLink } from "react-router-dom";
 import ProfilePic from "./ProfilePic";
 import { useAuth0 } from "@auth0/auth0-react";
 

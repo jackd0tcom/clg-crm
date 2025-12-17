@@ -63,11 +63,11 @@ const Reports = () => {
     // filter data
     data = data.filter((item) => {
       // Date range
-      if (filter.dateRange.start && item.createdAt < filter.dateRange.start) {
-        return false;
+      if (filter.dateRange.start && item.createdAt > filter.dateRange.start) {
+        return true;
       }
-      if (filter.dateRange.end && item.createdAt > filter.dateRange.start) {
-        return false;
+      if (filter.dateRange.end && item.createdAt < filter.dateRange.start) {
+        return true;
       }
 
       // No filters added - see all items

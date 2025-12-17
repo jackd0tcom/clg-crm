@@ -1,7 +1,7 @@
 import NotificationList from "../Inbox/NotificationList";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 
 const UpdatesWidget = ({ openTaskView, setCheckNotifications, userSynced }) => {
   const [updates, setUpdates] = useState([]);
