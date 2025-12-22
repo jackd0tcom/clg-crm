@@ -15,7 +15,7 @@ const ReportTableItem = ({ data, type, columns }) => {
         {type === "cases" ? (
           <>
             {<PhaseIcon phase={data.phase} />}
-            <p>{data.sol || ""}</p>
+            <p>{data.sol ? formatDateNoTime(data.sol) : ""}</p>
             <p>{formatDateNoTime(data.createdAt)}</p>
           </>
         ) : (

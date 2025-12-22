@@ -19,6 +19,7 @@
   padding: 10px;
   border: 1px solid var(--light-border);
   border-radius: 5px;
+  gap: 15px;
 }
 .report-filter-type-select {
   display: flex;
@@ -55,6 +56,50 @@
   background-color: var(--light-grey);
   cursor: pointer;
   transition: 200ms;
+}
+.report-filter-date-wrapper {
+  position: relative;
+  font-size: 0.9rem;
+  border: 1px solid var(--light-border);
+  border-radius: 5px;
+}
+.filter-date-button {
+  padding: 5px 10px;
+  cursor: pointer;
+}
+.filter-date-button:hover {
+  background-color: var(--root-bg-color-light);
+}
+.date-range-picker {
+  position: absolute;
+  top: 110%;
+  background-color: white;
+  padding: 10px;
+  border: 1px solid var(--light-border);
+  border-radius: 5px;
+  display: flex;
+  gap: 15px;
+}
+.quick-range-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-width: 150px;
+}
+.quick-range-wrapper p {
+  padding: 5px 10px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+.quick-range-wrapper p:hover {
+  background-color: var(--root-bg-color-light);
+}
+.current-quick-range {
+  color: var(--button-active-font);
+  background-color: var(--button-active-bg);
+  border-radius: 5px;
+}
+.current-quick-range:hover {
+  background-color: var(--button-active-bg);
 }
 
 .active-type {
@@ -102,4 +147,71 @@
 }
 .report-table-item:hover {
   background-color: var(--root-bg-color-light);
+}
+.practice-area-toggle {
+  position: relative;
+}
+.practice-area-button {
+  font-size: 0.9rem;
+  background-color: unset;
+  border: 1px solid var(--light-border);
+  border-radius: 5px;
+  transition: 200ms;
+  font-weight: 400;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.practice-area-button p {
+  padding: 6px 12px;
+}
+.practice-area-button:hover {
+  color: black;
+  border: 1px solid var(--light-border);
+  background-color: var(--root-bg-color-light);
+}
+.clear-areas-button {
+  padding: 6px;
+  margin-right: 12px;
+  margin: 0;
+  border-radius: 5px;
+  transition: 200ms;
+}
+.clear-areas-button:hover {
+  background-color: var(--bright-dark-green);
+  color: white;
+}
+.practice-area-dropdown {
+  position: absolute;
+  overflow-y: scroll;
+  max-height: 30vh;
+  background-color: white;
+  border: 1px solid var(--light-border);
+  border-radius: 5px;
+  top: 110%;
+  min-width: 200px;
+}
+.practice-area-item {
+  display: flex;
+  justify-content: space-between;
+}
+.selected-area {
+  background-color: var(--button-active-bg);
+  color: var(--bright-dark-green);
+}
+.checkmark-wrapper {
+  width: 15px;
+  height: 15px;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.active-wrapper {
+  background-color: var(--bright-green);
+}
+#practice-area-check {
+  color: white;
+  font-size: 0.6rem;
 }

@@ -9,9 +9,17 @@ const Reports = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [caseData, setCaseData] = useState([]);
   const [taskData, setTaskData] = useState([]);
+  const now = new Date();
+  const month = now.getMonth();
+  const year = now.getFullYear();
+  const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
   const [filter, setFilter] = useState({
-    type: "cases",
-    dateRange: { start: null, end: null },
+    type: "",
+    dateRange: {
+      start: `${year}-${month + 1}-01`,
+      end: `${year}-${month + 1}-${lastDay.getDate()}`,
+    },
+    practiceAreas: [],
     sortBy: "dateOpened",
     sortOrder: "desc",
   });
@@ -22,6 +30,7 @@ const Reports = () => {
       try {
         await axios.get("/api/getReportCases").then((res) => {
           if (res.statusText === "OK") {
+            console.log("Cases", res.data[0]);
             setCaseData(res.data);
           }
         });
@@ -34,6 +43,7 @@ const Reports = () => {
       try {
         await axios.get("/api/getReportTasks").then((res) => {
           if (res.statusText === "OK") {
+            console.log("Tasks", res.data[0]);
             setTaskData(res.data);
           }
         });
@@ -46,6 +56,7 @@ const Reports = () => {
     fetchTasks();
     setTimeout(() => {
       setIsLoading(false);
+      setFilter({ ...filter, type: "cases" });
     }, 200);
   }, []);
 
@@ -56,18 +67,29 @@ const Reports = () => {
 
   // Main data manipulator
   const processedData = useMemo(() => {
-    console.log("processing..");
+    console.log("processing..", filter);
     // setup data variable
     let data = filter.type === "cases" ? caseData : taskData;
+    // console.log("Raw data", data);
 
     // filter data
     data = data.filter((item) => {
       // Date range
-      if (filter.dateRange.start && item.createdAt > filter.dateRange.start) {
-        return true;
+      if (filter.dateRange.start && item.createdAt < filter.dateRange.start) {
+        return false;
       }
-      if (filter.dateRange.end && item.createdAt < filter.dateRange.start) {
-        return true;
+      if (filter.dateRange.end && item.createdAt > filter.dateRange.end) {
+        return false;
+      }
+      if (filter.type === "cases" && filter.practiceAreas.length > 0) {
+        const hasMatchingArea = item.practiceAreas.some((area) =>
+          filter.practiceAreas.some(
+            (filterArea) => area.name === filterArea.name
+          )
+        );
+        if (!hasMatchingArea) {
+          return false;
+        }
       }
 
       // No filters added - see all items
@@ -79,10 +101,14 @@ const Reports = () => {
       // dateOpened
       if (filter.sortBy === "dateOpened") {
         if (filter.sortOrder === "desc") {
-          return a - b;
+          return (
+            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          );
         }
       }
     });
+
+    console.log("Refined data", sorted);
 
     return sorted;
   }, [filter]);

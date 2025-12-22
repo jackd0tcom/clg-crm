@@ -19,19 +19,25 @@ export default {
           where: {
             isArchived: false,
           },
-          //   include: [
-          //     {
-          //       model: User,
-          //       as: "assignees",
-          //       through: { attributes: [] },
-          //       attributes: ["userId", "username", "firstName", "lastName"],
-          //     },
-          //     {
-          //       model: User,
-          //       as: "owner",
-          //       attributes: ["userId", "username", "firstName", "lastName"],
-          //     },
-          //   ],
+          include: [
+            {
+              model: User,
+              as: "assignees",
+              through: { attributes: [] },
+              attributes: ["userId", "username", "firstName", "lastName"],
+            },
+            {
+              model: User,
+              as: "owner",
+              attributes: ["userId", "username", "firstName", "lastName"],
+            },
+            {
+              model: PracticeArea,
+              as: "practiceAreas",
+              through: { attributes: [] },
+              attributes: ["practiceAreaId", "name"],
+            },
+          ],
         });
 
         res.send(cases);
