@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.4.0",
+    "@recharts/devtools": "^0.0.5",
     "@reduxjs/toolkit": "^2.5.0",
     "auth0": "^4.30.0",
     "axios": "^1.7.9",
@@ -48,6 +49,7 @@
     "react-redux": "^9.2.0",
     "react-router": "^7.1.1",
     "react-router-dom": "^7.1.1",
+    "recharts": "^3.6.0",
     "redux": "^5.0.1",
     "redux-persist": "^6.0.0",
     "sequelize": "^6.37.5",

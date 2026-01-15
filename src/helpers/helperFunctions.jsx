@@ -197,3 +197,14 @@ export const truncateTitleLonger = (title) => {
   }
   return title;
 };
+export const useOnWindowResize = (handler) => {
+  React.useEffect(() => {
+    const handleResize = () => {
+      handler();
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, [handler]);
+};

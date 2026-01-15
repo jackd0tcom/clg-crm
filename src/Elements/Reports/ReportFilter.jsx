@@ -27,6 +27,7 @@ const ReportFilter = ({ filter, setFilter }) => {
 
   const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
+  // Calculates Quick range values and sets the range in filter accordingly
   useMemo(() => {
     if (!filter && !quickRange) {
       return;
@@ -79,6 +80,22 @@ const ReportFilter = ({ filter, setFilter }) => {
           Tasks
         </p>
       </div>
+      {filter.type === "cases" && (
+        <div className="report-filter-type-select">
+          <p
+            onClick={() => setFilter({ ...filter, open: true })}
+            className={filter.open ? "active-type" : undefined}
+          >
+            Open
+          </p>
+          <p
+            onClick={() => setFilter({ ...filter, open: false })}
+            className={!filter.open ? "active-type" : undefined}
+          >
+            Closed
+          </p>
+        </div>
+      )}
       <div className="report-filter-date-wrapper">
         <p
           className="filter-date-button"
