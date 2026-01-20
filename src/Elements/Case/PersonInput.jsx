@@ -2,7 +2,8 @@ import { format } from "../../helpers/helperFunctions";
 import { useState, useEffect } from "react";
 import { useRef } from "react";
 import axios from "axios";
-import InputMask from "react-input-mask";
+import { useMaskito } from "@maskito/react";
+import { maskitoTransform } from "@maskito/core";
 
 const PersonInput = ({
   fieldName,
@@ -23,26 +24,49 @@ const PersonInput = ({
   const [isSaving, setIsSaving] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(false);
-  const inputRef = useRef(null);
+  // const inputRef = useRef(null);
   const isSavingRef = useRef(false);
 
   // Sync originalValue with the prop value when it changes externally
   useEffect(() => {
     setOriginalValue(value);
-    setInput(value);
+    setInput(formatInputValue(value));
   }, [value]);
+
   const masks = {
-    firstName: null,
-    lastName: null,
+    firstName: { mask: /^[a-zA-Z]+$/ },
+    lastName: { mask: /^[a-zA-Z]+$/ },
     address: null,
-    city: null,
-    state: "aa",
-    zip: "99999",
-    phoneNumber: "(999) 999 - 9999",
-    dob: "9999-99-99",
-    county: null,
-    SSN: "999 99 9999",
+    city: { mask: /^[a-zA-Z]+$/ },
+    state: { mask: /^[a-zA-Z]+$/ },
+    zip: { mask: /^\d{0,6}$/ },
+    phoneNumber: {
+      mask: [
+        "(",
+        /\d/,
+        /\d/,
+        /\d/,
+        ")",
+        " ",
+        /\d/,
+        /\d/,
+        /\d/,
+        "-",
+        /\d/,
+        /\d/,
+        /\d/,
+        /\d/,
+      ],
+    },
+    dob: {
+      mask: [/\d/, /\d/, "-", /\d/, /\d/, "-", /\d/, /\d/, /\d/, /\d/],
+    },
+    county: { mask: /^[a-zA-Z]+$/ },
+    SSN: {
+      mask: [/\d/, /\d/, /\d/, " ", /\d/, /\d/, " ", /\d/, /\d/, /\d/, /\d/],
+    },
   };
+
   const placeholders = {
     firstName: "First Name",
     lastName: "Last Name",
@@ -51,23 +75,20 @@ const PersonInput = ({
     state: "PA",
     zip: "12345",
     phoneNumber: "(000) 000 - 0000",
-    dob: "2000-01-01",
+    dob: "12-31-1999",
     county: "County",
     SSN: "123 56 7890",
     email: "Email",
   };
-  const formats = {
-    firstName: "a",
-    lastName: "a",
-    address: "*",
-    city: "a",
-    state: null,
-    zip: null,
-    phoneNumber: null,
-    dob: null,
-    county: "a",
-    SSN: null,
+
+  const formatInputValue = (val) => {
+    const mask = masks[fieldName];
+    if (!mask || !val) return val || "";
+
+    return maskitoTransform(String(val), mask);
   };
+
+  const maskedInputRef = useMaskito({ options: masks[fieldName] });
 
   const saveInput = async (data) => {
     // Prevent duplicate saves
@@ -110,6 +131,7 @@ const PersonInput = ({
           .post("/api/updatePerson", { personId, fieldName, value: data })
           .then((res) => {
             if (res.status === 200) {
+              console.log(res.data, data);
               setOriginalValue(data);
               refreshActivityData();
               refreshCaseData();
@@ -139,7 +161,13 @@ const PersonInput = ({
       return;
     }
     if (!isSavingRef.current) {
-      if (fieldName === "phoneNumber" || fieldName === "SSN") {
+      if (
+        fieldName === "phoneNumber" ||
+        fieldName === "SSN" ||
+        fieldName === "zip" ||
+        fieldName === "dob"
+      ) {
+        console.log("3");
         const data = input.replace(/[^0-9]/g, "");
         saveInput(data);
       } else saveInput(input);
@@ -156,14 +184,16 @@ const PersonInput = ({
         if (
           fieldName === "phoneNumber" ||
           fieldName === "SSN" ||
-          fieldName === "zip"
+          fieldName === "zip" ||
+          fieldName === "dob"
         ) {
+          console.log("3");
           const data = input.replace(/[^0-9]/g, "");
           saveInput(data);
         } else saveInput(input);
       }
-      if (inputRef.current) {
-        inputRef.current.blur();
+      if (maskedInputRef.current) {
+        maskedInputRef.current.blur();
       }
     }
   };
@@ -198,10 +228,13 @@ const PersonInput = ({
       </div>
       <div className="person-input-container">
         {fieldName !== "email" && (
-          <InputMask
+          <input
             className="person-input-field"
-            mask={masks[fieldName]}
+            ref={maskedInputRef}
+            placeholder={placeholders[fieldName]}
             value={input}
+            onBlur={handleBlur}
+            onKeyDown={handleEnter}
             onChange={(e) => {
               const newValue = e.target.value;
               // Normalize both values to strings for proper comparison
@@ -211,18 +244,16 @@ const PersonInput = ({
               setInput(newValue);
               setCount((prevCount) => prevCount + 1);
             }}
-            formatChars={formats[fieldName]}
-            inputRef={inputRef}
-            onBlur={handleBlur}
-            onKeyDown={handleEnter}
-            placeholder={placeholders[fieldName]}
-          ></InputMask>
+          />
         )}
         {type === "adverse" && fieldName === "email" && (
-          <InputMask
+          <input
             className="person-input-field"
-            mask={masks[fieldName]}
+            ref={maskedInputRef}
+            placeholder={placeholders[fieldName]}
             value={input}
+            onBlur={handleBlur}
+            onKeyDown={handleEnter}
             onChange={(e) => {
               const newValue = e.target.value;
               // Normalize both values to strings for proper comparison
@@ -232,12 +263,7 @@ const PersonInput = ({
               setInput(newValue);
               setCount((prevCount) => prevCount + 1);
             }}
-            formatChars={formats[fieldName]}
-            inputRef={inputRef}
-            onBlur={handleBlur}
-            onKeyDown={handleEnter}
-            placeholder={placeholders[fieldName]}
-          ></InputMask>
+          />
         )}
         {type === "opposing" && fieldName === "email" && (
           <textarea
@@ -253,8 +279,7 @@ const PersonInput = ({
               setInput(newValue);
               setCount((prevCount) => prevCount + 1);
             }}
-            formatChars={formats[fieldName]}
-            inputRef={inputRef}
+            inputRef={maskedInputRef}
             onBlur={handleBlur}
             placeholder={placeholders[fieldName]}
           ></textarea>

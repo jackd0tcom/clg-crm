@@ -17,7 +17,7 @@ import {
 import bcrypt from "bcryptjs";
 
 const db = await connectToDB(
-  process.env.DATABASE_URL || "postgresql:///clg-db"
+  process.env.DATABASE_URL || "postgresql:///clg-db",
 );
 
 const users = [
@@ -149,7 +149,7 @@ const people = [
     state: "IL",
     zip: "62701",
     phoneNumber: "2175550101",
-    dob: "1980-03-15",
+    dob: "03151999",
     county: "Sangamon",
     SSN: 123456,
     type: "client",
@@ -163,7 +163,7 @@ const people = [
     state: "IL",
     zip: "62702",
     phoneNumber: "2175550102",
-    dob: "1982-07-22",
+    dob: "07221999",
     county: "Sangamon",
     SSN: 123456,
     type: "client",
@@ -177,7 +177,7 @@ const people = [
     state: "IL",
     zip: "60601",
     phoneNumber: "3125550201",
-    dob: "1975-11-08",
+    dob: "11081999",
     county: "Cook",
     SSN: 123456,
     type: "client",
@@ -191,7 +191,7 @@ const people = [
     state: "IL",
     zip: "61601",
     phoneNumber: "3095550301",
-    dob: "1988-05-14",
+    dob: "05141999",
     county: "Peoria",
     SSN: 123456,
     type: "client",
@@ -205,7 +205,7 @@ const people = [
     state: "IL",
     zip: "61602",
     phoneNumber: "3095550302",
-    dob: "1986-09-30",
+    dob: "09301999",
     county: "Peoria",
     SSN: 123456,
     type: "client",
@@ -219,7 +219,7 @@ const people = [
     state: "IL",
     zip: "61101",
     phoneNumber: "8155550401",
-    dob: "1990-12-03",
+    dob: "12031999",
     county: "Winnebago",
     SSN: 123456,
     type: "client",
@@ -233,7 +233,7 @@ const people = [
     state: "IL",
     zip: "60602",
     phoneNumber: "3125550501",
-    dob: "1972-04-18",
+    dob: "04181999",
     county: "Cook",
     SSN: 123456,
     type: "client",
@@ -247,7 +247,7 @@ const people = [
     state: "IL",
     zip: "60603",
     phoneNumber: "3125550502",
-    dob: "1968-08-25",
+    dob: "08251999",
     county: "Cook",
     SSN: 123456,
     type: "client",
@@ -541,10 +541,10 @@ await db.sync({ alter: true }).then(async () => {
 
   console.log("Database reset and seeded successfully!");
   console.log(
-    `Created ${createdUsers.length} users, ${createdCases.length} cases, ${createdPeople.length} people, and ${createdTasks.length} tasks`
+    `Created ${createdUsers.length} users, ${createdCases.length} cases, ${createdPeople.length} people, and ${createdTasks.length} tasks`,
   );
   console.log(
-    `Created ${caseAssignments.length} case assignments, ${taskAssignments.length} task assignments, and ${activityReaders.length} activity readers`
+    `Created ${caseAssignments.length} case assignments, ${taskAssignments.length} task assignments, and ${activityReaders.length} activity readers`,
   );
 });
 

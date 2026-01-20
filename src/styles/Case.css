@@ -723,7 +723,6 @@ div.case-task-container
   z-index: 999;
   padding: 15px;
   min-width: 500px;
-  height: 100%;
   background-color: var(--root-bg-color-light);
 }
 .person-view-header-wrapper {

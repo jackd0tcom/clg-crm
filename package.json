@@ -15,6 +15,8 @@
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.4.0",
+    "@maskito/core": "^5.0.1",
+    "@maskito/react": "^5.0.1",
     "@reduxjs/toolkit": "^2.5.0",
     "auth0": "^4.30.0",
     "axios": "^1.7.9",

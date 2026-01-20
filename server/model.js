@@ -3,7 +3,7 @@ import url from "url";
 import connectToDb from "./db.js";
 
 const db = await connectToDb(
-  process.env.DATABASE_URL || "postgresql:///clg-db"
+  process.env.DATABASE_URL || "postgresql:///clg-db",
 );
 
 class User extends Model {}
@@ -70,7 +70,7 @@ User.init(
     modelName: "user",
     sequelize: db,
     timestamps: true,
-  }
+  },
 );
 
 class Person extends Model {}
@@ -132,7 +132,7 @@ Person.init(
       },
     },
     dob: {
-      type: DataTypes.DATEONLY,
+      type: DataTypes.INTEGER,
       allowNull: true,
     },
     county: {
@@ -166,7 +166,7 @@ Person.init(
     modelName: "person",
     sequelize: db,
     timestamps: true,
-  }
+  },
 );
 
 class Task extends Model {}
@@ -207,7 +207,7 @@ Task.init(
         "not started",
         "in progress",
         "blocked",
-        "completed"
+        "completed",
       ),
       defaultValue: "not started",
     },
@@ -220,7 +220,7 @@ Task.init(
     modelName: "task",
     sequelize: db,
     timestamps: true,
-  }
+  },
 );
 
 class Case extends Model {}
@@ -251,7 +251,7 @@ Case.init(
         "negotiation",
         "litigation",
         "settlement",
-        "closed"
+        "closed",
       ),
       defaultValue: "intake",
     },
@@ -270,7 +270,7 @@ Case.init(
     modelName: "case",
     sequelize: db,
     timestamps: true,
-  }
+  },
 );
 
 class Tribunal extends Model {}
@@ -296,7 +296,7 @@ Tribunal.init(
     modelName: "tribunal",
     sequelize: db,
     timestamps: true,
-  }
+  },
 );
 
 // Junction table for case-practice area relationships
@@ -316,7 +316,7 @@ CaseTribunal.init(
     modelName: "caseTribunal",
     sequelize: db,
     timestamps: true,
-  }
+  },
 );
 
 class ActivityLog extends Model {}
@@ -352,7 +352,7 @@ ActivityLog.init(
     modelName: "activityLog",
     sequelize: db,
     timestamps: true,
-  }
+  },
 );
 
 // New junction table for multiple readers per activity
@@ -377,7 +377,7 @@ ActivityReaders.init(
     modelName: "activityReaders",
     sequelize: db,
     timestamps: true,
-  }
+  },
 );
 
 class Comment extends Model {}
@@ -409,7 +409,7 @@ Comment.init(
     modelName: "comment",
     sequelize: db,
     timestamps: true,
-  }
+  },
 );
 
 class Notification extends Model {}
@@ -447,7 +447,7 @@ Notification.init(
         "case_unassigned",
         "case_phase_changed",
         "case_priority_changed",
-        "comment_added"
+        "comment_added",
       ),
       allowNull: false,
     },
@@ -478,7 +478,7 @@ Notification.init(
     modelName: "notification",
     sequelize: db,
     timestamps: true,
-  }
+  },
 );
 
 class TaskAssignees extends Model {}
@@ -497,7 +497,7 @@ TaskAssignees.init(
     modelName: "taskAssignees",
     sequelize: db,
     timestamps: true,
-  }
+  },
 );
 
 class CaseAssignees extends Model {}
@@ -516,7 +516,7 @@ CaseAssignees.init(
     modelName: "caseAssignees",
     sequelize: db,
     timestamps: true,
-  }
+  },
 );
 class PracticeArea extends Model {}
 PracticeArea.init(
@@ -541,7 +541,7 @@ PracticeArea.init(
     modelName: "practiceArea",
     sequelize: db,
     timestamps: true,
-  }
+  },
 );
 
 // Junction table for case-practice area relationships
@@ -561,7 +561,7 @@ CasePracticeAreas.init(
     modelName: "casePracticeAreas",
     sequelize: db,
     timestamps: true,
-  }
+  },
 );
 
 // Many-to-many relationships for assignees
