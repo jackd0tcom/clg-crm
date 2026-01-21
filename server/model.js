@@ -544,6 +544,50 @@ PracticeArea.init(
   },
 );
 
+class TimeEntry extends Model {}
+TimeEntry.init(
+  {
+    timeEntryId: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    taskId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    caseId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    notes: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    startTime: {
+      type: DataTypes.DATE,
+      allowNull: false,
+    },
+    endTime: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    isRunning: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+  },
+  {
+    modelName: "timeEntry",
+    sequelize: db,
+    timestamps: true,
+  },
+);
+
 // Junction table for case-practice area relationships
 class CasePracticeAreas extends Model {}
 CasePracticeAreas.init(
@@ -681,6 +725,43 @@ User.belongsToMany(ActivityLog, {
   otherKey: "activityId",
 });
 
+// TimeEntry relations
+// TimeEntry belongs to User (who logged the time)
+TimeEntry.belongsTo(User, {
+  foreignKey: "userId",
+  as: "user",
+});
+
+// TimeEntry belongs to Task (optional - can track time for tasks)
+TimeEntry.belongsTo(Task, {
+  foreignKey: "taskId",
+  as: "task",
+});
+
+// TimeEntry belongs to Case (optional - can track time for cases)
+TimeEntry.belongsTo(Case, {
+  foreignKey: "caseId",
+  as: "case",
+});
+
+// User has many TimeEntries
+User.hasMany(TimeEntry, {
+  foreignKey: "userId",
+  as: "timeEntries",
+});
+
+// Task has many TimeEntries
+Task.hasMany(TimeEntry, {
+  foreignKey: "taskId",
+  as: "timeEntries",
+});
+
+// Case has many TimeEntries
+Case.hasMany(TimeEntry, {
+  foreignKey: "caseId",
+  as: "timeEntries",
+});
+
 if (process.argv[1] === url.fileURLToPath(import.meta.url)) {
   console.log("Syncing database...");
   await db.sync({ alter: true });
@@ -703,4 +784,5 @@ export {
   CasePracticeAreas,
   Tribunal,
   CaseTribunal,
+  TimeEntry,
 };
