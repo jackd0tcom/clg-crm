@@ -24,6 +24,7 @@ const PersonInput = ({
   const [isSaving, setIsSaving] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("Not Saved");
   // const inputRef = useRef(null);
   const isSavingRef = useRef(false);
 
@@ -81,14 +82,24 @@ const PersonInput = ({
     email: "Email",
   };
 
+  // formats / saves dob date
   const formatDate = (value) => {
-    console.log(value);
     const dobArray = input.split("-");
-    const string = `${dobArray[2]}-${dobArray[1]}-${dobArray[0]}`;
-    console.log(string);
-    return string;
+    if (dobArray[1] > 12) {
+      setErrorMessage("DD-MM-YYYY");
+      setError(true);
+      setTimeout(() => {
+        setError(false);
+        setErrorMessage("Not Saved");
+      }, 1500);
+      return;
+    } else {
+      const string = `${dobArray[2]}-${dobArray[1]}-${dobArray[0]}`;
+      saveInput(string);
+    }
   };
 
+  // formats incoming values from db
   const formatInputValue = (val) => {
     const mask = masks[fieldName];
     if (!mask || !val) return val || "";
@@ -102,6 +113,7 @@ const PersonInput = ({
     return maskitoTransform(String(val), mask);
   };
 
+  // ref for maskito
   const maskedInputRef = useMaskito({ options: masks[fieldName] });
 
   const saveInput = async (data) => {
@@ -176,7 +188,8 @@ const PersonInput = ({
     }
     if (!isSavingRef.current) {
       if (fieldName === "dob") {
-        saveInput(formatDate());
+        formatDate();
+        return;
       }
       if (
         fieldName === "phoneNumber" ||
@@ -197,9 +210,8 @@ const PersonInput = ({
     if (e.key === "Enter") {
       if (!isSavingRef.current) {
         if (fieldName === "dob") {
-          if (fieldName === "dob") {
-            saveInput(formatDate());
-          }
+          formatDate();
+          return;
         }
         if (
           fieldName === "phoneNumber" ||
@@ -240,7 +252,8 @@ const PersonInput = ({
         )}
         {error && (
           <p className="person-error-message">
-            Not Saved <i className="fa-solid fa-exclamation"></i>
+            {errorMessage}
+            <i className="fa-solid fa-exclamation"></i>
           </p>
         )}
       </div>
