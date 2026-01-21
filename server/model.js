@@ -132,7 +132,7 @@ Person.init(
       },
     },
     dob: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.DATEONLY,
       allowNull: true,
     },
     county: {

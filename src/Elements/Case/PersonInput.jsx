@@ -75,15 +75,29 @@ const PersonInput = ({
     state: "PA",
     zip: "12345",
     phoneNumber: "(000) 000 - 0000",
-    dob: "12-31-1999",
+    dob: "DD-MM-YYYY",
     county: "County",
     SSN: "123 56 7890",
     email: "Email",
   };
 
+  const formatDate = (value) => {
+    console.log(value);
+    const dobArray = input.split("-");
+    const string = `${dobArray[2]}-${dobArray[1]}-${dobArray[0]}`;
+    console.log(string);
+    return string;
+  };
+
   const formatInputValue = (val) => {
     const mask = masks[fieldName];
     if (!mask || !val) return val || "";
+
+    if (fieldName === "dob") {
+      const dobValArray = val.split("-");
+      const formattedDob = `${dobValArray[2]}-${dobValArray[1]}-${dobValArray[0]}`;
+      return formattedDob;
+    }
 
     return maskitoTransform(String(val), mask);
   };
@@ -161,13 +175,14 @@ const PersonInput = ({
       return;
     }
     if (!isSavingRef.current) {
+      if (fieldName === "dob") {
+        saveInput(formatDate());
+      }
       if (
         fieldName === "phoneNumber" ||
         fieldName === "SSN" ||
-        fieldName === "zip" ||
-        fieldName === "dob"
+        fieldName === "zip"
       ) {
-        console.log("3");
         const data = input.replace(/[^0-9]/g, "");
         saveInput(data);
       } else saveInput(input);
@@ -181,13 +196,16 @@ const PersonInput = ({
     }
     if (e.key === "Enter") {
       if (!isSavingRef.current) {
+        if (fieldName === "dob") {
+          if (fieldName === "dob") {
+            saveInput(formatDate());
+          }
+        }
         if (
           fieldName === "phoneNumber" ||
           fieldName === "SSN" ||
-          fieldName === "zip" ||
-          fieldName === "dob"
+          fieldName === "zip"
         ) {
-          console.log("3");
           const data = input.replace(/[^0-9]/g, "");
           saveInput(data);
         } else saveInput(input);
@@ -213,7 +231,7 @@ const PersonInput = ({
     <div className="person-input-wrapper">
       <div className="person-input-label-wrapper">
         <label className="person-input-label" id={fieldName}>
-          {format(fieldName)}
+          {format(fieldName)}{" "}
         </label>
         {success && (
           <p className="person-save-message">
