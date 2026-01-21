@@ -15,6 +15,7 @@ import cleanupCtrl from "./controllers/cleanupCtrl.js";
 import cleanupScheduler from "./services/cleanupScheduler.js";
 import adminCtrl from "./controllers/adminCtrl.js";
 import commentCtrl from "./controllers/commentCtrl.js";
+import timeCtrl from "./controllers/timeCtrl.js";
 
 import { requireAccess, requireAdmin } from "./middleware/authMiddleware.js";
 import {
@@ -106,6 +107,8 @@ const {
   markAllAsRead,
 } = notificationsCtrl;
 
+const { startEntry, stopEntry, activeEntry, getUserEntries } = timeCtrl;
+
 // Express setup
 const app = express();
 const PORT = process.env.PORT || 5050;
@@ -126,7 +129,7 @@ if (process.env.NODE_ENV === "production") {
     cors({
       origin: true, // Allow all origins in development
       credentials: true,
-    })
+    }),
   );
 
   // Rate limiting for sync endpoint (even in development)
@@ -260,6 +263,12 @@ app.post("/api/notifications/mark-all-read", markAllAsRead);
 // Comment endpoints
 app.post("/api/createComment", createComment);
 
+// Time endpoints
+app.post("/api/time-entry/start", startEntry);
+app.post("/api/time-entry/stop", stopEntry);
+app.get("/api/time-entry/active", activeEntry);
+app.get("/api/time-entry/getUserEntries", getUserEntries);
+
 // user access check endpoint
 app.get("/api/user/check-access", adminCtrl.checkUserAccess);
 
@@ -269,25 +278,25 @@ app.post(
   "/api/admin/users/:userId/access",
   requireAccess,
   requireAdmin,
-  adminCtrl.updateUserAccess
+  adminCtrl.updateUserAccess,
 );
 app.post(
   "/api/admin/users/:userId/role",
   requireAccess,
   requireAdmin,
-  adminCtrl.updateUserRole
+  adminCtrl.updateUserRole,
 );
 app.post(
   "/api/admin/users",
   requireAccess,
   requireAdmin,
-  adminCtrl.addUserByEmail
+  adminCtrl.addUserByEmail,
 );
 app.post(
   "/api/admin/users/bulk-access",
   requireAccess,
   requireAdmin,
-  adminCtrl.bulkUpdateUserAccess
+  adminCtrl.bulkUpdateUserAccess,
 );
 
 // cleanup endpoints (admin only)
@@ -313,7 +322,7 @@ ViteExpress.listen(
     console.log(
       `live on http://localhost:${PORT} ${
         process.env.NODE_ENV === "production" ? "production" : "development"
-      }`
+      }`,
     );
 
     // Start automated cleanup scheduler
@@ -321,5 +330,5 @@ ViteExpress.listen(
   },
   {
     mode: process.env.NODE_ENV === "production" ? "production" : "development",
-  }
+  },
 );

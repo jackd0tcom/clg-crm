@@ -731,14 +731,10 @@ TimeEntry.belongsTo(User, {
   foreignKey: "userId",
   as: "user",
 });
-
-// TimeEntry belongs to Task (optional - can track time for tasks)
 TimeEntry.belongsTo(Task, {
   foreignKey: "taskId",
   as: "task",
 });
-
-// TimeEntry belongs to Case (optional - can track time for cases)
 TimeEntry.belongsTo(Case, {
   foreignKey: "caseId",
   as: "case",
@@ -750,13 +746,10 @@ User.hasMany(TimeEntry, {
   as: "timeEntries",
 });
 
-// Task has many TimeEntries
 Task.hasMany(TimeEntry, {
   foreignKey: "taskId",
   as: "timeEntries",
 });
-
-// Case has many TimeEntries
 Case.hasMany(TimeEntry, {
   foreignKey: "caseId",
   as: "timeEntries",
