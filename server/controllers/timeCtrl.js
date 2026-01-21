@@ -18,7 +18,7 @@ export default {
       // Mark entry isRunning as true
       // Return timeEntryId and startTime
       console.log("startEntry");
-      const { caseId, taskId } = req.body;
+      const { caseId, taskId, notes } = req.body;
       if (!req.session.user) {
         return res.status(401).send("User not authenticated");
       }

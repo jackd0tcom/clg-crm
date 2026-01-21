@@ -1,0 +1,14 @@
+.time-keeper-widget-wrapper {
+  position: relative;
+}
+
+.time-keeper-widget-container {
+  position: absolute;
+  top: 110%;
+  right: 0;
+  padding: 15px;
+  border: 1px solid var(--light-border);
+  border-radius: 5px;
+  min-width: 300px;
+  background-color: white;
+}

@@ -7,6 +7,7 @@
 @import "./Loader.css";
 @import "./Profile.css";
 @import "./Admin.css";
+@import "./TimeTracker.css";
 
 #root {
   --root-bg-color-dark: rgb(18, 18, 18);

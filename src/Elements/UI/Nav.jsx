@@ -100,6 +100,15 @@ const Nav = ({ checkNotifications, userSynced }) => {
                 <i className="fa-solid fa-calendar-days"></i>
                 Calendar
               </NavLink>
+              <NavLink
+                to="/time-keeper"
+                className={({ isActive }) =>
+                  isActive ? "active-nav nav-button" : "inactive-nav nav-button"
+                }
+              >
+                <i className="fa-solid fa-clock"></i>
+                Time Keeper
+              </NavLink>
             </div>
             <div className="nav-buttons-container profile-buttons">
               <NavLink
