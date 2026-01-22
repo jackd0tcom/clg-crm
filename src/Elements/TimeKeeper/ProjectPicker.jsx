@@ -1,11 +1,34 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import StatusIcon from "../Task/StatusIcon";
 import ProjectPickerSearch from "./ProjectPickerSearch";
 
-const ProjectPicker = ({ casesWithTasks, entry, setEntry, dropDownRef }) => {
+const ProjectPicker = ({
+  casesWithTasks,
+  entry,
+  setEntry,
+  showCaseTaskPicker,
+  setShowCaseTaskPicker,
+}) => {
   const originalData = [...casesWithTasks];
   const [filteredData, setFilteredData] = useState(casesWithTasks);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowCaseTaskPicker(false);
+      }
+    };
+
+    if (showCaseTaskPicker) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showCaseTaskPicker]);
 
   // Update filteredData when casesWithTasks changes
   useEffect(() => {
@@ -13,7 +36,7 @@ const ProjectPicker = ({ casesWithTasks, entry, setEntry, dropDownRef }) => {
   }, [casesWithTasks]);
 
   return (
-    <div className="project-picker-wrapper" ref={dropDownRef}>
+    <div className="project-picker-wrapper">
       <div className="project-picker-header">
         <ProjectPickerSearch
           originalData={originalData}
@@ -25,6 +48,7 @@ const ProjectPicker = ({ casesWithTasks, entry, setEntry, dropDownRef }) => {
         return (
           <>
             <div
+              key={caseItem.caseId}
               className={
                 entry.caseId !== caseItem.caseId
                   ? "project-picker-case-item"
@@ -56,6 +80,7 @@ const ProjectPicker = ({ casesWithTasks, entry, setEntry, dropDownRef }) => {
                 caseItem.tasks.map((task) => {
                   return (
                     <div
+                      key={task.taskId}
                       className={
                         entry.taskId !== task.taskId
                           ? "project-picker-case-item"

@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import ProjectPicker from "./ProjectPicker";
+import Timer from "./Timer";
 
 const TimeKeeperWidget = () => {
   const [showWidget, setShowWidget] = useState(false);
@@ -10,15 +11,43 @@ const TimeKeeperWidget = () => {
   const [casesWithTasks, setCasesWithTasks] = useState([]);
   const [showWarning, setShowWarning] = useState(false);
   const widgetRef = useRef(null);
-  const [timer, setTimer] = useState(0);
-  const [caseId, setCaseId] = useState(1);
-  const [notes, setNotes] = useState("");
+  const [resetTimer, setResetTimer] = useState(false);
   const [entry, setEntry] = useState({
     caseId: null,
     taskId: null,
     notes: "",
     currentTitle: null,
+    startTime: null,
   });
+
+  //   Checks for an actively running timer, and if so set's everything up accordingly
+  useEffect(() => {
+    const fetch = async () => {
+      try {
+        await axios.get("/api/time-entry/running-timer").then((res) => {
+          if (res.statusText !== "OK") {
+            console.log(error);
+            return;
+          }
+          if (res.data !== "OK") {
+            console.log(res);
+            setTimeEntryId(res.data.timeEntryId);
+            setEntry({
+              caseId: res.data.caseId,
+              taskId: res.data.taskId,
+              notes: res.data.notes,
+              startTime: res.data.startTime,
+              currentTitle: res.data.case.title,
+            });
+            setIsRunning(true);
+          }
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetch();
+  }, [showWidget]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -59,8 +88,9 @@ const TimeKeeperWidget = () => {
           notes: entry.notes,
         })
         .then((res) => {
+          setEntry({ ...entry, startTime: res.data.startTime });
           setTimeEntryId(res.data.timeEntryId);
-          console.log(res.data);
+          setIsRunning(true);
         });
     } catch (error) {
       console.log(error);
@@ -71,11 +101,15 @@ const TimeKeeperWidget = () => {
     try {
       await axios.post("/api/time-entry/stop", { timeEntryId }).then((res) => {
         console.log(res.data);
+        setIsRunning(false);
+        setResetTimer(true);
         setEntry({
           caseId: null,
           taskId: null,
           notes: "",
         });
+        // Reset the resetTimer flag after a brief moment
+        setTimeout(() => setResetTimer(false), 100);
       });
     } catch (error) {
       console.log(error);
@@ -91,10 +125,8 @@ const TimeKeeperWidget = () => {
       return;
     }
     if (!isRunning) {
-      setIsRunning(true);
       startTimer();
     } else {
-      setIsRunning(false);
       stopTimer();
     }
   };
@@ -124,14 +156,23 @@ const TimeKeeperWidget = () => {
               value={entry.notes}
               onChange={(e) => setEntry({ ...entry, notes: e.target.value })}
             />
-            <button
-              onClick={() => handlePlayButtonClick()}
-              className="time-keeper-start-stop"
-            >
-              <i
-                className={!isRunning ? "fa-solid fa-play" : "fa-solid fa-stop"}
-              ></i>
-            </button>
+            <div className="time-keeper-widget-timer-wrapper">
+              <Timer
+                isRunning={isRunning}
+                reset={resetTimer}
+                startTime={entry.startTime}
+              />
+              <button
+                onClick={() => handlePlayButtonClick()}
+                className="time-keeper-start-stop"
+              >
+                <i
+                  className={
+                    !isRunning ? "fa-solid fa-play" : "fa-solid fa-stop"
+                  }
+                ></i>
+              </button>
+            </div>
             {showWarning && (
               <div className="time-keeper-warning-wrapper">
                 <p>Choose a Case or Task first!</p>
@@ -144,10 +185,11 @@ const TimeKeeperWidget = () => {
             </button>
             {showCaseTaskPicker && (
               <ProjectPicker
-                dropdownRef={dropdownRef}
                 casesWithTasks={casesWithTasks}
                 entry={entry}
                 setEntry={setEntry}
+                showCaseTaskPicker={showCaseTaskPicker}
+                setShowCaseTaskPicker={setShowCaseTaskPicker}
               />
             )}
           </div>

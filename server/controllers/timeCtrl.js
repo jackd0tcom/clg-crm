@@ -64,11 +64,11 @@ export default {
       res.status(401).send(error);
     }
   },
-  activeEntry: async (req, res) => {
+  runningTimer: async (req, res) => {
     try {
       // Check for active entries
       // Return if there is one
-      console.log("active");
+      console.log("runningTimer");
       if (!req.session.user) {
         return res.status(401).send("User not authenticated");
       }
@@ -76,9 +76,28 @@ export default {
         where: { isRunning: true, userId: req.session.user.userId },
       });
 
+      let currentProject;
+
+      if (activeEntry.caseId) {
+        currentProject = await Case.findOne({
+          where: { caseId: activeEntry.caseId },
+        });
+      }
+      if (activeEntry.taskId) {
+        currentProject = await Task.findOne({
+          where: { taskId: activeEntry.taskId },
+        });
+      }
+
+      const payload = {
+        ...activeEntry.toJSON(),
+        case: currentProject.toJSON(),
+      };
+
       if (!activeEntry) {
-        res.status(200).send("No Active Entries");
-      } else res.status(200).send(activeEntry);
+        res.sendStatus(200);
+        return;
+      } else res.status(200).send(payload);
     } catch (error) {
       console.log(error);
       res.status(401).send(error);
