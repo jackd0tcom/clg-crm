@@ -47,7 +47,7 @@ const TimeKeeperWidget = () => {
       }
     };
     fetch();
-  }, [showWidget]);
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -141,7 +141,11 @@ const TimeKeeperWidget = () => {
   return (
     <div className="time-keeper-widget-wrapper" ref={widgetRef}>
       <button
-        className="time-keeper-toggle"
+        className={
+          !isRunning
+            ? "time-keeper-toggle"
+            : "time-keeper-toggle running-button"
+        }
         onClick={() =>
           !showWidget ? setShowWidget(true) : setShowWidget(false)
         }
@@ -151,7 +155,9 @@ const TimeKeeperWidget = () => {
       {showWidget && (
         <div className="time-keeper-widget-container">
           <div className="time-keeper-widget-first">
-            <textarea
+            <input
+              className="time-keeper-description"
+              type="text"
               placeholder="Description"
               value={entry.notes}
               onChange={(e) => setEntry({ ...entry, notes: e.target.value })}
@@ -164,7 +170,11 @@ const TimeKeeperWidget = () => {
               />
               <button
                 onClick={() => handlePlayButtonClick()}
-                className="time-keeper-start-stop"
+                className={
+                  !isRunning
+                    ? "time-keeper-start-stop"
+                    : "time-keeper-start-stop running-toggle"
+                }
               >
                 <i
                   className={
@@ -180,8 +190,12 @@ const TimeKeeperWidget = () => {
             )}
           </div>
           <div className="time-keeper-widget-second">
-            <button disabled={isRunning} onClick={() => handleProjectClick()}>
-              {!entry.currentTitle ? "Assign" : entry.currentTitle}
+            <button
+              className="project-picker-button"
+              disabled={isRunning}
+              onClick={() => handleProjectClick()}
+            >
+              {!entry.currentTitle ? "Choose Project" : entry.currentTitle}
             </button>
             {showCaseTaskPicker && (
               <ProjectPicker

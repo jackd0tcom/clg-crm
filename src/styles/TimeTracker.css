@@ -11,6 +11,9 @@
   border-radius: 5px;
   min-width: 300px;
   background-color: white;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 .time-keeper-warning-wrapper {
   position: absolute;
@@ -22,12 +25,86 @@
   border: 1px solid var(--light-border);
   font-size: 0.9rem;
 }
+.time-keeper-widget-first {
+  display: flex;
+  justify-content: space-between;
+}
+.time-keeper-start-stop {
+  border: none;
+  border-radius: 50%;
+  padding: 10px;
+  color: white;
+  background-color: var(--bright-green);
+  transition: 200ms;
+}
+.time-keeper-start-stop:hover {
+  border: none;
+  color: white;
+  background-color: var(--bright-dark-green);
+}
+.running-toggle {
+  background-color: var(--red);
+}
+.running-toggle:hover {
+  background-color: var(--dark-red);
+}
+.time-keeper-description {
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+  outline: none;
+}
+.time-keeper-widget-timer-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.time-keeper-toggle {
+  font-size: 1.5rem;
+  padding: 0;
+  border: none;
+  background-color: transparent;
+  color: var(--grey);
+  transition: 200ms;
+}
+.time-keeper-toggle:hover {
+  color: black;
+  border: none;
+  background-color: transparent;
+}
+.running-button {
+  color: var(--bright-green);
+}
+.running-button:hover {
+  background-color: var(--light-border);
+  color: var(--bright-dark-green);
+  border-radius: 50%;
+}
+.project-picker-button {
+  font-size: 0.9rem;
+  width: 100%;
+  border: 1px solid var(--light-border);
+  transition: 200ms;
+  color: var(--dark-grey);
+}
+.project-picker-button:hover {
+  background-color: var(--light-border);
+  border: 1px solid var(--light-border);
+  color: black;
+}
+.project-picker-button:disabled {
+  border: none;
+  color: var(--grey);
+}
+.project-picker-button:disabled:hover {
+  color: var(--grey);
+}
 .project-picker-wrapper {
   font-size: 0.9rem;
   display: flex;
   flex-direction: column;
   position: absolute;
-  top: 100%;
+  top: 105%;
   background-color: white;
   padding: 15px;
   border: 1px solid var(--light-border);
@@ -35,17 +112,23 @@
   left: 0;
   max-height: 350px;
   overflow: scroll;
+  scrollbar-width: none;
+  max-width: 300px;
 }
 .project-picker-header {
   margin-bottom: 10px;
   border-bottom: 1px solid var(--light-border);
-  padding-bottom: 10px;
+}
+.project-picker-search input {
+  border: none;
+  padding: 10px;
+  outline: none;
 }
 .project-picker-case-item {
   display: flex;
   align-items: center;
   gap: 5px;
-  padding: 7px 5px;
+  padding: 7px;
   border-radius: 5px;
 }
 .project-picker-case-item:hover,
@@ -62,6 +145,13 @@
   align-items: start;
   padding: 7px 5px;
   border-radius: 5px;
+  overflow: hidden;
+}
+.project-picker-task-item p,
+.project-picker-case-item p {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 .project-picker-task-item i {
   font-size: 0.75rem;

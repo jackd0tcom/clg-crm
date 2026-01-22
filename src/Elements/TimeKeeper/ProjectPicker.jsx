@@ -14,6 +14,7 @@ const ProjectPicker = ({
   const [filteredData, setFilteredData] = useState(casesWithTasks);
   const dropdownRef = useRef(null);
 
+  //   Handles blur
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -70,6 +71,7 @@ const ProjectPicker = ({
                     currentTitle: caseItem.title,
                   });
                 }
+                setShowCaseTaskPicker(false);
               }}
             >
               <i className="fa-solid fa-briefcase"></i>
@@ -102,6 +104,7 @@ const ProjectPicker = ({
                             currentTitle: task.title,
                           });
                         }
+                        setShowCaseTaskPicker(false);
                       }}
                     >
                       <StatusIcon
