@@ -12,3 +12,63 @@
   min-width: 300px;
   background-color: white;
 }
+.time-keeper-warning-wrapper {
+  position: absolute;
+  z-index: 5;
+  right: 15px;
+  padding: 10px;
+  border-radius: 15px;
+  background-color: white;
+  border: 1px solid var(--light-border);
+  font-size: 0.9rem;
+}
+.project-picker-wrapper {
+  font-size: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 100%;
+  background-color: white;
+  padding: 15px;
+  border: 1px solid var(--light-border);
+  border-radius: 5px;
+  left: 0;
+  max-height: 350px;
+  overflow: scroll;
+}
+.project-picker-header {
+  margin-bottom: 10px;
+  border-bottom: 1px solid var(--light-border);
+  padding-bottom: 10px;
+}
+.project-picker-case-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 5px;
+  border-radius: 5px;
+}
+.project-picker-case-item:hover,
+.project-picker-case-item:hover {
+  background-color: var(--root-bg-color-light);
+  cursor: pointer;
+}
+.project-picker-case-item i {
+  font-size: 0.75rem;
+  color: var(--dark-grey);
+}
+.project-picker-task-item {
+  display: flex;
+  align-items: start;
+  padding: 7px 5px;
+  border-radius: 5px;
+}
+.project-picker-task-item i {
+  font-size: 0.75rem;
+}
+.project-picker-task-list-wrapper {
+  margin-left: 15px;
+}
+.current-project {
+  background-color: var(--root-bg-color-light);
+}
