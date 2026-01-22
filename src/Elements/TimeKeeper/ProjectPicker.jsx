@@ -1,14 +1,27 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import StatusIcon from "../Task/StatusIcon";
+import ProjectPickerSearch from "./ProjectPickerSearch";
 
 const ProjectPicker = ({ casesWithTasks, entry, setEntry, dropDownRef }) => {
+  const originalData = [...casesWithTasks];
+  const [filteredData, setFilteredData] = useState(casesWithTasks);
+
+  // Update filteredData when casesWithTasks changes
+  useEffect(() => {
+    setFilteredData(casesWithTasks);
+  }, [casesWithTasks]);
+
   return (
     <div className="project-picker-wrapper" ref={dropDownRef}>
       <div className="project-picker-header">
-        <p>Choose a Case or Task</p>
+        <ProjectPickerSearch
+          originalData={originalData}
+          filteredData={filteredData}
+          setFilteredData={setFilteredData}
+        />
       </div>
-      {casesWithTasks.map((caseItem) => {
+      {filteredData.map((caseItem) => {
         return (
           <>
             <div

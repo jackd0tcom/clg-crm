@@ -3,13 +3,13 @@ import axios from "axios";
 import ProjectPicker from "./ProjectPicker";
 
 const TimeKeeperWidget = () => {
-  const [showWidget, setShowWidget] = useState(true);
+  const [showWidget, setShowWidget] = useState(false);
   const [showCaseTaskPicker, setShowCaseTaskPicker] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
   const [timeEntryId, setTimeEntryId] = useState(0);
   const [casesWithTasks, setCasesWithTasks] = useState([]);
   const [showWarning, setShowWarning] = useState(false);
-  const dropdownRef = useRef(null);
+  const widgetRef = useRef(null);
   const [timer, setTimer] = useState(0);
   const [caseId, setCaseId] = useState(1);
   const [notes, setNotes] = useState("");
@@ -22,19 +22,19 @@ const TimeKeeperWidget = () => {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setShowCaseTaskPicker(false);
+      if (widgetRef.current && !widgetRef.current.contains(event.target)) {
+        setShowWidget(false);
       }
     };
 
-    if (showCaseTaskPicker) {
+    if (showWidget) {
       document.addEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [showCaseTaskPicker]);
+  }, [showWidget]);
 
   const getCasesWithTasks = async () => {
     try {
@@ -107,16 +107,20 @@ const TimeKeeperWidget = () => {
   };
 
   return (
-    <div className="time-keeper-widget-wrapper">
-      <button className="time-keeper-toggle">
+    <div className="time-keeper-widget-wrapper" ref={widgetRef}>
+      <button
+        className="time-keeper-toggle"
+        onClick={() =>
+          !showWidget ? setShowWidget(true) : setShowWidget(false)
+        }
+      >
         <i className="fa-solid fa-clock"></i>
       </button>
       {showWidget && (
         <div className="time-keeper-widget-container">
           <div className="time-keeper-widget-first">
-            <input
-              type="text"
-              placeholder="Notes"
+            <textarea
+              placeholder="Description"
               value={entry.notes}
               onChange={(e) => setEntry({ ...entry, notes: e.target.value })}
             />
