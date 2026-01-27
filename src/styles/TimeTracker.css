@@ -6,7 +6,6 @@
   position: absolute;
   top: 110%;
   right: 0;
-  padding: 15px;
   border: 1px solid var(--light-border);
   border-radius: 5px;
   min-width: 375px;
@@ -28,9 +27,11 @@
 .time-keeper-widget-first {
   display: flex;
   justify-content: space-between;
+  padding: 15px;
 }
 .time-keeper-widget-second {
   position: relative;
+  padding: 0 15px;
 }
 .time-keeper-start-stop {
   border: none;
@@ -166,14 +167,26 @@
   background-color: var(--root-bg-color-light);
 }
 .widget-entry-list-wrapper {
+  border-top: 1px solid var(--light-border);
   height: 350px;
   overflow-y: scroll;
-  scrollbar-width: thin;
+  scrollbar-width: none;
+  background-color: var(--root-bg-color-light);
+}
+.widget-entry-group {
+  background-color: white;
+}
+.widget-entry-day {
+  font-size: 0.9rem;
+  padding: 15px;
+  border-bottom: 1px solid var(--light-border);
+  display: flex;
+  justify-content: space-between;
 }
 .widget-entry-item {
   display: flex;
   flex-direction: column;
-  padding: 10px;
+  padding: 15px;
   gap: 5px;
   border-radius: 5px;
 }

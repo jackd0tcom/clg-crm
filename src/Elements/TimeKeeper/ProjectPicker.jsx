@@ -47,9 +47,8 @@ const ProjectPicker = ({
       </div>
       {filteredData.map((caseItem) => {
         return (
-          <>
+          <div key={caseItem.caseId}>
             <div
-              key={caseItem.caseId}
               className={
                 entry.caseId !== caseItem.caseId
                   ? "project-picker-case-item"
@@ -118,7 +117,7 @@ const ProjectPicker = ({
                   );
                 })}
             </div>
-          </>
+          </div>
         );
       })}
     </div>

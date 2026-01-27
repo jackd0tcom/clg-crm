@@ -80,16 +80,23 @@ const TimeKeeperWidget = () => {
     }
   };
 
-  const startTimer = async () => {
+  const startTimer = async (entryOverride) => {
+    const data = entryOverride || entry;
     try {
       await axios
         .post("/api/time-entry/start", {
-          taskId: entry.taskId,
-          caseId: entry.caseId,
-          notes: entry.notes,
+          taskId: data.taskId,
+          caseId: data.caseId,
+          notes: data.notes,
         })
         .then((res) => {
-          setEntry({ ...entry, startTime: res.data.startTime });
+          setEntry({
+            ...(entryOverride || entry),
+            startTime: res.data.startTime,
+            ...(entryOverride?.currentTitle != null && {
+              currentTitle: entryOverride.currentTitle,
+            }),
+          });
           setTimeEntryId(res.data.timeEntryId);
           setIsRunning(true);
         });
@@ -208,7 +215,11 @@ const TimeKeeperWidget = () => {
               />
             )}
           </div>
-          <WidgetEntryList />
+          <WidgetEntryList
+            entry={entry}
+            setEntry={setEntry}
+            startTimer={startTimer}
+          />
         </div>
       )}
     </div>

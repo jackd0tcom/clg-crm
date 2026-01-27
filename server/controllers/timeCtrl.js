@@ -113,6 +113,10 @@ export default {
       }
       const entries = await TimeEntry.findAll({
         where: { userId: req.session.user.userId, endTime: { [Op.not]: null } },
+        order: [
+          ["endTime", "DESC"],
+          ["timeEntryId", "DESC"],
+        ],
       });
 
       if (!entries) {
@@ -133,6 +137,10 @@ export default {
       const entries = await TimeEntry.findAll({
         where: { userId: req.session.user.userId, endTime: { [Op.not]: null } },
         limit: 10,
+        order: [
+          ["endTime", "DESC"],
+          ["timeEntryId", "DESC"],
+        ],
       });
 
       const entriesWithProjects = await Promise.all(
