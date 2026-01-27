@@ -225,3 +225,38 @@
 #time-entry-start:hover {
   color: black;
 }
+
+.time-keeper-list {
+  display: flex;
+  flex-direction: column;
+  margin: 15px;
+  border: 1px solid var(--light-border);
+  border-radius: 5px;
+}
+.time-keeper-list-head {
+  padding: 10px 15px;
+  border-bottom: 1px solid var(--light-border);
+}
+.time-keeper-list-head,
+.time-keeper-list-item {
+  display: grid;
+  grid-template-columns: 0.25fr 2fr 2fr 1fr 1fr;
+  gap: 10px;
+  align-items: center;
+}
+.time-keeper-list-item {
+  padding: 15px;
+}
+.time-keeper-item-project {
+  display: flex;
+  align-items: center;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.time-keeper-item-project i.fa-briefcase {
+  color: var(--dark-grey);
+  font-size: 0.9rem;
+  padding: 0 6px;
+}

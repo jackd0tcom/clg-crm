@@ -52,7 +52,7 @@ export function formatRelativeTime(data) {
   const activityDay = new Date(
     activityDate.getFullYear(),
     activityDate.getMonth(),
-    activityDate.getDate()
+    activityDate.getDate(),
   );
 
   // Same calendar date (today)
@@ -88,7 +88,7 @@ export function findTimeDifference(data) {
   const activityDay = new Date(
     activityDate.getFullYear(),
     activityDate.getMonth(),
-    activityDate.getDate()
+    activityDate.getDate(),
   );
 
   // For future dates (negative diffInMs), we need to handle differently
@@ -196,4 +196,23 @@ export const truncateTitleLonger = (title) => {
     return title.substring(0, 30) + "...";
   }
   return title;
+};
+
+export const getDuration = (entry) => {
+  const timeDifference =
+    Math.floor(new Date(entry.endTime).getTime() / 1000) -
+    Math.floor(new Date(entry.startTime).getTime() / 1000);
+  const hours = Math.floor(timeDifference / 3600);
+  const minutes = Math.floor((timeDifference % 3600) / 60);
+  const seconds = Math.floor((timeDifference % 3600) % 60);
+
+  return `${hours > 0 ? hours : "0"}:${minutes < 10 ? "0" : ""}${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+};
+
+export const formatDay = (yyyyMmDd) => {
+  const d = new Date(yyyyMmDd + "T12:00:00");
+  const weekday = d.toLocaleDateString("en-GB", { weekday: "short" });
+  const date = d.getDate();
+  const month = d.toLocaleDateString("en-GB", { month: "short" });
+  return `${weekday} ${date}, ${month}`;
 };

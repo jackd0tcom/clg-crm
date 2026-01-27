@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import StatusIcon from "../Task/StatusIcon";
+import { getDuration, formatDay } from "../../helpers/helperFunctions";
 
 const WidgetEntryList = ({ entry, setEntry, startTimer }) => {
   const [recentEntries, setRecentEntries] = useState([]);
@@ -37,25 +38,6 @@ const WidgetEntryList = ({ entry, setEntry, startTimer }) => {
     return Object.entries(groups)
       .sort(([a], [b]) => b.localeCompare(a))
       .map(([day, entries]) => ({ day, entries }));
-  };
-
-  const formatDay = (yyyyMmDd) => {
-    const d = new Date(yyyyMmDd + "T12:00:00");
-    const weekday = d.toLocaleDateString("en-GB", { weekday: "short" });
-    const date = d.getDate();
-    const month = d.toLocaleDateString("en-GB", { month: "short" });
-    return `${weekday} ${date}, ${month}`;
-  };
-
-  const getDuration = (entry) => {
-    const timeDifference =
-      Math.floor(new Date(entry.endTime).getTime() / 1000) -
-      Math.floor(new Date(entry.startTime).getTime() / 1000);
-    const hours = Math.floor(timeDifference / 3600);
-    const minutes = Math.floor((timeDifference % 3600) / 60);
-    const seconds = Math.floor((timeDifference % 3600) % 60);
-
-    return `${hours > 0 ? hours : "0"}:${minutes < 10 ? "0" : ""}${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   };
 
   const getDurationNumber = (entry) => {

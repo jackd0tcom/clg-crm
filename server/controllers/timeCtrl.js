@@ -119,9 +119,36 @@ export default {
         ],
       });
 
+      const entriesWithProjects = await Promise.all(
+        entries.map(async (entry) => {
+          const entryJson = entry.toJSON();
+
+          if (entry.caseId) {
+            const caseObject = await Case.findOne({
+              where: { caseId: entry.caseId },
+            });
+            return {
+              ...entryJson,
+              projectTitle: caseObject.title,
+            };
+          }
+
+          if (entry.taskId) {
+            const taskObject = await Task.findOne({
+              where: { taskId: entry.taskId },
+            });
+            return {
+              ...entryJson,
+              projectTitle: taskObject.title,
+              status: taskObject.status,
+            };
+          }
+        }),
+      );
+
       if (!entries) {
         res.status(200).send("No Entries Found");
-      } else res.status(200).send(entries);
+      } else res.status(200).send(entriesWithProjects);
     } catch (error) {
       console.log(error);
       res.status(401).send(error);
