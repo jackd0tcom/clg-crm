@@ -9,7 +9,7 @@
   padding: 15px;
   border: 1px solid var(--light-border);
   border-radius: 5px;
-  min-width: 300px;
+  min-width: 375px;
   background-color: white;
   display: flex;
   flex-direction: column;
@@ -28,6 +28,9 @@
 .time-keeper-widget-first {
   display: flex;
   justify-content: space-between;
+}
+.time-keeper-widget-second {
+  position: relative;
 }
 .time-keeper-start-stop {
   border: none;
@@ -86,6 +89,7 @@
   border: 1px solid var(--light-border);
   transition: 200ms;
   color: var(--dark-grey);
+  position: relative;
 }
 .project-picker-button:hover {
   background-color: var(--light-border);
@@ -104,16 +108,15 @@
   display: flex;
   flex-direction: column;
   position: absolute;
-  top: 105%;
+  top: 110%;
   background-color: white;
   padding: 15px;
   border: 1px solid var(--light-border);
   border-radius: 5px;
-  left: 0;
   max-height: 350px;
   overflow: scroll;
   scrollbar-width: none;
-  max-width: 300px;
+  max-width: 275px;
 }
 .project-picker-header {
   margin-bottom: 10px;
@@ -161,4 +164,51 @@
 }
 .current-project {
   background-color: var(--root-bg-color-light);
+}
+.widget-entry-list-wrapper {
+  height: 350px;
+  overflow-y: scroll;
+  scrollbar-width: thin;
+}
+.widget-entry-item {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  gap: 5px;
+  border-radius: 5px;
+}
+.widget-entry-item:hover {
+  background-color: var(--root-bg-color-light);
+}
+.widget-entry-item-top,
+.widget-entry-item-bottom {
+  display: flex;
+  justify-content: space-between;
+}
+.widget-entry-item-notes {
+  font-size: 0.9rem;
+}
+.no-notes {
+  color: var(--grey);
+}
+.widget-entry-item-project {
+  font-size: 0.9rem;
+  color: var(--dark-grey);
+  display: flex;
+  align-items: center;
+  max-width: 80%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+#entry-case-icon {
+  margin: 0px 6px;
+}
+#time-entry-start {
+  cursor: pointer;
+  color: var(--dark-grey);
+}
+
+#time-entry-start:hover {
+  color: black;
 }

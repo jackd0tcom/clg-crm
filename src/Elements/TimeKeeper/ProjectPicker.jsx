@@ -37,7 +37,7 @@ const ProjectPicker = ({
   }, [casesWithTasks]);
 
   return (
-    <div className="project-picker-wrapper">
+    <div className="project-picker-wrapper" ref={dropdownRef}>
       <div className="project-picker-header">
         <ProjectPickerSearch
           originalData={originalData}

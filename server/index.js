@@ -107,7 +107,13 @@ const {
   markAllAsRead,
 } = notificationsCtrl;
 
-const { startEntry, stopEntry, runningTimer, getUserEntries } = timeCtrl;
+const {
+  startEntry,
+  stopEntry,
+  runningTimer,
+  getUserEntries,
+  getRecentUserEntries,
+} = timeCtrl;
 
 // Express setup
 const app = express();
@@ -268,6 +274,7 @@ app.post("/api/time-entry/start", startEntry);
 app.post("/api/time-entry/stop", stopEntry);
 app.get("/api/time-entry/running-timer", runningTimer);
 app.get("/api/time-entry/getUserEntries", getUserEntries);
+app.get("/api/time-entry/getRecentUserEntries", getRecentUserEntries);
 
 // user access check endpoint
 app.get("/api/user/check-access", adminCtrl.checkUserAccess);

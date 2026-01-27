@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import ProjectPicker from "./ProjectPicker";
 import Timer from "./Timer";
+import WidgetEntryList from "./WidgetEntryList";
 
 const TimeKeeperWidget = () => {
   const [showWidget, setShowWidget] = useState(false);
@@ -207,6 +208,7 @@ const TimeKeeperWidget = () => {
               />
             )}
           </div>
+          <WidgetEntryList />
         </div>
       )}
     </div>

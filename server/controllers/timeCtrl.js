@@ -6,6 +6,7 @@ import {
   format,
   spaceOut,
 } from "../helpers/activityHelper.js";
+import { Op } from "sequelize";
 
 const now = () => {
   return Date.now();
@@ -111,12 +112,59 @@ export default {
         return res.status(401).send("User not authenticated");
       }
       const entries = await TimeEntry.findAll({
-        where: { userId: req.session.user.userId },
+        where: { userId: req.session.user.userId, endTime: { [Op.not]: null } },
       });
 
       if (!entries) {
         res.status(200).send("No Entries Found");
       } else res.status(200).send(entries);
+    } catch (error) {
+      console.log(error);
+      res.status(401).send(error);
+    }
+  },
+  getRecentUserEntries: async (req, res) => {
+    try {
+      // Get all entries for user that are within this week maybe? or just maybe the last 5?
+      console.log("getRecentUserEntries");
+      if (!req.session.user) {
+        return res.status(401).send("User not authenticated");
+      }
+      const entries = await TimeEntry.findAll({
+        where: { userId: req.session.user.userId, endTime: { [Op.not]: null } },
+        limit: 10,
+      });
+
+      const entriesWithProjects = await Promise.all(
+        entries.map(async (entry) => {
+          const entryJson = entry.toJSON();
+
+          if (entry.caseId) {
+            const caseObject = await Case.findOne({
+              where: { caseId: entry.caseId },
+            });
+            return {
+              ...entryJson,
+              projectTitle: caseObject.title,
+            };
+          }
+
+          if (entry.taskId) {
+            const taskObject = await Task.findOne({
+              where: { taskId: entry.taskId },
+            });
+            return {
+              ...entryJson,
+              projectTitle: taskObject.title,
+              status: taskObject.status,
+            };
+          }
+        }),
+      );
+
+      if (!entries) {
+        res.status(200).send("No Entries Found");
+      } else res.status(200).send(entriesWithProjects);
     } catch (error) {
       console.log(error);
       res.status(401).send(error);
