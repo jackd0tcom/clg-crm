@@ -65,6 +65,57 @@ export default {
       res.status(401).send(error);
     }
   },
+  updateEntry: async (req, res) => {
+    try {
+      console.log("updateEntry");
+      const { timeEntryId, notes, caseId, taskId, startTime, endTime } =
+        req.body;
+      if (!req.session.user) {
+        return res.status(401).send("User not authenticated");
+      }
+      const currentEntry = await TimeEntry.findOne({ where: { timeEntryId } });
+
+      if (!currentEntry) {
+        res.status(401).send("Entry does not exist");
+        return;
+      }
+
+      const updatedEntry = await currentEntry.update({
+        notes,
+        caseId,
+        taskId,
+        startTime,
+        endTime,
+      });
+
+      res.status(200).send(updatedEntry);
+    } catch (error) {
+      console.log(error);
+      res.status(401).send(error);
+    }
+  },
+  deleteEntry: async (req, res) => {
+    try {
+      console.log("deleteEntry");
+      const { timeEntryId } = req.body;
+      if (!req.session.user) {
+        return res.status(401).send("User not authenticated");
+      }
+      const currentEntry = await TimeEntry.findOne({ where: { timeEntryId } });
+
+      if (!currentEntry) {
+        res.status(401).send("Entry does not exist");
+        return;
+      }
+
+      await currentEntry.destroy();
+
+      res.status(200).send("Entry deleted successfully");
+    } catch (error) {
+      console.log(error);
+      res.status(401).send(error);
+    }
+  },
   runningTimer: async (req, res) => {
     try {
       // Check for active entries

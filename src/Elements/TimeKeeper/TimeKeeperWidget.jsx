@@ -3,6 +3,7 @@ import axios from "axios";
 import ProjectPicker from "./ProjectPicker";
 import Timer from "./Timer";
 import WidgetEntryList from "./WidgetEntryList";
+import WidgetEntryView from "./WidgetEntryView";
 
 const TimeKeeperWidget = () => {
   const [showWidget, setShowWidget] = useState(false);
@@ -13,6 +14,7 @@ const TimeKeeperWidget = () => {
   const [showWarning, setShowWarning] = useState(false);
   const widgetRef = useRef(null);
   const [resetTimer, setResetTimer] = useState(false);
+  const [showEntryView, setShowEntryView] = useState(false);
   const [entry, setEntry] = useState({
     caseId: null,
     taskId: null,
@@ -54,6 +56,8 @@ const TimeKeeperWidget = () => {
     const handleClickOutside = (event) => {
       if (widgetRef.current && !widgetRef.current.contains(event.target)) {
         setShowWidget(false);
+        setShowEntryView(false);
+        setShowCaseTaskPicker(false);
       }
     };
 
@@ -139,11 +143,13 @@ const TimeKeeperWidget = () => {
     }
   };
 
-  const handleProjectClick = () => {
-    getCasesWithTasks();
-    !showCaseTaskPicker
-      ? setShowCaseTaskPicker(true)
-      : setShowCaseTaskPicker(false);
+  const handleProjectClick = (e) => {
+    if (!showCaseTaskPicker) {
+      getCasesWithTasks();
+      setShowCaseTaskPicker(true);
+    } else {
+      setShowCaseTaskPicker(false);
+    }
   };
 
   return (
@@ -162,64 +168,78 @@ const TimeKeeperWidget = () => {
       </button>
       {showWidget && (
         <div className="time-keeper-widget-container">
-          <div className="time-keeper-widget-first">
-            <input
-              className="time-keeper-description"
-              type="text"
-              placeholder="Description"
-              value={entry.notes}
-              onChange={(e) => setEntry({ ...entry, notes: e.target.value })}
+          {showEntryView ? (
+            <WidgetEntryView
+              entry={entry}
+              setEntry={setEntry}
+              setShowEntryView={setShowEntryView}
+              casesWithTasks={casesWithTasks}
             />
-            <div className="time-keeper-widget-timer-wrapper">
-              <Timer
-                isRunning={isRunning}
-                reset={resetTimer}
-                startTime={entry.startTime}
-              />
-              <button
-                onClick={() => handlePlayButtonClick()}
-                className={
-                  !isRunning
-                    ? "time-keeper-start-stop"
-                    : "time-keeper-start-stop running-toggle"
-                }
-              >
-                <i
-                  className={
-                    !isRunning ? "fa-solid fa-play" : "fa-solid fa-stop"
+          ) : (
+            <>
+              <div className="time-keeper-widget-first">
+                <input
+                  className="time-keeper-description"
+                  type="text"
+                  placeholder="Description"
+                  value={entry.notes}
+                  onChange={(e) =>
+                    setEntry({ ...entry, notes: e.target.value })
                   }
-                ></i>
-              </button>
-            </div>
-            {showWarning && (
-              <div className="time-keeper-warning-wrapper">
-                <p>Choose a Case or Task first!</p>
+                />
+                <div className="time-keeper-widget-timer-wrapper">
+                  <Timer
+                    isRunning={isRunning}
+                    reset={resetTimer}
+                    startTime={entry.startTime}
+                  />
+                  <button
+                    onClick={() => handlePlayButtonClick()}
+                    className={
+                      !isRunning
+                        ? "time-keeper-start-stop"
+                        : "time-keeper-start-stop running-toggle"
+                    }
+                  >
+                    <i
+                      className={
+                        !isRunning ? "fa-solid fa-play" : "fa-solid fa-stop"
+                      }
+                    ></i>
+                  </button>
+                </div>
+                {showWarning && (
+                  <div className="time-keeper-warning-wrapper">
+                    <p>Choose a Case or Task first!</p>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-          <div className="time-keeper-widget-second">
-            <button
-              className="project-picker-button"
-              disabled={isRunning}
-              onClick={() => handleProjectClick()}
-            >
-              {!entry.currentTitle ? "Choose Project" : entry.currentTitle}
-            </button>
-            {showCaseTaskPicker && (
-              <ProjectPicker
-                casesWithTasks={casesWithTasks}
+              <div className="time-keeper-widget-second">
+                <button
+                  className="project-picker-button"
+                  disabled={isRunning}
+                  onClick={() => handleProjectClick()}
+                >
+                  {!entry.currentTitle ? "Choose Project" : entry.currentTitle}
+                </button>
+                {showCaseTaskPicker && (
+                  <ProjectPicker
+                    casesWithTasks={casesWithTasks}
+                    entry={entry}
+                    setEntry={setEntry}
+                    showCaseTaskPicker={showCaseTaskPicker}
+                    setShowCaseTaskPicker={setShowCaseTaskPicker}
+                  />
+                )}
+              </div>
+              <WidgetEntryList
                 entry={entry}
                 setEntry={setEntry}
-                showCaseTaskPicker={showCaseTaskPicker}
-                setShowCaseTaskPicker={setShowCaseTaskPicker}
+                startTimer={startTimer}
+                setShowEntryView={setShowEntryView}
               />
-            )}
-          </div>
-          <WidgetEntryList
-            entry={entry}
-            setEntry={setEntry}
-            startTimer={startTimer}
-          />
+            </>
+          )}
         </div>
       )}
     </div>

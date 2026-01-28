@@ -17,7 +17,9 @@ const ProjectPicker = ({
   //   Handles blur
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      // Don't close if clicking on the project-picker-button or its children
+      const isButtonClick = event.target.closest('.project-picker-button');
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target) && !isButtonClick) {
         setShowCaseTaskPicker(false);
       }
     };

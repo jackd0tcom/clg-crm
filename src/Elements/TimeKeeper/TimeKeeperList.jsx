@@ -3,6 +3,7 @@ import axios from "axios";
 import ProfilePic from "../UI/ProfilePic";
 import { getDuration, formatDateNoTime } from "../../helpers/helperFunctions";
 import StatusIcon from "../Task/StatusIcon";
+import TimeKeeperFilter from "./TimeKeeperFilter";
 
 const TimeKeeperList = () => {
   const [entryList, setEntryList] = useState([]);
@@ -39,7 +40,7 @@ const TimeKeeperList = () => {
           return (
             <div key={entry.timeEntryId} className="time-keeper-list-item">
               <ProfilePic />
-              <p className="time-keeper-item-project">
+              <div className="time-keeper-item-project">
                 {entry.caseId ? (
                   <i className="fa-solid fa-briefcase"></i>
                 ) : (
@@ -52,7 +53,7 @@ const TimeKeeperList = () => {
                 )}
 
                 {entry.projectTitle}
-              </p>
+              </div>
               <p>{entry.notes}</p>
               <p>{getDuration(entry)}</p>
               <p>{formatDateNoTime(entry.createdAt)}</p>

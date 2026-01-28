@@ -3,7 +3,7 @@ import axios from "axios";
 import StatusIcon from "../Task/StatusIcon";
 import { getDuration, formatDay } from "../../helpers/helperFunctions";
 
-const WidgetEntryList = ({ entry, setEntry, startTimer }) => {
+const WidgetEntryList = ({ entry, setEntry, startTimer, setShowEntryView }) => {
   const [recentEntries, setRecentEntries] = useState([]);
 
   useEffect(() => {
@@ -82,7 +82,18 @@ const WidgetEntryList = ({ entry, setEntry, startTimer }) => {
                 <p>{formatDailyDuration(dailySeconds)}</p>
               </div>
               {entries.map((entry) => (
-                <div className="widget-entry-item" key={entry.timeEntryId}>
+                <div
+                  onClick={() => {
+                    setEntry({
+                      ...entry,
+                      currentTitle: entry.projectTitle,
+                      endTime: entry.endTime,
+                    });
+                    setShowEntryView(true);
+                  }}
+                  className="widget-entry-item"
+                  key={entry.timeEntryId}
+                >
                   <div className="widget-entry-item-top">
                     <p
                       className={
