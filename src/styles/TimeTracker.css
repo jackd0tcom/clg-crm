@@ -275,6 +275,60 @@
   border: none;
 }
 
+/* Time Picker */
+.time-picker-wrapper {
+  position: absolute;
+  min-height: 300px;
+  border: 1px solid var(--light-border);
+  border-radius: 5px;
+  background-color: white;
+  z-index: 10;
+  padding: 15px;
+  top: 100%;
+}
+.time-picker-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+.pickers-wrapper {
+  display: flex;
+  gap: 30px;
+}
+.duration-input-wrapper {
+  position: relative;
+}
+.hour-minute-picker-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.hour-minute-picker-wrapper p {
+  font-size: 0.9rem;
+}
+.hour-minute-picker-container {
+  display: flex;
+  gap: 3px;
+}
+.hour-minute-picker-container input {
+  max-width: 20px;
+  text-align: center;
+  border: 1px solid var(--light-border);
+  border-radius: 5px;
+}
+/* Chrome, Safari, Edge, Opera */
+.hour-minute-picker-container input::-webkit-outer-spin-button,
+.hour-minute-picker-container input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+.hour-minute-picker-container input[type="number"] {
+  -moz-appearance: textfield;
+}
+
 /* List */
 .time-keeper-list {
   display: flex;

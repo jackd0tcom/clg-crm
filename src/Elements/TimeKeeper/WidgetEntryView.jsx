@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { getDuration } from "../../helpers/helperFunctions";
 import ProjectPicker from "./ProjectPicker";
+import TimePicker from "./TimePicker";
 
 const WidgetEntryView = ({
   entry,
@@ -13,6 +14,8 @@ const WidgetEntryView = ({
   const [status, setStatus] = useState("");
   const [showCaseTaskPicker, setShowCaseTaskPicker] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [duration, setDuration] = useState(entry.endTime && getDuration(entry));
+  const [showTimePicker, setShowTimePicker] = useState(false);
 
   const updateEntry = async () => {
     setStatus("saving");
@@ -38,7 +41,7 @@ const WidgetEntryView = ({
   };
 
   const deleteEntry = async () => {
-    setStatus("saving");
+    setStatus("deleting");
     try {
       await axios
         .post("/api/time-entry/delete", {
@@ -80,7 +83,22 @@ const WidgetEntryView = ({
           </>
         ) : (
           <>
-            <p>{entry.endTime && getDuration(entry)}</p>
+            <div className="duration-input-wrapper">
+              <input
+                type="text"
+                value={duration}
+                onClick={() => setShowTimePicker(true)}
+                className="duration-input"
+              />
+              {showTimePicker && (
+                <TimePicker
+                  entry={entry}
+                  setEntry={setEntry}
+                  duration={duration}
+                  setDuration={setDuration}
+                />
+              )}
+            </div>
             <input
               onChange={(e) => setNotes(e.target.value)}
               type="text"
