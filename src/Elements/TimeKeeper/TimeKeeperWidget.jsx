@@ -15,6 +15,7 @@ const TimeKeeperWidget = () => {
   const widgetRef = useRef(null);
   const [resetTimer, setResetTimer] = useState(false);
   const [showEntryView, setShowEntryView] = useState(false);
+  const [entriesRefreshKey, setEntriesRefreshKey] = useState(0);
   const [entry, setEntry] = useState({
     caseId: null,
     taskId: null,
@@ -24,31 +25,32 @@ const TimeKeeperWidget = () => {
   });
 
   //   Checks for an actively running timer, and if so set's everything up accordingly
+  const fetch = async () => {
+    try {
+      await axios.get("/api/time-entry/running-timer").then((res) => {
+        if (res.statusText !== "OK") {
+          console.log(error);
+          return;
+        }
+        if (res.data !== "OK") {
+          console.log(res);
+          setTimeEntryId(res.data.timeEntryId);
+          setEntry({
+            caseId: res.data.caseId,
+            taskId: res.data.taskId,
+            notes: res.data.notes,
+            startTime: res.data.startTime,
+            currentTitle: res.data.case.title,
+          });
+          setIsRunning(true);
+        }
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
-    const fetch = async () => {
-      try {
-        await axios.get("/api/time-entry/running-timer").then((res) => {
-          if (res.statusText !== "OK") {
-            console.log(error);
-            return;
-          }
-          if (res.data !== "OK") {
-            console.log(res);
-            setTimeEntryId(res.data.timeEntryId);
-            setEntry({
-              caseId: res.data.caseId,
-              taskId: res.data.taskId,
-              notes: res.data.notes,
-              startTime: res.data.startTime,
-              currentTitle: res.data.case.title,
-            });
-            setIsRunning(true);
-          }
-        });
-      } catch (error) {
-        console.log(error);
-      }
-    };
     fetch();
   }, []);
 
@@ -112,7 +114,6 @@ const TimeKeeperWidget = () => {
   const stopTimer = async () => {
     try {
       await axios.post("/api/time-entry/stop", { timeEntryId }).then((res) => {
-        console.log(res.data);
         setIsRunning(false);
         setResetTimer(true);
         setEntry({
@@ -126,6 +127,7 @@ const TimeKeeperWidget = () => {
     } catch (error) {
       console.log(error);
     }
+    setEntriesRefreshKey(entriesRefreshKey + 1);
   };
 
   const handlePlayButtonClick = () => {
@@ -149,6 +151,36 @@ const TimeKeeperWidget = () => {
       setShowCaseTaskPicker(true);
     } else {
       setShowCaseTaskPicker(false);
+    }
+  };
+
+  const addFifteen = () => {
+    const date = new Date(entry.startTime);
+    const newDate = new Date(
+      date.setMinutes(date.getMinutes() - 15),
+    ).toISOString();
+    const newEntry = { ...entry, startTime: newDate };
+    setEntry(newEntry);
+    updateEntry(newEntry);
+  };
+
+  const updateEntry = async (newEntry) => {
+    console.log(newEntry);
+    try {
+      await axios
+        .post("/api/time-entry/update", {
+          timeEntryId: timeEntryId,
+          notes: newEntry.notes,
+          caseId: newEntry.caseId,
+          taskId: newEntry.taskId,
+          startTime: newEntry.startTime,
+          endTime: newEntry.endTime,
+        })
+        .then((res) => {
+          console.log(res);
+        });
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -222,6 +254,15 @@ const TimeKeeperWidget = () => {
                 >
                   {!entry.currentTitle ? "Choose Project" : entry.currentTitle}
                 </button>
+                <div className="quick-add-wrapper">
+                  <button
+                    disabled={!isRunning}
+                    onClick={addFifteen}
+                    className="time-increment"
+                  >
+                    +15 Min
+                  </button>
+                </div>
                 {showCaseTaskPicker && (
                   <ProjectPicker
                     casesWithTasks={casesWithTasks}
@@ -237,6 +278,7 @@ const TimeKeeperWidget = () => {
                 setEntry={setEntry}
                 startTimer={startTimer}
                 setShowEntryView={setShowEntryView}
+                entriesRefreshKey={entriesRefreshKey}
               />
             </>
           )}

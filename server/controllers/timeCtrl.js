@@ -141,11 +141,12 @@ export default {
         });
       }
 
-      const payload = {
-        ...activeEntry.toJSON(),
-        case: currentProject.toJSON(),
-      };
-
+      if (!activeEntry) {
+        const payload = {
+          ...activeEntry.toJSON(),
+          case: currentProject.toJSON(),
+        };
+      }
       if (!activeEntry) {
         res.sendStatus(200);
         return;

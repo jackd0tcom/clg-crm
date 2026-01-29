@@ -32,6 +32,10 @@
 .time-keeper-widget-second {
   position: relative;
   padding: 0 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
 }
 .time-keeper-start-stop {
   border: none;
@@ -86,11 +90,15 @@
 }
 .project-picker-button {
   font-size: 0.9rem;
-  width: 100%;
+  max-width: 225px;
+  text-align: left;
   border: 1px solid var(--light-border);
   transition: 200ms;
   color: var(--dark-grey);
   position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 .project-picker-button:hover {
   background-color: var(--light-border);
@@ -188,7 +196,6 @@
   flex-direction: column;
   padding: 15px;
   gap: 5px;
-  border-radius: 5px;
   cursor: pointer;
   border-bottom: 1px solid var(--light-border);
 }
