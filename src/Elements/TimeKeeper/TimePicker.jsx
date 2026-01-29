@@ -1,18 +1,18 @@
 import { useState, useRef, useEffect } from "react";
 import DatePicker from "react-datepicker";
+import { getDuration } from "../../helpers/helperFunctions";
 
-const TimePicker = ({ entry, setEntry, setShowTimePicker, showTimePicker }) => {
-  const [startHour, setStartHour] = useState(
-    new Date(entry.startTime).getHours(),
-  );
-  const [startMinute, setStartMinute] = useState(
-    new Date(entry.startTime).getMinutes(),
-  );
-  const [endHour, setEndHour] = useState(new Date(entry.endTime).getHours());
-  const [endMinute, setEndMinute] = useState(
-    new Date(entry.endTime).getMinutes(),
-  );
-  const [entryDay, setEntryDay] = useState(new Date(entry.startTime));
+const TimePicker = ({
+  entry,
+  setEntry,
+  duration,
+  setDuration,
+  setShowTimePicker,
+  showTimePicker,
+  updateEntry,
+}) => {
+  const [startDay, setStartDay] = useState(new Date(entry.startTime));
+  const [endDay, setEndDay] = useState(new Date(entry.endTime));
   const dropdownRef = useRef(null);
 
   //   Handles blur
@@ -20,6 +20,7 @@ const TimePicker = ({ entry, setEntry, setShowTimePicker, showTimePicker }) => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowTimePicker(false);
+        updateEntry(false);
       }
     };
 
@@ -32,54 +33,41 @@ const TimePicker = ({ entry, setEntry, setShowTimePicker, showTimePicker }) => {
     };
   }, [showTimePicker]);
 
-  const updateEntry = () => {
-    const startTime = new Date(entryDay, startHour, startMinute);
-    const endTime = new Date(entryDay, endHour, endMinute);
-    console.log(entryDay, startHour, startMinute);
-    // setEntry({ ...entry });
+  const startChange = (date) => {
+    setStartDay(date);
+    const newEntry = { ...entry, startTime: date.toISOString() };
+    setDuration(getDuration(newEntry));
+    setEntry(newEntry);
+  };
+
+  const endChange = (date) => {
+    setEndDay(date);
+    const newEntry = { ...entry, endTime: date.toISOString() };
+    setDuration(getDuration(newEntry));
+    setEntry(newEntry);
   };
 
   return (
     <div className="time-picker-wrapper" ref={dropdownRef}>
       <div className="time-picker-container">
-        <div className="pickers-wrapper">
-          <div className="hour-minute-picker-wrapper">
-            <p>Start</p>
-            <div className="hour-minute-picker-container">
-              <input
-                type="number"
-                value={startHour}
-                onChange={(e) => {
-                  setStartHour(e.target.value);
-                  updateEntry();
-                }}
-              />
-              :
-              <input
-                type="number"
-                value={startMinute}
-                onChange={(e) => setStartMinute(e.target.value)}
-              />
-            </div>
-          </div>
-          <div className="hour-minute-picker-wrapper">
-            <p>Stop</p>
-            <div className="hour-minute-picker-container">
-              <input
-                type="number"
-                value={endHour}
-                onChange={(e) => setEndHour(e.target.value)}
-              />
-              :
-              <input
-                type="number"
-                value={endMinute}
-                onChange={(e) => setEndMinute(e.target.value)}
-              />
-            </div>
-          </div>
-        </div>
-        <DatePicker selected={entryDay} inline />
+        <p>Start</p>
+        <DatePicker
+          selected={startDay}
+          onChange={startChange}
+          showTimeInput
+          timeInputLabel="Time"
+          dateFormat="h:mm aa - dd MMM"
+        />
+      </div>
+      <div className="time-picker-container">
+        <p>Stop</p>
+        <DatePicker
+          selected={endDay}
+          onChange={endChange}
+          showTimeInput
+          timeInputLabel="Time"
+          dateFormat="h:mm aa - dd MMM"
+        />
       </div>
     </div>
   );

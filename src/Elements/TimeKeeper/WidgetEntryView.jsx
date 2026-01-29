@@ -17,7 +17,7 @@ const WidgetEntryView = ({
   const [duration, setDuration] = useState(entry.endTime && getDuration(entry));
   const [showTimePicker, setShowTimePicker] = useState(false);
 
-  const updateEntry = async () => {
+  const updateEntry = async (hide) => {
     setStatus("saving");
     try {
       await axios
@@ -32,7 +32,16 @@ const WidgetEntryView = ({
         .then((res) => {
           setStatus("success");
           console.log(res);
-          setShowEntryView(false);
+          if (hide) {
+            setEntry({
+              caseId: null,
+              taskId: null,
+              notes: "",
+              currentTitle: null,
+              startTime: null,
+            });
+            setShowEntryView(false);
+          }
         });
     } catch (error) {
       setStatus("error");
@@ -57,6 +66,28 @@ const WidgetEntryView = ({
       setStatus("error");
       console.log(error);
     }
+  };
+
+  const increment = () => {
+    // move endtime up
+    const date = new Date(entry.endTime);
+    const newDate = new Date(
+      date.setMinutes(date.getMinutes() + 15),
+    ).toISOString();
+    const newEntry = { ...entry, endTime: newDate };
+    setEntry(newEntry);
+    setDuration(getDuration(newEntry));
+  };
+
+  const decrement = () => {
+    // move endtime up
+    const date = new Date(entry.endTime);
+    const newDate = new Date(
+      date.setMinutes(date.getMinutes() - 15),
+    ).toISOString();
+    const newEntry = { ...entry, endTime: newDate };
+    setEntry(newEntry);
+    setDuration(getDuration(newEntry));
   };
 
   return (
@@ -84,18 +115,27 @@ const WidgetEntryView = ({
         ) : (
           <>
             <div className="duration-input-wrapper">
-              <input
-                type="text"
-                value={duration}
+              <button onClick={decrement} className="time-increment">
+                -15
+              </button>
+              <p
                 onClick={() => setShowTimePicker(true)}
                 className="duration-input"
-              />
+              >
+                {duration}
+              </p>
+              <button onClick={increment} className="time-increment">
+                +15
+              </button>
               {showTimePicker && (
                 <TimePicker
                   entry={entry}
                   setEntry={setEntry}
                   duration={duration}
                   setDuration={setDuration}
+                  setShowTimePicker={setShowTimePicker}
+                  showTimePicker={showTimePicker}
+                  updateEntry={updateEntry}
                 />
               )}
             </div>
@@ -124,7 +164,10 @@ const WidgetEntryView = ({
                 casesWithTasks={casesWithTasks}
               />
             )}
-            <button onClick={() => updateEntry()} className="entry-save-button">
+            <button
+              onClick={() => updateEntry(true)}
+              className="entry-save-button"
+            >
               Save
             </button>
             <button
