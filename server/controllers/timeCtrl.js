@@ -19,14 +19,15 @@ export default {
       // Mark entry isRunning as true
       // Return timeEntryId and startTime
       console.log("startEntry");
-      const { caseId, taskId, notes } = req.body;
+      const { caseId, taskId, notes, userId } = req.body;
+      console.log(req.body);
       if (!req.session.user) {
         return res.status(401).send("User not authenticated");
       }
       const newEntry = await TimeEntry.create({
         caseId,
         taskId,
-        userId: req.session.user.userId,
+        userId: userId ? userId : req.session.user.userId,
         notes,
         startTime: now(),
         isRunning: true,
@@ -128,6 +129,11 @@ export default {
         where: { isRunning: true, userId: req.session.user.userId },
       });
 
+      if (!activeEntry) {
+        res.status(200).send("No active entries");
+        return;
+      }
+
       let currentProject;
 
       if (activeEntry.caseId) {
@@ -141,16 +147,12 @@ export default {
         });
       }
 
-      if (!activeEntry) {
-        const payload = {
-          ...activeEntry.toJSON(),
-          case: currentProject.toJSON(),
-        };
-      }
-      if (!activeEntry) {
-        res.sendStatus(200);
-        return;
-      } else res.status(200).send(payload);
+      const payload = {
+        ...activeEntry.toJSON(),
+        case: currentProject?.toJSON?.(),
+      };
+
+      res.status(200).send(payload);
     } catch (error) {
       console.log(error);
       res.status(401).send(error);
@@ -215,7 +217,7 @@ export default {
       }
       const entries = await TimeEntry.findAll({
         where: { userId: req.session.user.userId, endTime: { [Op.not]: null } },
-        limit: 10,
+        limit: 15,
         order: [
           ["endTime", "DESC"],
           ["timeEntryId", "DESC"],

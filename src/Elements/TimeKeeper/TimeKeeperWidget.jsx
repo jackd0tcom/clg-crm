@@ -1,12 +1,15 @@
 import { useEffect, useState, useRef } from "react";
+import { useSelector } from "react-redux";
 import axios from "axios";
 import ProjectPicker from "./ProjectPicker";
 import Timer from "./Timer";
 import WidgetEntryList from "./WidgetEntryList";
 import WidgetEntryView from "./WidgetEntryView";
+import UserPicker from "./UserPicker";
 
 const TimeKeeperWidget = () => {
   const [showWidget, setShowWidget] = useState(false);
+  const userStore = useSelector((state) => state.user);
   const [showCaseTaskPicker, setShowCaseTaskPicker] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
   const [timeEntryId, setTimeEntryId] = useState(0);
@@ -22,7 +25,12 @@ const TimeKeeperWidget = () => {
     notes: "",
     currentTitle: null,
     startTime: null,
+    userId: userStore.userId,
   });
+
+  useEffect(() => {
+    fetch();
+  }, []);
 
   //   Checks for an actively running timer, and if so set's everything up accordingly
   const fetch = async () => {
@@ -32,8 +40,7 @@ const TimeKeeperWidget = () => {
           console.log(error);
           return;
         }
-        if (res.data !== "OK") {
-          console.log(res);
+        if (res.data !== "No active entries") {
           setTimeEntryId(res.data.timeEntryId);
           setEntry({
             caseId: res.data.caseId,
@@ -49,10 +56,6 @@ const TimeKeeperWidget = () => {
       console.log(error);
     }
   };
-
-  useEffect(() => {
-    fetch();
-  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -88,12 +91,14 @@ const TimeKeeperWidget = () => {
 
   const startTimer = async (entryOverride) => {
     const data = entryOverride || entry;
+    console.log(data);
     try {
       await axios
         .post("/api/time-entry/start", {
           taskId: data.taskId,
           caseId: data.caseId,
           notes: data.notes,
+          userId: entry.userId ? entry.userId : userStore.userId,
         })
         .then((res) => {
           setEntry({
@@ -120,6 +125,7 @@ const TimeKeeperWidget = () => {
           caseId: null,
           taskId: null,
           notes: "",
+          userId: userStore.userId,
         });
         // Reset the resetTimer flag after a brief moment
         setTimeout(() => setResetTimer(false), 100);
@@ -165,7 +171,6 @@ const TimeKeeperWidget = () => {
   };
 
   const updateEntry = async (newEntry) => {
-    console.log(newEntry);
     try {
       await axios
         .post("/api/time-entry/update", {
@@ -247,13 +252,22 @@ const TimeKeeperWidget = () => {
                 )}
               </div>
               <div className="time-keeper-widget-second">
-                <button
-                  className="project-picker-button"
-                  disabled={isRunning}
-                  onClick={() => handleProjectClick()}
-                >
-                  {!entry.currentTitle ? "Choose Project" : entry.currentTitle}
-                </button>
+                <div className="time-keeper-widget-pickers">
+                  <UserPicker
+                    userId={userStore.userId}
+                    entry={entry}
+                    setEntry={setEntry}
+                  />
+                  <button
+                    className="project-picker-button"
+                    disabled={isRunning}
+                    onClick={() => handleProjectClick()}
+                  >
+                    {!entry.currentTitle
+                      ? "Choose Project"
+                      : entry.currentTitle}
+                  </button>
+                </div>
                 <div className="quick-add-wrapper">
                   <button
                     disabled={!isRunning}

@@ -37,6 +37,11 @@
   justify-content: space-between;
   gap: 15px;
 }
+.time-keeper-widget-pickers {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
 .time-keeper-start-stop {
   border: none;
   border-radius: 50%;
@@ -88,6 +93,49 @@
   color: var(--bright-dark-green);
   border-radius: 50%;
 }
+
+/* User Picker */
+.user-picker {
+  position: relative;
+}
+.user-picker-button {
+  padding: 5px;
+  border: none;
+  background-color: unset;
+  border-radius: 50%;
+  transition: 200ms;
+}
+.user-picker-button:hover {
+  border: none;
+  background-color: var(--root-bg-color-light);
+}
+.user-picker-wrapper {
+  position: absolute;
+  min-height: 200px;
+  min-width: 200px;
+  border: 1px solid var(--light-border);
+  border-radius: 5px;
+  background-color: white;
+}
+.user-picker-item {
+  padding: 10px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 0.9rem;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--light-border);
+}
+.user-picker-item:hover {
+  background-color: var(--root-bg-color-light);
+}
+.user-picker-first {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
 .project-picker-button {
   font-size: 0.9rem;
   max-width: 225px;
