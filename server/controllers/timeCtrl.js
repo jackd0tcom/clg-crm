@@ -69,7 +69,7 @@ export default {
   updateEntry: async (req, res) => {
     try {
       console.log("updateEntry");
-      const { timeEntryId, notes, caseId, taskId, startTime, endTime } =
+      const { timeEntryId, notes, caseId, taskId, startTime, endTime, userId } =
         req.body;
       if (!req.session.user) {
         return res.status(401).send("User not authenticated");
@@ -87,6 +87,7 @@ export default {
         taskId,
         startTime,
         endTime,
+        userId: userId ? userId : req.session.user.userId,
       });
 
       res.status(200).send(updatedEntry);

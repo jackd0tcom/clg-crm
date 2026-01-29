@@ -3,6 +3,7 @@ import axios from "axios";
 import { getDuration } from "../../helpers/helperFunctions";
 import ProjectPicker from "./ProjectPicker";
 import TimePicker from "./TimePicker";
+import UserPicker from "./UserPicker";
 
 const WidgetEntryView = ({
   entry,
@@ -16,6 +17,7 @@ const WidgetEntryView = ({
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [duration, setDuration] = useState(entry.endTime && getDuration(entry));
   const [showTimePicker, setShowTimePicker] = useState(false);
+  const userId = entry.userId;
 
   const updateEntry = async (hide) => {
     setStatus("saving");
@@ -28,6 +30,7 @@ const WidgetEntryView = ({
           taskId: entry.taskId,
           startTime: entry.startTime,
           endTime: entry.endTime,
+          userId: entry.userId,
         })
         .then((res) => {
           setStatus("success");
@@ -140,42 +143,52 @@ const WidgetEntryView = ({
               )}
             </div>
             <input
+              className="entry-view-description"
               onChange={(e) => setNotes(e.target.value)}
               type="text"
               value={notes}
               placeholder="Add a description"
             />
-            <button
-              className="project-picker-button"
-              onClick={() => {
-                showCaseTaskPicker
-                  ? setShowCaseTaskPicker(false)
-                  : setShowCaseTaskPicker(true);
-              }}
-            >
-              {!entry.currentTitle ? "Choose Project" : entry.currentTitle}
-            </button>
-            {showCaseTaskPicker && (
-              <ProjectPicker
-                showCaseTaskPicker={showCaseTaskPicker}
-                setShowCaseTaskPicker={setShowCaseTaskPicker}
+            <div className="picker-notes-wrapper">
+              <UserPicker
+                userId={entry.userId}
                 entry={entry}
                 setEntry={setEntry}
-                casesWithTasks={casesWithTasks}
               />
-            )}
-            <button
-              onClick={() => updateEntry(true)}
-              className="entry-save-button"
-            >
-              Save
-            </button>
-            <button
-              onClick={() => setShowDeleteModal(true)}
-              className="entry-delete-button"
-            >
-              Delete
-            </button>
+              <button
+                className="project-picker-button"
+                onClick={() => {
+                  showCaseTaskPicker
+                    ? setShowCaseTaskPicker(false)
+                    : setShowCaseTaskPicker(true);
+                }}
+              >
+                {!entry.currentTitle ? "Choose Project" : entry.currentTitle}
+              </button>
+              {showCaseTaskPicker && (
+                <ProjectPicker
+                  showCaseTaskPicker={showCaseTaskPicker}
+                  setShowCaseTaskPicker={setShowCaseTaskPicker}
+                  entry={entry}
+                  setEntry={setEntry}
+                  casesWithTasks={casesWithTasks}
+                />
+              )}
+            </div>
+            <div className="entry-button-wrapper">
+              <button
+                onClick={() => updateEntry(true)}
+                className="entry-save-button"
+              >
+                Save
+              </button>
+              <button
+                onClick={() => setShowDeleteModal(true)}
+                className="entry-delete-button"
+              >
+                Delete
+              </button>
+            </div>
           </>
         )}
       </div>

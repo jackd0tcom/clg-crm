@@ -231,6 +231,8 @@
 }
 .widget-entry-group {
   background-color: white;
+  margin-bottom: 15px;
+  border-top: 1px solid var(--light-border);
 }
 .widget-entry-day {
   font-size: 0.9rem;
@@ -294,17 +296,34 @@
   padding: 10% 15px;
 }
 .entry-view-container {
-  padding: 60px 30px;
+  padding: 30px;
   border: 1px solid var(--light-border);
   border-radius: 5px;
   background-color: white;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 30px;
   align-items: center;
+}
+.entry-view-description {
+  padding: 10px;
+  width: 100%;
+  border: 1px solid var(--light-border);
+  border-radius: 5px;
+}
+.picker-notes-wrapper {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  justify-content: space-between;
 }
 .back-button {
   cursor: pointer;
+}
+.entry-button-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 .entry-save-button {
   color: white;
@@ -338,13 +357,13 @@
   align-items: center;
   gap: 10px;
 }
-.duration-input-wrapper p {
+.duration-input {
   padding: 5px 15px;
   cursor: pointer;
   border: 1px solid transparent;
   transition: 200ms;
 }
-.duration-input-wrapper p:hover {
+.duration-input:hover {
   background-color: var(--root-bg-color-light);
   border-color: var(--light-border);
   border-radius: 5px;
@@ -356,25 +375,40 @@
 }
 .time-picker-wrapper {
   position: absolute;
-  min-height: 300px;
+  min-height: 200px;
   border: 1px solid var(--light-border);
   border-radius: 5px;
   background-color: white;
   z-index: 10;
   padding: 15px;
-  top: 100%;
+  top: 110%;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 .time-picker-container {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 15px;
+}
+.time-picker-container p {
+  margin: 0;
+  padding: 0 0 5px;
+  font-size: 0.9rem;
 }
 .time-picker-container .react-datepicker {
   display: flex;
   flex-direction: column-reverse;
 }
 
+.time-picker-container .react-datepicker-wrapper input {
+  padding: 10px;
+  border: 1px solid var(--light-border);
+  border-radius: 5px;
+}
+.time-picker-container .react-datepicker-wrapper input:hover {
+  background-color: var(--root-bg-color-light);
+  outline: none;
+}
 .time-picker-container .react-datepicker__navigation {
   top: 55px;
 }
