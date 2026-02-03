@@ -94,6 +94,28 @@
   border-radius: 50%;
 }
 
+/* Filter */
+
+.time-keeper-filter-wrapper {
+  padding: 15px;
+  border: 1px solid var(--light-border);
+  margin: 15px;
+  border-radius: 5px;
+  display: flex;
+  gap: 15px;
+}
+
+.time-keeper-filter-date-button {
+  background-color: unset;
+  border: 1px solid var(--light-border);
+  font-size: 0.9rem;
+  transition: 200ms;
+}
+.time-keeper-filter-date-button:hover {
+  background-color: var(--root-bg-color-light);
+  color: black;
+}
+
 /* User Picker */
 .user-picker {
   position: relative;

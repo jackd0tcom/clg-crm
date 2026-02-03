@@ -7,8 +7,7 @@ import StatusIcon from "../Task/StatusIcon";
 import TimeKeeperFilter from "./TimeKeeperFilter";
 import WidgetEntryView from "./WidgetEntryView";
 
-const TimeKeeperList = () => {
-  const [entryList, setEntryList] = useState([]);
+const TimeKeeperList = ({ data }) => {
   const userStore = useSelector((state) => state.user);
   const [showEntryView, setShowEntryView] = useState(false);
   const [entry, setEntry] = useState({
@@ -20,25 +19,6 @@ const TimeKeeperList = () => {
     currentTitle: null,
     userId: userStore.userId,
   });
-
-  const getEntries = async () => {
-    try {
-      await axios.get("/api/time-entry/getUserEntries").then((res) => {
-        if (!res.statusText === "OK") {
-          console.log(res);
-          return;
-        }
-        setEntryList(res.data);
-        console.log(res.data);
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  useEffect(() => {
-    getEntries();
-  }, []);
 
   return showEntryView ? (
     <WidgetEntryView
@@ -56,8 +36,8 @@ const TimeKeeperList = () => {
         <p>Duration</p>
         <p>Date</p>
       </div>
-      {entryList?.length > 0 &&
-        entryList.map((entry) => {
+      {data?.length > 0 ? (
+        data.map((entry) => {
           return (
             <div
               key={entry.timeEntryId}
@@ -100,7 +80,12 @@ const TimeKeeperList = () => {
               <p>{formatDateNoTime(entry.createdAt)}</p>
             </div>
           );
-        })}
+        })
+      ) : (
+        <div className="no-entries">
+          <p>No entries available</p>
+        </div>
+      )}
     </div>
   );
 };

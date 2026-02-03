@@ -39,7 +39,7 @@ const WidgetEntryView = ({ entry, setEntry, setShowEntryView, getEntries }) => {
             });
             setShowEntryView(false);
           }
-          getEntries();
+          getEntries?.();
         });
     } catch (error) {
       setStatus("error");
