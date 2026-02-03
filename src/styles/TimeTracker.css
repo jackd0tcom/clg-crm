@@ -77,11 +77,11 @@
   padding: 0;
   border: none;
   background-color: transparent;
-  color: var(--grey);
+  color: var(--light-grey);
   transition: 200ms;
 }
 .time-keeper-toggle:hover {
-  color: black;
+  color: var(--grey);
   border: none;
   background-color: transparent;
 }
@@ -161,6 +161,9 @@
   color: var(--grey);
 }
 .project-picker-wrapper {
+  position: relative;
+}
+.project-picker-overlay-wrapper {
   font-size: 0.9rem;
   display: flex;
   flex-direction: column;

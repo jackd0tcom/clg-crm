@@ -5,12 +5,7 @@ import ProjectPicker from "./ProjectPicker";
 import TimePicker from "./TimePicker";
 import UserPicker from "./UserPicker";
 
-const WidgetEntryView = ({
-  entry,
-  setEntry,
-  setShowEntryView,
-  casesWithTasks,
-}) => {
+const WidgetEntryView = ({ entry, setEntry, setShowEntryView, getEntries }) => {
   const [notes, setNotes] = useState(entry?.notes);
   const [status, setStatus] = useState("");
   const [showCaseTaskPicker, setShowCaseTaskPicker] = useState(false);
@@ -34,7 +29,6 @@ const WidgetEntryView = ({
         })
         .then((res) => {
           setStatus("success");
-          console.log(res);
           if (hide) {
             setEntry({
               caseId: null,
@@ -45,6 +39,7 @@ const WidgetEntryView = ({
             });
             setShowEntryView(false);
           }
+          getEntries();
         });
     } catch (error) {
       setStatus("error");
@@ -155,25 +150,12 @@ const WidgetEntryView = ({
                 entry={entry}
                 setEntry={setEntry}
               />
-              <button
-                className="project-picker-button"
-                onClick={() => {
-                  showCaseTaskPicker
-                    ? setShowCaseTaskPicker(false)
-                    : setShowCaseTaskPicker(true);
-                }}
-              >
-                {!entry.currentTitle ? "Choose Project" : entry.currentTitle}
-              </button>
-              {showCaseTaskPicker && (
-                <ProjectPicker
-                  showCaseTaskPicker={showCaseTaskPicker}
-                  setShowCaseTaskPicker={setShowCaseTaskPicker}
-                  entry={entry}
-                  setEntry={setEntry}
-                  casesWithTasks={casesWithTasks}
-                />
-              )}
+              <ProjectPicker
+                showCaseTaskPicker={showCaseTaskPicker}
+                setShowCaseTaskPicker={setShowCaseTaskPicker}
+                entry={entry}
+                setEntry={setEntry}
+              />
             </div>
             <div className="entry-button-wrapper">
               <button

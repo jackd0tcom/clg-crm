@@ -13,7 +13,6 @@ const TimeKeeperWidget = () => {
   const [showCaseTaskPicker, setShowCaseTaskPicker] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
   const [timeEntryId, setTimeEntryId] = useState(0);
-  const [casesWithTasks, setCasesWithTasks] = useState([]);
   const [showWarning, setShowWarning] = useState(false);
   const widgetRef = useRef(null);
   const [resetTimer, setResetTimer] = useState(false);
@@ -74,20 +73,6 @@ const TimeKeeperWidget = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showWidget]);
-
-  const getCasesWithTasks = async () => {
-    try {
-      await axios.get("/api/getCasesWithTasks").then((res) => {
-        if (!res.statusText === "OK") {
-          console.log(error);
-          return;
-        }
-        setCasesWithTasks(res.data);
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   const startTimer = async (entryOverride) => {
     const data = entryOverride || entry;
@@ -153,7 +138,6 @@ const TimeKeeperWidget = () => {
 
   const handleProjectClick = (e) => {
     if (!showCaseTaskPicker) {
-      getCasesWithTasks();
       setShowCaseTaskPicker(true);
     } else {
       setShowCaseTaskPicker(false);
@@ -210,7 +194,6 @@ const TimeKeeperWidget = () => {
               entry={entry}
               setEntry={setEntry}
               setShowEntryView={setShowEntryView}
-              casesWithTasks={casesWithTasks}
             />
           ) : (
             <>
@@ -258,15 +241,12 @@ const TimeKeeperWidget = () => {
                     entry={entry}
                     setEntry={setEntry}
                   />
-                  <button
-                    className="project-picker-button"
-                    disabled={isRunning}
-                    onClick={() => handleProjectClick()}
-                  >
-                    {!entry.currentTitle
-                      ? "Choose Project"
-                      : entry.currentTitle}
-                  </button>
+                  <ProjectPicker
+                    entry={entry}
+                    setEntry={setEntry}
+                    showCaseTaskPicker={showCaseTaskPicker}
+                    setShowCaseTaskPicker={setShowCaseTaskPicker}
+                  />
                 </div>
                 <div className="quick-add-wrapper">
                   <button
@@ -277,15 +257,6 @@ const TimeKeeperWidget = () => {
                     +15 Min
                   </button>
                 </div>
-                {showCaseTaskPicker && (
-                  <ProjectPicker
-                    casesWithTasks={casesWithTasks}
-                    entry={entry}
-                    setEntry={setEntry}
-                    showCaseTaskPicker={showCaseTaskPicker}
-                    setShowCaseTaskPicker={setShowCaseTaskPicker}
-                  />
-                )}
               </div>
               <WidgetEntryList
                 entry={entry}
