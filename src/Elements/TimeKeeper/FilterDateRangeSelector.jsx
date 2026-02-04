@@ -3,6 +3,9 @@ import DatePicker from "react-datepicker";
 
 const FilterDateRangeSelector = ({ filter, setFilter }) => {
   const [showDatePicker, setShowDatePicker] = useState(true);
+  const now = new Date();
+  const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+  const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
   const [startDate, setStartDate] = useState(
     filter.dateRange.startDate || new Date(),
   );
@@ -26,6 +29,42 @@ const FilterDateRangeSelector = ({ filter, setFilter }) => {
     });
   };
 
+  const nextMonth = () => {
+    const newStart = new Date(
+      startDate.getFullYear(),
+      startDate.getMonth() + 1,
+      1,
+    );
+    const newEnd = new Date(endDate.getFullYear(), endDate.getMonth() + 2, 0);
+    setStartDate(newStart);
+    setEndDate(newEnd);
+    setFilter({
+      ...filter,
+      dateRange: {
+        startDate: newStart,
+        endDate: newEnd,
+      },
+    });
+  };
+
+  const prevMonth = () => {
+    const newStart = new Date(
+      startDate.getFullYear(),
+      startDate.getMonth() - 1,
+      1,
+    );
+    const newEnd = new Date(endDate.getFullYear(), endDate.getMonth(), 0);
+    setStartDate(newStart);
+    setEndDate(newEnd);
+    setFilter({
+      ...filter,
+      dateRange: {
+        startDate: newStart,
+        endDate: newEnd,
+      },
+    });
+  };
+
   const CustomInput = ({ className, onClick, value }) => {
     return (
       <button className={className} onClick={onClick}>
@@ -36,6 +75,11 @@ const FilterDateRangeSelector = ({ filter, setFilter }) => {
 
   return (
     <div className="filter-date-range-selector-wrapper">
+      <i
+        id="date-range-arrow"
+        onClick={() => prevMonth()}
+        className="fa-solid fa-angle-left"
+      ></i>
       {showDatePicker && (
         <DatePicker
           swapRange
@@ -52,6 +96,11 @@ const FilterDateRangeSelector = ({ filter, setFilter }) => {
           dateFormat="MMM d yyyy"
         />
       )}
+      <i
+        id="date-range-arrow"
+        onClick={() => nextMonth()}
+        className="fa-solid fa-angle-right"
+      ></i>
     </div>
   );
 };

@@ -111,6 +111,24 @@
   gap: 15px;
 }
 
+/* Date Range selector */
+
+.filter-date-range-selector-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+#date-range-arrow {
+  padding: 5px;
+  border-radius: 5px;
+  transition: 200ms;
+  cursor: pointer;
+}
+#date-range-arrow:hover {
+  background-color: var(--root-bg-color-light);
+}
+
 .time-keeper-filter-date-button {
   background-color: unset;
   border: 1px solid var(--light-border);
@@ -121,6 +139,94 @@
 .time-keeper-filter-date-button:hover {
   background-color: var(--root-bg-color-light);
   color: black;
+}
+
+/* Filter project picker */
+.filter-project-picker-button {
+  border: 1px solid transparent;
+  background-color: unset;
+  font-size: 0.9rem;
+  transition: 200ms;
+  display: flex;
+  align-items: center;
+  padding: 8.5px 12px;
+}
+.filter-project-picker-button:hover {
+  border: 1px solid var(--light-border);
+  background-color: var(--root-bg-color-light);
+  color: black;
+}
+.active-project-filter {
+  border: 1px solid var(--button-active-border);
+  background-color: var(--button-active-bg);
+  color: var(--button-active-font);
+}
+.active-project-filter:hover {
+  border-color: var(--bright-dark-green);
+  background-color: var(--button-active-bg);
+  color: var(--button-active-font);
+}
+#clear-filter-x {
+  margin-left: 12px;
+  font-size: 0.7rem;
+  padding: 3px;
+  transition: 200ms;
+  border-radius: 5px;
+}
+#clear-filter-x:hover {
+  background-color: var(--bright-green);
+  color: white;
+}
+.filter-project-picker-overlay-wrapper {
+  font-size: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 110%;
+  background-color: white;
+  padding: 15px;
+  border: 1px solid var(--light-border);
+  border-radius: 5px;
+  max-height: 350px;
+  overflow-y: scroll;
+  scrollbar-width: none;
+  max-width: 300px;
+}
+.filter-project-picker-case-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  gap: 25px;
+  padding: 7px;
+  border-radius: 5px;
+}
+.filter-project-picker-task-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  gap: 5px;
+  padding: 7px;
+  border-radius: 5px;
+}
+.filter-project-picker-item-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 275px;
+  overflow: hidden;
+}
+.filter-project-picker-task-item p,
+.filter-project-picker-case-item p {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.filter-project-picker-case-item:hover,
+.filter-project-picker-case-item:hover {
+  background-color: var(--root-bg-color-light);
+  cursor: pointer;
 }
 
 /* User Picker */
@@ -249,7 +355,7 @@
   font-size: 0.75rem;
 }
 .project-picker-task-list-wrapper {
-  margin-left: 15px;
+  margin-left: 5px;
 }
 .current-project {
   background-color: var(--root-bg-color-light);

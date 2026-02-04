@@ -72,17 +72,25 @@ const TimeKeeper = () => {
       ) {
         return false;
       }
-      // // Practice Areas
-      // if (filter.type === "cases" && filter.practiceAreas.length > 0) {
-      //   const hasMatchingArea = item.practiceAreas.some((area) =>
-      //     filter.practiceAreas.some(
-      //       (filterArea) => area.name === filterArea.name,
-      //     ),
-      //   );
-      //   if (!hasMatchingArea) {
-      //     return false;
-      //   }
-      // }
+      // Project filter
+      if (item.caseId) {
+        // if the case filter and task filter is empty, return true
+        if (filter.caseIds.length + filter.taskIds.length === 0) {
+          return true;
+        } else if (!filter.caseIds.includes(item.caseId)) {
+          // if there is something in either of them, and the case is not in the filter, don't show it
+          return false;
+        }
+      }
+      if (item.taskId) {
+        // if the case filter and task filter is empty, return true
+        if (filter.taskIds.length + filter.caseIds.length === 0) {
+          return true;
+        } else if (!filter.taskIds.includes(item.taskId)) {
+          // if there is something in either of them, and the task is not in the filter, don't show it
+          return false;
+        }
+      }
       // // Open or closed cases
       // if (filter.type === "cases" && filter.open && item.status === "closed") {
       //   return false;
@@ -101,28 +109,12 @@ const TimeKeeper = () => {
       if (filter.sortBy === "dateOpened") {
         if (filter.sortOrder === "desc") {
           return (
-            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+            new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
           );
         }
       }
     });
 
-    // Sort data for chart
-    let sortedChartData = [];
-    // Group data by month
-    // Gotta figure out what the range is of months, or do I?
-    // Gotta return an array of objects
-
-    // // if (chartParams.XAxis === "month") {
-    // sortedChartData = sorted.reduce((acc, item) => {
-    //   const month = new Date(item.createdAt).toISOString().slice(0, 7); // YYYY-MM format
-    //   if (!acc[month]) {
-    //     acc[month] = { month: month };
-    //   }
-    //   acc[month][item.type] = (acc[month][item.type] || 0) + item.value;
-    //   return acc;
-    // }, {});
-    // // }
     console.log("Refined data", sorted);
 
     return sorted;
