@@ -14,11 +14,14 @@ const FilterDateRangeSelector = ({ filter, setFilter }) => {
     const [start, end] = dates;
     setStartDate(start);
     setEndDate(end);
+  };
+
+  const handleCalendarClose = () => {
     setFilter({
       ...filter,
       dateRange: {
-        startDate: start,
-        endDate: end,
+        startDate: startDate,
+        endDate: endDate,
       },
     });
   };
@@ -45,6 +48,8 @@ const FilterDateRangeSelector = ({ filter, setFilter }) => {
             <CustomInput className="time-keeper-filter-date-button" />
           }
           monthsShown={2}
+          onCalendarClose={handleCalendarClose}
+          dateFormat="MMM d yyyy"
         />
       )}
     </div>

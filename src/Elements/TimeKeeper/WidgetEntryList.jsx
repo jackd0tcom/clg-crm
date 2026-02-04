@@ -3,7 +3,13 @@ import axios from "axios";
 import StatusIcon from "../Task/StatusIcon";
 import { getDuration, formatDay } from "../../helpers/helperFunctions";
 
-const WidgetEntryList = ({ entry, setEntry, startTimer, setShowEntryView, entriesRefreshKey }) => {
+const WidgetEntryList = ({
+  entry,
+  setEntry,
+  startTimer,
+  setShowEntryView,
+  entriesRefreshKey,
+}) => {
   const [recentEntries, setRecentEntries] = useState([]);
 
   useEffect(() => {
@@ -11,7 +17,7 @@ const WidgetEntryList = ({ entry, setEntry, startTimer, setShowEntryView, entrie
       try {
         await axios.get("/api/time-entry/getRecentUserEntries").then((res) => {
           if (res.statusText === "OK") {
-            setRecentEntries(res.data);
+            setRecentEntries(res.data.filter((entry) => entry !== null));
           } else {
             console.log(error);
             setRecentEntries([{}]);

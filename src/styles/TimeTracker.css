@@ -1,3 +1,9 @@
+.time-tracker-page-wrapper {
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
+}
+
 .time-keeper-widget-wrapper {
   position: relative;
 }
@@ -110,6 +116,7 @@
   border: 1px solid var(--light-border);
   font-size: 0.9rem;
   transition: 200ms;
+  min-width: 200px;
 }
 .time-keeper-filter-date-button:hover {
   background-color: var(--root-bg-color-light);
@@ -454,6 +461,9 @@
   margin: 15px;
   border: 1px solid var(--light-border);
   border-radius: 5px;
+  height: 100%;
+  overflow-y: scroll;
+  scrollbar-width: thin;
 }
 .time-keeper-list-head {
   padding: 10px 15px;
@@ -491,4 +501,18 @@
   color: var(--dark-grey);
   font-size: 0.9rem;
   padding: 0 6px;
+}
+.no-entries {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 20vh;
+  color: var(--dark-grey);
+}
+.no-entries i {
+  font-size: 3rem;
+  padding-bottom: 15px;
+  color: var(--blue);
 }

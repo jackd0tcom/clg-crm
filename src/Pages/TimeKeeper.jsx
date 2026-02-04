@@ -31,7 +31,7 @@ const TimeKeeper = () => {
           console.log(res);
           return;
         }
-        setEntryList(res.data);
+        setEntryList(res.data.filter((entry) => entry !== null));
         setIsLoading(false);
       });
     } catch (error) {
@@ -46,19 +46,28 @@ const TimeKeeper = () => {
     console.log("processing..", filter);
     // setup data variable
     let data = [...entryList];
-    // console.log("Raw data", data);
 
     // filter data
     data = data.filter((item) => {
+      // filter out weird null entries
+      if (!item) {
+        return false;
+      }
+      // filter out entries that somehow don't have startTimes which would cause lots of issues
+      if (!item.startTime) {
+        return false;
+      }
       // Date range
       if (
         filter.dateRange.startDate &&
+        item.startTime &&
         item.startTime < filter.dateRange.startDate.toISOString()
       ) {
         return false;
       }
       if (
         filter.dateRange.endDate &&
+        item.startTime &&
         item.startTime > filter.dateRange.endDate.toISOString()
       ) {
         return false;
@@ -117,7 +126,7 @@ const TimeKeeper = () => {
     console.log("Refined data", sorted);
 
     return sorted;
-  }, [filter]);
+  }, [filter, entryList]);
 
   return (
     <div className="time-tracker-page-wrapper">

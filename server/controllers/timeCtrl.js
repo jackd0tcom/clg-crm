@@ -174,8 +174,10 @@ export default {
         ],
       });
 
+      const notNullEntries = entries.filter((entry) => entry !== null);
+
       const entriesWithProjects = await Promise.all(
-        entries.map(async (entry) => {
+        notNullEntries.map(async (entry) => {
           const entryJson = entry.toJSON();
 
           if (entry.caseId) {
@@ -225,8 +227,10 @@ export default {
         ],
       });
 
+      const notNullEntries = entries.filter((entry) => entry !== null);
+
       const entriesWithProjects = await Promise.all(
-        entries.map(async (entry) => {
+        notNullEntries.map(async (entry) => {
           const entryJson = entry.toJSON();
 
           if (entry.caseId) {
