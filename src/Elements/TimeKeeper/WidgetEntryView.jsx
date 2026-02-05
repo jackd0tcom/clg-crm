@@ -14,6 +14,43 @@ const WidgetEntryView = ({ entry, setEntry, setShowEntryView, getEntries }) => {
   const [showTimePicker, setShowTimePicker] = useState(false);
   const userId = entry.userId;
 
+  const newEntry = async () => {
+    setStatus("saving");
+    if (!entry.caseId && !entry.taskId) {
+      setStatus("no project");
+      setTimeout(() => {
+        setStatus("");
+      }, 2000);
+      return;
+    }
+    try {
+      await axios
+        .post("/api/time-entry/newEntry", {
+          notes,
+          caseId: entry.caseId,
+          taskId: entry.taskId,
+          startTime: entry.startTime,
+          endTime: entry.endTime,
+          userId: entry.userId,
+        })
+        .then((res) => {
+          setStatus("success");
+          setEntry({
+            caseId: null,
+            taskId: null,
+            notes: "",
+            currentTitle: null,
+            startTime: null,
+          });
+          setShowEntryView(false);
+          getEntries?.();
+        });
+    } catch (error) {
+      setStatus("error");
+      console.log(error);
+    }
+  };
+
   const updateEntry = async (hide) => {
     setStatus("saving");
     try {
@@ -158,8 +195,13 @@ const WidgetEntryView = ({ entry, setEntry, setShowEntryView, getEntries }) => {
               />
             </div>
             <div className="entry-button-wrapper">
+              {status === "no project" && (
+                <div className="no-project">Please add a task or case</div>
+              )}
               <button
-                onClick={() => updateEntry(true)}
+                onClick={() => {
+                  entry.timeEntryId ? updateEntry(true) : newEntry();
+                }}
                 className="entry-save-button"
               >
                 Save

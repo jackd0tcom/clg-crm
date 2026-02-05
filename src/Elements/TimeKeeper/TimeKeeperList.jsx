@@ -4,7 +4,6 @@ import ProfilePic from "../UI/ProfilePic";
 import { useSelector } from "react-redux";
 import { getDuration, formatDateNoTime } from "../../helpers/helperFunctions";
 import StatusIcon from "../Task/StatusIcon";
-import TimeKeeperFilter from "./TimeKeeperFilter";
 import WidgetEntryView from "./WidgetEntryView";
 
 const TimeKeeperList = ({ data, getEntries }) => {

@@ -4,13 +4,26 @@ import Loader from "../Elements/UI/Loader";
 import TimeKeeperWidget from "../Elements/TimeKeeper/TimeKeeperWidget";
 import TimeKeeperList from "../Elements/TimeKeeper/TimeKeeperList";
 import TimeKeeperFilter from "../Elements/TimeKeeper/TimeKeeperFilter";
+import { useSelector } from "react-redux";
+import WidgetEntryView from "../Elements/TimeKeeper/WidgetEntryView";
 
 const TimeKeeper = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [entryList, setEntryList] = useState([]);
+  const [showEntryView, setShowEntryView] = useState(false);
+  const userStore = useSelector((state) => state.user);
   const now = new Date();
   const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
   const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  const [entry, setEntry] = useState({
+    caseId: null,
+    taskId: null,
+    notes: "",
+    currentTitle: null,
+    startTime: new Date(),
+    endTime: new Date(),
+    userId: userStore.userId,
+  });
   const [filter, setFilter] = useState({
     dateRange: {
       startDate: firstDay,
@@ -61,14 +74,14 @@ const TimeKeeper = () => {
       if (
         filter.dateRange.startDate &&
         item.startTime &&
-        item.startTime < filter.dateRange.startDate.toISOString()
+        item.startTime < filter.dateRange.startDate?.toISOString()
       ) {
         return false;
       }
       if (
         filter.dateRange.endDate &&
         item.startTime &&
-        item.startTime > filter.dateRange.endDate.toISOString()
+        item.startTime > filter.dateRange.endDate?.toISOString()
       ) {
         return false;
       }
@@ -126,8 +139,25 @@ const TimeKeeper = () => {
         <h1 className="section-heading">Time Keeper</h1>
         <TimeKeeperWidget />
       </div>
-      <TimeKeeperFilter filter={filter} setFilter={setFilter} />
-      {isLoading ? <Loader /> : <TimeKeeperList data={processedData} />}
+      {showEntryView ? (
+        <WidgetEntryView
+          entry={entry}
+          setEntry={setEntry}
+          setShowEntryView={setShowEntryView}
+          getEntries={getEntries}
+        />
+      ) : (
+        <>
+          <TimeKeeperFilter
+            filter={filter}
+            setFilter={setFilter}
+            entries={processedData}
+            showEntryView={showEntryView}
+            setShowEntryView={setShowEntryView}
+          />
+          {isLoading ? <Loader /> : <TimeKeeperList data={processedData} />}
+        </>
+      )}
     </div>
   );
 };

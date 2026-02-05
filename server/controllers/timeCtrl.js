@@ -20,7 +20,6 @@ export default {
       // Return timeEntryId and startTime
       console.log("startEntry");
       const { caseId, taskId, notes, userId } = req.body;
-      console.log(req.body);
       if (!req.session.user) {
         return res.status(401).send("User not authenticated");
       }
@@ -116,6 +115,29 @@ export default {
     } catch (error) {
       console.log(error);
       res.status(401).send(error);
+    }
+  },
+  newEntry: async (req, res) => {
+    try {
+      console.log("newEntry");
+      const { caseId, taskId, notes, userId, startTime, endTime } = req.body;
+      if (!req.session.user) {
+        return res.status(401).send("User not authenticated");
+      }
+      const newEntry = await TimeEntry.create({
+        caseId,
+        taskId,
+        userId: userId ? userId : req.session.user.userId,
+        notes,
+        startTime,
+        endTime,
+        isRunning: false,
+      });
+
+      res.status(200).send(newEntry);
+    } catch (error) {
+      console.log(error);
+      res.status(500).send(error);
     }
   },
   runningTimer: async (req, res) => {

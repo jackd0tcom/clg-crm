@@ -115,6 +115,7 @@ const {
   runningTimer,
   getUserEntries,
   getRecentUserEntries,
+  newEntry,
 } = timeCtrl;
 
 // Express setup
@@ -275,6 +276,7 @@ app.post("/api/createComment", createComment);
 app.post("/api/time-entry/start", startEntry);
 app.post("/api/time-entry/stop", stopEntry);
 app.post("/api/time-entry/update", updateEntry);
+app.post("/api/time-entry/newEntry", newEntry);
 app.post("/api/time-entry/delete", deleteEntry);
 app.get("/api/time-entry/running-timer", runningTimer);
 app.get("/api/time-entry/getUserEntries", getUserEntries);

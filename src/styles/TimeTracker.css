@@ -33,7 +33,8 @@
 .time-keeper-widget-first {
   display: flex;
   justify-content: space-between;
-  padding: 15px;
+  padding: 15px 15px 0px;
+  gap: 20px;
 }
 .time-keeper-widget-second {
   position: relative;
@@ -72,6 +73,11 @@
   border-radius: 5px;
   border: none;
   outline: none;
+  transition: 200ms;
+  width: 100%;
+}
+.time-keeper-description:hover {
+  background-color: var(--root-bg-color-light);
 }
 .time-keeper-widget-timer-wrapper {
   display: flex;
@@ -103,12 +109,39 @@
 /* Filter */
 
 .time-keeper-filter-wrapper {
-  padding: 15px;
+  padding: 8px 15px;
   border: 1px solid var(--light-border);
   margin: 15px;
   border-radius: 5px;
-  display: flex;
+  display: grid;
+  grid-template-columns: 2fr 1fr 0.5fr;
+  align-items: center;
+  justify-items: flex-start;
   gap: 15px;
+}
+.date-range-project-picker-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.new-entry-button-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.new-entry-button {
+  font-size: 0.9rem;
+  color: white;
+  background-color: var(--bright-green);
+  border: none;
+  transition: 200ms;
+}
+.new-entry-button:hover {
+  color: white;
+  background-color: var(--bright-dark-green);
+  border: none;
 }
 
 /* Date Range selector */
@@ -117,8 +150,11 @@
   display: flex;
   align-items: center;
   gap: 5px;
+  position: relative;
 }
-
+.filter-date-range-selector-wrapper .react-datepicker {
+  display: flex;
+}
 #date-range-arrow {
   padding: 5px;
   border-radius: 5px;
@@ -140,10 +176,43 @@
   background-color: var(--root-bg-color-light);
   color: black;
 }
+.quick-select-button {
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  background-color: unset;
+  border: 1px solid var(--light-border);
+  transition: 200ms;
+}
+.quick-select-button:hover {
+  background-color: var(--root-bg-color-light);
+  color: black;
+}
+
+.quick-select-wrapper {
+  position: absolute;
+  min-width: 200px;
+  border: 1px solid var(--light-border);
+  background-color: white;
+  z-index: 10;
+  top: 110%;
+  border-radius: 5px;
+}
+.quick-select-item {
+  padding: 6px 15px;
+  font-size: 0.9rem;
+  border-bottom: 1px solid var(--light-border);
+  cursor: pointer;
+}
+.quick-select-item:hover {
+  background-color: var(--root-bg-color-light);
+}
+.current-quick-select {
+  background-color: var(--button-active-bg);
+}
 
 /* Filter project picker */
 .filter-project-picker-button {
-  border: 1px solid transparent;
+  border: 1px solid var(--light-border);
   background-color: unset;
   font-size: 0.9rem;
   transition: 200ms;
@@ -260,6 +329,7 @@
   font-size: 0.9rem;
   justify-content: space-between;
   border-bottom: 1px solid var(--light-border);
+  cursor: pointer;
 }
 .user-picker-item:hover {
   background-color: var(--root-bg-color-light);
@@ -273,7 +343,7 @@
 
 .project-picker-button {
   font-size: 0.9rem;
-  max-width: 225px;
+  max-width: 200px;
   text-align: left;
   border: 1px solid var(--light-border);
   transition: 200ms;
@@ -282,6 +352,7 @@
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  padding: 6px 12px;
 }
 .project-picker-button:hover {
   background-color: var(--light-border);
@@ -511,6 +582,16 @@
   padding: 5px 8px;
   border: 1px solid var(--light-border);
 }
+.time-increment:disabled {
+  color: var(--light-grey);
+  cursor: default;
+}
+.time-increment:disabled:hover {
+  color: var(--light-grey);
+}
+.time-increment:hover {
+  color: black;
+}
 .time-picker-wrapper {
   position: absolute;
   min-height: 200px;
@@ -558,6 +639,25 @@
   border: 1px solid var(--light-border);
   border-radius: 5px;
   padding: 5px 10px;
+}
+
+/* Stats */
+.time-keeper-stats-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 20%;
+  border-radius: 5px;
+  width: 100%;
+}
+
+.time-keeper-stat {
+  font-size: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.time-keeper-stat-heading {
+  font-weight: 500;
 }
 
 /* List */

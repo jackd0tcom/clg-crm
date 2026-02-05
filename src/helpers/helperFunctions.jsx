@@ -216,3 +216,26 @@ export const formatDay = (yyyyMmDd) => {
   const month = d.toLocaleDateString("en-GB", { month: "short" });
   return `${weekday} ${date}, ${month}`;
 };
+
+export function firstDayOfWeek(dateObject, firstDayOfWeekIndex) {
+  const dayOfWeek = dateObject.getDay(),
+    firstDayOfWeek = new Date(dateObject),
+    diff =
+      dayOfWeek >= firstDayOfWeekIndex
+        ? dayOfWeek - firstDayOfWeekIndex
+        : 6 - dayOfWeek;
+
+  firstDayOfWeek.setDate(dateObject.getDate() - diff);
+  firstDayOfWeek.setHours(0, 0, 0, 0);
+
+  return firstDayOfWeek;
+}
+
+export function lastDayOfTheWeek(dateObject, lastDayOfWeekIndex) {
+  const dayOfWeek = dateObject.getDay(),
+    lastDay = new Date(dateObject),
+    diff = (lastDayOfWeekIndex + (7 - dateObject.getDay())) % 7;
+  lastDay.setDate(dateObject.getDate() + diff);
+  lastDay.setHours(0, 0, 0, 0);
+  return lastDay;
+}

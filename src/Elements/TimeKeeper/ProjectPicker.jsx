@@ -72,7 +72,7 @@ const ProjectPicker = ({
             : setShowCaseTaskPicker(true);
         }}
       >
-        {!entry.projectTitle ? "Choose Project" : entry.projectTitle}
+        {!entry.currentTitle ? "Choose Project" : entry.currentTitle}
       </button>
       {showCaseTaskPicker && (
         <div className="project-picker-overlay-wrapper" ref={dropdownRef}>
