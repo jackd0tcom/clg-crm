@@ -7,7 +7,7 @@ import WidgetEntryList from "./WidgetEntryList";
 import WidgetEntryView from "./WidgetEntryView";
 import UserPicker from "./UserPicker";
 
-const TimeKeeperWidget = () => {
+const TimeKeeperWidget = ({ caseId, title, taskId }) => {
   const [showWidget, setShowWidget] = useState(false);
   const userStore = useSelector((state) => state.user);
   const [showCaseTaskPicker, setShowCaseTaskPicker] = useState(false);
@@ -19,10 +19,10 @@ const TimeKeeperWidget = () => {
   const [showEntryView, setShowEntryView] = useState(false);
   const [entriesRefreshKey, setEntriesRefreshKey] = useState(0);
   const [entry, setEntry] = useState({
-    caseId: null,
-    taskId: null,
+    caseId: caseId ? caseId : null,
+    taskId: taskId ? taskId : null,
     notes: "",
-    currentTitle: null,
+    currentTitle: title ? title : "",
     startTime: null,
     userId: userStore.userId,
   });

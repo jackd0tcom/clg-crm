@@ -234,6 +234,10 @@
   color: var(--grey);
   transform: 70ms;
 }
+.case-top-bar-container {
+  display: flex;
+  gap: 20px;
+}
 .extra-settings-wrapper {
   display: flex;
   z-index: 999;

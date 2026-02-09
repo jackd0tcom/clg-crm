@@ -6,6 +6,7 @@ import axios from "axios";
 import { NavLink } from "react-router";
 import ProfilePic from "./ProfilePic";
 import { useAuth0 } from "@auth0/auth0-react";
+import TimeKeeperWidget from "../TimeKeeper/TimeKeeperWidget";
 
 const Nav = ({ checkNotifications, userSynced }) => {
   const dispatch = useDispatch();
@@ -110,6 +111,9 @@ const Nav = ({ checkNotifications, userSynced }) => {
                 Time Keeper
               </NavLink>
             </div>
+            {/* <div className="nav-buttons-container time-keeper-nav-wrapper">
+              <TimeKeeperWidget isNav={true} />
+            </div> */}
             <div className="nav-buttons-container profile-buttons">
               <NavLink
                 to="/settings"

@@ -380,6 +380,10 @@
   display: flex;
   justify-content: space-between;
 }
+.task-view-header-container {
+  display: flex;
+  gap: 20px;
+}
 .task-view-header h3 {
   color: var(--grey);
   font-size: 0.9rem;
