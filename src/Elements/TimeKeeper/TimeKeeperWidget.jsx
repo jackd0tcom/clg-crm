@@ -7,7 +7,7 @@ import WidgetEntryList from "./WidgetEntryList";
 import WidgetEntryView from "./WidgetEntryView";
 import UserPicker from "./UserPicker";
 
-const TimeKeeperWidget = ({ caseId, title, taskId }) => {
+const TimeKeeperWidget = ({ caseId, title, taskId, isNav }) => {
   const [showWidget, setShowWidget] = useState(false);
   const userStore = useSelector((state) => state.user);
   const [showCaseTaskPicker, setShowCaseTaskPicker] = useState(false);
@@ -26,6 +26,8 @@ const TimeKeeperWidget = ({ caseId, title, taskId }) => {
     startTime: null,
     userId: userStore.userId,
   });
+
+  const navProjectTitle = entry.currentTitle ? entry.currentTitle : "";
 
   useEffect(() => {
     fetch();
@@ -186,9 +188,20 @@ const TimeKeeperWidget = ({ caseId, title, taskId }) => {
         }
       >
         <i className="fa-solid fa-clock"></i>
+        {isNav && (
+          <p className="time-keeper-nav-title">
+            {isRunning ? navProjectTitle : "Start Timer"}
+          </p>
+        )}
       </button>
       {showWidget && (
-        <div className="time-keeper-widget-container">
+        <div
+          className={
+            isNav
+              ? "time-keeper-widget-container nav-time-keeper"
+              : "time-keeper-widget-container"
+          }
+        >
           {showEntryView ? (
             <WidgetEntryView
               entry={entry}

@@ -7,6 +7,19 @@
 .time-keeper-widget-wrapper {
   position: relative;
 }
+.time-keeper-button-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.time-keeper-nav-title {
+  font-size: 0.9rem;
+  max-width: 120px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
 
 .time-keeper-widget-container {
   position: absolute;
@@ -20,6 +33,10 @@
   flex-direction: column;
   gap: 15px;
   z-index: 999;
+}
+.nav-time-keeper {
+  left: 0;
+  top: 200%;
 }
 .time-keeper-warning-wrapper {
   position: absolute;
@@ -84,6 +101,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  color: black;
 }
 .time-keeper-toggle {
   font-size: 1.5rem;
@@ -92,6 +110,9 @@
   background-color: transparent;
   color: var(--light-grey);
   transition: 200ms;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 .time-keeper-toggle:hover {
   color: var(--grey);
@@ -384,6 +405,7 @@
   overflow: scroll;
   scrollbar-width: none;
   max-width: 275px;
+  color: black;
 }
 .project-picker-header {
   margin-bottom: 10px;
@@ -443,6 +465,7 @@
   background-color: white;
   margin-bottom: 15px;
   border-top: 1px solid var(--light-border);
+  color: black;
 }
 .widget-entry-day {
   font-size: 0.9rem;
