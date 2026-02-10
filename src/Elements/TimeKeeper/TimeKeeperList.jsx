@@ -5,6 +5,8 @@ import { useSelector } from "react-redux";
 import { getDuration, formatDateNoTime } from "../../helpers/helperFunctions";
 import StatusIcon from "../Task/StatusIcon";
 import WidgetEntryView from "./WidgetEntryView";
+import TimeKeeperListGroup from "./TimeKeeperListGroup";
+import { getDurationNumber } from "../../helpers/helperFunctions";
 
 const TimeKeeperList = ({ data, getEntries }) => {
   const userStore = useSelector((state) => state.user);
@@ -18,6 +20,29 @@ const TimeKeeperList = ({ data, getEntries }) => {
     currentTitle: null,
     userId: userStore.userId,
   });
+
+  const groupedByProject = Object.values(
+    data.reduce((groups, entry) => {
+      const groupKey = entry.caseId
+        ? `case-${entry.caseId}`
+        : `task-${entry.taskId}`;
+
+      if (!groups[groupKey]) {
+        groups[groupKey] = {
+          id: entry.caseId ?? entry.taskId,
+          type: entry.caseId ? "case" : "task",
+          projectTitle: entry.projectTitle,
+          entries: [],
+          totalDuration: 0,
+        };
+      }
+      groups[groupKey].entries.push(entry);
+      groups[groupKey].totalDuration += getDurationNumber(entry);
+      return groups;
+    }, {}),
+  );
+
+  console.log(groupedByProject);
 
   return (
     <div className="time-keeper-list">
@@ -37,7 +62,27 @@ const TimeKeeperList = ({ data, getEntries }) => {
             <p>Duration</p>
             <p>Date</p>
           </div>
-          {data?.length > 0 ? (
+          {groupedByProject?.length > 0 ? (
+            groupedByProject.map((group) => (
+              <TimeKeeperListGroup
+                group={group}
+                entry={entry}
+                setEntry={setEntry}
+                showEntryView={showEntryView}
+                setShowEntryView={setShowEntryView}
+                userId={userStore.userId}
+              />
+            ))
+          ) : (
+            <div className="no-entries">
+              <i className="fa-solid fa-magnifying-glass"></i>
+              <p>No entries available for the current selected range.</p>
+              <p>
+                Try changing the date range or filters to see existing entries.
+              </p>
+            </div>
+          )}
+          {/* {data?.length > 0 ? (
             data.map((entry) => {
               return (
                 <div
@@ -90,7 +135,7 @@ const TimeKeeperList = ({ data, getEntries }) => {
                 Try changing the date range or filters to see existing entries.
               </p>
             </div>
-          )}
+          )} */}
         </>
       )}
     </div>

@@ -242,7 +242,7 @@ export default {
       }
       const entries = await TimeEntry.findAll({
         where: { userId: req.session.user.userId, endTime: { [Op.not]: null } },
-        limit: 15,
+        limit: 12,
         order: [
           ["endTime", "DESC"],
           ["timeEntryId", "DESC"],

@@ -239,3 +239,19 @@ export function lastDayOfTheWeek(dateObject, lastDayOfWeekIndex) {
   lastDay.setHours(0, 0, 0, 0);
   return lastDay;
 }
+
+export function getDurationNumber(entry) {
+  const timeDifference =
+    Math.floor(new Date(entry.endTime).getTime() / 1000) -
+    Math.floor(new Date(entry.startTime).getTime() / 1000);
+
+  return timeDifference;
+}
+
+export function formatTimeFromSeconds(inputSeconds) {
+  const hours = Math.floor(inputSeconds / 3600);
+  const minutes = Math.floor((inputSeconds % 3600) / 60);
+  const seconds = Math.floor((inputSeconds % 3600) % 60);
+
+  return `${hours > 0 ? hours : "0"}:${minutes < 10 ? "0" : ""}${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+}
