@@ -64,6 +64,14 @@ const TimeKeeperWidget = ({ caseId, title, taskId, isNav }) => {
         setShowWidget(false);
         setShowEntryView(false);
         setShowCaseTaskPicker(false);
+        setEntry({
+          caseId: null,
+          taskId: null,
+          notes: "",
+          currentTitle: "",
+          startTime: null,
+          userId: userStore.userId,
+        });
       }
     };
 

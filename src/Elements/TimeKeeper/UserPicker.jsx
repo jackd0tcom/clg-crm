@@ -6,8 +6,9 @@ import axios from "axios";
 const UserPicker = ({ userId, entry, setEntry }) => {
   const [userList, setUserList] = useState([]);
   const [showUserPicker, setShowUserPicker] = useState(false);
-  const [currentUser, setCurrentUser] = useState({});
+  const [currentUser, setCurrentUser] = useState(userId ? userId : {});
   const dropdownRef = useRef(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetch = async () => {
@@ -15,7 +16,8 @@ const UserPicker = ({ userId, entry, setEntry }) => {
         await axios.get("/api/getUsers").then((res) => {
           if (res.statusText === "OK") {
             setUserList(res.data);
-            setCurrentUser(res.data.filter((user) => user.userId === userId));
+            setCurrentUser(res.data.find((user) => user.userId === userId));
+            setIsLoading(false);
           }
         });
       } catch (error) {
@@ -61,22 +63,26 @@ const UserPicker = ({ userId, entry, setEntry }) => {
       {showUserPicker && (
         <div className="user-picker-wrapper" ref={dropdownRef}>
           <div className="user-picker-container">
-            {userList?.map((user) => (
-              <div
-                className="user-picker-item"
-                onClick={() => handleUserSelect(user)}
-              >
-                <div className="user-picker-first">
-                  <ProfilePic src={user.profilePic} />
-                  <p>
-                    {user.firstName} {user.lastName}
-                  </p>
+            {isLoading ? (
+              <p>Loading...</p>
+            ) : (
+              userList?.map((user) => (
+                <div
+                  className="user-picker-item"
+                  onClick={() => handleUserSelect(user)}
+                >
+                  <div className="user-picker-first">
+                    <ProfilePic src={user.profilePic} />
+                    <p>
+                      {user.firstName} {user.lastName}
+                    </p>
+                  </div>
+                  {currentUser.userId === user.userId && (
+                    <i className="fa-solid fa-check"></i>
+                  )}
                 </div>
-                {currentUser.userId === user.userId && (
-                  <i className="fa-solid fa-check"></i>
-                )}
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
       )}
