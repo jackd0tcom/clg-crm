@@ -9,6 +9,7 @@ import ExtraSettings from "../Elements/UI/ExtraSettings";
 import Loader from "../Elements/UI/Loader";
 import DetailsTab from "../Elements/Case/DetailsTab";
 import PeopleTab from "../Elements/Case/PeopleTab";
+import TimeKeeperWidget from "../Elements/TimeKeeper/TimeKeeperWidget";
 
 const Case = ({ openTaskView, refreshKey }) => {
   const { caseId } = useParams();
@@ -68,7 +69,7 @@ const Case = ({ openTaskView, refreshKey }) => {
       } else {
         const caseResponse = await axios.get(`/api/getCase/${caseId}`);
         const activityResponse = await axios.get(
-          `/api/getCaseActivities/${caseId}`
+          `/api/getCaseActivities/${caseId}`,
         );
         setCaseData(caseResponse.data);
         setActivityData(activityResponse.data);
@@ -80,15 +81,17 @@ const Case = ({ openTaskView, refreshKey }) => {
         setIsArchived(caseResponse.data.isArchived);
         setCurrentTribunal(caseResponse.data.tribunal);
         setClients(
-          caseResponse.data.people.filter((person) => person.type === "client")
+          caseResponse.data.people.filter((person) => person.type === "client"),
         );
         setAdverse(
-          caseResponse.data.people.filter((person) => person.type === "adverse")
+          caseResponse.data.people.filter(
+            (person) => person.type === "adverse",
+          ),
         );
         setOpposing(
           caseResponse.data.people.filter(
-            (person) => person.type === "opposing"
-          )
+            (person) => person.type === "opposing",
+          ),
         );
       }
     } catch (error) {
@@ -113,7 +116,7 @@ const Case = ({ openTaskView, refreshKey }) => {
   const refreshActivityData = async () => {
     try {
       const activityResponse = await axios.get(
-        `/api/getCaseActivities/${caseId}`
+        `/api/getCaseActivities/${caseId}`,
       );
       setActivityData(activityResponse.data);
     } catch (error) {
@@ -130,13 +133,13 @@ const Case = ({ openTaskView, refreshKey }) => {
       setCurrentAreas(caseResponse.data.practiceAreas);
       setIsArchived(caseResponse.data.isArchived);
       setClients(
-        caseResponse.data.people.filter((person) => person.type === "client")
+        caseResponse.data.people.filter((person) => person.type === "client"),
       );
       setAdverse(
-        caseResponse.data.people.filter((person) => person.type === "adverse")
+        caseResponse.data.people.filter((person) => person.type === "adverse"),
       );
       setOpposing(
-        caseResponse.data.people.filter((person) => person.type === "opposing")
+        caseResponse.data.people.filter((person) => person.type === "opposing"),
       );
     } catch (error) {
       console.log(error);
@@ -222,13 +225,16 @@ const Case = ({ openTaskView, refreshKey }) => {
             <Link to="/cases">
               <i className="fa-solid fa-arrow-left"></i>
             </Link>
-            <ExtraSettings
-              Id={caseId}
-              handleRefresh={refreshCaseData}
-              refreshActivityData={refreshActivityData}
-              isArchived={isArchived}
-              setIsArchived={setIsArchived}
-            />
+            <div className="case-top-bar-container">
+              <TimeKeeperWidget caseId={caseId} title={title} />
+              <ExtraSettings
+                Id={caseId}
+                handleRefresh={refreshCaseData}
+                refreshActivityData={refreshActivityData}
+                isArchived={isArchived}
+                setIsArchived={setIsArchived}
+              />
+            </div>
           </div>
           <div className="case-card">
             <div className="case-header">

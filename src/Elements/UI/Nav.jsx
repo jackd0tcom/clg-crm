@@ -6,6 +6,7 @@ import axios from "axios";
 import { NavLink } from "react-router";
 import ProfilePic from "./ProfilePic";
 import { useAuth0 } from "@auth0/auth0-react";
+import TimeKeeperWidget from "../TimeKeeper/TimeKeeperWidget";
 
 const Nav = ({ checkNotifications, userSynced }) => {
   const dispatch = useDispatch();
@@ -100,6 +101,18 @@ const Nav = ({ checkNotifications, userSynced }) => {
                 <i className="fa-solid fa-calendar-days"></i>
                 Calendar
               </NavLink>
+              <NavLink
+                to="/time-keeper"
+                className={({ isActive }) =>
+                  isActive ? "active-nav nav-button" : "inactive-nav nav-button"
+                }
+              >
+                <i className="fa-solid fa-clock"></i>
+                Time Keeper
+              </NavLink>
+              <div className="nav-buttons-container time-keeper-nav-wrapper">
+                <TimeKeeperWidget isNav={true} />
+              </div>
             </div>
             <div className="nav-buttons-container profile-buttons">
               <NavLink
@@ -124,15 +137,6 @@ const Nav = ({ checkNotifications, userSynced }) => {
                   Admin
                 </NavLink>
               )}
-              {/* <NavLink
-                to="/search"
-                className={({ isActive }) =>
-                  isActive ? "active-nav nav-button" : "inactive-nav nav-button"
-                }
-              >
-                <i className="fa-solid fa-magnifying-glass"></i>
-                Search
-              </NavLink> */}
               <NavLink
                 id="nav-profile"
                 to="/profile"

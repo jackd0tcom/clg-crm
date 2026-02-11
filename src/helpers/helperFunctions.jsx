@@ -52,7 +52,7 @@ export function formatRelativeTime(data) {
   const activityDay = new Date(
     activityDate.getFullYear(),
     activityDate.getMonth(),
-    activityDate.getDate()
+    activityDate.getDate(),
   );
 
   // Same calendar date (today)
@@ -88,7 +88,7 @@ export function findTimeDifference(data) {
   const activityDay = new Date(
     activityDate.getFullYear(),
     activityDate.getMonth(),
-    activityDate.getDate()
+    activityDate.getDate(),
   );
 
   // For future dates (negative diffInMs), we need to handle differently
@@ -197,3 +197,61 @@ export const truncateTitleLonger = (title) => {
   }
   return title;
 };
+
+export const getDuration = (entry) => {
+  const timeDifference =
+    Math.floor(new Date(entry.endTime).getTime() / 1000) -
+    Math.floor(new Date(entry.startTime).getTime() / 1000);
+  const hours = Math.floor(timeDifference / 3600);
+  const minutes = Math.floor((timeDifference % 3600) / 60);
+  const seconds = Math.floor((timeDifference % 3600) % 60);
+
+  return `${hours > 0 ? hours : "0"}:${minutes < 10 ? "0" : ""}${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+};
+
+export const formatDay = (yyyyMmDd) => {
+  const d = new Date(yyyyMmDd + "T12:00:00");
+  const weekday = d.toLocaleDateString("en-GB", { weekday: "short" });
+  const date = d.getDate();
+  const month = d.toLocaleDateString("en-GB", { month: "short" });
+  return `${weekday} ${date}, ${month}`;
+};
+
+export function firstDayOfWeek(dateObject, firstDayOfWeekIndex) {
+  const dayOfWeek = dateObject.getDay(),
+    firstDayOfWeek = new Date(dateObject),
+    diff =
+      dayOfWeek >= firstDayOfWeekIndex
+        ? dayOfWeek - firstDayOfWeekIndex
+        : 6 - dayOfWeek;
+
+  firstDayOfWeek.setDate(dateObject.getDate() - diff);
+  firstDayOfWeek.setHours(0, 0, 0, 0);
+
+  return firstDayOfWeek;
+}
+
+export function lastDayOfTheWeek(dateObject, lastDayOfWeekIndex) {
+  const dayOfWeek = dateObject.getDay(),
+    lastDay = new Date(dateObject),
+    diff = (lastDayOfWeekIndex + (7 - dateObject.getDay())) % 7;
+  lastDay.setDate(dateObject.getDate() + diff);
+  lastDay.setHours(0, 0, 0, 0);
+  return lastDay;
+}
+
+export function getDurationNumber(entry) {
+  const timeDifference =
+    Math.floor(new Date(entry.endTime).getTime() / 1000) -
+    Math.floor(new Date(entry.startTime).getTime() / 1000);
+
+  return timeDifference;
+}
+
+export function formatTimeFromSeconds(inputSeconds) {
+  const hours = Math.floor(inputSeconds / 3600);
+  const minutes = Math.floor((inputSeconds % 3600) / 60);
+  const seconds = Math.floor((inputSeconds % 3600) % 60);
+
+  return `${hours > 0 ? hours : "0"}:${minutes < 10 ? "0" : ""}${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+}

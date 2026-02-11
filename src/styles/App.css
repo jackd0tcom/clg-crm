@@ -7,6 +7,7 @@
 @import "./Loader.css";
 @import "./Profile.css";
 @import "./Admin.css";
+@import "./TimeTracker.css";
 
 #root {
   --root-bg-color-dark: rgb(18, 18, 18);
@@ -14,6 +15,7 @@
   --root-bg-color-light: rgb(246, 246, 246);
   --super-light-grey: rgb(252, 252, 252);
   --main-bg-color-light: rgb(255, 255, 255);
+  --light-light-grey: rgb(201, 201, 201);
   --light-grey: rgb(161, 161, 161);
   --grey: rgb(109, 109, 109);
   --dark-grey: rgb(54, 54, 54);
@@ -25,6 +27,7 @@
   --blue: #648dff;
   --dark-blue: #4b6cc7;
   --purple: #b651f5;
+  --dark-purple: #8539b5;
   --bright-green: rgb(67, 138, 100);
   --bright-dark-green: rgb(47, 98, 73);
   --button-active-font: rgb(33, 98, 75);
