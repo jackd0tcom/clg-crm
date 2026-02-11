@@ -1,4 +1,6 @@
 import { useEffect, useState, useRef } from "react";
+import { useDispatch } from "react-redux";
+import { timerStarted, timerStopped, timerUpdated } from "../../store/reducer";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import ProjectPicker from "./ProjectPicker";
@@ -8,10 +10,12 @@ import WidgetEntryView from "./WidgetEntryView";
 import UserPicker from "./UserPicker";
 
 const TimeKeeperWidget = ({ caseId, title, taskId, isNav }) => {
+  const dispatch = useDispatch();
   const [showWidget, setShowWidget] = useState(false);
   const userStore = useSelector((state) => state.user);
   const [showCaseTaskPicker, setShowCaseTaskPicker] = useState(false);
-  const [isRunning, setIsRunning] = useState(false);
+  const isRunning = useSelector((state) => state.isRunning);
+  const reduxStartTime = useSelector((state) => state.startTime);
   const [timeEntryId, setTimeEntryId] = useState(0);
   const [showWarning, setShowWarning] = useState(false);
   const widgetRef = useRef(null);
@@ -26,6 +30,13 @@ const TimeKeeperWidget = ({ caseId, title, taskId, isNav }) => {
     startTime: null,
     userId: userStore.userId,
   });
+
+  // When Redux says timer is running but this instance doesn't have the entry, fetch it
+  useEffect(() => {
+    if (isRunning && !timeEntryId) {
+      fetch();
+    }
+  }, [isRunning]);
 
   const navProjectTitle = entry.currentTitle ? entry.currentTitle : "";
 
@@ -50,7 +61,7 @@ const TimeKeeperWidget = ({ caseId, title, taskId, isNav }) => {
             startTime: res.data.startTime,
             currentTitle: res.data.case.title,
           });
-          setIsRunning(true);
+          dispatch(timerStarted({ startTime: res.data.startTime }));
         }
       });
     } catch (error) {
@@ -64,14 +75,16 @@ const TimeKeeperWidget = ({ caseId, title, taskId, isNav }) => {
         setShowWidget(false);
         setShowEntryView(false);
         setShowCaseTaskPicker(false);
-        setEntry({
-          caseId: null,
-          taskId: null,
-          notes: "",
-          currentTitle: "",
-          startTime: null,
-          userId: userStore.userId,
-        });
+        if(!isRunning) {
+          setEntry({
+            caseId: null,
+            taskId: null,
+            notes: "",
+            currentTitle: "",
+            startTime: null,
+            userId: userStore.userId,
+          });
+        }
       }
     };
 
@@ -82,11 +95,10 @@ const TimeKeeperWidget = ({ caseId, title, taskId, isNav }) => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [showWidget]);
+  }, [showWidget, isRunning]);
 
   const startTimer = async (entryOverride) => {
     const data = entryOverride || entry;
-    console.log(data);
     try {
       await axios
         .post("/api/time-entry/start", {
@@ -104,7 +116,7 @@ const TimeKeeperWidget = ({ caseId, title, taskId, isNav }) => {
             }),
           });
           setTimeEntryId(res.data.timeEntryId);
-          setIsRunning(true);
+          dispatch(timerStarted({ startTime: res.data.startTime }));
         });
     } catch (error) {
       console.log(error);
@@ -114,7 +126,6 @@ const TimeKeeperWidget = ({ caseId, title, taskId, isNav }) => {
   const stopTimer = async () => {
     try {
       await axios.post("/api/time-entry/stop", { timeEntryId }).then((res) => {
-        setIsRunning(false);
         setResetTimer(true);
         setEntry({
           caseId: null,
@@ -124,6 +135,7 @@ const TimeKeeperWidget = ({ caseId, title, taskId, isNav }) => {
         });
         // Reset the resetTimer flag after a brief moment
         setTimeout(() => setResetTimer(false), 100);
+        dispatch(timerStopped());
       });
     } catch (error) {
       console.log(error);
@@ -161,25 +173,24 @@ const TimeKeeperWidget = ({ caseId, title, taskId, isNav }) => {
     ).toISOString();
     const newEntry = { ...entry, startTime: newDate };
     setEntry(newEntry);
-    updateEntry(newEntry);
+    updateEntry(newEntry).then(() => {
+      dispatch(timerUpdated({ startTime: newDate }));
+    });
   };
 
   const updateEntry = async (newEntry) => {
     try {
-      await axios
-        .post("/api/time-entry/update", {
-          timeEntryId: timeEntryId,
-          notes: newEntry.notes,
-          caseId: newEntry.caseId,
-          taskId: newEntry.taskId,
-          startTime: newEntry.startTime,
-          endTime: newEntry.endTime,
-        })
-        .then((res) => {
-          console.log(res);
-        });
+      return await axios.post("/api/time-entry/update", {
+        timeEntryId: timeEntryId,
+        notes: newEntry.notes,
+        caseId: newEntry.caseId,
+        taskId: newEntry.taskId,
+        startTime: newEntry.startTime,
+        endTime: newEntry.endTime,
+      });
     } catch (error) {
       console.log(error);
+      return Promise.reject(error);
     }
   };
 
@@ -232,7 +243,11 @@ const TimeKeeperWidget = ({ caseId, title, taskId, isNav }) => {
                   <Timer
                     isRunning={isRunning}
                     reset={resetTimer}
-                    startTime={entry.startTime}
+                    startTime={
+                      isRunning && reduxStartTime != null
+                        ? reduxStartTime
+                        : entry.startTime
+                    }
                   />
                   <button
                     onClick={() => handlePlayButtonClick()}

@@ -35,8 +35,14 @@
   z-index: 999;
 }
 .nav-time-keeper {
-  left: 0;
-  top: 120%;
+  left: 100%;
+  top: -50%;
+  max-height: 380px;
+}
+.nav-time-keeper .entry-view-wrapper {
+  min-height: unset;
+  padding: 20px;
+  border-radius: 5px;
 }
 .time-keeper-warning-wrapper {
   position: absolute;
@@ -512,9 +518,13 @@
 #time-entry-start {
   cursor: pointer;
   color: var(--dark-grey);
+  padding: 5px;
+  border-radius: 5px;
+  transition: 100ms;
 }
 
 #time-entry-start:hover {
+  background-color: var(--light-light-grey);
   color: black;
 }
 
@@ -528,6 +538,7 @@
   gap: 15px;
   background-color: var(--root-bg-color-light);
   padding: 10% 15px;
+  color: black;
 }
 .entry-view-container {
   padding: 30px;
@@ -596,6 +607,7 @@
   cursor: pointer;
   border: 1px solid transparent;
   transition: 200ms;
+  color: black;
 }
 .duration-input:hover {
   background-color: var(--root-bg-color-light);
@@ -629,6 +641,7 @@
   display: flex;
   flex-direction: column;
   gap: 15px;
+  color: black;
 }
 .time-picker-container {
   display: flex;

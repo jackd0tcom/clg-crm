@@ -130,7 +130,10 @@ const WidgetEntryList = ({
                       {entry.projectTitle}
                     </div>
                     <i
-                      onClick={() => handlePressPlay(entry)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handlePressPlay(entry);
+                      }}
                       id="time-entry-start"
                       className="fa-solid fa-play"
                     ></i>

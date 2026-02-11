@@ -71,7 +71,6 @@
   border-bottom: 1px solid var(--grey);
   padding: 15px 0;
   display: flex;
-  align-items: center;
   margin-top: 30px;
 }
 .time-keeper-nav-wrapper i {
