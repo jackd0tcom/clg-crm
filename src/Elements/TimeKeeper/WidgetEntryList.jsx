@@ -19,7 +19,7 @@ const WidgetEntryList = ({
           if (res.statusText === "OK") {
             setRecentEntries(res.data.filter((entry) => entry !== null));
           } else {
-            console.log(error);
+            console.log(res);
             setRecentEntries([{}]);
           }
         });
@@ -87,59 +87,65 @@ const WidgetEntryList = ({
                 <p>{formatDay(day)}</p>
                 <p>{formatDailyDuration(dailySeconds)}</p>
               </div>
-              {entries.map((entry) => (
-                <div
-                  onClick={() => {
-                    setEntry({
-                      ...entry,
-                      currentTitle: entry.projectTitle,
-                      endTime: entry.endTime,
-                    });
-                    setShowEntryView(true);
-                  }}
-                  className="widget-entry-item"
-                  key={entry.timeEntryId}
-                >
-                  <div className="widget-entry-item-top">
-                    <p
-                      className={
-                        entry.notes
-                          ? "widget-entry-item-notes"
-                          : "widget-entry-item-notes no-notes"
-                      }
-                    >
-                      {entry.notes ? entry.notes : "Add a Description"}
-                    </p>
-                    <p>{getDuration(entry)}</p>
-                  </div>
-                  <div className="widget-entry-item-bottom">
-                    <div className="widget-entry-item-project">
-                      {entry.caseId ? (
-                        <i
-                          id="entry-case-icon"
-                          className="fa-solid fa-briefcase"
-                        ></i>
-                      ) : (
-                        <StatusIcon
-                          status={entry.status}
-                          hasIcon={true}
-                          hasTitle={false}
-                          noBg={true}
-                        />
-                      )}
-                      {entry.projectTitle}
+              {entries?.length > 0 ? (
+                entries?.map((entry) => (
+                  <div
+                    onClick={() => {
+                      setEntry({
+                        ...entry,
+                        currentTitle: entry.projectTitle,
+                        endTime: entry.endTime,
+                      });
+                      setShowEntryView(true);
+                    }}
+                    className="widget-entry-item"
+                    key={entry.timeEntryId}
+                  >
+                    <div className="widget-entry-item-top">
+                      <p
+                        className={
+                          entry.notes
+                            ? "widget-entry-item-notes"
+                            : "widget-entry-item-notes no-notes"
+                        }
+                      >
+                        {entry.notes ? entry.notes : "Add a Description"}
+                      </p>
+                      <p>{getDuration(entry)}</p>
                     </div>
-                    <i
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handlePressPlay(entry);
-                      }}
-                      id="time-entry-start"
-                      className="fa-solid fa-play"
-                    ></i>
+                    <div className="widget-entry-item-bottom">
+                      <div className="widget-entry-item-project">
+                        {entry.caseId ? (
+                          <i
+                            id="entry-case-icon"
+                            className="fa-solid fa-briefcase"
+                          ></i>
+                        ) : (
+                          <StatusIcon
+                            status={entry.status}
+                            hasIcon={true}
+                            hasTitle={false}
+                            noBg={true}
+                          />
+                        )}
+                        {entry.projectTitle}
+                      </div>
+                      <i
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handlePressPlay(entry);
+                        }}
+                        id="time-entry-start"
+                        className="fa-solid fa-play"
+                      ></i>
+                    </div>
                   </div>
+                ))
+              ) : (
+                <div className="widget-entry-item">
+                  <p>No entries yet!</p>
                 </div>
-              ))}
+              )}
             </div>
           );
         })}
