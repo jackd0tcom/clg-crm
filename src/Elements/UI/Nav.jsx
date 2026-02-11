@@ -110,43 +110,49 @@ const Nav = ({ checkNotifications, userSynced }) => {
                 <i className="fa-solid fa-clock"></i>
                 Time Keeper
               </NavLink>
+            </div>
+            <div className="nav-bottom-container">
               <div className="nav-buttons-container time-keeper-nav-wrapper">
                 <TimeKeeperWidget isNav={true} />
               </div>
-            </div>
-            <div className="nav-buttons-container profile-buttons">
-              <NavLink
-                to="/settings"
-                className={({ isActive }) =>
-                  isActive ? "active-nav nav-button" : "inactive-nav nav-button"
-                }
-              >
-                <i className="fa-solid fa-gear"></i>
-                Settings
-              </NavLink>
-              {user.isAdmin && isAuthenticated && (
+              <div className="nav-buttons-container profile-buttons">
                 <NavLink
-                  to="/admin"
+                  to="/settings"
                   className={({ isActive }) =>
                     isActive
                       ? "active-nav nav-button"
                       : "inactive-nav nav-button"
                   }
                 >
-                  <i className="fa-solid fa-user-tie"></i>
-                  Admin
+                  <i className="fa-solid fa-gear"></i>
+                  Settings
                 </NavLink>
-              )}
-              <NavLink
-                id="nav-profile"
-                to="/profile"
-                className={({ isActive }) =>
-                  isActive ? "active-nav nav-button" : "inactive-nav nav-button"
-                }
-              >
-                <ProfilePic />
-                Profile
-              </NavLink>
+                {user.isAdmin && isAuthenticated && (
+                  <NavLink
+                    to="/admin"
+                    className={({ isActive }) =>
+                      isActive
+                        ? "active-nav nav-button"
+                        : "inactive-nav nav-button"
+                    }
+                  >
+                    <i className="fa-solid fa-user-tie"></i>
+                    Admin
+                  </NavLink>
+                )}
+                <NavLink
+                  id="nav-profile"
+                  to="/profile"
+                  className={({ isActive }) =>
+                    isActive
+                      ? "active-nav nav-button"
+                      : "inactive-nav nav-button"
+                  }
+                >
+                  <ProfilePic />
+                  Profile
+                </NavLink>
+              </div>
             </div>
           </>
         )}

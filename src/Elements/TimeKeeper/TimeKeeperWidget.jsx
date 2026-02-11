@@ -75,7 +75,7 @@ const TimeKeeperWidget = ({ caseId, title, taskId, isNav }) => {
         setShowWidget(false);
         setShowEntryView(false);
         setShowCaseTaskPicker(false);
-        if(!isRunning) {
+        if (!isRunning) {
           setEntry({
             caseId: null,
             taskId: null,
@@ -198,9 +198,13 @@ const TimeKeeperWidget = ({ caseId, title, taskId, isNav }) => {
     <div className="time-keeper-widget-wrapper" ref={widgetRef}>
       <button
         className={
-          !isRunning
-            ? "time-keeper-toggle"
-            : "time-keeper-toggle running-button"
+          isNav
+            ? isRunning
+              ? "nav-time-keeper-widget running-timer"
+              : "nav-time-keeper-widget"
+            : !isRunning
+              ? "time-keeper-toggle"
+              : "time-keeper-toggle running-button"
         }
         onClick={() =>
           !showWidget ? setShowWidget(true) : setShowWidget(false)

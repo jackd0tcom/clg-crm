@@ -7,6 +7,34 @@
 .time-keeper-widget-wrapper {
   position: relative;
 }
+
+.nav-time-keeper-widget {
+  padding: 10px;
+  display: flex;
+  gap: 5px;
+  border: none;
+  background-color: var(--grey);
+  border-radius: 5px;
+  transition: 200ms;
+  cursor: pointer;
+  width: 100%;
+}
+
+.running-timer {
+  background-color: var(--blue);
+}
+.running-timer:hover {
+  background-color: var(--dark-blue) !important;
+}
+.nav-time-keeper-widget:hover {
+  border: none;
+  background-color: rgb(75, 75, 75);
+}
+.time-keeper-nav-wrapper i {
+  font-size: 1.2rem;
+  color: white;
+}
+
 .time-keeper-button-container {
   display: flex;
   align-items: center;
@@ -19,6 +47,7 @@
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
+  color: white;
 }
 
 .time-keeper-widget-container {
@@ -35,9 +64,9 @@
   z-index: 999;
 }
 .nav-time-keeper {
-  left: 100%;
-  top: -50%;
-  max-height: 380px;
+  left: 105%;
+  top: 0;
+  margin-top: -400px;
 }
 .nav-time-keeper .entry-view-wrapper {
   min-height: unset;
@@ -119,6 +148,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  width: 100%;
 }
 .time-keeper-toggle:hover {
   color: var(--grey);
@@ -295,6 +325,7 @@
   gap: 25px;
   padding: 7px;
   border-radius: 5px;
+  margin-bottom: 3px;
 }
 .filter-project-picker-task-item {
   display: flex;
@@ -304,6 +335,7 @@
   gap: 5px;
   padding: 7px;
   border-radius: 5px;
+  margin-bottom: 3px;
 }
 .filter-project-picker-item-title {
   display: flex;
@@ -514,6 +546,8 @@
 }
 #entry-case-icon {
   margin: 0px 6px;
+  color: var(--dark-grey);
+  font-size: 0.9rem;
 }
 #time-entry-start {
   cursor: pointer;
