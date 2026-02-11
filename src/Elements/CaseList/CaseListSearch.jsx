@@ -4,6 +4,7 @@ const CaseListSearch = ({
   cases,
   setCases,
   originalCases,
+  allCases,
   setOriginalCases,
   showArchived,
 }) => {
@@ -11,7 +12,7 @@ const CaseListSearch = ({
 
   // Filter cases based on search term
   useEffect(() => {
-    if (!originalCases) return;
+    if (!allCases) return;
 
     if (search.trim() === "") {
       // If search is empty, restore to the current filtered state
@@ -22,8 +23,8 @@ const CaseListSearch = ({
     } else {
       // Filter cases based on search term, but respect current archive filter
       const baseFilteredCases = showArchived
-        ? originalCases.filter((a) => a.isArchived)
-        : originalCases.filter((a) => !a.isArchived);
+        ? allCases.filter((a) => a.isArchived)
+        : allCases.filter((a) => !a.isArchived);
 
       const searchFilteredCases = baseFilteredCases.filter((caseItem) => {
         const searchTerm = search.toLowerCase();
@@ -38,7 +39,7 @@ const CaseListSearch = ({
         // Search in practice areas
         if (
           caseItem.practiceAreas?.some((area) =>
-            area.name.toLowerCase().includes(searchTerm)
+            area.name.toLowerCase().includes(searchTerm),
           )
         )
           return true;
@@ -48,7 +49,7 @@ const CaseListSearch = ({
           caseItem.people?.some((person) =>
             `${person.firstName} ${person.lastName}`
               .toLowerCase()
-              .includes(searchTerm)
+              .includes(searchTerm),
           )
         )
           return true;

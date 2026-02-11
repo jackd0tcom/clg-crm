@@ -32,24 +32,24 @@ const CaseList = ({ openTaskView, refreshKey }) => {
       // nonArchived cases === last updated cases that user is assigned to
       setNonArchivedCases(
         nonArchivedCases.filter((ca) =>
-          ca.assignees?.some((nee) => nee.userId === userStore.userId)
-        )
+          ca.assignees?.some((nee) => nee.userId === userStore.userId),
+        ),
       );
       // oldest first cases
       setOldestFirst(
         nonArchivedCases
           .filter((ca) =>
-            ca.assignees?.some((nee) => nee.userId === userStore.userId)
+            ca.assignees?.some((nee) => nee.userId === userStore.userId),
           )
-          .reverse()
+          .reverse(),
       );
       // archived cases
       setArchivedCases(archivedCases);
       //
       setOriginalCases(
         res.data.filter((ca) =>
-          ca.assignees?.some((nee) => nee.userId === userStore.userId)
-        )
+          ca.assignees?.some((nee) => nee.userId === userStore.userId),
+        ),
       ); // Keep original data for filtering
       setIsFetched(true);
     } catch (error) {
@@ -90,10 +90,11 @@ const CaseList = ({ openTaskView, refreshKey }) => {
           oldestFirst={oldestFirst}
         />
         <CaseListSearch
-          cases={cases}
+          cases={allCases}
           setCases={setCases}
           originalCases={originalCases}
           setOriginalCases={setOriginalCases}
+          allCases={allCases}
           showArchived={showArchived}
         />
         <a
