@@ -16,7 +16,7 @@ const WidgetEntryList = ({
     const fetch = async () => {
       try {
         await axios.get("/api/time-entry/getRecentUserEntries").then((res) => {
-          if (res.statusText === "OK") {
+          if (res.status === 200) {
             setRecentEntries(res.data.filter((entry) => entry !== null));
           } else {
             console.log(res);

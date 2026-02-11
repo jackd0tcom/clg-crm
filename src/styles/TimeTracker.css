@@ -359,6 +359,7 @@
 /* User Picker */
 .user-picker {
   position: relative;
+  color: black;
 }
 .user-picker-button {
   padding: 5px;
@@ -390,6 +391,9 @@
   justify-content: space-between;
   border-bottom: 1px solid var(--light-border);
   cursor: pointer;
+}
+.user-picker-item i {
+  color: var(--bright-dark-green);
 }
 .user-picker-item:hover {
   background-color: var(--root-bg-color-light);
