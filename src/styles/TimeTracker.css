@@ -721,11 +721,11 @@
   cursor: pointer;
 }
 .list-group-toggle:hover {
-  background-color: var(--main-bg-color-light);
+  background-color: var(--light-light-grey);
 }
 .show-entries {
   transition: 100ms;
-  transform: rotate(90);
+  transform: rotate(90deg);
 }
 .group-title {
   display: flex;
