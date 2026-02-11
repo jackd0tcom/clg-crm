@@ -48,8 +48,8 @@ const TimeKeeperWidget = ({ caseId, title, taskId, isNav }) => {
   const fetch = async () => {
     try {
       await axios.get("/api/time-entry/running-timer").then((res) => {
-        if (res.statusText !== "OK") {
-          console.log(error);
+        if (res.status !== 200) {
+          console.log(res);
           return;
         }
         if (res.data !== "No active entries") {
