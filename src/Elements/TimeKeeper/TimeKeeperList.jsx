@@ -42,8 +42,6 @@ const TimeKeeperList = ({ data, getEntries }) => {
     }, {}),
   );
 
-  console.log(groupedByProject);
-
   return (
     <div className="time-keeper-list">
       {showEntryView ? (

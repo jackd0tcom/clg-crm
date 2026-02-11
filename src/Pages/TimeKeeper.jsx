@@ -56,7 +56,7 @@ const TimeKeeper = () => {
   }, []);
 
   const processedData = useMemo(() => {
-    console.log("processing..", filter);
+    // console.log("processing..", filter);
     // setup data variable
     let data = [...entryList];
 
@@ -128,7 +128,7 @@ const TimeKeeper = () => {
       }
     });
 
-    console.log("Refined data", sorted);
+    // console.log("Refined data", sorted);
 
     return sorted;
   }, [filter, entryList]);
