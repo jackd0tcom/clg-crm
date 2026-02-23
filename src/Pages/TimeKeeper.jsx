@@ -70,18 +70,24 @@ const TimeKeeper = () => {
       if (!item.startTime) {
         return false;
       }
-      // Date range
+      // Date range (normalize in case startDate/endDate are Date objects or timestamps)
+      const rangeStart = filter.dateRange.startDate
+        ? new Date(filter.dateRange.startDate)
+        : null;
+      const rangeEnd = filter.dateRange.endDate
+        ? new Date(filter.dateRange.endDate)
+        : null;
       if (
-        filter.dateRange.startDate &&
+        rangeStart &&
         item.startTime &&
-        item.startTime < filter.dateRange.startDate?.toISOString()
+        item.startTime < rangeStart.toISOString()
       ) {
         return false;
       }
       if (
-        filter.dateRange.endDate &&
+        rangeEnd &&
         item.startTime &&
-        item.startTime > filter.dateRange.endDate?.toISOString()
+        item.startTime > rangeEnd.toISOString()
       ) {
         return false;
       }

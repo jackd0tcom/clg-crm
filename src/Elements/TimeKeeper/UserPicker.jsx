@@ -58,7 +58,7 @@ const UserPicker = ({ userId, entry, setEntry }) => {
   return (
     <div className="user-picker">
       <button onClick={setShowUserPicker} className="user-picker-button">
-        <ProfilePic src={currentUser.profilePic} />
+        {currentUser.profilePic && <ProfilePic src={currentUser.profilePic} />}
       </button>
       {showUserPicker && (
         <div className="user-picker-wrapper" ref={dropdownRef}>

@@ -596,6 +596,7 @@
 }
 .picker-notes-wrapper {
   display: flex;
+  align-items: center;
   gap: 10px;
   width: 100%;
   justify-content: space-between;
@@ -803,7 +804,7 @@
 .time-keeper-list-head,
 .time-keeper-list-item {
   display: grid;
-  grid-template-columns: 0.25fr 2fr 2fr 1fr 1fr;
+  grid-template-columns: 0.2fr 2fr 2fr 1fr 1fr;
   gap: 10px;
   align-items: center;
   font-size: 0.9rem;

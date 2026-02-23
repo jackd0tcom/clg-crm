@@ -111,26 +111,33 @@ const FilterDateRangeSelector = ({ filter, setFilter }) => {
     let newStart = new Date(startDate);
     let newEnd = new Date(endDate);
     if (quickSelect === "This Week") {
-      setStartDate(newStart.setDate(newStart.getDate() + 7));
-      setEndDate(newEnd.setDate(newEnd.getDate() + 7));
+      newStart.setDate(newStart.getDate() + 7);
+      newEnd.setDate(newEnd.getDate() + 7);
+      setStartDate(newStart);
+      setEndDate(newEnd);
     }
     if (quickSelect === "This Month") {
-      setStartDate(newStart.setMonth(newStart.getMonth() + 1));
-      setEndDate(newEnd.setMonth(newEnd.getMonth() + 1));
+      newStart.setMonth(newStart.getMonth() + 1);
+      newEnd.setMonth(newEnd.getMonth() + 1);
+      setStartDate(newStart);
+      setEndDate(newEnd);
     }
     if (quickSelect === "This Quarter") {
       newStart.setMonth(newStart.getMonth() + 3);
-      const newEnd = new Date(
+      const quarterEnd = new Date(
         newStart.getFullYear(),
         newStart.getMonth() + 3,
         0,
       );
       setStartDate(newStart);
-      setEndDate(newEnd);
+      setEndDate(quarterEnd);
+      newEnd = quarterEnd;
     }
     if (quickSelect === "This Year") {
-      setStartDate(newStart.setFullYear(newStart.getFullYear() + 1));
-      setEndDate(newEnd.setFullYear(newEnd.getFullYear() + 1));
+      newStart.setFullYear(newStart.getFullYear() + 1);
+      newEnd.setFullYear(newEnd.getFullYear() + 1);
+      setStartDate(newStart);
+      setEndDate(newEnd);
     }
     setFilter({
       ...filter,
@@ -143,26 +150,33 @@ const FilterDateRangeSelector = ({ filter, setFilter }) => {
     let newStart = new Date(startDate);
     let newEnd = new Date(endDate);
     if (quickSelect === "This Week") {
-      setStartDate(newStart.setDate(newStart.getDate() - 7));
-      setEndDate(newEnd.setDate(newEnd.getDate() - 7));
-    }
-    if (quickSelect === "This Month") {
-      setStartDate(newStart.setMonth(newStart.getMonth() - 1));
-      setEndDate(newEnd.setMonth(newEnd.getMonth() - 1));
-    }
-    if (quickSelect === "This Quarter") {
-      newStart.setMonth(newStart.getMonth() - 3);
-      const newEnd = new Date(
-        newStart.getFullYear(),
-        newStart.getMonth() - 3,
-        0,
-      );
+      newStart.setDate(newStart.getDate() - 7);
+      newEnd.setDate(newEnd.getDate() - 7);
       setStartDate(newStart);
       setEndDate(newEnd);
     }
+    if (quickSelect === "This Month") {
+      newStart.setMonth(newStart.getMonth() - 1);
+      newEnd.setMonth(newEnd.getMonth() - 1);
+      setStartDate(newStart);
+      setEndDate(newEnd);
+    }
+    if (quickSelect === "This Quarter") {
+      newStart.setMonth(newStart.getMonth() - 3);
+      const quarterEnd = new Date(
+        newStart.getFullYear(),
+        newStart.getMonth() + 3,
+        0,
+      );
+      setStartDate(newStart);
+      setEndDate(quarterEnd);
+      newEnd = quarterEnd;
+    }
     if (quickSelect === "This Year") {
-      setStartDate(newStart.setFullYear(newStart.getFullYear() - 1));
-      setEndDate(newEnd.setFullYear(newEnd.getFullYear() - 1));
+      newStart.setFullYear(newStart.getFullYear() - 1);
+      newEnd.setFullYear(newEnd.getFullYear() - 1);
+      setStartDate(newStart);
+      setEndDate(newEnd);
     }
     setFilter({
       ...filter,
