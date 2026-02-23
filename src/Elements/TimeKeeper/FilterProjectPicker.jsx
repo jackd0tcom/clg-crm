@@ -14,7 +14,7 @@ const FilterProjectPicker = ({ filter, setFilter }) => {
   const getCasesWithTasks = async () => {
     try {
       await axios.get("/api/getCasesWithTasks").then((res) => {
-        if (!res.statusText === "OK") {
+        if (!res.status === 200) {
           console.log(error);
           return;
         }

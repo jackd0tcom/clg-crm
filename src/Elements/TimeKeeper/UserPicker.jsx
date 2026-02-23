@@ -14,7 +14,7 @@ const UserPicker = ({ userId, entry, setEntry }) => {
     const fetch = async () => {
       try {
         await axios.get("/api/getUsers").then((res) => {
-          if (res.statusText === "OK") {
+          if (res.status === 200) {
             setUserList(res.data);
             setCurrentUser(res.data.find((user) => user.userId === userId));
             setIsLoading(false);

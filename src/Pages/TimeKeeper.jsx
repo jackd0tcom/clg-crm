@@ -40,7 +40,7 @@ const TimeKeeper = () => {
   const getEntries = async () => {
     try {
       await axios.get("/api/time-entry/getUserEntries").then((res) => {
-        if (!res.statusText === "OK") {
+        if (!res.status === 200) {
           console.log(res);
           return;
         }
