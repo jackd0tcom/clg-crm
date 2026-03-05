@@ -174,11 +174,7 @@ const PersonInput = ({
         formatDate();
         return;
       }
-      if (
-        fieldName === "phoneNumber" ||
-        fieldName === "SSN" ||
-        fieldName === "zip"
-      ) {
+      if (fieldName === "SSN" || fieldName === "zip") {
         const data = input.replace(/[^0-9]/g, "");
         saveInput(data);
       } else saveInput(input);
@@ -196,11 +192,7 @@ const PersonInput = ({
           formatDate();
           return;
         }
-        if (
-          fieldName === "phoneNumber" ||
-          fieldName === "SSN" ||
-          fieldName === "zip"
-        ) {
+        if (fieldName === "SSN" || fieldName === "zip") {
           const data = input.replace(/[^0-9]/g, "");
           saveInput(data);
         } else saveInput(input);
