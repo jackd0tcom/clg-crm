@@ -38,27 +38,10 @@ const PersonInput = ({
     firstName: { mask: /^[a-zA-Z]+$/ },
     lastName: { mask: /^[a-zA-Z]+$/ },
     address: null,
-    city: { mask: /^[a-zA-Z]+$/ },
+    city: null,
     state: { mask: /^[a-zA-Z]+$/ },
     zip: { mask: /^\d{0,6}$/ },
-    phoneNumber: {
-      mask: [
-        "(",
-        /\d/,
-        /\d/,
-        /\d/,
-        ")",
-        " ",
-        /\d/,
-        /\d/,
-        /\d/,
-        "-",
-        /\d/,
-        /\d/,
-        /\d/,
-        /\d/,
-      ],
-    },
+    phoneNumber: null,
     dob: {
       mask: [/\d/, /\d/, "-", /\d/, /\d/, "-", /\d/, /\d/, /\d/, /\d/],
     },
@@ -277,7 +260,7 @@ const PersonInput = ({
             }}
           />
         )}
-        {type === "adverse" && fieldName === "email" && (
+        {type !== "opposing" && fieldName === "email" && (
           <input
             className="person-input-field"
             ref={maskedInputRef}

@@ -752,6 +752,12 @@ div.case-task-container
   column-gap: 15px;
   row-gap: 15px;
 }
+.small-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-column: 1 / -1;
+  gap: 15px;
+}
 .person-input-label-wrapper {
   display: flex;
   justify-content: space-between;

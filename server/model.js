@@ -119,17 +119,8 @@ Person.init(
       },
     },
     phoneNumber: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: true,
-      validate: {
-        isNumeric: {
-          msg: "Phone number must contain only digits.",
-        },
-        len: {
-          args: [10, 15],
-          msg: "Phone number length is invalid.",
-        },
-      },
     },
     dob: {
       type: DataTypes.DATEONLY,
