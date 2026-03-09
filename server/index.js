@@ -16,6 +16,7 @@ import cleanupScheduler from "./services/cleanupScheduler.js";
 import adminCtrl from "./controllers/adminCtrl.js";
 import commentCtrl from "./controllers/commentCtrl.js";
 import timeCtrl from "./controllers/timeCtrl.js";
+import invoiceCtrl from "./controllers/invoiceCtrl.js";
 
 import { requireAccess, requireAdmin } from "./middleware/authMiddleware.js";
 import {
@@ -117,6 +118,9 @@ const {
   getRecentUserEntries,
   newEntry,
 } = timeCtrl;
+
+const { getInvoice, getInvoices, markAsPaid, newInvoice, deleteInvoice } =
+  invoiceCtrl;
 
 // Express setup
 const app = express();
@@ -281,6 +285,13 @@ app.post("/api/time-entry/delete", deleteEntry);
 app.get("/api/time-entry/running-timer", runningTimer);
 app.get("/api/time-entry/getUserEntries", getUserEntries);
 app.get("/api/time-entry/getRecentUserEntries", getRecentUserEntries);
+
+// Invoice endpoints
+app.get("/api/getInvoice", getInvoice);
+app.get("/api/getInvoices", getInvoices);
+app.post("/api/markAsPaid", markAsPaid);
+app.post("/api/newInvoice", newInvoice);
+app.post("/api/deleteInvoice", deleteInvoice);
 
 // user access check endpoint
 app.get("/api/user/check-access", adminCtrl.checkUserAccess);

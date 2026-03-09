@@ -20,6 +20,7 @@ import { addRecentItem } from "./helpers/recentItemsHelper";
 import Admin from "./Pages/Admin.jsx";
 import Denied from "./Pages/Denied.jsx";
 import TimeKeeper from "./Pages/TimeKeeper.jsx";
+import InvoiceList from "./Pages/InvoiceList.jsx";
 
 function App() {
   const userStore = useSelector((state) => state.user);
@@ -211,6 +212,12 @@ function App() {
                 path="/time-keeper"
                 element={
                   !isAuthenticated ? <Navigate to="/login" /> : <TimeKeeper />
+                }
+              />
+              <Route
+                path="/invoices"
+                element={
+                  !isAuthenticated ? <Navigate to="/login" /> : <InvoiceList />
                 }
               />
               <Route

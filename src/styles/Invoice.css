@@ -1,0 +1,31 @@
+.invoice-page-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.invoice-list {
+  margin: 15px;
+  display: flex;
+  flex-direction: column;
+}
+.invoice-list-item {
+  display: grid;
+  grid-template-columns: 0.5fr 3fr 1fr 1fr 1fr;
+  border-bottom: 1px solid var(--light-border);
+  padding: 8px 15px;
+  align-items: center;
+  justify-items: start;
+}
+.invoice-status {
+  font-size: 0.9rem;
+  color: white;
+  border-radius: 5px;
+  padding: 4px 12px;
+}
+.invoice-draft {
+  background-color: var(--light-light-grey);
+  color: black;
+}
+.invoice-paid {
+  background-color: var(--bright-green);
+}

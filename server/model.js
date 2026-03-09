@@ -571,9 +571,45 @@ TimeEntry.init(
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
+    invoiceId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    isPaid: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
   },
   {
     modelName: "timeEntry",
+    sequelize: db,
+    timestamps: true,
+  },
+);
+
+class Invoice extends Model {}
+Invoice.init(
+  {
+    invoiceId: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    invoiceTitle: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    isPaid: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+  },
+  {
+    modelName: "invoice",
     sequelize: db,
     timestamps: true,
   },
@@ -746,6 +782,16 @@ Case.hasMany(TimeEntry, {
   as: "timeEntries",
 });
 
+// Invoice
+TimeEntry.belongsTo(Invoice, {
+  foreignKey: "invoiceId",
+  as: "invoice",
+});
+Invoice.hasMany(TimeEntry, {
+  foreignKey: "invoiceId",
+  as: "timeEntries",
+});
+
 if (process.argv[1] === url.fileURLToPath(import.meta.url)) {
   console.log("Syncing database...");
   await db.sync({ alter: true });
@@ -769,4 +815,5 @@ export {
   Tribunal,
   CaseTribunal,
   TimeEntry,
+  Invoice,
 };

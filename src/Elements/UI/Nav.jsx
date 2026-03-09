@@ -110,6 +110,15 @@ const Nav = ({ checkNotifications, userSynced }) => {
                 <i className="fa-solid fa-clock"></i>
                 Time Keeper
               </NavLink>
+              <NavLink
+                to="/invoices"
+                className={({ isActive }) =>
+                  isActive ? "active-nav nav-button" : "inactive-nav nav-button"
+                }
+              >
+                <i class="fa-solid fa-file-invoice"></i>
+                Invoices
+              </NavLink>
             </div>
             <div className="nav-bottom-container">
               <div className="nav-buttons-container time-keeper-nav-wrapper">

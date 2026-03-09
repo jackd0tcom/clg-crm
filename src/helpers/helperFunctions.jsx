@@ -209,6 +209,14 @@ export const getDuration = (entry) => {
   return `${hours > 0 ? hours : "0"}:${minutes < 10 ? "0" : ""}${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
 };
 
+export const getDurationFromNumber = (number) => {
+  const hours = Math.floor(number / 3600);
+  const minutes = Math.floor((number % 3600) / 60);
+  const seconds = Math.floor((number % 3600) % 60);
+
+  return `${hours > 0 ? hours : "0"}:${minutes < 10 ? "0" : ""}${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+};
+
 export const formatDay = (yyyyMmDd) => {
   const d = new Date(yyyyMmDd + "T12:00:00");
   const weekday = d.toLocaleDateString("en-GB", { weekday: "short" });

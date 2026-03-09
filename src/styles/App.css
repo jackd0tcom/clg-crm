@@ -8,6 +8,7 @@
 @import "./Profile.css";
 @import "./Admin.css";
 @import "./TimeTracker.css";
+@import "./Invoice.css";
 
 #root {
   --root-bg-color-dark: rgb(18, 18, 18);

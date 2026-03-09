@@ -1,5 +1,5 @@
 import connectToDB from "./db.js";
-import { TimeEntry } from "./model.js";
+import { TimeEntry, Invoice } from "./model.js";
 
 const db = await connectToDB(
   process.env.DATABASE_URL || "postgresql:///clg-db",
@@ -8,6 +8,16 @@ const db = await connectToDB(
 const now = new Date();
 const ms = (d, h, m) =>
   new Date(now - d * 24 * 60 * 60 * 1000 - h * 60 * 60 * 1000 - m * 60 * 1000);
+
+// Invoices (userId 6 to match time entries; run after main seed so user 6 exists)
+const invoices = [
+  { userId: 6, invoiceTitle: "CLG 001", isPaid: true },
+  { userId: 6, invoiceTitle: "P1P 001", isPaid: false },
+  { userId: 6, invoiceTitle: "CLG 003", isPaid: true },
+];
+
+const createdInvoices = await Invoice.bulkCreate(invoices);
+const [inv1, inv2, inv3] = createdInvoices;
 
 const timeEntries = [
   {
@@ -18,6 +28,8 @@ const timeEntries = [
     startTime: ms(2, 11, 30),
     endTime: ms(2, 9, 0),
     isRunning: false,
+    invoiceId: inv1.invoiceId,
+    isPaid: true,
   },
   {
     userId: 6,
@@ -27,6 +39,8 @@ const timeEntries = [
     startTime: ms(1, 15, 45),
     endTime: ms(1, 14, 0),
     isRunning: false,
+    invoiceId: inv1.invoiceId,
+    isPaid: true,
   },
   {
     userId: 6,
@@ -36,6 +50,8 @@ const timeEntries = [
     startTime: ms(3, 12, 0),
     endTime: ms(3, 10, 0),
     isRunning: false,
+    invoiceId: inv1.invoiceId,
+    isPaid: true,
   },
   {
     userId: 6,
@@ -45,6 +61,8 @@ const timeEntries = [
     startTime: ms(5, 10, 15),
     endTime: ms(5, 9, 30),
     isRunning: false,
+    invoiceId: inv2.invoiceId,
+    isPaid: false,
   },
   {
     userId: 6,
@@ -54,6 +72,8 @@ const timeEntries = [
     startTime: ms(1, 11, 50),
     endTime: ms(1, 11, 0),
     isRunning: false,
+    invoiceId: inv2.invoiceId,
+    isPaid: false,
   },
   {
     userId: 6,
@@ -63,6 +83,8 @@ const timeEntries = [
     startTime: ms(4, 16, 20),
     endTime: ms(4, 13, 0),
     isRunning: false,
+    invoiceId: inv2.invoiceId,
+    isPaid: false,
   },
   {
     userId: 6,
@@ -72,6 +94,8 @@ const timeEntries = [
     startTime: ms(2, 9, 30),
     endTime: ms(2, 8, 0),
     isRunning: false,
+    invoiceId: inv3.invoiceId,
+    isPaid: true,
   },
   {
     userId: 6,
@@ -186,5 +210,7 @@ const timeEntries = [
 ];
 
 const created = await TimeEntry.bulkCreate(timeEntries);
-console.log(`Seeded ${created.length} time entries (userId 6).`);
+console.log(
+  `Seeded ${createdInvoices.length} invoices and ${created.length} time entries (userId 6).`,
+);
 await db.close();
