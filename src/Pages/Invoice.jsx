@@ -20,6 +20,7 @@ const Invoice = () => {
   const [payTo, setPayTo] = useState("");
   const [isSettingRounding, setIsSettingRounding] = useState(false);
   const [savingStatus, setSavingStatus] = useState("Save");
+  const [paidStatus, setPaidStatus] = useState("Mark as paid");
   const [isViewing, setIsViewing] = useState(false);
   const [somethingToSave, setSomethingToSave] = useState(false);
   const dropdownRef = useRef(null);
@@ -55,6 +56,9 @@ const Invoice = () => {
         setDefaultRate(data.settings.defaultRate);
         setPayTo(data.payTo ?? data.settings.payTo);
         setBilledTo(data.billTo ?? "");
+        if (invoiceData.isPaid) {
+          setPaidStatus("Paid");
+        }
 
         const entries = data?.entries ?? [];
         const byProject = entries.reduce((acc, entry) => {
@@ -140,6 +144,32 @@ const Invoice = () => {
     <div className="invoice-page-wrapper">
       <div className="page-header">
         <h2 className="section-heading">Invoice</h2>
+        <div className="invoice-id-wrapper">
+          <p>Invoice ID:</p>
+          <input
+            type="text"
+            className="invoice-id-input"
+            value={invoiceData.invoiceTitle}
+            onChange={(e) => {
+              setSomethingToSave(true);
+              setInvoiceData({ ...invoiceData, invoiceTitle: e.target.value });
+            }}
+          />
+          {!isViewing && (
+            <button
+              className={
+                invoiceData.isPaid ? "paid-button marked-paid" : "paid-button"
+              }
+              onClick={() => {
+                setInvoiceData({ ...invoiceData, isPaid: !invoiceData.isPaid });
+                handleSaveInvoice();
+                setPaidStatus("Paid");
+              }}
+            >
+              {paidStatus}
+            </button>
+          )}
+        </div>
         <div className="invoice-buttons-wrapper">
           {!isViewing && (
             <button

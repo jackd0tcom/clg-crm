@@ -12,6 +12,31 @@
   display: flex;
   gap: 15px;
 }
+.invoice-id-wrapper {
+  display: flex;
+  gap: 10px;
+  font-size: 0.9rem;
+  align-items: center;
+}
+
+.invoice-id-input {
+  border: 1px solid var(--light-border);
+  border-radius: 5px;
+  padding: 10px;
+}
+.paid-button {
+  font-size: 0.9rem;
+  border: 1px solid var(--light-border);
+  background-color: var(--bright-green);
+  color: white;
+}
+.paid-button:hover {
+  background-color: var(--bright-dark-green);
+  color: white;
+}
+.marked-paid {
+  background-color: #8bbda1;
+}
 
 .invoice-save-button {
   font-size: 0.9rem;

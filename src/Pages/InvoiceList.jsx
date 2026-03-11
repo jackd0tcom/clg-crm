@@ -61,7 +61,7 @@ const InvoiceList = () => {
               >
                 <ProfilePic />
                 <p>{invoice.invoiceTitle}</p>
-                {invoice.isPaid ? (
+                {!invoice.isPaid ? (
                   <p className="invoice-status invoice-draft">Draft</p>
                 ) : (
                   <p className="invoice-status invoice-paid">Paid</p>
