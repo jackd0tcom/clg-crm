@@ -242,6 +242,8 @@ export default {
         invoiceTitle: invoiceData.invoiceTitle,
         roundingAmount: invoiceData.roundingAmount,
         isPaid: invoiceData.isPaid,
+        billTo: invoiceData.billTo,
+        payTo: invoiceData.payTo,
       });
 
       const entries = invoiceData.entries ?? [];

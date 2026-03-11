@@ -616,6 +616,14 @@ Invoice.init(
       defaultValue: 15,
       allowNull: false,
     },
+    payTo: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    billTo: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
   },
   {
     modelName: "invoice",
