@@ -14,11 +14,13 @@ const InvoiceItem = ({
   index,
   projectIndex,
   rounding,
+  setSomethingToSave,
 }) => {
   const [rate, setRate] = useState(item.rate ?? defaultRate);
-  const [showTrash, setShowTrash] = useState(false);
+  const [showTrash, setShowTrash] = useState(true);
 
   const handleRateChange = (e) => {
+    setSomethingToSave(true);
     setRate(e.target.value);
     const currentData = [...groupedData];
     currentData[projectIndex][1][index].rate = e.target.value;
@@ -26,6 +28,7 @@ const InvoiceItem = ({
   };
 
   const handleDeleteItem = () => {
+    setSomethingToSave(true);
     const newItems = groupedData[projectIndex][1].filter(
       (_, idx) => idx !== index,
     );
@@ -50,13 +53,15 @@ const InvoiceItem = ({
       <input type="number" value={rate} onChange={(e) => handleRateChange(e)} />
       <p>{getRoundedDuration(item, rounding)}</p>
       <div className="amount-wrapper">
-        <p>${getRoundedAmountOfEntry(rate, item, rounding)}</p>
+        <p>{getRoundedAmountOfEntry(rate, item, rounding)}</p>
       </div>
       {showTrash && (
-        <i
-          onClick={() => handleDeleteItem()}
-          className="fa-solid fa-trash trash-button"
-        ></i>
+        <div className="trash-wrapper">
+          <i
+            onClick={() => handleDeleteItem()}
+            className="fa-solid fa-trash trash-button"
+          ></i>
+        </div>
       )}
     </div>
   );

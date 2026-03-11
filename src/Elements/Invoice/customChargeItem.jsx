@@ -1,11 +1,18 @@
 import { useState } from "react";
 
-const CustomChargeItem = ({ item, invoiceData, setInvoiceData, index }) => {
+const CustomChargeItem = ({
+  item,
+  invoiceData,
+  setInvoiceData,
+  index,
+  setSomethingToSave,
+}) => {
   const [amount, setAmount] = useState(item.amount);
   const [description, setDescription] = useState(item.description);
   const [showTrash, setShowTrash] = useState(false);
 
   const handleAmountChange = (e) => {
+    setSomethingToSave(true);
     setAmount(e.target.value);
     setInvoiceData({
       ...invoiceData,
@@ -16,6 +23,7 @@ const CustomChargeItem = ({ item, invoiceData, setInvoiceData, index }) => {
   };
 
   const handleDescriptionChange = (e) => {
+    setSomethingToSave(true);
     setDescription(e.target.value);
     setInvoiceData({
       ...invoiceData,
@@ -26,6 +34,7 @@ const CustomChargeItem = ({ item, invoiceData, setInvoiceData, index }) => {
   };
 
   const handleDeleteItem = () => {
+    setSomethingToSave(true);
     const newCharges = invoiceData.customCharges.filter(
       (charge, idx) => idx !== index,
     );
@@ -58,10 +67,12 @@ const CustomChargeItem = ({ item, invoiceData, setInvoiceData, index }) => {
         />
       </div>
       {showTrash && (
-        <i
-          onClick={() => handleDeleteItem()}
-          className="fa-solid fa-trash trash-button"
-        ></i>
+        <div className="trash-wrapper">
+          <i
+            onClick={() => handleDeleteItem()}
+            className="fa-solid fa-trash trash-button"
+          ></i>
+        </div>
       )}
     </div>
   );

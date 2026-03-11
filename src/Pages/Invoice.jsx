@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useParams } from "react-router";
 import Loader from "../Elements/UI/Loader";
@@ -19,8 +19,10 @@ const Invoice = () => {
   const [billedTo, setBilledTo] = useState("");
   const [payTo, setPayTo] = useState("");
   const [isSettingRounding, setIsSettingRounding] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
+  const [savingStatus, setSavingStatus] = useState("Save");
   const [isViewing, setIsViewing] = useState(false);
+  const [somethingToSave, setSomethingToSave] = useState(false);
+  const dropdownRef = useRef(null);
   const customChargeTotal =
     invoiceData?.customCharges?.length > 0
       ? invoiceData?.customCharges?.reduce((acc, charge) => {
@@ -70,7 +72,24 @@ const Invoice = () => {
     }
   };
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsSettingRounding(false);
+      }
+    };
+
+    if (isSettingRounding) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isSettingRounding]);
+
   const handleAddCustomCharge = () => {
+    setSomethingToSave(true);
     const currentData = invoiceData;
     setInvoiceData({
       ...currentData,
@@ -93,7 +112,7 @@ const Invoice = () => {
 
   const handleSaveInvoice = async () => {
     try {
-      setIsSaving(true);
+      setSavingStatus("Saving...");
       const updatedInvoiceData = {
         ...invoiceData,
         billTo: billedTo,
@@ -103,8 +122,13 @@ const Invoice = () => {
         .post("/api/saveInvoice", { invoiceData: updatedInvoiceData })
         .then((res) => {
           if (res.status === 200) {
-            console.log(res.data);
-            setIsSaving(false);
+            setTimeout(() => {
+              setSavingStatus("Saved");
+            }, 800);
+            setTimeout(() => {
+              setSavingStatus("Save");
+              setSomethingToSave(false);
+            }, 1800);
           }
         });
     } catch (error) {
@@ -116,18 +140,30 @@ const Invoice = () => {
     <div className="invoice-page-wrapper">
       <div className="page-header">
         <h2 className="section-heading">Invoice</h2>
-        <button
-          onClick={() => handleSaveInvoice()}
-          className="invoice-save-button"
-        >
-          {isSaving ? "Saving..." : "Save"}
-        </button>
-        <button
-          onClick={() => setIsViewing(!isViewing)}
-          className="invoice-save-button"
-        >
-          {isViewing ? "Close" : "View"}
-        </button>
+        <div className="invoice-buttons-wrapper">
+          {!isViewing && (
+            <button
+              disabled={!somethingToSave}
+              onClick={() => handleSaveInvoice()}
+              className={
+                savingStatus !== "Save"
+                  ? "invoice-save-button saving"
+                  : "invoice-save-button"
+              }
+            >
+              {savingStatus}
+              {savingStatus === "Save"
+                ? somethingToSave && <i class="fa-solid fa-floppy-disk"></i>
+                : savingStatus === "Saved" && <i class="fa-solid fa-check"></i>}
+            </button>
+          )}
+          <button
+            onClick={() => setIsViewing(!isViewing)}
+            className="invoice-view-button"
+          >
+            {isViewing ? "Close PDF" : "View PDF"}
+          </button>
+        </div>
       </div>
       {isViewing ? (
         <PDFInvoice invoiceData={invoiceData} />
@@ -152,7 +188,7 @@ const Invoice = () => {
                 onChange={(e) => setPayTo(e.target.value)}
               ></textarea>
             </div>
-            <div className="rate-wrapper">
+            <div className="billing-wrapper">
               <p>Default Rate:</p>
               <input
                 type="number"
@@ -160,15 +196,18 @@ const Invoice = () => {
                 onChange={(e) => setDefaultRate(e.target.value)}
               />
             </div>
-            <div className="rounding-wrapper">
-              <button
-                onClick={() => setIsSettingRounding(true)}
-                className="rounding-button"
-              >
-                Rounding {invoiceData.roundingAmount} min
-              </button>
+            <div className="billing-wrapper">
+              <p>Rounding</p>
+              <div>
+                <button
+                  onClick={() => setIsSettingRounding(true)}
+                  className="rounding-button"
+                >
+                  {invoiceData.roundingAmount} min
+                </button>
+              </div>
               {isSettingRounding && (
-                <div className="rounding-dropdown">
+                <div className="rounding-dropdown" ref={dropdownRef}>
                   <p
                     onClick={() => {
                       setIsSettingRounding(false);
@@ -225,10 +264,12 @@ const Invoice = () => {
                 {groupedData?.map((project, projectIndex) => (
                   <div className="invoice-project-item">
                     <div className="invoice-project-item-head">
+                      <i className="fa-solid fa-briefcase"></i>
                       <p>{project[0]}</p>
                     </div>
                     {project[1].map((item, index) => (
                       <InvoiceItem
+                        setSomethingToSave={setSomethingToSave}
                         key={`${projectIndex}-${index}`}
                         setGroupedData={setGroupedData}
                         groupedData={groupedData}
@@ -243,6 +284,7 @@ const Invoice = () => {
                 ))}
                 {invoiceData?.customCharges?.map((charge, index) => (
                   <CustomChargeItem
+                    setSomethingToSave={setSomethingToSave}
                     item={charge}
                     index={index}
                     invoiceData={invoiceData}
@@ -266,9 +308,6 @@ const Invoice = () => {
               <div className="amount-wrapper">
                 <p>${totalAmount}</p>
               </div>
-            </div>
-            <div className="total-wrapper">
-              <p>${totalAmount}</p>
             </div>
           </div>
         </>
