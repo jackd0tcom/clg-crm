@@ -170,7 +170,7 @@
   margin: 15px;
   border-radius: 5px;
   display: grid;
-  grid-template-columns: 2fr 1fr 0.5fr;
+  grid-template-columns: 2fr 1fr 1fr;
   align-items: center;
   justify-items: flex-start;
   gap: 15px;
@@ -180,11 +180,26 @@
   align-items: center;
   gap: 30px;
 }
+.time-keeper-filter-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
 
 .new-entry-button-wrapper {
   display: flex;
   justify-content: flex-end;
   width: 100%;
+}
+.new-invoice-button {
+  font-size: 0.9rem;
+  border: 1px solid var(--light-border);
+  transition: 200ms;
+}
+.new-invoice-button:hover {
+  background-color: var(--light-light-grey);
+  color: black;
 }
 
 .new-entry-button {

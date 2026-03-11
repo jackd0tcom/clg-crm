@@ -7,10 +7,12 @@ import {
   getDurationFromNumber,
 } from "../helpers/helperFunctions";
 import Loader from "../Elements/UI/Loader";
+import { useNavigate } from "react-router";
 
 const InvoiceList = () => {
   const [invoiceList, setInvoiceList] = useState([{}]);
   const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
 
   const fetchInvoices = async () => {
     try {
@@ -53,7 +55,10 @@ const InvoiceList = () => {
               0,
             );
             return (
-              <div className="invoice-list-item">
+              <div
+                className="invoice-list-item"
+                onClick={() => navigate(`/invoice/${invoice.invoiceId}`)}
+              >
                 <ProfilePic />
                 <p>{invoice.invoiceTitle}</p>
                 {invoice.isPaid ? (

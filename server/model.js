@@ -579,6 +579,10 @@ TimeEntry.init(
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
+    rate: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
   },
   {
     modelName: "timeEntry",
@@ -607,11 +611,67 @@ Invoice.init(
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
+    roundingAmount: {
+      type: DataTypes.INTEGER,
+      defaultValue: 15,
+      allowNull: false,
+    },
   },
   {
     modelName: "invoice",
     sequelize: db,
     timestamps: true,
+  },
+);
+
+class CustomCharge extends Model {}
+CustomCharge.init(
+  {
+    chargeId: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    invoiceId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    description: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    amount: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+  },
+  {
+    modelName: "customCharge",
+    sequelize: db,
+    timestamps: true,
+  },
+);
+
+class UserSettings extends Model {}
+UserSettings.init(
+  {
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      unique: true,
+    },
+    defaultRate: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    payTo: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+  },
+  {
+    modelName: "userSettings",
+    sequelize: db,
   },
 );
 
@@ -792,6 +852,25 @@ Invoice.hasMany(TimeEntry, {
   as: "timeEntries",
 });
 
+UserSettings.belongsTo(User, {
+  foreignKey: "userId",
+  as: "user",
+});
+
+User.hasOne(UserSettings, {
+  foreignKey: "userId",
+  as: "settings",
+});
+
+CustomCharge.belongsTo(Invoice, {
+  foreignKey: "invoiceId",
+  as: "invoice",
+});
+Invoice.hasMany(CustomCharge, {
+  foreignKey: "invoiceId",
+  as: "customCharges",
+});
+
 if (process.argv[1] === url.fileURLToPath(import.meta.url)) {
   console.log("Syncing database...");
   await db.sync({ alter: true });
@@ -816,4 +895,6 @@ export {
   CaseTribunal,
   TimeEntry,
   Invoice,
+  UserSettings,
+  CustomCharge,
 };

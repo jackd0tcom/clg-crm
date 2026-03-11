@@ -218,6 +218,13 @@ button:hover,
   width: 100%;
   margin: 15px;
 }
+.page-header {
+  padding: 15px 15px 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--light-border);
+}
 .section-heading {
   font-size: 1.5rem;
   margin: 0;

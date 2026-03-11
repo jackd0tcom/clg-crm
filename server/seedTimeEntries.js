@@ -1,5 +1,5 @@
 import connectToDB from "./db.js";
-import { TimeEntry, Invoice } from "./model.js";
+import { TimeEntry, Invoice, UserSettings, CustomCharge } from "./model.js";
 
 const db = await connectToDB(
   process.env.DATABASE_URL || "postgresql:///clg-db",
@@ -30,6 +30,7 @@ const timeEntries = [
     isRunning: false,
     invoiceId: inv1.invoiceId,
     isPaid: true,
+    rate: 450,
   },
   {
     userId: 6,
@@ -41,6 +42,7 @@ const timeEntries = [
     isRunning: false,
     invoiceId: inv1.invoiceId,
     isPaid: true,
+    rate: 450,
   },
   {
     userId: 6,
@@ -52,6 +54,7 @@ const timeEntries = [
     isRunning: false,
     invoiceId: inv1.invoiceId,
     isPaid: true,
+    rate: 450,
   },
   {
     userId: 6,
@@ -63,6 +66,7 @@ const timeEntries = [
     isRunning: false,
     invoiceId: inv2.invoiceId,
     isPaid: false,
+    rate: 450,
   },
   {
     userId: 6,
@@ -74,6 +78,7 @@ const timeEntries = [
     isRunning: false,
     invoiceId: inv2.invoiceId,
     isPaid: false,
+    rate: 450,
   },
   {
     userId: 6,
@@ -85,6 +90,7 @@ const timeEntries = [
     isRunning: false,
     invoiceId: inv2.invoiceId,
     isPaid: false,
+    rate: 450,
   },
   {
     userId: 6,
@@ -96,6 +102,7 @@ const timeEntries = [
     isRunning: false,
     invoiceId: inv3.invoiceId,
     isPaid: true,
+    rate: 450,
   },
   {
     userId: 6,
@@ -104,6 +111,7 @@ const timeEntries = [
     startTime: ms(0, 10, 45),
     endTime: ms(0, 10, 0),
     isRunning: false,
+    rate: 450,
   },
   {
     userId: 6,
@@ -112,6 +120,7 @@ const timeEntries = [
     startTime: ms(6, 16, 0),
     endTime: ms(6, 14, 0),
     isRunning: false,
+    rate: 450,
   },
   {
     userId: 6,
@@ -120,6 +129,7 @@ const timeEntries = [
     startTime: ms(4, 11, 0),
     endTime: ms(4, 9, 0),
     isRunning: false,
+    rate: 450,
   },
   {
     userId: 6,
@@ -129,6 +139,7 @@ const timeEntries = [
     startTime: ms(7, 10, 30),
     endTime: ms(7, 9, 0),
     isRunning: false,
+    rate: 450,
   },
   {
     userId: 6,
@@ -138,6 +149,7 @@ const timeEntries = [
     startTime: ms(8, 16, 45),
     endTime: ms(8, 15, 0),
     isRunning: false,
+    rate: 450,
   },
   {
     userId: 6,
@@ -147,6 +159,7 @@ const timeEntries = [
     startTime: ms(2, 15, 30),
     endTime: ms(2, 14, 0),
     isRunning: false,
+    rate: 450,
   },
   {
     userId: 6,
@@ -155,6 +168,7 @@ const timeEntries = [
     startTime: ms(10, 13, 0),
     endTime: ms(10, 11, 0),
     isRunning: false,
+    rate: 450,
   },
   {
     userId: 6,
@@ -164,6 +178,7 @@ const timeEntries = [
     startTime: ms(9, 12, 15),
     endTime: ms(9, 10, 0),
     isRunning: false,
+    rate: 450,
   },
   {
     userId: 6,
@@ -171,6 +186,7 @@ const timeEntries = [
     startTime: ms(0, 9, 0),
     endTime: ms(0, 8, 30),
     isRunning: false,
+    rate: 450,
   },
   {
     userId: 6,
@@ -180,6 +196,7 @@ const timeEntries = [
     startTime: ms(1, 14, 20),
     endTime: ms(1, 13, 0),
     isRunning: false,
+    rate: 450,
   },
   {
     userId: 6,
@@ -209,8 +226,34 @@ const timeEntries = [
   },
 ];
 
+const settings = await UserSettings.create({
+  userId: 6,
+  defaultRate: 475,
+  payTo: "Jack Ball 112 S Snead Ave Eagle ID",
+});
+
+const customCharges = [
+  {
+    invoiceId: 1,
+    description: "Bought pencils",
+    amount: 20,
+  },
+  {
+    invoiceId: 2,
+    description: "Drove to Philly",
+    amount: 40,
+  },
+  {
+    invoiceId: 3,
+    description: "Drove to Miami",
+    amount: 200,
+  },
+];
+
+const charges = await CustomCharge.bulkCreate(customCharges);
+
 const created = await TimeEntry.bulkCreate(timeEntries);
 console.log(
-  `Seeded ${createdInvoices.length} invoices and ${created.length} time entries (userId 6).`,
+  `Seeded ${createdInvoices.length} invoices, ${created.length} time entries (userId 6), ${customCharges.length} charges, and 1 user setting.`,
 );
 await db.close();

@@ -29,3 +29,30 @@
 .invoice-paid {
   background-color: var(--bright-green);
 }
+
+/* Invoice page */
+
+.invoice-items-list {
+  padding: 15px;
+}
+
+.invoice-items-list-item {
+  display: grid;
+  grid-template-columns: 3fr 1fr 1fr 1fr;
+  border-bottom: 1px solid var(--light-border);
+  padding: 8px 15px;
+  align-items: center;
+  justify-items: start;
+}
+.amount-wrapper {
+  width: 100%;
+  text-align: right;
+}
+.invoice-item {
+  display: grid;
+  grid-template-columns: 3fr 1fr 1fr 1fr;
+  align-items: center;
+  justify-items: start;
+  border-bottom: 1px solid var(--light-border);
+  padding: 8px 15px;
+}
