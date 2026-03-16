@@ -7,6 +7,7 @@ import CustomChargeItem from "../Elements/Invoice/customChargeItem";
 import {
   getAmountOfEntry,
   getRoundedAmountOfEntry,
+  capitalize,
 } from "../helpers/helperFunctions";
 import PDFInvoice from "../Elements/PDF/PDFInvoice";
 
@@ -20,10 +21,12 @@ const Invoice = () => {
   const [payTo, setPayTo] = useState("");
   const [isSettingRounding, setIsSettingRounding] = useState(false);
   const [savingStatus, setSavingStatus] = useState("Save");
-  const [paidStatus, setPaidStatus] = useState("Mark as paid");
+  const [status, setStatus] = useState("Draft");
   const [isViewing, setIsViewing] = useState(false);
+  const [showStatusDropdown, setShowStatusDropdown] = useState(false);
   const [somethingToSave, setSomethingToSave] = useState(false);
   const dropdownRef = useRef(null);
+  const statusRef = useRef(null);
   const customChargeTotal =
     invoiceData?.customCharges?.length > 0
       ? invoiceData?.customCharges?.reduce((acc, charge) => {
@@ -55,10 +58,12 @@ const Invoice = () => {
         setInvoiceData(data);
         setDefaultRate(data.settings.defaultRate);
         setPayTo(data.payTo ?? data.settings.payTo);
-        setBilledTo(data.billTo ?? "");
-        if (invoiceData.isPaid) {
-          setPaidStatus("Paid");
-        }
+        const defaultClient = data.entries[0].case?.people[0];
+        const defaultBillTo = defaultClient
+          ? `${defaultClient.firstName} ${defaultClient.lastName}\n${defaultClient.address} ${defaultClient.city}, ${defaultClient.state} ${defaultClient.zip}\n${defaultClient.phoneNumber}  `
+          : "";
+        setBilledTo(data.billTo ?? defaultBillTo ?? "");
+        setStatus(data.invoiceStatus);
 
         const entries = data?.entries ?? [];
         const byProject = entries.reduce((acc, entry) => {
@@ -91,6 +96,22 @@ const Invoice = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isSettingRounding]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (statusRef.current && !statusRef.current.contains(event.target)) {
+        setShowStatusDropdown(false);
+      }
+    };
+
+    if (showStatusDropdown) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showStatusDropdown]);
 
   const handleAddCustomCharge = () => {
     setSomethingToSave(true);
@@ -140,6 +161,29 @@ const Invoice = () => {
     }
   };
 
+  const handleChangeStatus = async (status) => {
+    try {
+      setSavingStatus("Saving...");
+      await axios
+        .post("/api/updateInvoiceStatus", { invoiceId, status })
+        .then((res) => {
+          if (res.status === 200) {
+            setInvoiceData({ ...invoiceData, invoiceStatus: status });
+            setStatus(status);
+            setTimeout(() => {
+              setSavingStatus("Saved");
+            }, 800);
+            setTimeout(() => {
+              setSavingStatus("Save");
+              setSomethingToSave(false);
+            }, 1800);
+          }
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="invoice-page-wrapper">
       <div className="page-header">
@@ -156,18 +200,51 @@ const Invoice = () => {
             }}
           />
           {!isViewing && (
-            <button
-              className={
-                invoiceData.isPaid ? "paid-button marked-paid" : "paid-button"
-              }
-              onClick={() => {
-                setInvoiceData({ ...invoiceData, isPaid: !invoiceData.isPaid });
-                handleSaveInvoice();
-                setPaidStatus("Paid");
-              }}
-            >
-              {paidStatus}
-            </button>
+            <div className="invoice-status-wrapper">
+              <button
+                disabled={status === "paid"}
+                className={`invoice-status-button invoice-${status}`}
+                onClick={() => {
+                  setShowStatusDropdown(!showStatusDropdown);
+                }}
+              >
+                {capitalize(status)}
+              </button>
+              {showStatusDropdown && (
+                <div
+                  className="dropdown invoice-status-dropdown"
+                  ref={statusRef}
+                >
+                  <div
+                    onClick={() => {
+                      handleChangeStatus("draft");
+                      setShowStatusDropdown(false);
+                    }}
+                    className="dropdown-item invoice-status-dropdown-item"
+                  >
+                    Draft
+                  </div>
+                  <div
+                    onClick={() => {
+                      handleChangeStatus("posted");
+                      setShowStatusDropdown(false);
+                    }}
+                    className="dropdown-item invoice-status-dropdown-item"
+                  >
+                    Posted
+                  </div>
+                  <div
+                    onClick={() => {
+                      handleChangeStatus("paid");
+                      setShowStatusDropdown(false);
+                    }}
+                    className="dropdown-item invoice-status-dropdown-item"
+                  >
+                    Paid
+                  </div>
+                </div>
+              )}
+            </div>
           )}
         </div>
         <div className="invoice-buttons-wrapper">
@@ -196,7 +273,7 @@ const Invoice = () => {
         </div>
       </div>
       {isViewing ? (
-        <PDFInvoice invoiceData={invoiceData} />
+        <PDFInvoice invoiceData={invoiceData} billTo={billedTo} payTo={payTo} />
       ) : (
         <>
           <div className="invoice-info-wrapper">
@@ -205,8 +282,14 @@ const Invoice = () => {
               <textarea
                 name="billed-to"
                 id="billed-to"
+                disabled={status !== "draft"}
                 value={billedTo}
-                onChange={(e) => setBilledTo(e.target.value)}
+                onChange={(e) => {
+                  if (e.target.value !== billedTo) {
+                    setSomethingToSave(true);
+                  }
+                  setBilledTo(e.target.value);
+                }}
               ></textarea>
             </div>
             <div className="billing-wrapper">
@@ -215,7 +298,13 @@ const Invoice = () => {
                 name="pay-to"
                 id="pay-to"
                 value={payTo}
-                onChange={(e) => setPayTo(e.target.value)}
+                disabled={status !== "draft"}
+                onChange={(e) => {
+                  if (e.target.value !== payTo) {
+                    setSomethingToSave(true);
+                  }
+                  setPayTo(e.target.value);
+                }}
               ></textarea>
             </div>
             <div className="billing-wrapper">
@@ -223,6 +312,7 @@ const Invoice = () => {
               <input
                 type="number"
                 value={defaultRate}
+                disabled={status !== "draft"}
                 onChange={(e) => setDefaultRate(e.target.value)}
               />
             </div>
@@ -230,7 +320,12 @@ const Invoice = () => {
               <p>Rounding</p>
               <div>
                 <button
-                  onClick={() => setIsSettingRounding(true)}
+                  onClick={() => {
+                    if (status === "draft") {
+                      setIsSettingRounding(true);
+                    }
+                  }}
+                  disabled={status !== "draft"}
                   className="rounding-button"
                 >
                   {invoiceData.roundingAmount} min
@@ -308,6 +403,7 @@ const Invoice = () => {
                         projectIndex={projectIndex}
                         index={index}
                         rounding={invoiceData.roundingAmount}
+                        status={status}
                       />
                     ))}
                   </div>
@@ -319,14 +415,17 @@ const Invoice = () => {
                     index={index}
                     invoiceData={invoiceData}
                     setInvoiceData={setInvoiceData}
+                    status={status}
                   />
                 ))}
-                <div
-                  onClick={() => handleAddCustomCharge()}
-                  className="add-custom-item-wrapper"
-                >
-                  <p>+ Add Custom Charge</p>
-                </div>
+                {status === "draft" && (
+                  <div
+                    onClick={() => handleAddCustomCharge()}
+                    className="add-custom-item-wrapper"
+                  >
+                    <p>+ Add Custom Charge</p>
+                  </div>
+                )}
               </>
             ) : (
               <div className="no-invoice-items">No items to show</div>

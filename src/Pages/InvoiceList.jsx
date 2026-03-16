@@ -5,6 +5,7 @@ import { formatDateNoTime } from "../helpers/helperFunctions";
 import {
   getDurationNumber,
   getDurationFromNumber,
+  capitalize,
 } from "../helpers/helperFunctions";
 import Loader from "../Elements/UI/Loader";
 import { useNavigate } from "react-router";
@@ -61,11 +62,11 @@ const InvoiceList = () => {
               >
                 <ProfilePic />
                 <p>{invoice.invoiceTitle}</p>
-                {!invoice.isPaid ? (
-                  <p className="invoice-status invoice-draft">Draft</p>
-                ) : (
-                  <p className="invoice-status invoice-paid">Paid</p>
-                )}
+                <p
+                  className={`invoice-status invoice-${invoice.invoiceStatus}`}
+                >
+                  {capitalize(invoice.invoiceStatus)}
+                </p>
                 <p>{getDurationFromNumber(totalTimeNumber)}</p>
                 <p>{formatDateNoTime(invoice?.createdAt)}</p>
               </div>

@@ -6,6 +6,7 @@ const CustomChargeItem = ({
   setInvoiceData,
   index,
   setSomethingToSave,
+  status,
 }) => {
   const [amount, setAmount] = useState(item.amount);
   const [description, setDescription] = useState(item.description);
@@ -50,23 +51,31 @@ const CustomChargeItem = ({
       onMouseEnter={() => setShowTrash(true)}
       onMouseLeave={() => setShowTrash(false)}
     >
-      <input
-        type="text"
-        value={description}
-        onChange={(e) => handleDescriptionChange(e)}
-        className="custom-charge-description"
-      />
+      {status !== "draft" ? (
+        <p>{description}</p>
+      ) : (
+        <input
+          type="text"
+          value={description}
+          onChange={(e) => handleDescriptionChange(e)}
+          className="custom-charge-description"
+        />
+      )}
       <p></p>
       <p></p>
       <div className="amount-wrapper">
-        <input
-          type="number"
-          value={amount}
-          onChange={(e) => handleAmountChange(e)}
-          className="custom-charge-amount"
-        />
+        {status !== "draft" ? (
+          <p>{amount}</p>
+        ) : (
+          <input
+            type="number"
+            value={amount}
+            onChange={(e) => handleAmountChange(e)}
+            className="custom-charge-amount"
+          />
+        )}
       </div>
-      {showTrash && (
+      {status === "draft" && showTrash && (
         <div className="trash-wrapper">
           <i
             onClick={() => handleDeleteItem()}

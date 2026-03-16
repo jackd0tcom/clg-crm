@@ -11,9 +11,9 @@ const ms = (d, h, m) =>
 
 // Invoices (userId 6 to match time entries; run after main seed so user 6 exists)
 const invoices = [
-  { userId: 6, invoiceTitle: "CLG 001", isPaid: true },
-  { userId: 6, invoiceTitle: "P1P 001", isPaid: false },
-  { userId: 6, invoiceTitle: "CLG 003", isPaid: true },
+  { userId: 6, invoiceTitle: "CLG 001", invoiceStatus: "posted" },
+  { userId: 6, invoiceTitle: "P1P 001", invoiceStatus: "draft" },
+  { userId: 6, invoiceTitle: "CLG 003", invoiceStatus: "paid" },
 ];
 
 const createdInvoices = await Invoice.bulkCreate(invoices);
@@ -29,7 +29,7 @@ const timeEntries = [
     endTime: ms(2, 9, 0),
     isRunning: false,
     invoiceId: inv1.invoiceId,
-    isPaid: true,
+    isDraft: true,
     rate: 450,
   },
   {
@@ -41,7 +41,7 @@ const timeEntries = [
     endTime: ms(1, 14, 0),
     isRunning: false,
     invoiceId: inv1.invoiceId,
-    isPaid: true,
+    isDraft: true,
     rate: 450,
   },
   {
@@ -53,7 +53,7 @@ const timeEntries = [
     endTime: ms(3, 10, 0),
     isRunning: false,
     invoiceId: inv1.invoiceId,
-    isPaid: true,
+    isDraft: true,
     rate: 450,
   },
   {
@@ -65,7 +65,7 @@ const timeEntries = [
     endTime: ms(5, 9, 30),
     isRunning: false,
     invoiceId: inv2.invoiceId,
-    isPaid: false,
+    isDraft: false,
     rate: 450,
   },
   {
@@ -77,7 +77,7 @@ const timeEntries = [
     endTime: ms(1, 11, 0),
     isRunning: false,
     invoiceId: inv2.invoiceId,
-    isPaid: false,
+    isDraft: false,
     rate: 450,
   },
   {
@@ -89,7 +89,7 @@ const timeEntries = [
     endTime: ms(4, 13, 0),
     isRunning: false,
     invoiceId: inv2.invoiceId,
-    isPaid: false,
+    isDraft: false,
     rate: 450,
   },
   {
@@ -101,7 +101,7 @@ const timeEntries = [
     endTime: ms(2, 8, 0),
     isRunning: false,
     invoiceId: inv3.invoiceId,
-    isPaid: true,
+    isDraft: true,
     rate: 450,
   },
   {

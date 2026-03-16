@@ -14,7 +14,7 @@ import {
   Image,
 } from "@react-pdf/renderer";
 
-const PDFInvoice = ({ invoiceData }) => {
+const PDFInvoice = ({ invoiceData, billTo, payTo }) => {
   const now = new Date();
   const today = formatDateNoTimeWithYear(now);
 
@@ -68,6 +68,7 @@ const PDFInvoice = ({ invoiceData }) => {
             style={{
               flexDirection: "row",
               justifyContent: "space-between",
+              gap: 80,
               marginRight: "20%",
               marginTop: "15",
             }}
@@ -80,7 +81,7 @@ const PDFInvoice = ({ invoiceData }) => {
               }}
             >
               <Text style={styles.subtitle}>Billed To:</Text>
-              <Text style={styles.subtitle}>{invoiceData.billTo}</Text>
+              <Text style={styles.subtitle}>{billTo}</Text>
             </View>
             <View
               style={{
@@ -90,7 +91,7 @@ const PDFInvoice = ({ invoiceData }) => {
               }}
             >
               <Text style={styles.subtitle}>Pay To:</Text>
-              <Text style={styles.subtitle}>{invoiceData.payTo}</Text>
+              <Text style={styles.subtitle}>{payTo}</Text>
             </View>
           </View>
           <View style={{ marginTop: 20 }}>

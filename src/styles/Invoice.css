@@ -246,16 +246,43 @@
   align-items: center;
   justify-items: start;
 }
+.invoice-list-item:hover {
+  background-color: var(--root-bg-color-light);
+  cursor: pointer;
+}
+.invoice-list-head:hover {
+  cursor: default;
+  background-color: white;
+}
+
+.invoice-status-wrapper {
+  position: relative;
+}
+.invoice-status-dropdown {
+  min-width: 100px;
+}
 .invoice-status {
   font-size: 0.9rem;
   color: white;
   border-radius: 5px;
   padding: 4px 12px;
 }
+.invoice-status-button {
+  color: white;
+  border: none;
+}
+.invoice-status-button:hover {
+  border: none;
+  color: white;
+}
 .invoice-draft {
   background-color: var(--light-light-grey);
   color: black;
 }
+.invoice-posted {
+  background-color: var(--blue);
+}
+
 .invoice-paid {
   background-color: var(--bright-green);
 }

@@ -238,8 +238,11 @@ export default {
         return res.status(403).send("Not authorized to edit this invoice");
       }
 
+      console.log(invoiceData);
+
       const updatedInvoice = await invoice.update({
         invoiceTitle: invoiceData.invoiceTitle,
+        invoiceStatus: invoiceData.invoiceStatus,
         roundingAmount: invoiceData.roundingAmount,
         isPaid: invoiceData.isPaid,
         billTo: invoiceData.billTo,
@@ -303,6 +306,37 @@ export default {
       };
 
       res.status(200).send(updatedData);
+    } catch (err) {
+      console.log(err);
+      res.status(500).send(err);
+    }
+  },
+  updateInvoiceStatus: async (req, res) => {
+    try {
+      console.log("updateInvoiceStatus");
+      const { invoiceId, status } = req.body;
+
+      if (!req.session.user) {
+        return res.status(401).send("User not authenticated");
+      }
+
+      const invoice = await Invoice.findOne({
+        where: { invoiceId },
+      });
+
+      if (!invoice) {
+        return res.status(404).send("Invoice does not exist");
+      }
+
+      if (invoice.userId !== req.session.user.userId) {
+        return res.status(403).send("Not authorized to edit this invoice");
+      }
+
+      const updatedInvoice = await invoice.update({
+        invoiceStatus: status,
+      });
+
+      res.status(200).send(updatedInvoice);
     } catch (err) {
       console.log(err);
       res.status(500).send(err);

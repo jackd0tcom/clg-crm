@@ -575,7 +575,7 @@ TimeEntry.init(
       type: DataTypes.INTEGER,
       allowNull: true,
     },
-    isPaid: {
+    isDraft: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
@@ -607,9 +607,10 @@ Invoice.init(
       type: DataTypes.STRING,
       allowNull: true,
     },
-    isPaid: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
+    invoiceStatus: {
+      type: DataTypes.ENUM("draft", "posted", "paid"),
+      defaultValue: "draft",
+      allowNull: false,
     },
     roundingAmount: {
       type: DataTypes.INTEGER,

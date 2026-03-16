@@ -245,6 +245,29 @@ h5 {
   margin: 5px 0px;
 }
 
+.dropdown {
+  position: absolute;
+  background-color: white;
+  z-index: 999;
+  border: 1px solid var(--light-border);
+  border-radius: 5px;
+  top: 115%;
+  display: flex;
+  flex-direction: column;
+  row-gap: 5px;
+}
+.dropdown-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--light-border);
+}
+.dropdown:nth-last-child {
+  border-bottom: 0px;
+}
+.dropdown-item:hover {
+  background-color: var(--root-bg-color-light);
+}
+
 /* Login */
 .login-wrapper {
   display: flex;

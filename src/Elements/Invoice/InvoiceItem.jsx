@@ -15,6 +15,7 @@ const InvoiceItem = ({
   projectIndex,
   rounding,
   setSomethingToSave,
+  status,
 }) => {
   const [rate, setRate] = useState(item.rate ?? defaultRate);
   const [showTrash, setShowTrash] = useState(true);
@@ -50,12 +51,21 @@ const InvoiceItem = ({
       onMouseLeave={() => setShowTrash(false)}
     >
       <p>{item.notes}</p>
-      <input type="number" value={rate} onChange={(e) => handleRateChange(e)} />
+      {status !== "draft" ? (
+        <p>{rate}</p>
+      ) : (
+        <input
+          type="number"
+          value={rate}
+          onChange={(e) => handleRateChange(e)}
+        />
+      )}
+
       <p>{getRoundedDuration(item, rounding)}</p>
       <div className="amount-wrapper">
         <p>{getRoundedAmountOfEntry(rate, item, rounding)}</p>
       </div>
-      {showTrash && (
+      {status === "draft" && showTrash && (
         <div className="trash-wrapper">
           <i
             onClick={() => handleDeleteItem()}
