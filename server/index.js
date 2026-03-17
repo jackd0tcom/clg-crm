@@ -36,7 +36,7 @@ dotenv.config();
 validateEnvironment();
 
 const { updatePerson, newPerson, deletePerson } = personCtrl;
-const { getUser, getUsers } = userCtrl;
+const { getUser, getUsers, getUserSettings, updateUserSettings } = userCtrl;
 const { createComment } = commentCtrl;
 
 const {
@@ -207,6 +207,8 @@ app.post("/api/sync-auth0-user", syncAuth0User);
 // user endpoints
 app.get("/api/getUser/:userId", getUser);
 app.get("/api/getUsers", getUsers);
+app.get("/api/getUserSettings", getUserSettings);
+app.post("/api/updateUserSettings", updateUserSettings);
 app.delete("/api/deletePerson", deletePerson);
 
 // case endpoints

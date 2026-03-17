@@ -18,10 +18,32 @@ const Settings = () => {
   const [migrating, setMigrating] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   const [isDisconnecting, setIsDisconnecting] = useState(false);
+  const [payTo, setPayTo] = useState("");
+  const [originalPayTo, setOriginalPayTo] = useState("");
+  const [defaultRate, setDefaultRate] = useState(0);
+  const [originalDefaultRate, setOriginalDefaultRate] = useState(0);
+  const [showRateSave, setShowRateSave] = useState(false);
+  const [showPayToSave, setShowPayToSave] = useState(false);
   const { user } = useAuth0();
+
+  const fetchUserSettings = async () => {
+    try {
+      await axios.get("/api/getUserSettings").then((res) => {
+        if (res.status === 200) {
+          setPayTo(res.data.payTo);
+          setOriginalPayTo(res.data.payTo);
+          setDefaultRate(res.data.defaultRate);
+          setOriginalDefaultRate(res.data.defaultRate);
+        }
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
     checkGoogleConnection();
+    fetchUserSettings();
   }, []);
 
   useEffect(() => {
@@ -71,7 +93,7 @@ const Settings = () => {
         setSelectedCalendar(preferredRes.data.preferredCalendarId);
       } else {
         const primaryCalendar = calendarsRes.data.calendars.find(
-          (cal) => cal.primary
+          (cal) => cal.primary,
         );
         if (primaryCalendar) {
           setOriginalCalendar(primaryCalendar.id);
@@ -163,7 +185,7 @@ const Settings = () => {
       const popup = window.open(
         authUrl,
         "Google Calendar Auth",
-        "width=500,height=600,scrollbars=yes,resizable=yes"
+        "width=500,height=600,scrollbars=yes,resizable=yes",
       );
 
       // Note: We rely entirely on the message system for popup communication
@@ -177,7 +199,7 @@ const Settings = () => {
   const handleDisconnectCalendar = async () => {
     if (
       !window.confirm(
-        "Are you sure you want to disconnect Google Calendar? Your tasks will no longer sync to your calendar."
+        "Are you sure you want to disconnect Google Calendar? Your tasks will no longer sync to your calendar.",
       )
     ) {
       return;
@@ -237,13 +259,79 @@ const Settings = () => {
     return <Loader />;
   }
 
+  const handleUpdateUserSettings = async (fieldName, value) => {
+    try {
+      await axios
+        .post("/api/updateUserSettings", { fieldName, value })
+        .then((res) => {
+          if (res.status === 200) {
+            console.log(res.data);
+          }
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="settings-wrapper">
       <div className="settings-header">
         <h1 className="section-heading">Settings</h1>
       </div>
-
       <div className="settings-section">
+        <div className="settings-section-header">
+          <h3>Invoice</h3>
+          <div className="invoice-settings">
+            <p>Default Invoice Rate</p>
+            <input
+              type="number"
+              value={defaultRate}
+              onChange={(e) => {
+                if (Number(e.target.value) !== originalDefaultRate) {
+                  setShowRateSave(true);
+                } else setShowRateSave(false);
+                setDefaultRate(e.target.value);
+              }}
+            />
+            {showRateSave && (
+              <button
+                className="invoice-settings-save-button"
+                onClick={() => {
+                  handleUpdateUserSettings("defaultRate", defaultRate);
+                  setOriginalDefaultRate(defaultRate);
+                  setShowRateSave(false);
+                }}
+              >
+                Save
+              </button>
+            )}
+          </div>
+          <div className="invoice-settings">
+            <p>Default Pay To Address</p>
+            <textarea
+              type="text"
+              value={payTo}
+              onChange={(e) => {
+                if (e.target.value !== originalPayTo) {
+                  setShowPayToSave(true);
+                } else setShowPayToSave(false);
+                setPayTo(e.target.value);
+              }}
+            />
+            {showPayToSave && (
+              <button
+                className="invoice-settings-save-button"
+                onClick={() => {
+                  handleUpdateUserSettings("payTo", payTo);
+                  setOriginalPayTo(payTo);
+                  setShowPayToSave(false);
+                }}
+              >
+                Save
+              </button>
+            )}
+          </div>
+        </div>
         <div className="settings-section-header">
           <h3>Google Calendar</h3>
           <p>Choose which calendar your tasks will be synced to</p>
