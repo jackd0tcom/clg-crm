@@ -14,7 +14,7 @@ import {
   Image,
 } from "@react-pdf/renderer";
 
-const PDFInvoice = ({ invoiceData, billTo, payTo }) => {
+const PDFInvoice = ({ invoiceData, billTo, payTo, defaultRate }) => {
   const now = new Date();
   const today = formatDateNoTimeWithYear(now);
 
@@ -96,22 +96,39 @@ const PDFInvoice = ({ invoiceData, billTo, payTo }) => {
           </View>
           <View style={{ marginTop: 20 }}>
             <View style={styles.row}>
-              <Text style={styles.tableHeader}>DESCRIPTION</Text>
-              <Text style={styles.tableHeader}>RATE</Text>
-              <Text style={styles.tableHeader}>QUANTITY</Text>
-              <Text style={styles.tableHeader}>AMOUNT</Text>
+              <Text style={[styles.tableHeader, { flexBasis: 250 }]}>
+                DESCRIPTION
+              </Text>
+              <Text style={[styles.tableHeader, { flexBasis: 30 }]}>RATE</Text>
+              <Text style={[styles.tableHeader, { flexBasis: 65 }]}>
+                QUANTITY
+              </Text>
+              <Text
+                style={[
+                  styles.tableHeader,
+                  { flexBasis: 50, textAlign: "right" },
+                ]}
+              >
+                AMOUNT
+              </Text>
             </View>
             {invoiceData.entries.map((entry) => (
               <View style={styles.row}>
-                <Text style={styles.text}>{entry.notes}</Text>
-                <Text style={styles.text}>{entry.rate}</Text>
-                <Text style={styles.text}>
+                <Text style={[styles.text, { flexBasis: 250 }]}>
+                  {entry.notes}
+                </Text>
+                <Text style={[styles.text, { flexBasis: 30 }]}>
+                  {entry.rate ?? defaultRate}
+                </Text>
+                <Text style={[styles.text, { flexBasis: 50 }]}>
                   {getRoundedDuration(entry, invoiceData.roundingAmount)}
                 </Text>
-                <Text style={styles.text}>
+                <Text
+                  style={[styles.text, { flexBasis: 40, textAlign: "right" }]}
+                >
                   $
                   {getRoundedAmountOfEntry(
-                    entry.rate,
+                    entry.rate ?? defaultRate,
                     entry,
                     invoiceData.roundingAmount,
                   )}

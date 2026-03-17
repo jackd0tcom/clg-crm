@@ -4,6 +4,12 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+  overflow: hidden;
+}
+.invoice-body {
+  overflow-y: scroll;
+  scrollbar-width: thin;
+  padding-bottom: 25px;
 }
 .invoice-page-wrapper iframe {
   height: 100%;

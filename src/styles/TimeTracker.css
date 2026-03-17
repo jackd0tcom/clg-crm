@@ -194,12 +194,15 @@
 }
 .new-invoice-button {
   font-size: 0.9rem;
-  border: 1px solid var(--light-border);
+  background-color: var(--blue);
+  color: white;
+  border: none;
   transition: 200ms;
 }
 .new-invoice-button:hover {
-  background-color: var(--light-light-grey);
-  color: black;
+  background-color: var(--dark-blue);
+  color: white;
+  border: none;
 }
 
 .new-entry-button {

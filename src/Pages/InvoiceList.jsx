@@ -36,6 +36,12 @@ const InvoiceList = () => {
     <div className="invoice-page-wrapper">
       <div className="case-list-head">
         <h2 className="section-heading">Invoices</h2>
+        <button
+          className="new-invoice-button"
+          onClick={() => navigate("/time-keeper")}
+        >
+          New Invoice
+        </button>
       </div>
       <div className="invoice-list">
         <div className="invoice-list-item invoice-list-head">

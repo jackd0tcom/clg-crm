@@ -16,7 +16,7 @@ const Invoice = () => {
   const [invoiceData, setInvoiceData] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [groupedData, setGroupedData] = useState([]);
-  const [defaultRate, setDefaultRate] = useState(450);
+  const [defaultRate, setDefaultRate] = useState(0);
   const [billedTo, setBilledTo] = useState("");
   const [payTo, setPayTo] = useState("");
   const [isSettingRounding, setIsSettingRounding] = useState(false);
@@ -273,9 +273,14 @@ const Invoice = () => {
         </div>
       </div>
       {isViewing ? (
-        <PDFInvoice invoiceData={invoiceData} billTo={billedTo} payTo={payTo} />
+        <PDFInvoice
+          invoiceData={invoiceData}
+          billTo={billedTo}
+          payTo={payTo}
+          defaultRate={defaultRate}
+        />
       ) : (
-        <>
+        <div className="invoice-body">
           <div className="invoice-info-wrapper">
             <div className="billing-wrapper">
               <p>Billed to:</p>
@@ -439,7 +444,7 @@ const Invoice = () => {
               </div>
             </div>
           </div>
-        </>
+        </div>
       )}
     </div>
   );
