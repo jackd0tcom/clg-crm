@@ -6,6 +6,7 @@ import {
   formatDateNoTime,
 } from "../../helpers/helperFunctions";
 import ProfilePic from "../UI/ProfilePic";
+import TimeEntryStatusBadge from "../UI/TimeEntryStatusBadge";
 
 const TimeKeeperListGroup = ({
   group,
@@ -100,6 +101,7 @@ const TimeKeeperListGroup = ({
               <p>{entry.notes}</p>
               <p>{getDuration(entry)}</p>
               <p>{formatDateNoTime(entry.startTime)}</p>
+              <TimeEntryStatusBadge status={entry.paidStatus} />
             </div>
           ))}
       </div>

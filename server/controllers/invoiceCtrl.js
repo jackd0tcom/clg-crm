@@ -314,7 +314,7 @@ export default {
   updateInvoiceStatus: async (req, res) => {
     try {
       console.log("updateInvoiceStatus");
-      const { invoiceId, status } = req.body;
+      const { invoiceId, status, entryIds } = req.body;
 
       if (!req.session.user) {
         return res.status(401).send("User not authenticated");
@@ -336,7 +336,36 @@ export default {
         invoiceStatus: status,
       });
 
-      res.status(200).send(updatedInvoice);
+      const updatedEntries = await Promise.all(
+        entryIds.map(async (id) => {
+          const currentEntry = await TimeEntry.findByPk(id);
+          const updatedEntry = currentEntry.update({
+            paidStatus: status,
+          });
+          const entryWithItem = await TimeEntry.findOne({
+            where: { timeEntryId: id },
+            include: [
+              {
+                model: Case,
+                as: "case",
+                required: false,
+                include: [{ model: Person, as: "people" }],
+              },
+              { model: Task, as: "task", required: false },
+            ],
+          });
+          return entryWithItem;
+        }),
+      );
+
+      const invoiceData = updatedInvoice.toJSON();
+
+      const payload = {
+        ...invoiceData,
+        entries: updatedEntries,
+      };
+
+      res.status(200).send(payload);
     } catch (err) {
       console.log(err);
       res.status(500).send(err);

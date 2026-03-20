@@ -44,6 +44,7 @@ const TimeKeeper = () => {
           console.log(res);
           return;
         }
+        console.log(res.data);
         setEntryList(res.data.filter((entry) => entry !== null));
         setIsLoading(false);
       });
@@ -104,6 +105,12 @@ const TimeKeeper = () => {
       if (item.taskId) {
         // if the case filter and task filter is empty, return true
         if (filter.taskIds.length + filter.caseIds.length === 0) {
+          return true;
+        } else if (
+          filter.taskIds.length === 0 &&
+          filter.caseIds.includes(item.taskCaseId)
+        ) {
+          // If there is no task selected, but there is a case selected and the taskCaseId matches, include the tasks
           return true;
         } else if (!filter.taskIds.includes(item.taskId)) {
           // if there is something in either of them, and the task is not in the filter, don't show it

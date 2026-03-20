@@ -29,7 +29,7 @@ const timeEntries = [
     endTime: ms(2, 9, 0),
     isRunning: false,
     invoiceId: inv1.invoiceId,
-    isDraft: true,
+    paidStatus: "posted",
     rate: 450,
   },
   {
@@ -41,7 +41,7 @@ const timeEntries = [
     endTime: ms(1, 14, 0),
     isRunning: false,
     invoiceId: inv1.invoiceId,
-    isDraft: true,
+    paidStatus: "posted",
     rate: 450,
   },
   {
@@ -53,7 +53,7 @@ const timeEntries = [
     endTime: ms(3, 10, 0),
     isRunning: false,
     invoiceId: inv1.invoiceId,
-    isDraft: true,
+    paidStatus: "posted",
     rate: 450,
   },
   {
@@ -65,7 +65,6 @@ const timeEntries = [
     endTime: ms(5, 9, 30),
     isRunning: false,
     invoiceId: inv2.invoiceId,
-    isDraft: false,
     rate: 450,
   },
   {
@@ -77,7 +76,6 @@ const timeEntries = [
     endTime: ms(1, 11, 0),
     isRunning: false,
     invoiceId: inv2.invoiceId,
-    isDraft: false,
     rate: 450,
   },
   {
@@ -89,7 +87,6 @@ const timeEntries = [
     endTime: ms(4, 13, 0),
     isRunning: false,
     invoiceId: inv2.invoiceId,
-    isDraft: false,
     rate: 450,
   },
   {
@@ -101,7 +98,7 @@ const timeEntries = [
     endTime: ms(2, 8, 0),
     isRunning: false,
     invoiceId: inv3.invoiceId,
-    isDraft: true,
+    paidStatus: "paid",
     rate: 450,
   },
   {

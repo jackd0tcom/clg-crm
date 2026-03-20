@@ -59,6 +59,7 @@ const TimeKeeperList = ({ data, getEntries }) => {
             <p>Description</p>
             <p>Duration</p>
             <p>Date</p>
+            <p>Status</p>
           </div>
           {groupedByProject?.length > 0 ? (
             groupedByProject.map((group) => (

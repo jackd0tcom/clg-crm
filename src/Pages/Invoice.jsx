@@ -15,6 +15,7 @@ const Invoice = () => {
   const { invoiceId } = useParams();
   const [invoiceData, setInvoiceData] = useState({});
   const [isLoading, setIsLoading] = useState(true);
+  const [entries, setEntries] = useState([{}]);
   const [groupedData, setGroupedData] = useState([]);
   const [defaultRate, setDefaultRate] = useState(0);
   const [billedTo, setBilledTo] = useState("");
@@ -68,6 +69,8 @@ const Invoice = () => {
         setStatus(data.invoiceStatus);
 
         const entries = data?.entries ?? [];
+        setEntries(entries ?? [{}]);
+
         const byProject = entries.reduce((acc, entry) => {
           const project = entry.case?.title || entry.task?.title || "Untitled";
           if (!acc[project]) acc[project] = [];
@@ -164,14 +167,27 @@ const Invoice = () => {
   };
 
   const handleChangeStatus = async (status) => {
+    const entryIds = entries.map((entry) => entry.timeEntryId);
     try {
       setSavingStatus("Saving...");
       await axios
-        .post("/api/updateInvoiceStatus", { invoiceId, status })
+        .post("/api/updateInvoiceStatus", { invoiceId, status, entryIds })
         .then((res) => {
           if (res.status === 200) {
             setInvoiceData({ ...invoiceData, invoiceStatus: status });
             setStatus(status);
+            const entries = res.data.entries;
+            setEntries(entries);
+
+            const byProject = entries.reduce((acc, entry) => {
+              const project =
+                entry.case?.title || entry.task?.title || "Untitled";
+              if (!acc[project]) acc[project] = [];
+              acc[project].push(entry);
+              return acc;
+            }, {});
+            setGroupedData(Object.entries(byProject));
+
             setTimeout(() => {
               setSavingStatus("Saved");
             }, 800);
@@ -383,6 +399,7 @@ const Invoice = () => {
           <div className="invoice-items-list">
             <div className="invoice-items-list-item invoice-list-head">
               <p>Description</p>
+              <p>Status</p>
               <p>Rate</p>
               <p>Time</p>
               <div className="amount-wrapper">

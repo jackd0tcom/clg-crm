@@ -5,6 +5,7 @@ import {
   getRoundedAmountOfEntry,
 } from "../../helpers/helperFunctions";
 import { useState } from "react";
+import TimeEntryStatusBadge from "../UI/TimeEntryStatusBadge";
 
 const InvoiceItem = ({
   groupedData,
@@ -52,6 +53,7 @@ const InvoiceItem = ({
       onMouseLeave={() => setShowTrash(false)}
     >
       <p>{item.notes}</p>
+      <TimeEntryStatusBadge status={item.paidStatus} />
       {status !== "draft" ? (
         <p>{rate}</p>
       ) : (

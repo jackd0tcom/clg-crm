@@ -215,11 +215,14 @@ export default {
           if (entry.taskId) {
             const taskObject = await Task.findOne({
               where: { taskId: entry.taskId },
+              include: [{ model: Case, as: "case" }],
             });
+            const caseData = taskObject.case.toJSON();
             return {
               ...entryJson,
               projectTitle: taskObject.title,
               status: taskObject.status,
+              taskCaseId: caseData.caseId,
             };
           }
         }),

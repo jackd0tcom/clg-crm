@@ -575,7 +575,7 @@ TimeEntry.init(
       type: DataTypes.INTEGER,
       allowNull: true,
     },
-    status: {
+    paidStatus: {
       type: DataTypes.ENUM("draft", "posted", "paid"),
       defaultValue: "draft",
     },

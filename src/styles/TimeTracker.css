@@ -776,7 +776,7 @@
 }
 .list-group-project-item {
   display: grid;
-  grid-template-columns: 0.15fr 2fr 2fr 1fr 1fr;
+  grid-template-columns: 0.15fr 2fr 2fr 1fr 1fr 0.5fr;
   gap: 10px;
   align-items: center;
   font-size: 0.9rem;
@@ -822,11 +822,12 @@
 .time-keeper-list-head,
 .time-keeper-list-item {
   display: grid;
-  grid-template-columns: 0.2fr 2fr 2fr 1fr 1fr;
+  grid-template-columns: 0.2fr 2fr 2fr 1fr 1fr 0.5fr;
   gap: 10px;
   align-items: center;
   font-size: 0.9rem;
   background-color: white;
+  justify-items: start;
 }
 .time-keeper-list-item {
   padding: 10px 15px;
@@ -866,4 +867,16 @@
   font-size: 3rem;
   padding-bottom: 15px;
   color: var(--blue);
+}
+.time-keeper-status {
+  padding: 3px 12px;
+  border-radius: 5px;
+  color: white;
+  display: flex;
+}
+.posted-badge {
+  background-color: var(--blue);
+}
+.paid-badge {
+  background-color: var(--bright-green);
 }
