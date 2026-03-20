@@ -43,7 +43,7 @@ export default {
       res.status(200).send(userSettings);
     } catch (err) {
       console.log(err);
-      res.status(500).send("Failed to Save Story");
+      res.status(500).send("Failed to save user settings");
     }
   },
   updateUserSettings: async (req, res) => {
@@ -81,7 +81,7 @@ export default {
       res.status(200).send(updatedSettings);
     } catch (err) {
       console.log(err);
-      res.status(500).send("Failed to Save Story");
+      res.status(500).send(err);
     }
   },
 };
