@@ -34,6 +34,7 @@ const TimeKeeper = () => {
     taskIds: [],
     sortBy: "dateOpened",
     sortOrder: "desc",
+    paidStatus: "all",
   });
 
   // Initial data hydration
@@ -44,7 +45,6 @@ const TimeKeeper = () => {
           console.log(res);
           return;
         }
-        console.log(res.data);
         setEntryList(res.data.filter((entry) => entry !== null));
         setIsLoading(false);
       });
@@ -92,6 +92,11 @@ const TimeKeeper = () => {
       ) {
         return false;
       }
+      // Status filter
+      if (filter.paidStatus !== "all")
+        if (item.paidStatus !== filter.paidStatus) {
+          return false;
+        }
       // Project filter
       if (item.caseId) {
         // if the case filter and task filter is empty, return true

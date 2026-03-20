@@ -5,6 +5,7 @@ import TimeKeeperSorter from "./TimeKeeperSorter";
 import TimeKeeperStats from "./TimeKeeperStats";
 import axios from "axios";
 import { useNavigate } from "react-router";
+import FilterStatusPicker from "./FilterStatusPicker";
 
 const TimeKeeperFilter = ({
   filter,
@@ -33,6 +34,7 @@ const TimeKeeperFilter = ({
       <div className="date-range-project-picker-wrapper">
         <FilterDateRangeSelector filter={filter} setFilter={setFilter} />
         <FilterProjectPicker filter={filter} setFilter={setFilter} />
+        <FilterStatusPicker filter={filter} setFilter={setFilter} />
       </div>
       <TimeKeeperStats entries={entries} />
       <div className="time-keeper-filter-buttons">

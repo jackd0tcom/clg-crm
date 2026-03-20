@@ -283,6 +283,49 @@
 .current-quick-select {
   background-color: var(--button-active-bg);
 }
+/* Filter status picker */
+.filter-status-picker {
+  position: relative;
+}
+.filter-status-button {
+  border: 1px solid var(--light-border);
+  background-color: unset;
+  font-size: 0.9rem;
+  transition: 200ms;
+  display: flex;
+  align-items: center;
+  padding: 8.5px 12px;
+}
+.filter-status-button:hover {
+  border: 1px solid var(--light-border);
+  background-color: var(--root-bg-color-light);
+  color: black;
+}
+.active-filter-status {
+  border: 1px solid var(--button-active-border);
+  background-color: var(--button-active-bg);
+  color: var(--button-active-font);
+}
+.active-filter-status:hover {
+  border-color: var(--bright-dark-green);
+  background-color: var(--button-active-bg);
+  color: var(--button-active-font);
+}
+.filter-status-dropdown {
+  min-width: 120px;
+}
+.filter-status-dropdown div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.9rem;
+}
+.filter-status-item i {
+  font-size: 0.9rem;
+}
+.selected-status-item {
+  background-color: var(--root-bg-color-light);
+}
 
 /* Filter project picker */
 .filter-project-picker-button {
