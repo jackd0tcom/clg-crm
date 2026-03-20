@@ -154,7 +154,7 @@
 .invoice-items-list-item {
   display: grid;
   background-color: white;
-  grid-template-columns: 3fr 1fr 1fr 1fr 1fr 0.2fr;
+  grid-template-columns: 4fr 1fr 1fr 1fr 1fr 0.2fr;
   border-bottom: 1px solid var(--light-border);
   padding: 10px 30px;
   padding-right: 15px;
@@ -168,7 +168,7 @@
 .invoice-item {
   display: grid;
   font-size: 0.9rem;
-  grid-template-columns: 3fr 1fr 1fr 1fr 1fr 0.2fr;
+  grid-template-columns: 4fr 1fr 1fr 1fr 1fr 0.2fr;
   align-items: center;
   justify-items: start;
   border-bottom: 1px solid var(--light-border);

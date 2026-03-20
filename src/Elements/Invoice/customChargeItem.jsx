@@ -63,6 +63,7 @@ const CustomChargeItem = ({
       )}
       <p></p>
       <p></p>
+      <p></p>
       <div className="amount-wrapper">
         {status !== "draft" ? (
           <p>{amount}</p>

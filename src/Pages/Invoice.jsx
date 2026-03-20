@@ -458,6 +458,7 @@ const Invoice = () => {
               <p>Subtotal</p>
               <p></p>
               <p></p>
+              <p></p>
               <div className="amount-wrapper">
                 <p>${totalAmount}</p>
               </div>
