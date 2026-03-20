@@ -108,29 +108,32 @@ export const helmetConfig = helmet({
     ? {
         directives: {
           defaultSrc: ["'self'"],
+
           styleSrc: [
             "'self'",
             "'unsafe-inline'",
             "https://fonts.googleapis.com",
             "https://ka-f.fontawesome.com",
           ],
+
           fontSrc: [
             "'self'",
             "https://fonts.gstatic.com",
             "https://kit.fontawesome.com",
             "https://ka-f.fontawesome.com",
           ],
+
           imgSrc: ["'self'", "data:", "https:"],
 
-          // Added wasm eval allowance for @react-pdf/renderer
+          // Needed for react-pdf / wasm compile paths in production
           scriptSrc: [
             "'self'",
             "https://kit.fontawesome.com",
             "'wasm-unsafe-eval'",
-            "'unsafe-eval'", // keep for compatibility; remove later if not needed
+            "'unsafe-eval'", // optional fallback; remove later if no longer needed
           ],
 
-          // Added data: so fetch(data:application/octet-stream;base64,...) is allowed
+          // Needed because pdf/wasm loader may fetch data: URLs
           connectSrc: [
             "'self'",
             "data:",
@@ -139,11 +142,17 @@ export const helmetConfig = helmet({
             "https://ka-f.fontawesome.com",
           ],
 
+          // Needed because PDFViewer uses blob: iframe URLs
           frameSrc: [
             "'self'",
+            "blob:",
             "https://clauselawgroup.auth0.com",
             "https://dev-qysee6dr6mhj3r6y.us.auth0.com",
           ],
+
+          // Compatibility for some browsers / CSP handling
+          childSrc: ["'self'", "blob:"],
+
           mediaSrc: ["'self'", "https://videos.files.wordpress.com"],
         },
       }
