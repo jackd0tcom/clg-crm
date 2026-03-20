@@ -62,7 +62,10 @@ export default {
       });
 
       if (!userSettings) {
-        res.status(404).send("User settings not found");
+        const newSettings = await UserSettings.create({
+          [fieldName]: value,
+        });
+        res.status(200).send(newSettings);
         return;
       }
 
