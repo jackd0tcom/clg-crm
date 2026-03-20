@@ -104,39 +104,50 @@ export const corsOptions = {
 // Helmet configuration
 export const helmetConfig = helmet({
   contentSecurityPolicy:
-    process.env.NODE_ENV === "production"
-      ? {
-          directives: {
-            defaultSrc: ["'self'"],
-            styleSrc: [
-              "'self'",
-              "'unsafe-inline'",
-              "https://fonts.googleapis.com",
-              "https://ka-f.fontawesome.com",
-            ],
-            fontSrc: [
-              "'self'",
-              "https://fonts.gstatic.com",
-              "https://kit.fontawesome.com",
-              "https://ka-f.fontawesome.com",
-            ],
-            imgSrc: ["'self'", "data:", "https:"],
-            scriptSrc: ["'self'", "https://kit.fontawesome.com"],
-            connectSrc: [
-              "'self'",
-              "https://clauselawgroup.auth0.com",
-              "https://dev-qysee6dr6mhj3r6y.us.auth0.com",
-              "https://ka-f.fontawesome.com",
-            ],
-            frameSrc: [
-              "'self'",
-              "https://clauselawgroup.auth0.com",
-              "https://dev-qysee6dr6mhj3r6y.us.auth0.com",
-            ],
-            mediaSrc: ["'self'", "https://videos.files.wordpress.com"],
-          },
-        }
-      : false, // Disable CSP in development
+  process.env.NODE_ENV === "production"
+    ? {
+        directives: {
+          defaultSrc: ["'self'"],
+          styleSrc: [
+            "'self'",
+            "'unsafe-inline'",
+            "https://fonts.googleapis.com",
+            "https://ka-f.fontawesome.com",
+          ],
+          fontSrc: [
+            "'self'",
+            "https://fonts.gstatic.com",
+            "https://kit.fontawesome.com",
+            "https://ka-f.fontawesome.com",
+          ],
+          imgSrc: ["'self'", "data:", "https:"],
+
+          // Added wasm eval allowance for @react-pdf/renderer
+          scriptSrc: [
+            "'self'",
+            "https://kit.fontawesome.com",
+            "'wasm-unsafe-eval'",
+            "'unsafe-eval'", // keep for compatibility; remove later if not needed
+          ],
+
+          // Added data: so fetch(data:application/octet-stream;base64,...) is allowed
+          connectSrc: [
+            "'self'",
+            "data:",
+            "https://clauselawgroup.auth0.com",
+            "https://dev-qysee6dr6mhj3r6y.us.auth0.com",
+            "https://ka-f.fontawesome.com",
+          ],
+
+          frameSrc: [
+            "'self'",
+            "https://clauselawgroup.auth0.com",
+            "https://dev-qysee6dr6mhj3r6y.us.auth0.com",
+          ],
+          mediaSrc: ["'self'", "https://videos.files.wordpress.com"],
+        },
+      }
+    : false, // Disable CSP in development
   crossOriginEmbedderPolicy: false, // Disable for Vite dev server compatibility
   crossOriginOpenerPolicy: false, // Disable to allow popup windows for OAuth flows
 });
