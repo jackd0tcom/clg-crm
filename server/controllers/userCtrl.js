@@ -63,6 +63,7 @@ export default {
 
       if (!userSettings) {
         const newSettings = await UserSettings.create({
+          userId: req.session.user.userId,
           [fieldName]: value,
         });
         res.status(200).send(newSettings);
