@@ -80,6 +80,7 @@ export default {
 
       const invoices = await Invoice.findAll({
         where: { userId: req.session.user.userId },
+        order: [["updatedAt", "DESC"]],
       });
 
       if (!invoices) {
