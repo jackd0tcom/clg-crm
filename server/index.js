@@ -16,7 +16,7 @@ import cleanupScheduler from "./services/cleanupScheduler.js";
 import adminCtrl from "./controllers/adminCtrl.js";
 import commentCtrl from "./controllers/commentCtrl.js";
 import timeCtrl from "./controllers/timeCtrl.js";
-import invoiceCtrl from "./controllers/InvoiceCtrl.js";
+import invoiceCtrl from "./controllers/invoiceCtrl.js";
 
 import { requireAccess, requireAdmin } from "./middleware/authMiddleware.js";
 import {
