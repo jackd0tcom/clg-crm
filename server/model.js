@@ -575,9 +575,9 @@ TimeEntry.init(
       type: DataTypes.INTEGER,
       allowNull: true,
     },
-    isDraft: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
+    status: {
+      type: DataTypes.ENUM("draft", "posted", "paid"),
+      defaultValue: "draft",
     },
     rate: {
       type: DataTypes.INTEGER,

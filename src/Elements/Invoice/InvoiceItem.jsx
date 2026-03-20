@@ -17,14 +17,15 @@ const InvoiceItem = ({
   setSomethingToSave,
   status,
 }) => {
-  const [rate, setRate] = useState(item.rate ?? defaultRate);
   const [showTrash, setShowTrash] = useState(true);
+
+  const rate = item.rate ?? defaultRate;
 
   const handleRateChange = (e) => {
     setSomethingToSave(true);
-    setRate(e.target.value);
+    const newRate = Number(e.target.value);
     const currentData = [...groupedData];
-    currentData[projectIndex][1][index].rate = e.target.value;
+    currentData[projectIndex][1][index].rate = newRate;
     setGroupedData(currentData);
   };
 

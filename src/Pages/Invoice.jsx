@@ -58,7 +58,9 @@ const Invoice = () => {
         setInvoiceData(data);
         setDefaultRate(data.settings.defaultRate);
         setPayTo(data.payTo ?? data.settings.payTo);
-        const defaultClient = data.entries[0].case?.people[0];
+        const defaultClient = data.entries[0].case
+          ? data.entries[0].case?.people[0]
+          : null;
         const defaultBillTo = defaultClient
           ? `${defaultClient.firstName} ${defaultClient.lastName}\n${defaultClient.address} ${defaultClient.city}, ${defaultClient.state} ${defaultClient.zip}\n${defaultClient.phoneNumber}  `
           : "";
@@ -318,7 +320,7 @@ const Invoice = () => {
                 type="number"
                 value={defaultRate}
                 disabled={status !== "draft"}
-                onChange={(e) => setDefaultRate(e.target.value)}
+                onChange={(e) => setDefaultRate(Number(e.target.value))}
               />
             </div>
             <div className="billing-wrapper">

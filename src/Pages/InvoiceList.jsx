@@ -54,7 +54,14 @@ const InvoiceList = () => {
         {isLoading ? (
           <Loader />
         ) : invoiceList?.length <= 0 ? (
-          <div className="no-invoices">No invoices to show</div>
+          <div className="no-invoices">
+            <i className="fa-solid fa-magnifying-glass"></i>
+            <h2>No Invoices Found</h2>
+            <p>
+              To create an invoice, go the the Time Keeper, filter the entries
+              you want to include and hit "Create Invoice"
+            </p>
+          </div>
         ) : (
           invoiceList?.map((invoice) => {
             const totalTimeNumber = invoice?.entries?.reduce(

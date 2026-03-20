@@ -284,6 +284,11 @@
 .invoice-draft {
   background-color: var(--light-light-grey);
   color: black;
+  border: 1px solid transparent;
+}
+.invoice-draft:hover {
+  border: 1px solid black;
+  color: black;
 }
 .invoice-posted {
   background-color: var(--blue);
@@ -291,4 +296,19 @@
 
 .invoice-paid {
   background-color: var(--bright-green);
+}
+.no-invoices {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  padding-top: 5%;
+  max-width: 500px;
+  text-align: center;
+  margin: 0 auto;
+}
+.no-invoices i {
+  font-size: 3rem;
+  color: var(--blue);
 }
