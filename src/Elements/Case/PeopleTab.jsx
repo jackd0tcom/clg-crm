@@ -10,7 +10,7 @@ const PeopleTab = ({
   type,
 }) => {
   const [currentTab, setCurrentTab] = useState(
-    people.length > 0 ? people[0].personId : 0
+    people.length > 0 ? people[0].personId : 0,
   );
   const [isNewPerson, setIsNewPerson] = useState(false);
 
@@ -23,11 +23,13 @@ const PeopleTab = ({
     address: "",
     city: "",
     state: "",
+    smallFields: null,
     zip: "",
-    phoneNumber: "",
-    dob: "",
-    county: "",
     SSN: "",
+    county: "",
+    dob: "",
+    phoneNumber: "",
+    email: "",
     personId: "dummy",
     type: "client",
   };

@@ -11,6 +11,7 @@ import PriorityToggle from "./PriorityToggle";
 import Notes from "../UI/Notes";
 import ExtraSettings from "../UI/ExtraSettings";
 import TaskCaseToggle from "./TaskCaseToggle";
+import TimeKeeperWidget from "../TimeKeeper/TimeKeeperWidget";
 
 const TaskView = ({ taskId, setTaskId, isOpen, onClose, onTaskUpdate }) => {
   const [taskData, setTaskData] = useState();
@@ -259,12 +260,15 @@ const TaskView = ({ taskId, setTaskId, isOpen, onClose, onTaskUpdate }) => {
             <div className="task-view-details">
               <div className="task-view-header">
                 <h3>Task</h3>
-                <ExtraSettings
-                  taskId={taskData?.taskId}
-                  handleRefresh={refreshTaskData}
-                  handleClose={handleClose}
-                  onTaskUpdate={onTaskUpdate}
-                />
+                <div className="task-view-header-container">
+                  <TimeKeeperWidget taskId={taskId} title={title} />
+                  <ExtraSettings
+                    taskId={taskData?.taskId}
+                    handleRefresh={refreshTaskData}
+                    handleClose={handleClose}
+                    onTaskUpdate={onTaskUpdate}
+                  />
+                </div>
               </div>
               <div
                 onMouseEnter={() => setIsHoverMove(true)}

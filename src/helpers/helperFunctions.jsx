@@ -21,6 +21,14 @@ export function formatDateNoTime(data) {
     month: "short",
   }).format(date);
 }
+export function formatDateNoTimeWithYear(data) {
+  const date = new Date(data);
+  return new Intl.DateTimeFormat("en-US", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(date);
+}
 export function formatDateWithDay(data) {
   const date = new Date(data);
   return new Intl.DateTimeFormat("en-US", {
@@ -52,7 +60,7 @@ export function formatRelativeTime(data) {
   const activityDay = new Date(
     activityDate.getFullYear(),
     activityDate.getMonth(),
-    activityDate.getDate()
+    activityDate.getDate(),
   );
 
   // Same calendar date (today)
@@ -88,7 +96,7 @@ export function findTimeDifference(data) {
   const activityDay = new Date(
     activityDate.getFullYear(),
     activityDate.getMonth(),
-    activityDate.getDate()
+    activityDate.getDate(),
   );
 
   // For future dates (negative diffInMs), we need to handle differently
@@ -197,6 +205,133 @@ export const truncateTitleLonger = (title) => {
   }
   return title;
 };
+
+export const getDuration = (entry) => {
+  const timeDifference =
+    Math.floor(new Date(entry.endTime).getTime() / 1000) -
+    Math.floor(new Date(entry.startTime).getTime() / 1000);
+  const hours = Math.floor(timeDifference / 3600);
+  const minutes = Math.floor((timeDifference % 3600) / 60);
+  const seconds = Math.floor((timeDifference % 3600) % 60);
+
+  return `${hours > 0 ? hours : "0"}:${minutes < 10 ? "0" : ""}${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+};
+
+export const getRoundedDuration = (entry, rounding) => {
+  const timeDifference =
+    Math.floor(new Date(entry.endTime).getTime() / 1000) -
+    Math.floor(new Date(entry.startTime).getTime() / 1000);
+
+  if (rounding === 0) {
+    const hours = Math.floor(timeDifference / 3600);
+    const minutes = Math.floor((timeDifference % 3600) / 60);
+    const seconds = Math.floor((timeDifference % 3600) % 60);
+    return `${hours > 0 ? hours : "0"}:${minutes < 10 ? "0" : ""}${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+  }
+
+  const totalMinutes = timeDifference / 60;
+  const roundedMinutes = Math.ceil(totalMinutes / rounding) * rounding;
+  const roundedSeconds = roundedMinutes * 60;
+
+  const hours = Math.floor(roundedSeconds / 3600);
+  const minutes = Math.floor((roundedSeconds % 3600) / 60);
+  const seconds = Math.floor((roundedSeconds % 3600) % 60);
+
+  return `${hours > 0 ? hours : "0"}:${minutes < 10 ? "0" : ""}${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+};
+
+export const getDurationFromNumber = (number) => {
+  const hours = Math.floor(number / 3600);
+  const minutes = Math.floor((number % 3600) / 60);
+  const seconds = Math.floor((number % 3600) % 60);
+
+  return `${hours > 0 ? hours : "0"}:${minutes < 10 ? "0" : ""}${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+};
+
+export function getDurationNumber(entry) {
+  const timeDifference =
+    Math.floor(new Date(entry.endTime).getTime() / 1000) -
+    Math.floor(new Date(entry.startTime).getTime() / 1000);
+
+  return timeDifference;
+}
+
+export function getAmountOfEntry(rate, entry) {
+  const startTime = new Date(entry.startTime);
+  const endTime = new Date(entry.endTime);
+  const differenceInMilliseconds = Math.abs(
+    startTime.getTime() - endTime.getTime(),
+  );
+
+  const differenceInMinutes = Math.floor(
+    differenceInMilliseconds / (1000 * 60),
+  );
+
+  const ratePerMinute = rate / 60;
+
+  return Math.floor(differenceInMinutes * ratePerMinute);
+}
+
+export function getRoundedAmountOfEntry(rate, entry, rounding) {
+  const startTime = new Date(entry.startTime);
+  const endTime = new Date(entry.endTime);
+  const differenceInMilliseconds = Math.abs(
+    startTime.getTime() - endTime.getTime(),
+  );
+
+  const differenceInMinutes = Math.floor(
+    differenceInMilliseconds / (1000 * 60),
+  );
+
+  const ratePerMinute = rate / 60;
+
+  if (rounding === 0) {
+    return Math.floor(differenceInMinutes * ratePerMinute);
+  }
+
+  const roundedMinutes = Math.ceil(differenceInMinutes / rounding) * rounding;
+
+  return Math.floor(roundedMinutes * ratePerMinute);
+}
+
+export const formatDay = (yyyyMmDd) => {
+  const d = new Date(yyyyMmDd + "T12:00:00");
+  const weekday = d.toLocaleDateString("en-GB", { weekday: "short" });
+  const date = d.getDate();
+  const month = d.toLocaleDateString("en-GB", { month: "short" });
+  return `${weekday} ${date}, ${month}`;
+};
+
+export function firstDayOfWeek(dateObject, firstDayOfWeekIndex) {
+  const dayOfWeek = dateObject.getDay(),
+    firstDayOfWeek = new Date(dateObject),
+    diff =
+      dayOfWeek >= firstDayOfWeekIndex
+        ? dayOfWeek - firstDayOfWeekIndex
+        : 6 - dayOfWeek;
+
+  firstDayOfWeek.setDate(dateObject.getDate() - diff);
+  firstDayOfWeek.setHours(0, 0, 0, 0);
+
+  return firstDayOfWeek;
+}
+
+export function lastDayOfTheWeek(dateObject, lastDayOfWeekIndex) {
+  const dayOfWeek = dateObject.getDay(),
+    lastDay = new Date(dateObject),
+    diff = (lastDayOfWeekIndex + (7 - dateObject.getDay())) % 7;
+  lastDay.setDate(dateObject.getDate() + diff);
+  lastDay.setHours(0, 0, 0, 0);
+  return lastDay;
+}
+
+export function formatTimeFromSeconds(inputSeconds) {
+  const hours = Math.floor(inputSeconds / 3600);
+  const minutes = Math.floor((inputSeconds % 3600) / 60);
+  const seconds = Math.floor((inputSeconds % 3600) % 60);
+
+  return `${hours > 0 ? hours : "0"}:${minutes < 10 ? "0" : ""}${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+}
 export const useOnWindowResize = (handler) => {
   React.useEffect(() => {
     const handleResize = () => {

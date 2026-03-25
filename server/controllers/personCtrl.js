@@ -25,7 +25,7 @@ export default {
 
       const oldValue = currentPerson[fieldName];
       let message = `updated ${currentPerson.firstName}'s ${spaceOut(
-        fieldName
+        fieldName,
       )}`;
       if (oldValue === null) {
         message = `added ${format(fieldName).toLowerCase()} to ${

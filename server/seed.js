@@ -17,7 +17,7 @@ import {
 import bcrypt from "bcryptjs";
 
 const db = await connectToDB(
-  process.env.DATABASE_URL || "postgresql:///clg-db"
+  process.env.DATABASE_URL || "postgresql:///clg-db",
 );
 
 const users = [
@@ -968,10 +968,10 @@ await db.sync({ alter: true }).then(async () => {
 
   console.log("Database reset and seeded successfully!");
   console.log(
-    `Created ${createdUsers.length} users, ${createdCases.length} cases, ${createdPeople.length} people, and ${createdTasks.length} tasks`
+    `Created ${createdUsers.length} users, ${createdCases.length} cases, ${createdPeople.length} people, and ${createdTasks.length} tasks`,
   );
   console.log(
-    `Created ${caseAssignments.length} case assignments, ${taskAssignments.length} task assignments, and ${activityReaders.length} activity readers`
+    `Created ${caseAssignments.length} case assignments, ${taskAssignments.length} task assignments, and ${activityReaders.length} activity readers`,
   );
 });
 

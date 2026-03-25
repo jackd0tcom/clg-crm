@@ -18,10 +18,32 @@ const Settings = () => {
   const [migrating, setMigrating] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   const [isDisconnecting, setIsDisconnecting] = useState(false);
+  const [payTo, setPayTo] = useState("");
+  const [originalPayTo, setOriginalPayTo] = useState("");
+  const [defaultRate, setDefaultRate] = useState(0);
+  const [originalDefaultRate, setOriginalDefaultRate] = useState(0);
+  const [showRateSave, setShowRateSave] = useState(false);
+  const [showPayToSave, setShowPayToSave] = useState(false);
   const { user } = useAuth0();
+
+  const fetchUserSettings = async () => {
+    try {
+      await axios.get("/api/getUserSettings").then((res) => {
+        if (res.status === 200) {
+          setPayTo(res.data.payTo);
+          setOriginalPayTo(res.data.payTo);
+          setDefaultRate(res.data.defaultRate);
+          setOriginalDefaultRate(res.data.defaultRate);
+        }
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
     checkGoogleConnection();
+    fetchUserSettings();
   }, []);
 
   useEffect(() => {
@@ -71,7 +93,7 @@ const Settings = () => {
         setSelectedCalendar(preferredRes.data.preferredCalendarId);
       } else {
         const primaryCalendar = calendarsRes.data.calendars.find(
-          (cal) => cal.primary
+          (cal) => cal.primary,
         );
         if (primaryCalendar) {
           setOriginalCalendar(primaryCalendar.id);
@@ -163,7 +185,7 @@ const Settings = () => {
       const popup = window.open(
         authUrl,
         "Google Calendar Auth",
-        "width=500,height=600,scrollbars=yes,resizable=yes"
+        "width=500,height=600,scrollbars=yes,resizable=yes",
       );
 
       // Note: We rely entirely on the message system for popup communication
@@ -177,7 +199,7 @@ const Settings = () => {
   const handleDisconnectCalendar = async () => {
     if (
       !window.confirm(
-        "Are you sure you want to disconnect Google Calendar? Your tasks will no longer sync to your calendar."
+        "Are you sure you want to disconnect Google Calendar? Your tasks will no longer sync to your calendar.",
       )
     ) {
       return;
@@ -237,124 +259,204 @@ const Settings = () => {
     return <Loader />;
   }
 
+  const handleUpdateUserSettings = async (fieldName, value) => {
+    try {
+      await axios
+        .post("/api/updateUserSettings", { fieldName, value })
+        .then((res) => {
+          if (res.status === 200) {
+            console.log(res.data);
+          }
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="settings-wrapper">
       <div className="settings-header">
         <h1 className="section-heading">Settings</h1>
       </div>
-
-      <div className="settings-section">
-        <div className="settings-section-header">
-          <h3>Google Calendar</h3>
-          <p>Choose which calendar your tasks will be synced to</p>
-        </div>
-
-        {!isGoogleConnected ? (
-          <div className="calendar-connect-card">
-            <div className="calendar-connect-icon">🔗</div>
-            <h4>Connect Google Calendar</h4>
-            <button onClick={handleConnectGoogle} className="connect-button">
-              Connect Google Calendar
-            </button>
+      <div className="settings-body">
+        <div className="settings-section">
+          <div className="settings-section-header">
+            <h3>Invoice</h3>
+            <p>
+              Adjust your default rate and default "Pay To" address for invoices
+            </p>
           </div>
-        ) : (
-          <div className="calendar-settings-card">
-            <div className="calendar-status">
-              <span className="status-indicator connected">●</span>
-              <span>Google Calendar Connected</span>
-            </div>
-
-            <div className="calendar-selection">
-              <label htmlFor="calendar-select">
-                <strong>Select Google Calendar for tasks</strong>
-              </label>
-              <p>
-                Connect your Google Calendar to sync your tasks and events
-                seamlessly. You can choose which calendar to use for your tasks.
-              </p>
-              <div className="calendar-select-wrapper">
-                <select
-                  id="calendar-select"
-                  value={selectedCalendar}
-                  onChange={(e) => handleCalendarChange(e.target.value)}
-                  className="calendar-select"
-                >
-                  {calendars.map((calendar) => (
-                    <option key={calendar.id} value={calendar.id}>
-                      {calendar.name} {calendar.primary && "(Primary)"}
-                    </option>
-                  ))}
-                </select>
-                <button
-                  onClick={saveCalendarPreference}
-                  disabled={isSaving || selectedCalendar === originalCalendar}
-                  className="save-button"
-                >
-                  {isSaving ? "Saving..." : "Save Calendar Preference"}
-                </button>
+          <div className="invoice-settings">
+            <div className="invoice-settings-section">
+              <p>Default Invoice Rate</p>
+              <div className="invoice-settings-input-wrapper">
+                <input
+                  type="number"
+                  value={defaultRate}
+                  onChange={(e) => {
+                    if (Number(e.target.value) !== originalDefaultRate) {
+                      setShowRateSave(true);
+                    } else setShowRateSave(false);
+                    setDefaultRate(e.target.value);
+                  }}
+                />
+                {showRateSave && (
+                  <button
+                    className="invoice-settings-save-button"
+                    onClick={() => {
+                      handleUpdateUserSettings("defaultRate", defaultRate);
+                      setOriginalDefaultRate(defaultRate);
+                      setShowRateSave(false);
+                    }}
+                  >
+                    Save
+                  </button>
+                )}
               </div>
             </div>
-
-            {message && (
-              <div
-                className={`message ${
-                  message.includes("✅" || "🔄") ? "success" : "error"
-                }`}
-              >
-                {message}
-              </div>
-            )}
-            <div className="calendar-settings-container">
-              <label htmlFor="sync-tasks">
-                <strong>Google Calendar Settings</strong>
-              </label>
-              <div className="calendar-settings-item">
-                <p>
-                  Manually sync calendar settings to override any existing
-                  tasks, and resync new tasks.
-                </p>
-                <button
-                  className="sync-button"
-                  onClick={handleSyncTasks}
-                  disabled={isSyncing}
-                >
-                  {isSyncing ? "Syncing..." : "Sync Tasks"}
-                </button>
-              </div>
-              <div className="calendar-settings-item">
-                <p>
-                  Disconnect Google Calendar if you no longer want to sync tasks
-                  on Google Calendar, or if you have an issue and need to reset
-                  the connection.
-                </p>
-                <button
-                  className="disconnect-calendar"
-                  onClick={handleDisconnectCalendar}
-                  disabled={isDisconnecting}
-                >
-                  {isDisconnecting ? "Disconnecting..." : "Disconnect Calendar"}
-                </button>
+            <div className="invoice-settings-section">
+              <p>Default Pay To Address</p>
+              <div className="invoice-settings-input-wrapper">
+                <textarea
+                  type="text"
+                  value={payTo}
+                  onChange={(e) => {
+                    if (e.target.value !== originalPayTo) {
+                      setShowPayToSave(true);
+                    } else setShowPayToSave(false);
+                    setPayTo(e.target.value);
+                  }}
+                />
+                {showPayToSave && (
+                  <button
+                    className="invoice-settings-save-button"
+                    onClick={() => {
+                      handleUpdateUserSettings("payTo", payTo);
+                      setOriginalPayTo(payTo);
+                      setShowPayToSave(false);
+                    }}
+                  >
+                    Save
+                  </button>
+                )}
               </div>
             </div>
           </div>
-        )}
-        <div className="settings-info">
-          <h4>How it works:</h4>
-          <ul>
-            <li>
-              When you create a task, it will automatically appear in your
-              selected calendar
-            </li>
-            <li>
-              When you edit a task's title, due date, or notes, the calendar
-              event updates automatically
-            </li>
-            <li>
-              When you delete a task, the calendar event is removed
-              automatically
-            </li>
-            <li>You can change your preferred calendar at any time</li>
-          </ul>
+          <div className="settings-section-header">
+            <h3>Google Calendar</h3>
+            <p>Choose which calendar your tasks will be synced to</p>
+          </div>
+
+          {!isGoogleConnected ? (
+            <div className="calendar-connect-card">
+              <div className="calendar-connect-icon">🔗</div>
+              <h4>Connect Google Calendar</h4>
+              <button onClick={handleConnectGoogle} className="connect-button">
+                Connect Google Calendar
+              </button>
+            </div>
+          ) : (
+            <div className="calendar-settings-card">
+              <div className="calendar-status">
+                <span className="status-indicator connected">●</span>
+                <span>Google Calendar Connected</span>
+              </div>
+
+              <div className="calendar-selection">
+                <label htmlFor="calendar-select">
+                  <strong>Select Google Calendar for tasks</strong>
+                </label>
+                <p>
+                  Connect your Google Calendar to sync your tasks and events
+                  seamlessly. You can choose which calendar to use for your
+                  tasks.
+                </p>
+                <div className="calendar-select-wrapper">
+                  <select
+                    id="calendar-select"
+                    value={selectedCalendar}
+                    onChange={(e) => handleCalendarChange(e.target.value)}
+                    className="calendar-select"
+                  >
+                    {calendars.map((calendar) => (
+                      <option key={calendar.id} value={calendar.id}>
+                        {calendar.name} {calendar.primary && "(Primary)"}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    onClick={saveCalendarPreference}
+                    disabled={isSaving || selectedCalendar === originalCalendar}
+                    className="save-button"
+                  >
+                    {isSaving ? "Saving..." : "Save Calendar Preference"}
+                  </button>
+                </div>
+              </div>
+
+              {message && (
+                <div
+                  className={`message ${
+                    message.includes("✅" || "🔄") ? "success" : "error"
+                  }`}
+                >
+                  {message}
+                </div>
+              )}
+              <div className="calendar-settings-container">
+                <label htmlFor="sync-tasks">
+                  <strong>Google Calendar Settings</strong>
+                </label>
+                <div className="calendar-settings-item">
+                  <p>
+                    Manually sync calendar settings to override any existing
+                    tasks, and resync new tasks.
+                  </p>
+                  <button
+                    className="sync-button"
+                    onClick={handleSyncTasks}
+                    disabled={isSyncing}
+                  >
+                    {isSyncing ? "Syncing..." : "Sync Tasks"}
+                  </button>
+                </div>
+                <div className="calendar-settings-item">
+                  <p>
+                    Disconnect Google Calendar if you no longer want to sync
+                    tasks on Google Calendar, or if you have an issue and need
+                    to reset the connection.
+                  </p>
+                  <button
+                    className="disconnect-calendar"
+                    onClick={handleDisconnectCalendar}
+                    disabled={isDisconnecting}
+                  >
+                    {isDisconnecting
+                      ? "Disconnecting..."
+                      : "Disconnect Calendar"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+          <div className="settings-info">
+            <h4>How it works:</h4>
+            <ul>
+              <li>
+                When you create a task, it will automatically appear in your
+                selected calendar
+              </li>
+              <li>
+                When you edit a task's title, due date, or notes, the calendar
+                event updates automatically
+              </li>
+              <li>
+                When you delete a task, the calendar event is removed
+                automatically
+              </li>
+              <li>You can change your preferred calendar at any time</li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>

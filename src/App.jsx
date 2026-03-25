@@ -19,6 +19,9 @@ import Inbox from "./Pages/Inbox.jsx";
 import { addRecentItem } from "./helpers/recentItemsHelper";
 import Admin from "./Pages/Admin.jsx";
 import Denied from "./Pages/Denied.jsx";
+import TimeKeeper from "./Pages/TimeKeeper.jsx";
+import InvoiceList from "./Pages/InvoiceList.jsx";
+import Invoice from "./Pages/Invoice.jsx";
 import Reports from "./Pages/Reports.jsx";
 
 function App() {
@@ -211,6 +214,24 @@ function App() {
                 path="/calendar"
                 element={
                   !isAuthenticated ? <Navigate to="/login" /> : <Calendar />
+                }
+              />
+              <Route
+                path="/time-keeper"
+                element={
+                  !isAuthenticated ? <Navigate to="/login" /> : <TimeKeeper />
+                }
+              />
+              <Route
+                path="/invoices"
+                element={
+                  !isAuthenticated ? <Navigate to="/login" /> : <InvoiceList />
+                }
+              />
+              <Route
+                path="/invoice/:invoiceId"
+                element={
+                  !isAuthenticated ? <Navigate to="/login" /> : <Invoice />
                 }
               />
               <Route

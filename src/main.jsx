@@ -7,6 +7,11 @@ import "./styles/App.css";
 import { Provider } from "react-redux";
 import store from "./store/store.jsx";
 import { Auth0Provider } from "@auth0/auth0-react";
+import { Buffer } from "buffer";
+
+if (!globalThis.Buffer) {
+  globalThis.Buffer = Buffer;
+}
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <Provider store={store}>

@@ -39,10 +39,46 @@ const PersonView = ({
     }
   };
 
+  const smallFields = ["state", "zip", "SSN"];
+
+  let smallFieldsObject = {};
+
+  if (type === "client") {
+    smallFieldsObject.state = data.state;
+    smallFieldsObject.zip = data.zip;
+    smallFieldsObject.SSN = data.SSN;
+    delete objectTemplate.state;
+    delete objectTemplate.zip;
+    delete objectTemplate.SSN;
+  }
+
   return (
     <div className="person-view-wrapper">
       <div className="person-view-fields">
         {Object.entries(objectTemplate).map(([fieldName]) => {
+          if (type === "client") {
+            if (fieldName === "smallFields") {
+              return (
+                <div className="small-fields">
+                  {Object.entries(smallFieldsObject).map(([fieldName]) => (
+                    <PersonInput
+                      key={fieldName}
+                      fieldName={fieldName}
+                      value={data[fieldName] || ""}
+                      personId={personId}
+                      refreshActivityData={refreshActivityData}
+                      refreshCaseData={refreshCaseData}
+                      isNewPerson={isNewPerson}
+                      caseId={caseId}
+                      setPersonId={setPersonId}
+                      setIsNewPerson={setIsNewPerson}
+                      type={type}
+                    />
+                  ))}
+                </div>
+              );
+            }
+          }
           return (
             <PersonInput
               key={fieldName}

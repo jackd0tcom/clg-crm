@@ -1,3 +1,10 @@
+.settings-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
 .settings-header {
   padding: 15px;
   border-bottom: 1px solid var(--light-border);
@@ -12,7 +19,12 @@
   color: #666;
   font-size: 1.1rem;
 }
-
+.settings-body {
+  height: 100%;
+  overflow-y: scroll;
+  overscroll-behavior: none;
+  scrollbar-width: thin;
+}
 .settings-section {
   background: white;
   padding: 15px;
@@ -34,6 +46,49 @@
 .settings-section-header p {
   color: #666;
   margin: 0;
+}
+
+/* Invoice Settings */
+.invoice-settings {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+.invoice-settings-section {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+.invoice-settings-input-wrapper {
+  display: flex;
+  align-items: start;
+  gap: 15px;
+}
+.invoice-settings-save-button {
+  background-color: var(--bright-green);
+  color: white;
+  border: none;
+}
+.invoice-settings-save-button:hover {
+  background-color: var(--bright-dark-green);
+  color: white;
+  border: none;
+}
+.invoice-settings input,
+.invoice-settings textarea {
+  padding: 10px 12px;
+  border: 1px solid var(--light-border);
+  border-radius: 5px;
+}
+.invoice-settings textarea {
+  padding: 12px;
+  min-width: 250px;
+  min-height: 100px;
+  resize: none;
 }
 
 /* Calendar Connect Card */

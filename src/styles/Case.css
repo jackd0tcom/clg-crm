@@ -217,7 +217,6 @@
   padding: 15px 20px 0px 20px;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
   order: 1;
 }
 .case-top-bar {
@@ -234,6 +233,10 @@
 .case-top-bar a:hover {
   color: var(--grey);
   transform: 70ms;
+}
+.case-top-bar-container {
+  display: flex;
+  gap: 20px;
 }
 .extra-settings-wrapper {
   display: flex;
@@ -724,7 +727,6 @@ div.case-task-container
   z-index: 999;
   padding: 15px;
   min-width: 500px;
-  height: 100%;
   background-color: var(--root-bg-color-light);
 }
 .person-view-header-wrapper {
@@ -750,10 +752,24 @@ div.case-task-container
   column-gap: 15px;
   row-gap: 15px;
 }
+.small-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-column: 1 / -1;
+  gap: 15px;
+}
 .person-input-label-wrapper {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+.person-input-label {
+  display: flex;
+  align-items: center;
+}
+.dob-tooltip {
+  font-size: 0.7rem;
+  margin-left: 10px;
 }
 .person-save-message {
   font-size: 0.8rem;
