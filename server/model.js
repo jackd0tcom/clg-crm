@@ -677,6 +677,41 @@ UserSettings.init(
       type: DataTypes.TEXT,
       allowNull: true,
     },
+    caseFilter: {
+      type: DataTypes.ENUM(
+        "updated-down",
+        "updated-up",
+        "opened-up",
+        "opened-down",
+        "all",
+        "archived",
+      ),
+      allowNull: true,
+      defaultValue: "updated-down",
+    },
+    taskFilter: {
+      type: DataTypes.ENUM(
+        "dueDate",
+        "lastUpdated",
+        "firstUpdated",
+        "lastCreated",
+        "firstCreated",
+        "highPriority",
+        "lowPriority",
+      ),
+      allowNull: true,
+      defaultValue: "dueDate",
+    },
+    taskShowAssigned: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+      allowNull: true,
+    },
+    taskShowCompleted: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      allowNull: true,
+    },
   },
   {
     modelName: "userSettings",

@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from "react";
+import axios from "axios";
+import { capitalizeCaseFilter } from "../../helpers/helperFunctions";
 
 const CaseFilter = ({
   setCases,
@@ -13,11 +15,42 @@ const CaseFilter = ({
   // Used to determine which option gets the checkmark icon
   const [currentFilter, setCurrentFilter] = useState("updated-down");
   // Used to populate the button text, is an html element
-  const [activeFilter, setActiveFilter] = useState(
-    <span>
-      Last Updated <i className="case-filter-icon fa-solid fa-arrow-down"></i>
-    </span>
-  );
+  const [activeFilter, setActiveFilter] = useState("Last Updated");
+
+  const fetchSettings = async (params) => {
+    try {
+      await axios.get("/api/getUserSettings").then((res) => {
+        console.log(res.data);
+        const filter = res.data.caseFilter;
+        setCurrentFilter(filter);
+        setActiveFilter(capitalizeCaseFilter(filter));
+        if (filter === "updated-down") {
+          setCases(nonArchivedCases);
+        }
+        if (filter === "updated-up") {
+          setCases(oldestFirst);
+        }
+        if (filter === "opened-up") {
+          byDate(false);
+        }
+        if (filter === "opened-down") {
+          byDate(true);
+        }
+        if (filter === "all") {
+          setCases(allCases);
+        }
+        if (filter === "archived") {
+          setCases(archivedCases);
+        }
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchSettings();
+  }, []);
 
   // Handles blur
   useEffect(() => {
@@ -39,15 +72,30 @@ const CaseFilter = ({
     if (latest) {
       const sortedCases = [...nonArchivedCases].sort(
         (a, b) =>
-          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
       );
       setCases(sortedCases);
     } else {
       const sortedCases = [...nonArchivedCases].sort(
         (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
       );
       setCases(sortedCases);
+    }
+  };
+
+  const handleFilterClick = async (filter) => {
+    try {
+      await axios
+        .post("/api/updateUserSettings", {
+          fieldName: "caseFilter",
+          value: filter,
+        })
+        .then((res) => {
+          console.log(res.data);
+        });
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -67,11 +115,12 @@ const CaseFilter = ({
           <div
             className="case-filter-dropdown-item"
             onClick={() => {
+              handleFilterClick("updated-down");
               setActiveFilter(
                 <span>
                   Last Updated{" "}
                   <i className="case-filter-icon fa-solid fa-arrow-down"></i>
-                </span>
+                </span>,
               );
               setCases(nonArchivedCases);
               setCurrentFilter("updated-down");
@@ -89,11 +138,12 @@ const CaseFilter = ({
           <div
             className="case-filter-dropdown-item"
             onClick={() => {
+              handleFilterClick("updated-up");
               setActiveFilter(
                 <span>
                   Last Updated{" "}
                   <i className="case-filter-icon fa-solid fa-arrow-up"></i>
-                </span>
+                </span>,
               );
               setCases(oldestFirst);
               setCurrentFilter("updated-up");
@@ -112,11 +162,12 @@ const CaseFilter = ({
           <div
             className="case-filter-dropdown-item"
             onClick={() => {
+              handleFilterClick("opened-up");
               setActiveFilter(
                 <span>
                   Date Opened{" "}
                   <i className="case-filter-icon fa-solid fa-arrow-down"></i>
-                </span>
+                </span>,
               );
               byDate(false);
               setCurrentFilter("opened-up");
@@ -134,11 +185,12 @@ const CaseFilter = ({
           <div
             className="case-filter-dropdown-item"
             onClick={() => {
+              handleFilterClick("opened-down");
               setActiveFilter(
                 <span>
                   Date Opened{" "}
                   <i className="case-filter-icon fa-solid fa-arrow-up"></i>
-                </span>
+                </span>,
               );
               byDate(true);
               setCurrentFilter("opened-down");
@@ -157,6 +209,7 @@ const CaseFilter = ({
           <div
             className="case-filter-dropdown-item"
             onClick={() => {
+              handleFilterClick("all");
               setActiveFilter("Show All");
               setCases(allCases);
               setCurrentFilter("all");
@@ -171,6 +224,7 @@ const CaseFilter = ({
           <div
             className="case-filter-dropdown-item"
             onClick={() => {
+              handleFilterClick("archived");
               setActiveFilter("Show Archived");
               setCases(archivedCases);
               setCurrentFilter("archived");

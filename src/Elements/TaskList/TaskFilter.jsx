@@ -47,7 +47,7 @@ const TaskFilter = ({
           setCaseData(res.data);
           if (paramCase !== 0) {
             const currentCase = res.data.find(
-              (data) => data.caseId === paramCase
+              (data) => data.caseId === paramCase,
             );
             if (currentCase) {
               handleCaseClick(currentCase);
@@ -184,7 +184,7 @@ const TaskFilter = ({
               {caseData && caseData.length > 0 ? (
                 caseData
                   .filter(
-                    (ca) => !filteredCases.some((c) => c.caseId === ca.caseId)
+                    (ca) => !filteredCases.some((c) => c.caseId === ca.caseId),
                   )
                   .map((ca) => (
                     <p

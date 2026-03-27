@@ -4,6 +4,12 @@ export function capitalize(str) {
     .map((word) => word.slice(0, 1).toUpperCase() + word.slice(1))
     .join(" ");
 }
+export function capitalizeCaseFilter(str) {
+  return str
+    .split("-")
+    .map((word) => word.slice(0, 1).toUpperCase() + word.slice(1))
+    .join(" ");
+}
 export function formatDate(data) {
   const date = new Date(data);
   return new Intl.DateTimeFormat("en-US", {

@@ -71,26 +71,26 @@ const Tasks = ({ openTaskView, refreshKey }) => {
   // Handles tasks array filtering
   useEffect(() => {
     const nonCompletedTasks = originalTasks.filter(
-      (task) => task.status !== "completed"
+      (task) => task.status !== "completed",
     );
     const completedTasks = originalTasks.filter(
-      (task) => task.status === "completed"
+      (task) => task.status === "completed",
     );
 
     if (!showCompleted) {
       showAssigned
         ? setTasks(
             nonCompletedTasks.filter((task) =>
-              task.assignees.some((nee) => nee.userId === user.userId)
-            )
+              task.assignees.some((nee) => nee.userId === user.userId),
+            ),
           )
         : setTasks(nonCompletedTasks);
     } else if (showCompleted) {
       showAssigned
         ? setTasks(
             completedTasks.filter((task) =>
-              task.assignees.some((nee) => nee.userId === user.userId)
-            )
+              task.assignees.some((nee) => nee.userId === user.userId),
+            ),
           )
         : setTasks(completedTasks);
     }
@@ -160,64 +160,64 @@ const Tasks = ({ openTaskView, refreshKey }) => {
         setTasks(
           tasksArr.sort(
             (a, b) =>
-              new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
-          )
+              new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime(),
+          ),
         );
         break;
       case "lastUpdated":
         setTasks(
           tasksArr.sort(
             (a, b) =>
-              new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-          )
+              new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+          ),
         );
         break;
       case "firstUpdated":
         setTasks(
           tasksArr.sort(
             (a, b) =>
-              new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime()
-          )
+              new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime(),
+          ),
         );
         break;
       case "lastCreated":
         setTasks(
           tasksArr.sort(
             (a, b) =>
-              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-          )
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+          ),
         );
         break;
       case "firstCreated":
         setTasks(
           tasksArr.sort(
             (a, b) =>
-              new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-          )
+              new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+          ),
         );
         break;
       case "highPriority":
         setTasks(
           tasksArr.sort(
             (a, b) =>
-              priorities.indexOf(b.priority) - priorities.indexOf(a.priority)
-          )
+              priorities.indexOf(b.priority) - priorities.indexOf(a.priority),
+          ),
         );
         break;
       case "lowPriority":
         setTasks(
           tasksArr.sort(
             (a, b) =>
-              priorities.indexOf(a.priority) - priorities.indexOf(b.priority)
-          )
+              priorities.indexOf(a.priority) - priorities.indexOf(b.priority),
+          ),
         );
         break;
       default:
         setTasks(
           tasksArr.sort(
             (a, b) =>
-              new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
-          )
+              new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime(),
+          ),
         );
     }
     format();
