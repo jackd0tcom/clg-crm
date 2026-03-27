@@ -58,6 +58,26 @@ const TaskFilter = ({
         console.log(error);
       }
     };
+    const fetchSettings = async () => {
+      try {
+        await axios.get("/api/getUserSettings").then((res) => {
+          console.log(res.data);
+          if (res.data.taskShowAssigned) {
+            setShowAssigned(true);
+          } else if (!res.data.taskShowAssigned) {
+            setShowAssigned(false);
+          }
+          if (res.data.taskShowCompleted) {
+            setShowCompleted(true);
+          } else if (!res.data.taskShowCompleted) {
+            setShowCompleted(false);
+          }
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchSettings();
     fetchCases();
   }, []);
 
@@ -138,15 +158,28 @@ const TaskFilter = ({
     setFilteredCases([]);
   };
 
+  const handleFilterUpdate = async (fieldName, value) => {
+    try {
+      await axios.post("/api/updateUserSettings", {
+        fieldName,
+        value,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="task-filter-wrapper">
       <div className="filter-header">
         <button
           onClick={() => {
             if (showAssigned) {
+              handleFilterUpdate("taskShowAssigned", false);
               setShowAssigned(false);
             } else {
               setShowAssigned(true);
+              handleFilterUpdate("taskShowAssigned", true);
             }
           }}
           className={
@@ -161,7 +194,11 @@ const TaskFilter = ({
           onClick={() => {
             if (showCompleted) {
               setShowCompleted(false);
-            } else setShowCompleted(true);
+              handleFilterUpdate("taskShowCompleted", false);
+            } else {
+              setShowCompleted(true);
+              handleFilterUpdate("taskShowCompleted", true);
+            }
           }}
           className={
             !showCompleted

@@ -4,6 +4,27 @@ export function capitalize(str) {
     .map((word) => word.slice(0, 1).toUpperCase() + word.slice(1))
     .join(" ");
 }
+export function capitalizeCamelCase(str) {
+  const containsUpperCase = /[A-Z]/.test(str);
+  if (!containsUpperCase) {
+    return str
+      .split(" ")
+      .map((word) => word.slice(0, 1).toUpperCase() + word.slice(1))
+      .join(" ");
+  } else
+    return str
+      .split("")
+      .map((letter, index) => {
+        if (index === 0) {
+          return letter.toUpperCase();
+        } else if (/[A-Z]/.test(letter)) {
+          return ` ${letter.toUpperCase()}`;
+        }
+        return letter;
+      })
+      .join("")
+      .trim();
+}
 export function capitalizeCaseFilter(str) {
   return str
     .split("-")
