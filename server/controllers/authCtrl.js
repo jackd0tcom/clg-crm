@@ -1,4 +1,4 @@
-import { User, UserSettings } from "../model.js";
+import { User, UserSettings, AllowedEmails } from "../model.js";
 import bcrypt from "bcryptjs";
 
 export default {
@@ -79,6 +79,28 @@ export default {
       res.status(400).send("There is no user on the session");
     }
   },
+  addUser: async (req, res) => {
+    console.log("addUser");
+    try {
+      if (!req.session.user) {
+        res.status(401).send("User not authenticated");
+        return;
+      }
+
+      const { email } = req.body;
+
+      const existingUser = await User.findOne({ where: { email } });
+
+      if (!existingUser) {
+        const allowedEmail = await AllowedEmails.create({ email });
+        res.status(200).send(allowedEmail);
+        return;
+      } else res.status(404).send("email already added");
+    } catch (error) {
+      console.log(error);
+      res.send(500).send(error);
+    }
+  },
   logout: async (req, res) => {
     console.log("logout");
     req.session.destroy();
@@ -104,6 +126,8 @@ export default {
           : [];
         const isAdmin = adminEmails.includes(email);
 
+        const isAllowedEmail = AllowedEmails.findOne({ where: { email } });
+
         console.log(`🔍 Admin check for ${email}:`);
         console.log(`   ADMIN_EMAIL env var: "${process.env.ADMIN_EMAIL}"`);
         console.log(
@@ -122,8 +146,12 @@ export default {
           profilePic: picture,
           role: isAdmin || isFirstUser ? "admin" : "user",
           authProvider: "auth0",
-          isAllowed: isAdmin || isFirstUser, // Admin emails or first user gets access
+          isAllowed: isAdmin || isFirstUser || isAllowedEmail, // Admin emails or first user gets access
         });
+
+        if (isAllowedEmail) {
+          isAllowedEmail.destroy();
+        }
 
         const newUserSettings = await UserSettings.create({
           userId: user.userId,

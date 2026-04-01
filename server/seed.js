@@ -13,6 +13,7 @@ import {
   PracticeArea,
   CasePracticeAreas,
   Tribunal,
+  AllowedEmails,
 } from "./model.js";
 
 const db = await connectToDB(
@@ -56,6 +57,15 @@ const users = [
     isAllowed: true,
   },
 ];
+
+const allowedEmails = await AllowedEmails.bulkCreate([
+  {
+    email: "newguy@gmail.com",
+  },
+  {
+    email: "newlady@gmail.com",
+  },
+]);
 
 console.log("Creating practice areas...");
 const practiceAreas = await PracticeArea.bulkCreate([

@@ -15,6 +15,35 @@
   flex-direction: column;
   overflow: hidden;
 }
+.add-user-wrapper {
+  align-items: center;
+  padding-top: 10%;
+  gap: 25px;
+  max-width: 500px;
+  margin: 0 auto;
+  text-align: center;
+}
+.add-user-wrapper h2 {
+  margin: 5px;
+  font-size: 1.8rem;
+}
+.add-user-wrapper i {
+  font-size: 4rem;
+  color: var(--blue);
+}
+.add-user-wrapper input {
+  padding: 8px;
+  border: 1px solid var(--light-border);
+  border-radius: 5px;
+  width: 50%;
+}
+.light-button {
+  font-size: 0.9rem;
+  border: 1px solid var(--light-border);
+}
+.light-button:hover {
+  color: black;
+}
 /* Admin section header */
 .admin-section-header h2 {
   font-weight: 500;
@@ -185,7 +214,10 @@ input:checked + .slider:before {
   background-color: var(--grey);
   color: white;
 }
-
+.pending {
+  background-color: var(--purple);
+  color: white;
+}
 /* Toggle container */
 .toggle-container {
   display: flex;

@@ -76,7 +76,7 @@ const {
   deleteTask,
   getTodayTasks,
 } = taskCtrl;
-const { register, login, checkUser, logout, syncAuth0User } = authCtrl;
+const { register, login, checkUser, logout, syncAuth0User, addUser } = authCtrl;
 const {
   getUserActivities,
   getCaseActivities,
@@ -210,6 +210,7 @@ app.get("/api/getUsers", getUsers);
 app.get("/api/getUserSettings", getUserSettings);
 app.post("/api/updateUserSettings", updateUserSettings);
 app.delete("/api/deletePerson", deletePerson);
+app.post("/api/addUser", addUser);
 
 // case endpoints
 app.get("/api/getCases", getCases);

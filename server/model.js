@@ -719,6 +719,20 @@ UserSettings.init(
   },
 );
 
+class AllowedEmails extends Model {}
+AllowedEmails.init(
+  {
+    email: {
+      type: DataTypes.STRING,
+      unique: true,
+    },
+  },
+  {
+    modelName: "allowedEmails",
+    sequelize: db,
+  },
+);
+
 // Junction table for case-practice area relationships
 class CasePracticeAreas extends Model {}
 CasePracticeAreas.init(
@@ -941,4 +955,5 @@ export {
   Invoice,
   UserSettings,
   CustomCharge,
+  AllowedEmails,
 };

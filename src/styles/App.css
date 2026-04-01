@@ -244,6 +244,18 @@ h5 {
   font-weight: 400;
   margin: 5px 0px;
 }
+.green-button {
+  background-color: var(--bright-green);
+  color: white;
+  font-size: 0.9rem;
+  border: 1px solid transparent;
+}
+.green-button:hover {
+  background-color: var(--bright-dark-green);
+  color: white;
+  font-size: 0.9rem;
+  border: 1px solid transparent;
+}
 
 .dropdown {
   position: absolute;

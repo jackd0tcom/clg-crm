@@ -1,4 +1,4 @@
-import { User } from "../model.js";
+import { User, AllowedEmails } from "../model.js";
 
 export default {
   requireAdmin: (req, res, next) => {
@@ -28,6 +28,8 @@ export default {
         order: [["createdAt", "DESC"]],
       });
 
+      const allowed = await AllowedEmails.findAll();
+
       res.json({
         success: true,
         users: users.map((user) => ({
@@ -44,6 +46,7 @@ export default {
             `${user.firstName || ""} ${user.lastName || ""}`.trim() ||
             user.username,
         })),
+        allowedEmails: allowed,
       });
     } catch (error) {
       console.error("Error fetching users:", error);
