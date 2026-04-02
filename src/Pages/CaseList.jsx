@@ -18,13 +18,15 @@ const CaseList = ({ openTaskView, refreshKey }) => {
   const [archivedCases, setArchivedCases] = useState([]);
   const [nonArchivedCases, setNonArchivedCases] = useState([]);
   const [oldestFirst, setOldestFirst] = useState([]);
+  const [openCases, setOpenCases] = useState(0);
 
   const fetchCases = async () => {
     try {
       const res = await axios.get("/api/getCasesWithTasks");
+      setOpenCases(res.data.count);
       // Filter out archived cases before setting initial state
-      const nonArchivedCases = res.data.filter((a) => !a.isArchived);
-      const archivedCases = res.data.filter((a) => a.isArchived);
+      const nonArchivedCases = res.data.cases.filter((a) => !a.isArchived);
+      const archivedCases = res.data.cases.filter((a) => a.isArchived);
       // initial load should be last updated non archived cases assigned to user
       setCases(nonArchivedCases);
       // allCases for seeing cases that the user might not be assigned to.
@@ -47,7 +49,7 @@ const CaseList = ({ openTaskView, refreshKey }) => {
       setArchivedCases(archivedCases);
       //
       setOriginalCases(
-        res.data.filter((ca) =>
+        res.data.cases.filter((ca) =>
           ca.assignees?.some((nee) => nee.userId === userStore.userId),
         ),
       ); // Keep original data for filtering
@@ -77,7 +79,7 @@ const CaseList = ({ openTaskView, refreshKey }) => {
         <div className="case-list-head-heading-wrapper">
           <h1 className="section-heading">My Cases</h1>
           <div className="case-count-wrapper">
-            <p className="case-count">{cases.length} Open Cases</p>
+            <p className="case-count">{openCases} Open Cases</p>
           </div>
         </div>
         <CaseFilter
