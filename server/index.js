@@ -2,7 +2,6 @@ import express from "express";
 import ViteExpress from "vite-express";
 import session from "express-session";
 import cors from "cors";
-import path from "path";
 import authCtrl from "./controllers/authCtrl.js";
 import caseCtrl from "./controllers/caseCtrl.js";
 import taskCtrl from "./controllers/taskCtrl.js";
@@ -23,9 +22,6 @@ import {
   setupSecurityMiddleware,
   sessionConfig,
   validateEnvironment,
-  corsOptions,
-  validationRules,
-  handleValidationErrors,
   syncRateLimit,
 } from "./config/security.js";
 
