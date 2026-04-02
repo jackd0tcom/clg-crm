@@ -163,6 +163,7 @@ export default {
       const count = await Case.count({
         where: {
           isArchived: false,
+          phase: { [Op.ne]: "closed" },
         },
       });
 
