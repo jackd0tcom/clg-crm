@@ -362,20 +362,14 @@ app.post("/api/cleanup/archived-cases", cleanupCtrl.cleanupArchivedCases);
 app.post("/api/cleanup/full", cleanupCtrl.runFullCleanup);
 
 // Replace ViteExpress.listen with httpServer.listen
-httpServer.listen(
-  PORT,
-  () => {
-    console.log(
-      `🚀 Server live on http://localhost:${PORT} ${
-        process.env.NODE_ENV === "production" ? "production" : "development"
-      }`,
-    );
-    console.log(`🔌 Socket.io initialized`);
+httpServer.listen(PORT, () => {
+  console.log(
+    `🚀 Server live on http://localhost:${PORT} ${
+      process.env.NODE_ENV === "production" ? "production" : "development"
+    }`,
+  );
+ Socket.io initialized`);
 
-    // Start automated cleanup scheduler
-    cleanupScheduler.start();
-  },
-  {
-    mode: process.env.NODE_ENV === "production" ? "production" : "development",
-  },
-);
+  // Start automated cleanup scheduler
+  cleanupScheduler.start();
+});
