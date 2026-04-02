@@ -330,6 +330,8 @@ app.post(
   requireAdmin,
   adminCtrl.addUserByEmail,
 );
+app.post("/api/deleteUser", adminCtrl.deleteUser);
+app.post("/api/deletePendingUser", adminCtrl.deletePendingUser);
 app.post(
   "/api/admin/users/bulk-access",
   requireAccess,

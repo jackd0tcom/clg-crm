@@ -4,6 +4,7 @@ import AdminUserToggle from "../Elements/Admin/AdminUserItem";
 import { useAuth0 } from "@auth0/auth0-react";
 import Loader from "../Elements/UI/Loader";
 import ProfilePic from "../Elements/UI/ProfilePic";
+import PendingUserItem from "../Elements/Admin/PendingUserItem";
 
 const Admin = () => {
   const [users, setUsers] = useState([]);
@@ -150,23 +151,16 @@ const Admin = () => {
                             user={user}
                             handleAllow={handleAllow}
                             handleRoleChange={handleRoleChange}
+                            users={users}
+                            setUsers={setUsers}
                           />
                         );
                       })}
                     {pendingUsers?.map((user) => (
-                      <div className="admin-user-toggle-wrapper">
-                        <ProfilePic src={"/default-profile-pic.jpg"} />
-                        <p>Pending User</p>
-                        <p>{user.email}</p>
-                        <div className="role-container">
-                          <div className="role-toggle-wrapper">
-                            <span className={`role-badge pending`}>
-                              Pending
-                            </span>
-                          </div>
-                        </div>
-                        <p></p>
-                      </div>
+                      <PendingUserItem
+                        user={user}
+                        setPendingUsers={setPendingUsers}
+                      />
                     ))}
                   </>
                 )}

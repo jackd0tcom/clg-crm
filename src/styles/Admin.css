@@ -7,6 +7,8 @@
 .admin-header {
   padding: 15px;
   border-bottom: 1px solid var(--light-border);
+  display: flex;
+  justify-content: space-between;
 }
 .admin-section {
   padding: 15px;
@@ -80,9 +82,18 @@
 .users-list-head,
 .admin-user-toggle-wrapper {
   display: grid;
-  grid-template-columns: 0.25fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 0.25fr 1fr 1fr 1fr 1fr 0.1fr;
   row-gap: 2rem;
   align-items: center;
+  font-size: 0.9rem;
+}
+.delete-user {
+  font-size: 1.2rem;
+  color: var(--red);
+  cursor: pointer;
+}
+.delete-user:hover {
+  color: var(--dark-red);
 }
 .admin-users-list {
   display: flex;
@@ -90,7 +101,7 @@
 }
 .admin-user-toggle-wrapper {
   border-top: 1px solid var(--light-border);
-  padding: 10px 0;
+  padding: 5px 15px;
   gap: 10px;
 }
 .admin-user-toggle-wrapper p {
@@ -302,6 +313,40 @@ input:checked + .slider:before {
 
 .submit-button:hover {
   background-color: #218838;
+}
+
+/* Delete User */
+.delete-user-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  border-top: 1px solid var(--light-border);
+  padding: 10px 15px;
+}
+.delete-user-wrapper h3 {
+  font-size: 0.9rem;
+}
+.delete-user-buttons {
+  display: flex;
+  gap: 10px;
+}
+.delete-button {
+  background-color: var(--red);
+  border: none;
+  color: white;
+}
+.delete-button:hover {
+  background-color: var(--dark-red);
+  border: none;
+  color: white;
+}
+.cancel-button {
+  border: 1px solid var(--light-border);
+}
+.cancel-button:hover {
+  color: black;
+  border: 1px solid var(--light-grey);
 }
 
 /* Message styling */

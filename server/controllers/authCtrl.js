@@ -126,7 +126,15 @@ export default {
           : [];
         const isAdmin = adminEmails.includes(email);
 
-        const isAllowedEmail = AllowedEmails.findOne({ where: { email } });
+        const emailCheck = await AllowedEmails.findOne({
+          where: { email },
+        });
+
+        let isAllowedEmail;
+
+        if (emailCheck) {
+          isAllowedEmail = emailCheck.toJSON().email === email;
+        }
 
         console.log(`🔍 Admin check for ${email}:`);
         console.log(`   ADMIN_EMAIL env var: "${process.env.ADMIN_EMAIL}"`);
@@ -134,6 +142,7 @@ export default {
           `   Parsed admin emails: [${adminEmails.map((e) => `"${e}"`).join(", ")}]`,
         );
         console.log(`   Is admin: ${isAdmin}`);
+        console.log(`   Is allowed already: ${isAllowedEmail}`);
         const userCount = await User.count();
         const isFirstUser = userCount === 0;
 
@@ -149,8 +158,8 @@ export default {
           isAllowed: isAdmin || isFirstUser || isAllowedEmail, // Admin emails or first user gets access
         });
 
-        if (isAllowedEmail) {
-          isAllowedEmail.destroy();
+        if (emailCheck) {
+          emailCheck.destroy();
         }
 
         const newUserSettings = await UserSettings.create({

@@ -1,4 +1,4 @@
-import { User, AllowedEmails } from "../model.js";
+import { User, AllowedEmails, UserSettings } from "../model.js";
 
 export default {
   requireAdmin: (req, res, next) => {
@@ -316,6 +316,59 @@ export default {
         error: "Failed to bulk update user access",
         message: "An error occurred while updating user permissions",
       });
+    }
+  },
+  deleteUser: async (req, res) => {
+    try {
+      console.log("deleteUser");
+      if (!req.session.user) {
+        return res.status(401).send("User not authenticated");
+      }
+
+      const { userId } = req.body;
+
+      const currentUser = await User.findOne({ where: { userId } });
+
+      if (!currentUser) {
+        return res.status(404).send("Person not found");
+      }
+
+      const userSettings = await UserSettings.findOne({
+        where: {
+          userId,
+        },
+      });
+
+      await userSettings.destroy();
+      await currentUser.destroy();
+
+      res.status(200).send("User deleted successfully");
+    } catch (error) {
+      console.log(error);
+      res.status(500).send("Failed to remove person from case");
+    }
+  },
+  deletePendingUser: async (req, res) => {
+    try {
+      console.log("deletePendingUser");
+      if (!req.session.user) {
+        return res.status(401).send("User not authenticated");
+      }
+
+      const { email } = req.body;
+
+      const currentUser = await AllowedEmails.findOne({ where: { email } });
+
+      if (!currentUser) {
+        return res.status(404).send("Person not found");
+      }
+
+      await currentUser.destroy();
+
+      res.status(200).send("User deleted successfully");
+    } catch (error) {
+      console.log(error);
+      res.status(500).send("Failed to remove person from case");
     }
   },
 };
