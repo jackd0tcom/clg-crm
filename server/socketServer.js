@@ -1,7 +1,6 @@
 import { Server } from "socket.io";
 import { createServer } from "http";
-import session from "express-session";
-import { sessionConfig } from "./config/security.js";
+import { sessionMiddleware } from "./config/security.js";
 import { User } from "./model.js";
 
 let io = null;
@@ -39,43 +38,28 @@ export const initializeSocketIO = (app) => {
   });
 
   // Socket.io middleware for authentication
-  io.use(async (socket, next) => {
-    try {
-      // Get session ID from handshake
-      const sessionID = socket.handshake.auth.sessionID;
-
-      if (!sessionID) {
-        return next(new Error("No session ID provided"));
+  const noopRes = {
+    setHeader() {},
+    getHeader() {
+      return undefined;
+    },
+    writeHead() {},
+    end() {},
+  };
+  
+  io.use((socket, next) => {
+    sessionMiddleware(socket.request, noopRes, (err) => {
+      if (err) {
+        return next(err);
       }
-
-      // Create a fake request object to use with session middleware
-      const req = {
-        sessionID: sessionID,
-        session: null,
-      };
-
-      // Use session middleware to restore session
-      await new Promise((resolve, reject) => {
-        session(sessionConfig)(req, {}, (err) => {
-          if (err) reject(err);
-          else resolve();
-        });
-      });
-
-      // Check if session exists and has user
+      const req = socket.request;
       if (!req.session || !req.session.user) {
         return next(new Error("Unauthorized"));
       }
-
-      // Attach user info to socket
       socket.userId = req.session.user.userId;
       socket.user = req.session.user;
-
       next();
-    } catch (error) {
-      console.error("Socket authentication error:", error);
-      next(new Error("Authentication failed"));
-    }
+    });
   });
 
   // Connection handler

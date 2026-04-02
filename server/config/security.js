@@ -13,6 +13,7 @@ import xss from "xss-clean";
 import hpp from "hpp";
 import compression from "compression";
 import morgan from "morgan";
+import session from "express-session";
 
 // Rate limiting configurations
 export const createRateLimit = (
@@ -179,6 +180,9 @@ export const sessionConfig = {
   // Use memory store in development, but log warning in production
   store: process.env.NODE_ENV === "production" ? undefined : undefined, // Will use default MemoryStore
 };
+
+/** Single instance so Express and Socket.io share the same session store */
+export const sessionMiddleware = session(sessionConfig);
 
 // Input validation rules
 export const validationRules = {
