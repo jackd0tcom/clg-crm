@@ -339,7 +339,9 @@ export default {
         },
       });
 
-      await userSettings.destroy();
+      if (userSettings) {
+        await userSettings.destroy();
+      }
       await currentUser.destroy();
 
       res.status(200).send("User deleted successfully");
