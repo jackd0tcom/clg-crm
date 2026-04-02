@@ -104,39 +104,59 @@ export const corsOptions = {
 // Helmet configuration
 export const helmetConfig = helmet({
   contentSecurityPolicy:
-    process.env.NODE_ENV === "production"
-      ? {
-          directives: {
-            defaultSrc: ["'self'"],
-            styleSrc: [
-              "'self'",
-              "'unsafe-inline'",
-              "https://fonts.googleapis.com",
-              "https://ka-f.fontawesome.com",
-            ],
-            fontSrc: [
-              "'self'",
-              "https://fonts.gstatic.com",
-              "https://kit.fontawesome.com",
-              "https://ka-f.fontawesome.com",
-            ],
-            imgSrc: ["'self'", "data:", "https:"],
-            scriptSrc: ["'self'", "https://kit.fontawesome.com"],
-            connectSrc: [
-              "'self'",
-              "https://clauselawgroup.auth0.com",
-              "https://dev-qysee6dr6mhj3r6y.us.auth0.com",
-              "https://ka-f.fontawesome.com",
-            ],
-            frameSrc: [
-              "'self'",
-              "https://clauselawgroup.auth0.com",
-              "https://dev-qysee6dr6mhj3r6y.us.auth0.com",
-            ],
-            mediaSrc: ["'self'", "https://videos.files.wordpress.com"],
-          },
-        }
-      : false, // Disable CSP in development
+  process.env.NODE_ENV === "production"
+    ? {
+        directives: {
+          defaultSrc: ["'self'"],
+
+          styleSrc: [
+            "'self'",
+            "'unsafe-inline'",
+            "https://fonts.googleapis.com",
+            "https://ka-f.fontawesome.com",
+          ],
+
+          fontSrc: [
+            "'self'",
+            "https://fonts.gstatic.com",
+            "https://kit.fontawesome.com",
+            "https://ka-f.fontawesome.com",
+          ],
+
+          imgSrc: ["'self'", "data:", "https:"],
+
+          // Needed for react-pdf / wasm compile paths in production
+          scriptSrc: [
+            "'self'",
+            "https://kit.fontawesome.com",
+            "'wasm-unsafe-eval'",
+            "'unsafe-eval'", // optional fallback; remove later if no longer needed
+          ],
+
+          // Needed because pdf/wasm loader may fetch data: URLs
+          connectSrc: [
+            "'self'",
+            "data:",
+            "https://clauselawgroup.auth0.com",
+            "https://dev-qysee6dr6mhj3r6y.us.auth0.com",
+            "https://ka-f.fontawesome.com",
+          ],
+
+          // Needed because PDFViewer uses blob: iframe URLs
+          frameSrc: [
+            "'self'",
+            "blob:",
+            "https://clauselawgroup.auth0.com",
+            "https://dev-qysee6dr6mhj3r6y.us.auth0.com",
+          ],
+
+          // Compatibility for some browsers / CSP handling
+          childSrc: ["'self'", "blob:"],
+
+          mediaSrc: ["'self'", "https://videos.files.wordpress.com"],
+        },
+      }
+    : false, // Disable CSP in development
   crossOriginEmbedderPolicy: false, // Disable for Vite dev server compatibility
   crossOriginOpenerPolicy: false, // Disable to allow popup windows for OAuth flows
 });

@@ -1,9 +1,18 @@
 import { useState } from "react";
 import ProfilePic from "../UI/ProfilePic";
+import axios from "axios";
 
-const AdminUserToggle = ({ user, handleAllow, handleRoleChange }) => {
+const AdminUserToggle = ({
+  user,
+  handleAllow,
+  handleRoleChange,
+  setUsers,
+  users,
+}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [roleLoading, setRoleLoading] = useState(false);
+  const [hovering, setHovering] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleToggle = async () => {
     setIsLoading(true);
@@ -23,8 +32,38 @@ const AdminUserToggle = ({ user, handleAllow, handleRoleChange }) => {
     }
   };
 
-  return (
-    <div className="admin-user-toggle-wrapper">
+  const handleDelete = async () => {
+    try {
+      await axios
+        .post("/api/deleteUser", { userId: user.userId })
+        .then((res) => {
+          if (res.status === 200) {
+            setUsers((prev) => prev.filter((u) => u.userId !== user.userId));
+          }
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  return isDeleting ? (
+    <div className="delete-user-wrapper">
+      <h3>Are you sure you want to delete this user?</h3>
+      <div className="delete-user-buttons">
+        <button className="delete-button" onClick={() => handleDelete()}>
+          Delete
+        </button>
+        <button className="cancel-button" onClick={() => setIsDeleting(false)}>
+          Cancel
+        </button>
+      </div>
+    </div>
+  ) : (
+    <div
+      className="admin-user-toggle-wrapper"
+      onMouseEnter={() => setHovering(true)}
+      onMouseLeave={() => setHovering(false)}
+    >
       <ProfilePic
         src={user.profilePic}
         alt="user profile picture"
@@ -49,8 +88,8 @@ const AdminUserToggle = ({ user, handleAllow, handleRoleChange }) => {
             {roleLoading
               ? "..."
               : user.role === "admin"
-              ? "Switch to User"
-              : "Switch to Admin"}
+                ? "Switch to User"
+                : "Switch to Admin"}
           </button>
         </div>
       </div>
@@ -69,6 +108,12 @@ const AdminUserToggle = ({ user, handleAllow, handleRoleChange }) => {
         </label>
         <p>Allowed</p>
       </div>
+      {hovering && (
+        <i
+          onClick={() => setIsDeleting(true)}
+          className="delete-user fa-solid fa-circle-xmark"
+        ></i>
+      )}
     </div>
   );
 };

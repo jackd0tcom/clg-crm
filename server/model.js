@@ -3,7 +3,7 @@ import url from "url";
 import connectToDb from "./db.js";
 
 const db = await connectToDb(
-  process.env.DATABASE_URL || "postgresql:///clg-db"
+  process.env.DATABASE_URL || "postgresql:///clg-db",
 );
 
 class User extends Model {}
@@ -70,7 +70,7 @@ User.init(
     modelName: "user",
     sequelize: db,
     timestamps: true,
-  }
+  },
 );
 
 class Person extends Model {}
@@ -119,17 +119,8 @@ Person.init(
       },
     },
     phoneNumber: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: true,
-      validate: {
-        isNumeric: {
-          msg: "Phone number must contain only digits.",
-        },
-        len: {
-          args: [10, 15],
-          msg: "Phone number length is invalid.",
-        },
-      },
     },
     dob: {
       type: DataTypes.DATEONLY,
@@ -152,12 +143,21 @@ Person.init(
         },
       },
     },
+    email: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    type: {
+      type: DataTypes.ENUM("client", "adverse", "opposing"),
+      allowNull: true,
+      defaultValue: "client",
+    },
   },
   {
     modelName: "person",
     sequelize: db,
     timestamps: true,
-  }
+  },
 );
 
 class Task extends Model {}
@@ -198,7 +198,7 @@ Task.init(
         "not started",
         "in progress",
         "blocked",
-        "completed"
+        "completed",
       ),
       defaultValue: "not started",
     },
@@ -211,7 +211,7 @@ Task.init(
     modelName: "task",
     sequelize: db,
     timestamps: true,
-  }
+  },
 );
 
 class Case extends Model {}
@@ -242,7 +242,7 @@ Case.init(
         "negotiation",
         "litigation",
         "settlement",
-        "closed"
+        "closed",
       ),
       defaultValue: "intake",
     },
@@ -261,7 +261,7 @@ Case.init(
     modelName: "case",
     sequelize: db,
     timestamps: true,
-  }
+  },
 );
 
 class Tribunal extends Model {}
@@ -287,7 +287,7 @@ Tribunal.init(
     modelName: "tribunal",
     sequelize: db,
     timestamps: true,
-  }
+  },
 );
 
 // Junction table for case-practice area relationships
@@ -307,7 +307,7 @@ CaseTribunal.init(
     modelName: "caseTribunal",
     sequelize: db,
     timestamps: true,
-  }
+  },
 );
 
 class ActivityLog extends Model {}
@@ -343,7 +343,7 @@ ActivityLog.init(
     modelName: "activityLog",
     sequelize: db,
     timestamps: true,
-  }
+  },
 );
 
 // New junction table for multiple readers per activity
@@ -368,7 +368,7 @@ ActivityReaders.init(
     modelName: "activityReaders",
     sequelize: db,
     timestamps: true,
-  }
+  },
 );
 
 class Comment extends Model {}
@@ -400,7 +400,7 @@ Comment.init(
     modelName: "comment",
     sequelize: db,
     timestamps: true,
-  }
+  },
 );
 
 class Notification extends Model {}
@@ -438,7 +438,7 @@ Notification.init(
         "case_unassigned",
         "case_phase_changed",
         "case_priority_changed",
-        "comment_added"
+        "comment_added",
       ),
       allowNull: false,
     },
@@ -469,7 +469,7 @@ Notification.init(
     modelName: "notification",
     sequelize: db,
     timestamps: true,
-  }
+  },
 );
 
 class TaskAssignees extends Model {}
@@ -488,7 +488,7 @@ TaskAssignees.init(
     modelName: "taskAssignees",
     sequelize: db,
     timestamps: true,
-  }
+  },
 );
 
 class CaseAssignees extends Model {}
@@ -507,7 +507,7 @@ CaseAssignees.init(
     modelName: "caseAssignees",
     sequelize: db,
     timestamps: true,
-  }
+  },
 );
 class PracticeArea extends Model {}
 PracticeArea.init(
@@ -532,7 +532,205 @@ PracticeArea.init(
     modelName: "practiceArea",
     sequelize: db,
     timestamps: true,
-  }
+  },
+);
+
+class TimeEntry extends Model {}
+TimeEntry.init(
+  {
+    timeEntryId: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    taskId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    caseId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    notes: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    startTime: {
+      type: DataTypes.DATE,
+      allowNull: false,
+    },
+    endTime: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    isRunning: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    invoiceId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    paidStatus: {
+      type: DataTypes.ENUM("draft", "posted", "paid"),
+      defaultValue: "draft",
+    },
+    rate: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+  },
+  {
+    modelName: "timeEntry",
+    sequelize: db,
+    timestamps: true,
+  },
+);
+
+class Invoice extends Model {}
+Invoice.init(
+  {
+    invoiceId: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    invoiceTitle: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    invoiceStatus: {
+      type: DataTypes.ENUM("draft", "posted", "paid"),
+      defaultValue: "draft",
+      allowNull: false,
+    },
+    roundingAmount: {
+      type: DataTypes.INTEGER,
+      defaultValue: 15,
+      allowNull: false,
+    },
+    payTo: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    billTo: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+  },
+  {
+    modelName: "invoice",
+    sequelize: db,
+    timestamps: true,
+  },
+);
+
+class CustomCharge extends Model {}
+CustomCharge.init(
+  {
+    chargeId: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    invoiceId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    description: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    amount: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+  },
+  {
+    modelName: "customCharge",
+    sequelize: db,
+    timestamps: true,
+  },
+);
+
+class UserSettings extends Model {}
+UserSettings.init(
+  {
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      unique: true,
+    },
+    defaultRate: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    payTo: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    caseFilter: {
+      type: DataTypes.ENUM(
+        "updated-down",
+        "updated-up",
+        "opened-up",
+        "opened-down",
+        "all",
+        "archived",
+      ),
+      allowNull: true,
+      defaultValue: "updated-down",
+    },
+    taskFilter: {
+      type: DataTypes.ENUM(
+        "dueDate",
+        "lastUpdated",
+        "firstUpdated",
+        "lastCreated",
+        "firstCreated",
+        "highPriority",
+        "lowPriority",
+      ),
+      allowNull: true,
+      defaultValue: "dueDate",
+    },
+    taskShowAssigned: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+      allowNull: true,
+    },
+    taskShowCompleted: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      allowNull: true,
+    },
+  },
+  {
+    modelName: "userSettings",
+    sequelize: db,
+  },
+);
+
+class AllowedEmails extends Model {}
+AllowedEmails.init(
+  {
+    email: {
+      type: DataTypes.STRING,
+      unique: true,
+    },
+  },
+  {
+    modelName: "allowedEmails",
+    sequelize: db,
+  },
 );
 
 // Junction table for case-practice area relationships
@@ -552,7 +750,7 @@ CasePracticeAreas.init(
     modelName: "casePracticeAreas",
     sequelize: db,
     timestamps: true,
-  }
+  },
 );
 
 // Many-to-many relationships for assignees
@@ -672,6 +870,65 @@ User.belongsToMany(ActivityLog, {
   otherKey: "activityId",
 });
 
+// TimeEntry relations
+// TimeEntry belongs to User (who logged the time)
+TimeEntry.belongsTo(User, {
+  foreignKey: "userId",
+  as: "user",
+});
+TimeEntry.belongsTo(Task, {
+  foreignKey: "taskId",
+  as: "task",
+});
+TimeEntry.belongsTo(Case, {
+  foreignKey: "caseId",
+  as: "case",
+});
+
+// User has many TimeEntries
+User.hasMany(TimeEntry, {
+  foreignKey: "userId",
+  as: "timeEntries",
+});
+
+Task.hasMany(TimeEntry, {
+  foreignKey: "taskId",
+  as: "timeEntries",
+});
+Case.hasMany(TimeEntry, {
+  foreignKey: "caseId",
+  as: "timeEntries",
+});
+
+// Invoice
+TimeEntry.belongsTo(Invoice, {
+  foreignKey: "invoiceId",
+  as: "invoice",
+});
+Invoice.hasMany(TimeEntry, {
+  foreignKey: "invoiceId",
+  as: "timeEntries",
+});
+
+UserSettings.belongsTo(User, {
+  foreignKey: "userId",
+  as: "user",
+});
+
+User.hasOne(UserSettings, {
+  foreignKey: "userId",
+  as: "settings",
+});
+
+CustomCharge.belongsTo(Invoice, {
+  foreignKey: "invoiceId",
+  as: "invoice",
+});
+Invoice.hasMany(CustomCharge, {
+  foreignKey: "invoiceId",
+  as: "customCharges",
+});
+
 if (process.argv[1] === url.fileURLToPath(import.meta.url)) {
   console.log("Syncing database...");
   await db.sync({ alter: true });
@@ -694,4 +951,9 @@ export {
   CasePracticeAreas,
   Tribunal,
   CaseTribunal,
+  TimeEntry,
+  Invoice,
+  UserSettings,
+  CustomCharge,
+  AllowedEmails,
 };

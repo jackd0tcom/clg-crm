@@ -1,9 +1,50 @@
+.admin-page-wrapper {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
 .admin-header {
   padding: 15px;
   border-bottom: 1px solid var(--light-border);
+  display: flex;
+  justify-content: space-between;
 }
 .admin-section {
   padding: 15px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.add-user-wrapper {
+  align-items: center;
+  padding-top: 10%;
+  gap: 25px;
+  max-width: 500px;
+  margin: 0 auto;
+  text-align: center;
+}
+.add-user-wrapper h2 {
+  margin: 5px;
+  font-size: 1.8rem;
+}
+.add-user-wrapper i {
+  font-size: 4rem;
+  color: var(--blue);
+}
+.add-user-wrapper input {
+  padding: 8px;
+  border: 1px solid var(--light-border);
+  border-radius: 5px;
+  width: 50%;
+}
+.light-button {
+  font-size: 0.9rem;
+  border: 1px solid var(--light-border);
+}
+.light-button:hover {
+  color: black;
 }
 /* Admin section header */
 .admin-section-header h2 {
@@ -29,6 +70,8 @@
   border: 1px solid var(--light-border);
   margin-top: 1rem;
   border-radius: 5px;
+  overflow-y: scroll;
+  scrollbar-width: thin;
 }
 .users-list-head {
   padding: 10px 0;
@@ -39,9 +82,18 @@
 .users-list-head,
 .admin-user-toggle-wrapper {
   display: grid;
-  grid-template-columns: 0.25fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 0.25fr 1fr 1fr 1fr 1fr 0.1fr;
   row-gap: 2rem;
   align-items: center;
+  font-size: 0.9rem;
+}
+.delete-user {
+  font-size: 1.2rem;
+  color: var(--red);
+  cursor: pointer;
+}
+.delete-user:hover {
+  color: var(--dark-red);
 }
 .admin-users-list {
   display: flex;
@@ -49,7 +101,7 @@
 }
 .admin-user-toggle-wrapper {
   border-top: 1px solid var(--light-border);
-  padding: 10px 0;
+  padding: 5px 15px;
   gap: 10px;
 }
 .admin-user-toggle-wrapper p {
@@ -173,7 +225,10 @@ input:checked + .slider:before {
   background-color: var(--grey);
   color: white;
 }
-
+.pending {
+  background-color: var(--purple);
+  color: white;
+}
 /* Toggle container */
 .toggle-container {
   display: flex;
@@ -258,6 +313,40 @@ input:checked + .slider:before {
 
 .submit-button:hover {
   background-color: #218838;
+}
+
+/* Delete User */
+.delete-user-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  border-top: 1px solid var(--light-border);
+  padding: 10px 15px;
+}
+.delete-user-wrapper h3 {
+  font-size: 0.9rem;
+}
+.delete-user-buttons {
+  display: flex;
+  gap: 10px;
+}
+.delete-button {
+  background-color: var(--red);
+  border: none;
+  color: white;
+}
+.delete-button:hover {
+  background-color: var(--dark-red);
+  border: none;
+  color: white;
+}
+.cancel-button {
+  border: 1px solid var(--light-border);
+}
+.cancel-button:hover {
+  color: black;
+  border: 1px solid var(--light-grey);
 }
 
 /* Message styling */

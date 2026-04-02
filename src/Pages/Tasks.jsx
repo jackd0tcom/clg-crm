@@ -8,6 +8,7 @@ import TaskFilter from "../Elements/TaskList/TaskFilter";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useNavigate } from "react-router";
 import { useSelector } from "react-redux";
+import { capitalizeCamelCase } from "../helpers/helperFunctions";
 
 const Tasks = ({ openTaskView, refreshKey }) => {
   const user = useSelector((state) => state.user);
@@ -24,11 +25,12 @@ const Tasks = ({ openTaskView, refreshKey }) => {
   const [showAssigned, setShowAssigned] = useState(true);
   const columns = "0.2fr 3fr 3fr 2fr 2fr 1fr";
   const headings = ["", "Title", "Case", "Assignees", "Priority", "Due Date"];
-  const [currentSort, setCurrentSort] = useState("Due Date");
+  const [currentSort, setCurrentSort] = useState("");
   const [isSorting, setIsSorting] = useState(false);
   const dropdownRef = useRef(null);
   const caseId = useParams();
   const nav = useNavigate();
+  const pendingSortFromSettingsRef = useRef(null);
 
   // Handles blur
   useEffect(() => {
@@ -49,7 +51,10 @@ const Tasks = ({ openTaskView, refreshKey }) => {
     try {
       const res = await axios.get("/api/getAllTasks");
       setOriginalTasks(res.data);
-      // setTasks(res.data.filter((task) => task.status !== "completed"));
+      const settings = await axios.get("/api/getUserSettings");
+      const savedSort = settings.data.taskFilter;
+      setCurrentSort(capitalizeCamelCase(savedSort));
+      pendingSortFromSettingsRef.current = savedSort;
     } catch (error) {
       setLoading(false);
       console.log(error);
@@ -61,7 +66,6 @@ const Tasks = ({ openTaskView, refreshKey }) => {
     if (!isLoading && isAuthenticated) {
       setTimeout(() => {
         fetchTasks();
-        sort("dueDate");
       }, 100);
     } else if (!isLoading && !isAuthenticated) {
       nav("/");
@@ -71,26 +75,26 @@ const Tasks = ({ openTaskView, refreshKey }) => {
   // Handles tasks array filtering
   useEffect(() => {
     const nonCompletedTasks = originalTasks.filter(
-      (task) => task.status !== "completed"
+      (task) => task.status !== "completed",
     );
     const completedTasks = originalTasks.filter(
-      (task) => task.status === "completed"
+      (task) => task.status === "completed",
     );
 
     if (!showCompleted) {
       showAssigned
         ? setTasks(
             nonCompletedTasks.filter((task) =>
-              task.assignees.some((nee) => nee.userId === user.userId)
-            )
+              task.assignees.some((nee) => nee.userId === user.userId),
+            ),
           )
         : setTasks(nonCompletedTasks);
     } else if (showCompleted) {
       showAssigned
         ? setTasks(
             completedTasks.filter((task) =>
-              task.assignees.some((nee) => nee.userId === user.userId)
-            )
+              task.assignees.some((nee) => nee.userId === user.userId),
+            ),
           )
         : setTasks(completedTasks);
     }
@@ -98,13 +102,19 @@ const Tasks = ({ openTaskView, refreshKey }) => {
     setLoading(false);
   }, [originalTasks, showCompleted, showAssigned]);
 
+  useEffect(() => {
+    const param = pendingSortFromSettingsRef.current;
+    if (!param || !tasks.length) return;
+    pendingSortFromSettingsRef.current = null;
+    sort(param);
+  }, [tasks]);
+
   // Refetch tasks when refreshKey change aka when you close TaskView
   useEffect(() => {
     if (refreshKey > 0) {
       // Only fetch if we're not filtering by a specific case
       // The TaskFilter component will handle filtering
       fetchTasks();
-      sort(currentSort);
     }
   }, [refreshKey]);
 
@@ -151,6 +161,7 @@ const Tasks = ({ openTaskView, refreshKey }) => {
 
   const priorities = ["low", "normal", "high"];
   const sort = (param) => {
+    console.log(param);
     if (!tasks || tasks.length <= 0) {
       return;
     }
@@ -160,67 +171,78 @@ const Tasks = ({ openTaskView, refreshKey }) => {
         setTasks(
           tasksArr.sort(
             (a, b) =>
-              new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
-          )
+              new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime(),
+          ),
         );
         break;
       case "lastUpdated":
         setTasks(
           tasksArr.sort(
             (a, b) =>
-              new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-          )
+              new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+          ),
         );
         break;
       case "firstUpdated":
         setTasks(
           tasksArr.sort(
             (a, b) =>
-              new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime()
-          )
+              new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime(),
+          ),
         );
         break;
       case "lastCreated":
         setTasks(
           tasksArr.sort(
             (a, b) =>
-              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-          )
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+          ),
         );
         break;
       case "firstCreated":
         setTasks(
           tasksArr.sort(
             (a, b) =>
-              new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-          )
+              new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+          ),
         );
         break;
       case "highPriority":
         setTasks(
           tasksArr.sort(
             (a, b) =>
-              priorities.indexOf(b.priority) - priorities.indexOf(a.priority)
-          )
+              priorities.indexOf(b.priority) - priorities.indexOf(a.priority),
+          ),
         );
         break;
       case "lowPriority":
         setTasks(
           tasksArr.sort(
             (a, b) =>
-              priorities.indexOf(a.priority) - priorities.indexOf(b.priority)
-          )
+              priorities.indexOf(a.priority) - priorities.indexOf(b.priority),
+          ),
         );
         break;
       default:
         setTasks(
           tasksArr.sort(
             (a, b) =>
-              new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
-          )
+              new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime(),
+          ),
         );
     }
     format();
+  };
+
+  const updateTaskFilter = async (filter) => {
+    try {
+      await axios.post("/api/updateUserSettings", {
+        fieldName: "taskFilter",
+        value: filter,
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return loading ? (
@@ -253,6 +275,7 @@ const Tasks = ({ openTaskView, refreshKey }) => {
               <div
                 className="tasks-sort-dropdown-item"
                 onClick={() => {
+                  updateTaskFilter("dueDate");
                   sort("dueDate");
                   setCurrentSort("Due Date");
                   setIsSorting(false);
@@ -266,6 +289,7 @@ const Tasks = ({ openTaskView, refreshKey }) => {
               <div
                 className="tasks-sort-dropdown-item"
                 onClick={() => {
+                  updateTaskFilter("lastUpdated");
                   sort("lastUpdated");
                   setCurrentSort("Last Updated");
                   setIsSorting(false);
@@ -282,6 +306,7 @@ const Tasks = ({ openTaskView, refreshKey }) => {
               <div
                 className="tasks-sort-dropdown-item"
                 onClick={() => {
+                  updateTaskFilter("firstUpdated");
                   sort("firstUpdated");
                   setCurrentSort("First Updated");
                   setIsSorting(false);
@@ -298,6 +323,7 @@ const Tasks = ({ openTaskView, refreshKey }) => {
               <div
                 className="tasks-sort-dropdown-item"
                 onClick={() => {
+                  updateTaskFilter("lastCreated");
                   sort("lastCreated");
                   setCurrentSort("Last Created");
                   setIsSorting(false);
@@ -314,6 +340,7 @@ const Tasks = ({ openTaskView, refreshKey }) => {
               <div
                 className="tasks-sort-dropdown-item"
                 onClick={() => {
+                  updateTaskFilter("firstCreated");
                   sort("firstCreated");
                   setCurrentSort("First Created");
                   setIsSorting(false);
@@ -330,6 +357,7 @@ const Tasks = ({ openTaskView, refreshKey }) => {
               <div
                 className="tasks-sort-dropdown-item"
                 onClick={() => {
+                  updateTaskFilter("highPriority");
                   sort("highPriority");
                   setCurrentSort("High Priority");
                   setIsSorting(false);
@@ -343,6 +371,7 @@ const Tasks = ({ openTaskView, refreshKey }) => {
               <div
                 className="tasks-sort-dropdown-item"
                 onClick={() => {
+                  updateTaskFilter("lowPriority");
                   sort("lowPriority");
                   setCurrentSort("Low Priority");
                   setIsSorting(false);

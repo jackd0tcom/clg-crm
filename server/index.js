@@ -16,6 +16,8 @@ import cleanupCtrl from "./controllers/cleanupCtrl.js";
 import cleanupScheduler from "./services/cleanupScheduler.js";
 import adminCtrl from "./controllers/adminCtrl.js";
 import commentCtrl from "./controllers/commentCtrl.js";
+import timeCtrl from "./controllers/timeCtrl.js";
+import invoiceCtrl from "./controllers/invoiceCtrl.js";
 
 import { requireAccess, requireAdmin } from "./middleware/authMiddleware.js";
 import {
@@ -35,7 +37,7 @@ dotenv.config();
 validateEnvironment();
 
 const { updatePerson, newPerson, deletePerson } = personCtrl;
-const { getUser, getUsers } = userCtrl;
+const { getUser, getUsers, getUserSettings, updateUserSettings } = userCtrl;
 const { createComment } = commentCtrl;
 
 const {
@@ -75,7 +77,7 @@ const {
   deleteTask,
   getTodayTasks,
 } = taskCtrl;
-const { register, login, checkUser, logout, syncAuth0User } = authCtrl;
+const { register, login, checkUser, logout, syncAuth0User, addUser } = authCtrl;
 const {
   getUserActivities,
   getCaseActivities,
@@ -107,6 +109,28 @@ const {
   markAllAsRead,
 } = notificationsCtrl;
 
+const {
+  startEntry,
+  stopEntry,
+  updateEntry,
+  deleteEntry,
+  runningTimer,
+  getUserEntries,
+  getRecentUserEntries,
+  newEntry,
+} = timeCtrl;
+
+const {
+  getInvoice,
+  getInvoices,
+  markAsPaid,
+  newInvoice,
+  deleteInvoice,
+  newCustomCharge,
+  saveInvoice,
+  updateInvoiceStatus,
+} = invoiceCtrl;
+
 // Express setup
 const app = express();
 const PORT = process.env.PORT || 5050;
@@ -127,7 +151,7 @@ if (process.env.NODE_ENV === "production") {
     cors({
       origin: true, // Allow all origins in development
       credentials: true,
-    })
+    }),
   );
 
   // Rate limiting for sync endpoint (even in development)
@@ -189,7 +213,10 @@ app.post("/api/sync-auth0-user", syncAuth0User);
 // user endpoints
 app.get("/api/getUser/:userId", getUser);
 app.get("/api/getUsers", getUsers);
+app.get("/api/getUserSettings", getUserSettings);
+app.post("/api/updateUserSettings", updateUserSettings);
 app.delete("/api/deletePerson", deletePerson);
+app.post("/api/addUser", addUser);
 
 // case endpoints
 app.get("/api/getCases", getCases);
@@ -266,6 +293,26 @@ app.post("/api/notifications/mark-all-read", markAllAsRead);
 // Comment endpoints
 app.post("/api/createComment", createComment);
 
+// Time endpoints
+app.post("/api/time-entry/start", startEntry);
+app.post("/api/time-entry/stop", stopEntry);
+app.post("/api/time-entry/update", updateEntry);
+app.post("/api/time-entry/newEntry", newEntry);
+app.post("/api/time-entry/delete", deleteEntry);
+app.get("/api/time-entry/running-timer", runningTimer);
+app.get("/api/time-entry/getUserEntries", getUserEntries);
+app.get("/api/time-entry/getRecentUserEntries", getRecentUserEntries);
+
+// Invoice endpoints
+app.get("/api/getInvoice/:invoiceId", getInvoice);
+app.get("/api/getInvoices", getInvoices);
+app.post("/api/markAsPaid", markAsPaid);
+app.post("/api/newInvoice", newInvoice);
+app.post("/api/deleteInvoice", deleteInvoice);
+app.post("/api/newCustomCharge", newCustomCharge);
+app.post("/api/saveInvoice", saveInvoice);
+app.post("/api/updateInvoiceStatus", updateInvoiceStatus);
+
 // user access check endpoint
 app.get("/api/user/check-access", adminCtrl.checkUserAccess);
 
@@ -275,25 +322,27 @@ app.post(
   "/api/admin/users/:userId/access",
   requireAccess,
   requireAdmin,
-  adminCtrl.updateUserAccess
+  adminCtrl.updateUserAccess,
 );
 app.post(
   "/api/admin/users/:userId/role",
   requireAccess,
   requireAdmin,
-  adminCtrl.updateUserRole
+  adminCtrl.updateUserRole,
 );
 app.post(
   "/api/admin/users",
   requireAccess,
   requireAdmin,
-  adminCtrl.addUserByEmail
+  adminCtrl.addUserByEmail,
 );
+app.post("/api/deleteUser", adminCtrl.deleteUser);
+app.post("/api/deletePendingUser", adminCtrl.deletePendingUser);
 app.post(
   "/api/admin/users/bulk-access",
   requireAccess,
   requireAdmin,
-  adminCtrl.bulkUpdateUserAccess
+  adminCtrl.bulkUpdateUserAccess,
 );
 
 // cleanup endpoints (admin only)
@@ -313,14 +362,20 @@ app.post("/api/cleanup/archived-cases", cleanupCtrl.cleanupArchivedCases);
 app.post("/api/cleanup/full", cleanupCtrl.runFullCleanup);
 
 // Replace ViteExpress.listen with httpServer.listen
-httpServer.listen(PORT, () => {
-  console.log(
-    `🚀 Server live on http://localhost:${PORT} ${
-      process.env.NODE_ENV === "production" ? "production" : "development"
-    }`
-  );
-  console.log(`🔌 Socket.io initialized`);
+httpServer.listen(
+  PORT,
+  () => {
+    console.log(
+      `🚀 Server live on http://localhost:${PORT} ${
+        process.env.NODE_ENV === "production" ? "production" : "development"
+      }`,
+    );
+    console.log(`🔌 Socket.io initialized`);
 
-  // Start automated cleanup scheduler
-  cleanupScheduler.start();
-});
+    // Start automated cleanup scheduler
+    cleanupScheduler.start();
+  },
+  {
+    mode: process.env.NODE_ENV === "production" ? "production" : "development",
+  },
+);

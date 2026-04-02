@@ -1,7 +1,5 @@
-import { User } from "../model.js";
+import { User, UserSettings, AllowedEmails } from "../model.js";
 import bcrypt from "bcryptjs";
-import googleCalendarService from "../services/googleCalendar.js";
-import { syncExistingTasksToCalendar } from "./calendarCtrl.js";
 
 export default {
   register: async (req, res) => {
@@ -43,12 +41,6 @@ export default {
   },
 
   login: async (req, res) => {
-    // get user info from req.body
-    // check to make sure there IS a found user
-    // if there is no user found, send back status of 400 with an error message for the user
-    // if user is found, use bcrypt.compareSync(), and pass in the new password from req.body, as well as the foundUser's password from the db
-    // if the passwords match up, send the user info to the session and send status of 200 with the req.session.user
-    // if the passwords don't match up, send back 401 status with an error message
     try {
       console.log("login");
       const { username, password } = req.body;
@@ -87,6 +79,28 @@ export default {
       res.status(400).send("There is no user on the session");
     }
   },
+  addUser: async (req, res) => {
+    console.log("addUser");
+    try {
+      if (!req.session.user) {
+        res.status(401).send("User not authenticated");
+        return;
+      }
+
+      const { email } = req.body;
+
+      const existingUser = await User.findOne({ where: { email } });
+
+      if (!existingUser) {
+        const allowedEmail = await AllowedEmails.create({ email });
+        res.status(200).send(allowedEmail);
+        return;
+      } else res.status(404).send("email already added");
+    } catch (error) {
+      console.log(error);
+      res.send(500).send(error);
+    }
+  },
   logout: async (req, res) => {
     console.log("logout");
     req.session.destroy();
@@ -107,14 +121,28 @@ export default {
         const [firstName, ...lastNameParts] = name.split(" ");
 
         // Check if this is an admin user (support multiple emails)
-        const adminEmails = process.env.ADMIN_EMAIL ? 
-          process.env.ADMIN_EMAIL.split(',').map(e => e.trim()) : [];
+        const adminEmails = process.env.ADMIN_EMAIL
+          ? process.env.ADMIN_EMAIL.split(",").map((e) => e.trim())
+          : [];
         const isAdmin = adminEmails.includes(email);
-        
+
+        const emailCheck = await AllowedEmails.findOne({
+          where: { email },
+        });
+
+        let isAllowedEmail;
+
+        if (emailCheck) {
+          isAllowedEmail = emailCheck.toJSON().email === email;
+        }
+
         console.log(`🔍 Admin check for ${email}:`);
         console.log(`   ADMIN_EMAIL env var: "${process.env.ADMIN_EMAIL}"`);
-        console.log(`   Parsed admin emails: [${adminEmails.map(e => `"${e}"`).join(', ')}]`);
+        console.log(
+          `   Parsed admin emails: [${adminEmails.map((e) => `"${e}"`).join(", ")}]`,
+        );
         console.log(`   Is admin: ${isAdmin}`);
+        console.log(`   Is allowed already: ${isAllowedEmail}`);
         const userCount = await User.count();
         const isFirstUser = userCount === 0;
 
@@ -127,24 +155,50 @@ export default {
           profilePic: picture,
           role: isAdmin || isFirstUser ? "admin" : "user",
           authProvider: "auth0",
-          isAllowed: isAdmin || isFirstUser, // Admin emails or first user gets access
+          isAllowed: isAdmin || isFirstUser || isAllowedEmail, // Admin emails or first user gets access
+        });
+
+        if (emailCheck) {
+          emailCheck.destroy();
+        }
+
+        const newUserSettings = await UserSettings.create({
+          userId: user.userId,
         });
 
         if (isAdmin || isFirstUser) {
-          console.log(`🎉 Admin user created: ${email} (${isAdmin ? 'configured admin' : 'first user'})`);
+          console.log(
+            `🎉 Admin user created: ${email} (${isAdmin ? "configured admin" : "first user"})`,
+          );
+        }
+      } else {
+        // Check if user has user settings yet
+        const userSettings = await UserSettings.findOne({
+          where: { userId: user.userId },
+        });
+
+        if (!userSettings) {
+          await UserSettings.create({
+            userId: user.userId,
+          });
         }
       }
 
       // Check if user has Google Calendar connected
-      const hasGoogleCalendar = user.googleAccessToken && user.googleRefreshToken;
-      
+      const hasGoogleCalendar =
+        user.googleAccessToken && user.googleRefreshToken;
+
       if (isNewUser && !hasGoogleCalendar) {
-        console.log(`📅 New user ${user.userId} - Google Calendar connection available via Settings page`);
+        console.log(
+          `📅 New user ${user.userId} - Google Calendar connection available via Settings page`,
+        );
         // You could add a flag here to show a calendar setup prompt on the frontend
       }
 
       // Always sync user to session, let frontend handle access control
-      console.log(`User synced: ${email} (${user.userId}) - Allowed: ${user.isAllowed}`);
+      console.log(
+        `User synced: ${email} (${user.userId}) - Allowed: ${user.isAllowed}`,
+      );
 
       // Set up session with your local user data
       req.session.user = {
@@ -164,97 +218,4 @@ export default {
       res.status(500).json({ message: "Failed to sync user" });
     }
   },
-
-  //   updateUser: async (req, res) => {
-  //     try {
-  //       console.log("updateUser");
-  //       if (req.session.user) {
-  //         const { artists, genres, username } = req.body;
-  //         const { userId } = req.session.user;
-  //         const currentUserLikes = await Likes.findOne({ where: { userId } });
-  //         const currentUser = await User.findOne({ where: { userId } });
-
-  //         if (artists) {
-  //           console.log(artists);
-  //           let artistIdString = "";
-  //           const artistStrings = artists.trim().split(",");
-  //           let artistObj = [];
-
-  //           for (let artistName of artistStrings) {
-  //             await spotifyApi.searchArtists(`${artistName}`, { limit: 1 }).then(
-  //               function (data) {
-  //                 const Id = data.body.artists.items[0].id;
-  //                 artistIdString += Id + ",";
-  //                 artistObj.push({
-  //                   artist: data.body.artists.items[0].name,
-  //                   genres: data.body.artists.items[0].genres[0],
-  //                   url: data.body.artists.items[0].external_urls.spotify,
-  //                   image: data.body.artists.items[0].images,
-  //                 });
-  //               },
-  //               function (err) {
-  //                 console.log(err);
-  //               }
-  //             );
-  //           }
-  //           const artistIds = artistIdString.slice(0, -1);
-
-  //           await Artist.destroy({ where: { userId } });
-
-  //           artistObj.forEach(async (artist) => {
-  //             const newArtist = await Artist.create({
-  //               artist: artist.artist,
-  //               image: artist.image[0].url,
-  //               url: artist.url,
-  //               genres: artist.genres
-  //                 ? artist.genres
-  //                     .split(" ")
-  //                     .map((el) => {
-  //                       return el.replace(el[0], el[0].toUpperCase());
-  //                     })
-  //                     .join(" ")
-  //                 : "",
-  //               userId: currentUser.userId,
-  //             });
-  //           });
-
-  //           req.session.user.artists = artists;
-  //           req.session.user.artistIds = artistIds;
-
-  //           currentUserLikes.update({
-  //             artists: artists,
-  //             artistIds: artistIds,
-  //           });
-  //         }
-
-  //         if (username) {
-  //           const usernameTaken = await User.findOne({ where: { username } });
-  //           if (!usernameTaken || usernameTaken.dataValues.userId === userId) {
-  //             console.log("user found");
-  //             currentUser.update({ username: username });
-  //             await currentUser.save();
-  //             req.session.user.username = username;
-  //           } else {
-  //             res.send("that username is already taken, try a different one!");
-  //           }
-  //         }
-
-  //         if (genres) {
-  //           currentUserLikes.update({
-  //             genres: genres,
-  //           });
-  //           await currentUserLikes.save();
-  //           req.session.user.genres = genres;
-  //         }
-
-  //         req.session.user.userId = userId;
-  //         res.send(req.session.user);
-  //         console.log(req.session.user);
-  //       } else {
-  //         res.status(400).send("You are not logged in!");
-  //       }
-  //     } catch (err) {
-  //       console.log(err);
-  //     }
-  //   },
 };

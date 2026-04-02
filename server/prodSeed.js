@@ -1,23 +1,8 @@
 import connectToDB from "./db.js";
-import {
-  User,
-  Task,
-  Case,
-  Person,
-  Comment,
-  ActivityLog,
-  Notification,
-  CaseAssignees,
-  TaskAssignees,
-  ActivityReaders,
-  PracticeArea,
-  CasePracticeAreas,
-  Tribunal,
-  CaseTribunal,
-} from "./model.js";
+import { PracticeArea, Tribunal } from "./model.js";
 
 const db = await connectToDB(
-  process.env.DATABASE_URL || "postgresql:///clg-db"
+  process.env.DATABASE_URL || "postgresql:///clg-db",
 );
 
 // Practice areas data

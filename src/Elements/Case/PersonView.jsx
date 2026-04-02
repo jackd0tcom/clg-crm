@@ -1,55 +1,26 @@
-import PersonInput from "../Person-Inputs/PersonInput";
+import PersonInput from "./PersonInput";
 import axios from "axios";
 import { useState, useEffect, useRef } from "react";
 import Confirm from "../UI/ConfirmModal";
 
 const PersonView = ({
   data,
-  onBlur,
   refreshActivityData,
   refreshCaseData,
   isNewPerson,
   setIsNewPerson,
   caseId,
-  isAddingPerson,
-  setIsAddingPerson,
+  type,
+  objectTemplate,
 }) => {
-  const [personId, setPersonId] = useState();
-  const dropdownRef = useRef(null);
+  const [personId, setPersonId] = useState(data.personId);
   const [confirm, setConfirm] = useState(false);
 
   useEffect(() => {
-    setPersonId(data.personId);
-  }, []);
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsAddingPerson(false);
-        onBlur();
-      }
-    };
-
-    // Always add the event listener when component mounts
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [setIsAddingPerson, onBlur]);
-
-  const personObject = {
-    firstName: "",
-    lastName: "",
-    address: "",
-    city: "",
-    state: "",
-    zip: "",
-    phoneNumber: "",
-    dob: "",
-    county: "",
-    SSN: "",
-  };
+    if (data?.personId) {
+      setPersonId(data.personId);
+    }
+  }, [data?.personId]);
 
   const handleRemove = async () => {
     try {
@@ -61,7 +32,6 @@ const PersonView = ({
           if (res.status === 200) {
             refreshActivityData();
             refreshCaseData();
-            onBlur();
           }
         });
     } catch (error) {
@@ -69,56 +39,81 @@ const PersonView = ({
     }
   };
 
-  return (
-    <div className="person-view-overlay">
-      <div className="person-view-wrapper" ref={dropdownRef}>
-        <div className="person-view-header-wrapper">
-          <p className="person-view-header">Client</p>
-          <i
-            onClick={() => {
-              setIsAddingPerson(false);
-              onBlur();
-            }}
-            className="fa-solid fa-xmark"
-          ></i>
-        </div>
-        <div className="person-view-fields">
-          {Object.entries(personObject).map(([fieldName]) => {
-            return (
-              <PersonInput
-                key={fieldName}
-                fieldName={fieldName}
-                value={data[fieldName]}
-                personId={personId}
-                refreshActivityData={refreshActivityData}
-                refreshCaseData={refreshCaseData}
-                isNewPerson={isNewPerson}
-                caseId={caseId}
-                setPersonId={setPersonId}
-                setIsNewPerson={setIsNewPerson}
-              />
-            );
-          })}
+  const smallFields = ["state", "zip", "SSN"];
 
-          <div className="remove-person-button">
-            {confirm ? (
-              <div className="confirm-modal-overlay">
-                <Confirm
-                  message={"delete this person?"}
-                  handleConfirm={handleRemove}
-                  setConfirm={setConfirm}
-                />
-              </div>
-            ) : (
-              <a
-                onClick={() => {
-                  setConfirm(true);
-                }}
-              >
-                Remove Person
-              </a>
-            )}
-          </div>
+  let smallFieldsObject = {};
+
+  if (type === "client") {
+    smallFieldsObject.state = data.state;
+    smallFieldsObject.zip = data.zip;
+    smallFieldsObject.SSN = data.SSN;
+    delete objectTemplate.state;
+    delete objectTemplate.zip;
+    delete objectTemplate.SSN;
+  }
+
+  return (
+    <div className="person-view-wrapper">
+      <div className="person-view-fields">
+        {Object.entries(objectTemplate).map(([fieldName]) => {
+          if (type === "client") {
+            if (fieldName === "smallFields") {
+              return (
+                <div className="small-fields">
+                  {Object.entries(smallFieldsObject).map(([fieldName]) => (
+                    <PersonInput
+                      key={fieldName}
+                      fieldName={fieldName}
+                      value={data[fieldName] || ""}
+                      personId={personId}
+                      refreshActivityData={refreshActivityData}
+                      refreshCaseData={refreshCaseData}
+                      isNewPerson={isNewPerson}
+                      caseId={caseId}
+                      setPersonId={setPersonId}
+                      setIsNewPerson={setIsNewPerson}
+                      type={type}
+                    />
+                  ))}
+                </div>
+              );
+            }
+          }
+          return (
+            <PersonInput
+              key={fieldName}
+              fieldName={fieldName}
+              value={data[fieldName] || ""}
+              personId={personId}
+              refreshActivityData={refreshActivityData}
+              refreshCaseData={refreshCaseData}
+              isNewPerson={isNewPerson}
+              caseId={caseId}
+              setPersonId={setPersonId}
+              setIsNewPerson={setIsNewPerson}
+              type={type}
+            />
+          );
+        })}
+
+        <div className="remove-person-button">
+          {confirm ? (
+            <div className="confirm-modal-overlay">
+              <Confirm
+                message={"delete this person?"}
+                handleConfirm={handleRemove}
+                setConfirm={setConfirm}
+              />
+            </div>
+          ) : (
+            <a
+              onClick={() => {
+                setConfirm(true);
+              }}
+            >
+              Remove Person
+            </a>
+          )}
         </div>
       </div>
     </div>

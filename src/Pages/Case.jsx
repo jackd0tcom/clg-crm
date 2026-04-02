@@ -1,21 +1,15 @@
-import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router";
-import { useRef } from "react";
+import { useEffect, useState, useRef } from "react";
+import { useParams, useNavigate, Link } from "react-router";
 import axios from "axios";
-import { capitalize, formatPracticeAreas } from "../helpers/helperFunctions";
-import TribunalToggle from "../Elements/Case/TribunalToggle";
 import ActivityLog from "../Elements/UI/ActivityLog";
 import TaskList from "../Elements/TaskList/TaskList";
-import { Link } from "react-router";
 import Notes from "../Elements/UI/Notes";
-import PhaseToggle from "../Elements/Case/PhaseToggle";
-import AssigneeList from "../Elements/Assignee/AssigneeList";
-import PersonView from "../Elements/Case/PersonView";
 import CaseInput from "../Elements/Case/CaseInput";
-import PracticeAreaToggle from "../Elements/Case/PracticeAreaToggle";
 import ExtraSettings from "../Elements/UI/ExtraSettings";
-import SOLInput from "../Elements/Case/SOLInput";
 import Loader from "../Elements/UI/Loader";
+import DetailsTab from "../Elements/Case/DetailsTab";
+import PeopleTab from "../Elements/Case/PeopleTab";
+import TimeKeeperWidget from "../Elements/TimeKeeper/TimeKeeperWidget";
 
 const Case = ({ openTaskView, refreshKey }) => {
   const { caseId } = useParams();
@@ -38,6 +32,11 @@ const Case = ({ openTaskView, refreshKey }) => {
   const [isCreatingCase, setIsCreatingCase] = useState(false);
   const [currentSOL, setCurrentSOl] = useState(null);
   const [currentTribunal, setCurrentTribunal] = useState();
+  const [currentTab, setCurrentTab] = useState("details");
+  const [clients, setClients] = useState([]);
+  const [adverse, setAdverse] = useState([]);
+  const [opposing, setOpposing] = useState([]);
+  const [adverseOpposing, setAdverseOpposing] = useState([]);
   const dropdownRef = useRef(null);
   const isCreatingCaseRef = useRef(false);
 
@@ -64,11 +63,13 @@ const Case = ({ openTaskView, refreshKey }) => {
         setCurrentAreas([]);
         setActivityData([]);
         setCurrentTribunal(null);
+        setClients([]);
+        setAdverseOpposing([]);
         return;
       } else {
         const caseResponse = await axios.get(`/api/getCase/${caseId}`);
         const activityResponse = await axios.get(
-          `/api/getCaseActivities/${caseId}`
+          `/api/getCaseActivities/${caseId}`,
         );
         setCaseData(caseResponse.data);
         setActivityData(activityResponse.data);
@@ -79,14 +80,30 @@ const Case = ({ openTaskView, refreshKey }) => {
         setCurrentAreas(caseResponse.data.practiceAreas);
         setIsArchived(caseResponse.data.isArchived);
         setCurrentTribunal(caseResponse.data.tribunal);
+        setClients(
+          caseResponse.data.people.filter((person) => person.type === "client"),
+        );
+        setAdverse(
+          caseResponse.data.people.filter(
+            (person) => person.type === "adverse",
+          ),
+        );
+        setOpposing(
+          caseResponse.data.people.filter(
+            (person) => person.type === "opposing",
+          ),
+        );
       }
     } catch (error) {
       console.log(error);
     }
   };
 
+  // Fetches init data, timeout fixes page reload infinite loader rendering bug
   useEffect(() => {
-    getData();
+    setTimeout(() => {
+      getData();
+    }, 100);
   }, [caseId]);
 
   // Refetch case data when refreshKey changes (when tasks are updated)
@@ -96,27 +113,10 @@ const Case = ({ openTaskView, refreshKey }) => {
     }
   }, [refreshKey]);
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsAddingArea(false);
-        setIsAddingPerson(false);
-      }
-    };
-
-    if (isAddingArea || isAddingPerson) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isAddingArea, isAddingPerson]);
-
   const refreshActivityData = async () => {
     try {
       const activityResponse = await axios.get(
-        `/api/getCaseActivities/${caseId}`
+        `/api/getCaseActivities/${caseId}`,
       );
       setActivityData(activityResponse.data);
     } catch (error) {
@@ -132,6 +132,15 @@ const Case = ({ openTaskView, refreshKey }) => {
       setNotes(caseResponse.data.notes);
       setCurrentAreas(caseResponse.data.practiceAreas);
       setIsArchived(caseResponse.data.isArchived);
+      setClients(
+        caseResponse.data.people.filter((person) => person.type === "client"),
+      );
+      setAdverse(
+        caseResponse.data.people.filter((person) => person.type === "adverse"),
+      );
+      setOpposing(
+        caseResponse.data.people.filter((person) => person.type === "opposing"),
+      );
     } catch (error) {
       console.log(error);
     }
@@ -153,7 +162,6 @@ const Case = ({ openTaskView, refreshKey }) => {
   const updateNotes = () => {
     try {
       axios.post("/api/updateCaseNotes", { caseId, notes }).then((res) => {
-        console.log(res);
         setCount(0);
       });
     } catch (error) {}
@@ -163,16 +171,6 @@ const Case = ({ openTaskView, refreshKey }) => {
     if (count >= 75) {
       updateNotes();
     }
-  };
-
-  const handlePersonClick = (person) => {
-    setSelectedPerson(person);
-    setPersonView(true);
-  };
-  const handleOnBlur = () => {
-    setPersonView(false);
-    setSelectedPerson("");
-    setIsAddingPerson(false);
   };
 
   const newCase = async () => {
@@ -217,60 +215,30 @@ const Case = ({ openTaskView, refreshKey }) => {
     }
   };
 
-  return caseData ? (
+  return !caseData ? (
+    <Loader />
+  ) : (
     <div className="case-container">
       <div className="case-wrapper">
         <div className="case-details-container">
           <div className="case-top-bar">
             <Link to="/cases">
-              {" "}
               <i className="fa-solid fa-arrow-left"></i>
             </Link>
-            <ExtraSettings
-              Id={caseId}
-              handleRefresh={refreshCaseData}
-              refreshActivityData={refreshActivityData}
-              isArchived={isArchived}
-              setIsArchived={setIsArchived}
-            />
+            <div className="case-top-bar-container">
+              <TimeKeeperWidget caseId={caseId} title={title} />
+              <ExtraSettings
+                Id={caseId}
+                handleRefresh={refreshCaseData}
+                refreshActivityData={refreshActivityData}
+                isArchived={isArchived}
+                setIsArchived={setIsArchived}
+              />
+            </div>
           </div>
           <div className="case-card">
             <div className="case-header">
               {isArchived && <h3>Archived</h3>}
-              <div
-                className="case-practice-areas-wrapper"
-                onClick={() => {
-                  if (!caseData?.caseId && !isCreatingCaseRef.current) {
-                    console.log("Practice area: Creating new case...");
-                    newCase().then(() => {
-                      setIsAddingArea(true);
-                    });
-                  } else if (caseData?.caseId) {
-                    setIsAddingArea(true);
-                  }
-                }}
-              >
-                {isNewCase || caseData.practiceAreas.length < 1 ? (
-                  <a className="case-practice-area no-area">
-                    Add Practice Area
-                  </a>
-                ) : (
-                  formatPracticeAreas(caseData.practiceAreas)
-                )}
-              </div>
-              {isAddingArea && (
-                <PracticeAreaToggle
-                  currentAreas={currentAreas}
-                  setCurrentAreas={setCurrentAreas}
-                  newPracticeArea={newPracticeArea}
-                  setNewPracticeArea={setNewPracticeArea}
-                  caseId={caseId}
-                  refreshCaseData={refreshCaseData}
-                  refreshActivityData={refreshActivityData}
-                  isAddingArea={isAddingArea}
-                  setIsAddingArea={setIsAddingArea}
-                />
-              )}
               <CaseInput
                 title={title}
                 setTitle={setTitle}
@@ -281,165 +249,105 @@ const Case = ({ openTaskView, refreshKey }) => {
                 newCase={newCase}
                 isCreatingCase={isCreatingCase}
               />
-              <div className="case-persons-wrapper">
-                {personView && selectedPerson && (
-                  <PersonView
-                    onBlur={handleOnBlur}
-                    refreshActivityData={refreshActivityData}
-                    refreshCaseData={refreshCaseData}
-                    data={selectedPerson}
-                    caseId={caseId}
-                    isNewPerson={false}
-                    isAddingPerson={isAddingPerson}
-                    setIsAddingPerson={setIsAddingPerson}
-                    onClose={() => {
-                      setPersonView(false);
-                      setSelectedPerson(null);
-                    }}
-                  />
-                )}
-                {isAddingPerson && (
-                  <PersonView
-                    data={{
-                      firstName: "",
-                      lastName: "",
-                      address: "",
-                      city: "",
-                      state: "",
-                      zip: "",
-                      phoneNumber: "",
-                      dob: "",
-                      county: "",
-                    }}
-                    ref={dropdownRef}
-                    onBlur={handleOnBlur}
-                    refreshActivityData={refreshActivityData}
-                    refreshCaseData={refreshCaseData}
-                    caseId={caseId}
-                    isNewPerson={isNewPerson}
-                    setIsNewPerson={setIsNewPerson}
-                    isAddingPerson={isAddingPerson}
-                    setIsAddingPerson={setIsAddingPerson}
-                  />
-                )}
-                <div className="case-persons-names-wrapper">
-                  {caseData.people.length > 0 &&
-                    caseData.people.map((person, idx) => {
-                      if (caseData.people.length === 1) {
-                        return (
-                          <a
-                            key={person.personId}
-                            className="case-person-link"
-                            onClick={() => handlePersonClick(person)}
-                          >{`${person.firstName} ${
-                            person.lastName ? person.lastName : ""
-                          }`}</a>
-                        );
-                      } else if (idx === caseData.people.length - 1) {
-                        return (
-                          <span
-                            className="case-person-amp"
-                            key={person.personId}
-                          >
-                            {" "}
-                            &{" "}
-                            <a
-                              className="case-person-link"
-                              onClick={() => handlePersonClick(person)}
-                            >{`${person.firstName} ${
-                              person.lastName ? person.lastName : ""
-                            }`}</a>
-                          </span>
-                        );
-                      } else if (idx === caseData.people.length - 2) {
-                        return (
-                          <a
-                            key={person.personId}
-                            className="case-person-link"
-                            onClick={() => handlePersonClick(person)}
-                          >{`${person.firstName} ${
-                            person.lastName ? person.lastName : ""
-                          }`}</a>
-                        );
-                      } else
-                        return (
-                          <a
-                            key={person.personId}
-                            className="case-person-link"
-                            onClick={() => handlePersonClick(person)}
-                          >{`${person.firstName} ${
-                            person.lastName ? person.lastName : ""
-                          }, `}</a>
-                        );
-                    })}
-                  {caseData.people.length === 0 && (
-                    <p
-                      onClick={() => {
-                        setIsAddingPerson(true);
-                        setIsNewPerson(true);
-                      }}
-                      className="add-person-p"
-                    >
-                      Add Person
-                    </p>
-                  )}
-                </div>
-                <i
-                  className="fa-solid fa-circle-plus add-person-button"
-                  onClick={() => {
-                    setIsAddingPerson(true);
-                    setIsNewPerson(true);
-                  }}
-                ></i>
-              </div>
-              <div className="case-stats-wrapper">
-                <div className="case-stats-container">
-                  <h4>Phase</h4>
-                  <h4>Assignees</h4>
-                </div>
-                <div className="case-stats-container">
-                  <PhaseToggle
-                    value={phase}
-                    onHandle={handleUpdatePhase}
-                    setPhase={setPhase}
-                  />
-                  <AssigneeList
-                    assignees={caseData.assignees}
-                    caseId={caseData.caseId}
-                    onActivityUpdate={refreshActivityData}
-                    isNewCase={isNewCase}
-                  />
-                </div>
-                <div className="case-stats-container">
-                  <h4>SOL</h4>
-                  <h4>Tribunal</h4>
-                </div>
-                <div className="case-stats-container">
-                  <SOLInput
-                    currentSOL={currentSOL}
-                    caseId={caseId}
-                    refreshActivityData={refreshActivityData}
-                    setCurrentSOL={setCurrentSOl}
-                  />
-                  <TribunalToggle
-                    currentTribunal={currentTribunal}
-                    setCurrentTribunal={setCurrentTribunal}
-                    caseId={caseId}
-                    refreshActivityData={refreshActivityData}
-                  />
-                </div>
+              <div className="case-tabs-wrapper">
+                <h4
+                  onClick={() => setCurrentTab("details")}
+                  className={
+                    currentTab === "details"
+                      ? "case-tab-heading active-tab"
+                      : "case-tab-heading"
+                  }
+                >
+                  Details
+                </h4>
+                <h4
+                  onClick={() => setCurrentTab("client")}
+                  className={
+                    currentTab === "client"
+                      ? "case-tab-heading active-tab"
+                      : "case-tab-heading"
+                  }
+                >
+                  Client
+                </h4>
+                <h4
+                  onClick={() => setCurrentTab("adverse")}
+                  className={
+                    currentTab === "adverse"
+                      ? "case-tab-heading active-tab"
+                      : "case-tab-heading"
+                  }
+                >
+                  Adverse Party
+                </h4>
+                <h4
+                  onClick={() => setCurrentTab("opposing")}
+                  className={
+                    currentTab === "opposing"
+                      ? "case-tab-heading active-tab"
+                      : "case-tab-heading"
+                  }
+                >
+                  Opposing Council
+                </h4>
               </div>
             </div>
-            <div className="case-notes">
-              <Notes
-                value={notes}
-                onChange={handleUpdateNotes}
-                setNotes={Notes}
+            {currentTab === "details" && (
+              <DetailsTab
+                caseData={caseData}
+                phase={phase}
+                handleUpdatePhase={handleUpdatePhase}
+                setPhase={setPhase}
+                refreshActivityData={refreshActivityData}
+                refreshCaseData={refreshCaseData}
+                isNewCase={isNewCase}
+                currentSOL={currentSOL}
+                caseId={caseId}
+                setCurrentSOL={setCurrentSOl}
+                currentTribunal={currentTribunal}
+                setCurrentTribunal={setCurrentTribunal}
+                notes={notes}
+                handleUpdateNotes={handleUpdateNotes}
+                Notes={Notes}
                 count={count}
                 setCount={setCount}
                 updateNotes={updateNotes}
+                newCase={newCase}
+                currentAreas={currentAreas}
+                setCurrentAreas={setCurrentAreas}
+                newPracticeArea={newPracticeArea}
+                setNewPracticeArea={setNewPracticeArea}
+                isAddingArea={isAddingArea}
+                setIsAddingArea={setIsAddingArea}
               />
-            </div>
+            )}
+            {currentTab === "client" && (
+              <PeopleTab
+                people={clients}
+                refreshActivityData={refreshActivityData}
+                refreshCaseData={refreshCaseData}
+                caseId={caseId}
+                type={"client"}
+              />
+            )}
+            {currentTab === "adverse" && (
+              <PeopleTab
+                people={adverse}
+                refreshActivityData={refreshActivityData}
+                refreshCaseData={refreshCaseData}
+                caseId={caseId}
+                type={"adverse"}
+              />
+            )}
+            {currentTab === "opposing" && (
+              <PeopleTab
+                people={opposing}
+                refreshActivityData={refreshActivityData}
+                refreshCaseData={refreshCaseData}
+                caseId={caseId}
+                type={"opposing"}
+              />
+            )}
           </div>
         </div>
         <div className="case-activity-container">
@@ -464,7 +372,7 @@ const Case = ({ openTaskView, refreshKey }) => {
               <div className="case-view-tasks-list-head tasks-list-head">
                 {headings.map((heading) => {
                   if (heading === "Status") {
-                    return <p></p>;
+                    return <p key="status"></p>;
                   } else if (heading === "Priority") {
                     return (
                       <p className="priority-heading" key={heading}>
@@ -488,8 +396,6 @@ const Case = ({ openTaskView, refreshKey }) => {
         </div>
       </div>
     </div>
-  ) : (
-    <Loader />
   );
 };
 

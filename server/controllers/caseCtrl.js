@@ -59,7 +59,18 @@ export default {
           ],
         });
 
-        res.send(cases);
+        const count = await Case.count({
+          where: {
+            isArchived: false,
+          },
+        });
+
+        const payload = {
+          ...cases,
+          count,
+        };
+
+        res.send(payload);
       } else {
         res.status(401).send("User not authenticated");
       }
@@ -146,10 +157,19 @@ export default {
             ...caseJson,
             tasks: tasks,
           };
-        })
+        }),
       );
 
-      res.json(casesWithTasks);
+      const count = await Case.count({
+        where: {
+          isArchived: false,
+          phase: { [Op.ne]: "closed" },
+        },
+      });
+
+      const payload = { cases: [...casesWithTasks], count };
+
+      res.json(payload);
     } catch (error) {
       console.log(error);
       res.status(500).send("Error fetching cases with tasks");
@@ -331,7 +351,10 @@ export default {
           ],
         });
 
-        const people = await Person.findAll({ where: { caseId } });
+        const people = await Person.findAll({
+          where: { caseId },
+          order: [["personId", "ASC"]],
+        });
 
         // Transform tribunal array to single object (or null)
         const caseData = foundCase.toJSON();
@@ -380,7 +403,7 @@ export default {
           message = `added an SOL`;
         } else {
           message = `changed the SOL from ${formatDateNoTime(
-            oldValue
+            oldValue,
           )} to ${formatDateNoTime(value)}`;
         }
       }
@@ -404,7 +427,7 @@ export default {
         actorName,
         fieldName,
         oldValue,
-        value
+        value,
       );
 
       res.status(200).send("Saved Case Successfully");
@@ -449,7 +472,7 @@ export default {
         actorName,
         "phase",
         oldPhase,
-        phase
+        phase,
       );
 
       res.status(200).send(currentCase);
@@ -488,7 +511,7 @@ export default {
           actorName,
           "priority",
           oldPriority,
-          priority
+          priority,
         );
       }
       res.status(200).send("Saved Case Priority Successfully");
@@ -577,7 +600,7 @@ export default {
         userId,
         assigneeName,
         req.session.user.userId,
-        actorName
+        actorName,
       );
       res.status(201).json(assignedUser);
     } catch (err) {
@@ -626,7 +649,7 @@ export default {
         userId,
         unassignedUserName,
         req.session.user.userId,
-        actorName
+        actorName,
       );
 
       res.status(200).send("Case assignees updated successfully");
@@ -865,7 +888,7 @@ export default {
             foundCase,
             req.session.user.userId,
             actorName,
-            false
+            false,
           );
 
           res.send("0 case unarchived");
@@ -887,7 +910,7 @@ export default {
             foundCase,
             req.session.user.userId,
             actorName,
-            true
+            true,
           );
 
           res.send("1 case archived");
