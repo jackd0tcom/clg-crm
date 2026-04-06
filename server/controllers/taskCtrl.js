@@ -1,6 +1,8 @@
 import { User, Case, Task } from "../model.js";
 import { Op } from "sequelize";
 import { CaseAssignees, TaskAssignees } from "../model.js";
+import { getIO } from "../socketServer.js";
+import { getTaskNotificationRecipients } from "../helpers/notificationHelper.js";
 import {
   createActivityLog,
   ACTIVITY_ACTIONS,
@@ -78,7 +80,7 @@ export default {
         const startOfDay = new Date(
           today.getFullYear(),
           today.getMonth(),
-          today.getDate()
+          today.getDate(),
         );
         const endOfDay = new Date(
           today.getFullYear(),
@@ -87,7 +89,7 @@ export default {
           23,
           59,
           59,
-          999
+          999,
         );
 
         // First get the IDs of tasks where the user is assigned
@@ -337,7 +339,7 @@ export default {
         } else if (fieldName === "dueDate") {
           if (value && oldValue) {
             message = `changed the due date from ${formatDateNoTime(
-              oldValue
+              oldValue,
             )} to ${formatDateNoTime(value)}`;
           } else if (!value && oldValue) {
             message = "removed the due date";
@@ -364,21 +366,21 @@ export default {
           await syncTaskWithCalendar(
             currentTask,
             req.session.user.userId,
-            "delete"
+            "delete",
           );
         } else if (fieldName === "status" && oldValue === "completed") {
           // Task unmarked from completed - create in calendar
           await syncTaskWithCalendar(
             currentTask,
             req.session.user.userId,
-            "create"
+            "create",
           );
         } else if (["title", "dueDate", "notes"].includes(fieldName)) {
           // Other fields that affect calendar events - update
           await syncTaskWithCalendar(
             currentTask,
             req.session.user.userId,
-            "update"
+            "update",
           );
         }
 
@@ -393,9 +395,34 @@ export default {
             actorName,
             fieldName,
             oldValue,
-            value
+            value,
           );
         }
+
+        // Emit socket.io event
+        const io = getIO();
+        io.to(`task:${taskId}`).emit("task:updated", {
+          caseId: parseInt(taskId),
+          field: fieldName,
+          value: value,
+          oldValue: oldValue,
+          updatedBy: req.session.user,
+          timestamp: new Date().toISOString(),
+        });
+
+        // Also emit to user rooms for notifications
+        const recipients = await getTaskNotificationRecipients(
+          parseInt(taskId),
+          req.session.user.userId,
+        );
+
+        recipients.forEach((recipient) => {
+          io.to(`user:${recipient.userId}`).emit("notification:new", {
+            type: "task_updated",
+            caseId: parseInt(taskId),
+            message: `${req.session.user.firstName} updated "${currentTask.title}"`,
+          });
+        });
 
         if (fieldName === "caseId") {
           res.status(200).send(currentTask);
@@ -431,7 +458,7 @@ export default {
         await syncTaskWithCalendar(
           currentTask,
           req.session.user.userId,
-          "update"
+          "update",
         );
 
         // Create notifications for status change
@@ -444,7 +471,7 @@ export default {
           actorName,
           "status",
           oldStatus,
-          status
+          status,
         );
       }
       res.status(200).send("Saved Task Status Successfully");
@@ -546,11 +573,22 @@ export default {
         userId,
         assigneeName,
         req.session.user.userId,
-        actorName
+        actorName,
       );
 
       // Sync with Google Calendar for the assigned user
       await syncTaskWithCalendar(taskExists, userId, "create");
+
+      // Emit socket.io event
+      const io = getIO();
+      io.to(`task:${taskId}`).emit("task:updated", {
+        caseId: parseInt(taskId),
+        field: "assignee",
+        value: value,
+        oldValue: oldValue,
+        updatedBy: req.session.user,
+        timestamp: new Date().toISOString(),
+      });
 
       res.status(201).json(assignedUser);
     } catch (err) {
@@ -599,11 +637,22 @@ export default {
         userId,
         unassignedUserName,
         req.session.user.userId,
-        actorName
+        actorName,
       );
 
       // Remove from Google Calendar for the unassigned user
       await syncTaskWithCalendar(taskExists, userId, "delete");
+
+      // Emit socket.io event
+      const io = getIO();
+      io.to(`task:${taskId}`).emit("task:updated", {
+        caseId: parseInt(taskId),
+        field: "assignee",
+        value: value,
+        oldValue: oldValue,
+        updatedBy: req.session.user,
+        timestamp: new Date().toISOString(),
+      });
 
       res.status(200).send("Task assignees updated successfully");
     } catch (err) {
@@ -630,7 +679,7 @@ export default {
       await syncTaskWithCalendar(
         currentTask,
         req.session.user.userId,
-        "delete"
+        "delete",
       );
 
       // Create notifications for task deletion (before deleting the task)

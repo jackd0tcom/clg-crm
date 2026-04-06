@@ -64,6 +64,9 @@ const Case = ({ openTaskView, refreshKey }) => {
                 priority: data.value,
               }));
               break;
+            case "notes":
+              setNotes(data.value);
+              break;
             default:
               // Refresh full case data for other updates
               getData();
