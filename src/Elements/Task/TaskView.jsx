@@ -66,6 +66,12 @@ const TaskView = ({ taskId, setTaskId, isOpen, onClose, onTaskUpdate }) => {
 
       socket.on("task:updated", handleTaskUpdate);
       socket.on("comment:created", handleCommentCreated);
+
+      return () => {
+        socket.emit("leave-room", `task:${taskId}`);
+        socket.off("task:updated", handleTaskUpdate);
+        socket.off("comment:created", handleCommentCreated);
+      };
     }
   }, []);
 

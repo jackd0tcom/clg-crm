@@ -7,13 +7,31 @@ import { NavLink } from "react-router";
 import ProfilePic from "./ProfilePic";
 import { useAuth0 } from "@auth0/auth0-react";
 import TimeKeeperWidget from "../TimeKeeper/TimeKeeperWidget";
+import { socket } from "../../Services/socket";
 
 const Nav = ({ checkNotifications, userSynced }) => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
   const { isAuthenticated } = useAuth0();
   const [notification, setNotification] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(0);
   const navigate = useNavigate();
+
+  // Socket connection
+  useEffect(() => {
+    socket.emit("join-room", `user:${user.userId}`);
+
+    const handleNotify = () => {
+      return;
+    };
+
+    socket.on("notification:new", handleNotify);
+
+    return () => {
+      socket.emit("leave-room", `user:${user.userId}`);
+      socket.off("notification:new", handleNotify);
+    };
+  }, []);
 
   useEffect(() => {
     if (!userSynced) return;
@@ -23,7 +41,8 @@ const Nav = ({ checkNotifications, userSynced }) => {
         const res = await axios.get("/api/notifications");
         let unread = [];
         unread = res.data.filter((item) => !item.isCleared && !item.isRead);
-        setNotification(unread.length >= 1);
+        setNotification(unread?.length >= 1);
+        setNotificationCount(unread?.length);
       } catch (error) {
         console.log(error);
         setNotification(false);
@@ -67,12 +86,10 @@ const Nav = ({ checkNotifications, userSynced }) => {
                 }
               >
                 <span className="notification-icon-wrapper">
-                  <i className="fa-solid fa-inbox"></i>
-                  {notification && (
-                    <i className="fa-solid fa-circle notification-push"></i>
-                  )}
+                  <i class="fa-solid fa-bell"></i>
+                  {notification && <div className="notification-push"></div>}
                 </span>
-                Inbox
+                Inbox{" "}
               </NavLink>
               <NavLink
                 to="/tasks"
