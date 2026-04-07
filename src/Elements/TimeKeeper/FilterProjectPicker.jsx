@@ -19,7 +19,7 @@ const FilterProjectPicker = ({ filter, setFilter }) => {
           return;
         }
         setOriginalData(res.data.cases ?? []);
-        setFilteredData(res.data ?? []);
+        setFilteredData(res.data.cases ?? []);
         setIsLoading(false);
       });
     } catch (error) {
