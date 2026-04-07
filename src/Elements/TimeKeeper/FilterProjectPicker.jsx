@@ -18,8 +18,8 @@ const FilterProjectPicker = ({ filter, setFilter }) => {
           console.log(error);
           return;
         }
-        setOriginalData(res.data);
-        setFilteredData(res.data);
+        setOriginalData(res.data.cases ?? []);
+        setFilteredData(res.data ?? []);
         setIsLoading(false);
       });
     } catch (error) {

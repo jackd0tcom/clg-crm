@@ -18,13 +18,12 @@ const ProjectPicker = ({
   const getCasesWithTasks = async () => {
     try {
       await axios.get("/api/getCasesWithTasks").then((res) => {
-        if (!res.status === 200) {
-          console.log(error);
-          return;
+        if (res.status === 200) {
+          console.log(res.data);
+          setOriginalData(res.data.cases ?? []);
+          setFilteredData(res.data.cases ?? []);
+          setIsLoading(false);
         }
-        setOriginalData(res.data);
-        setFilteredData(res.data);
-        setIsLoading(false);
       });
     } catch (error) {
       console.log(error);
