@@ -45,7 +45,7 @@ const TimePicker = ({
     setStartTime(newStart);
     let newEntry = {};
     if (newStart > endDay) {
-      setEndDay(newStart);
+      setStartTime(newStart);
       newEntry = {
         ...entry,
         startTime: newStart.toISOString(),
@@ -90,6 +90,9 @@ const TimePicker = ({
     };
     setEntry(newEntry);
     setDate(new Date(date));
+    setDay(day);
+    setMonth(month);
+    setYear(year);
   };
 
   return (
