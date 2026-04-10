@@ -1,4 +1,5 @@
 import { Notification, User, Task } from "../model.js";
+import { getIO } from "../socketServer.js";
 
 /**
  * Notification Helper
@@ -41,7 +42,7 @@ export const createNotification = async (
   type,
   objectType,
   objectId,
-  message
+  message,
 ) => {
   try {
     const notification = await Notification.create({
@@ -71,7 +72,7 @@ export const createNotification = async (
 export const getTaskNotificationRecipients = async (
   taskId,
   action,
-  actorId
+  actorId,
 ) => {
   try {
     const task = await Task.findByPk(taskId, {
@@ -123,7 +124,7 @@ export const getTaskNotificationRecipients = async (
     });
 
     console.log(
-      `📋 Found ${recipients.length} notification recipients for task ${taskId}`
+      `📋 Found ${recipients.length} notification recipients for task ${taskId}`,
     );
     return recipients;
   } catch (error) {
@@ -143,7 +144,7 @@ export const notifyTaskCreated = async (task, actorId, actorName) => {
     const recipients = await getTaskNotificationRecipients(
       task.taskId,
       "created",
-      actorId
+      actorId,
     );
 
     for (const recipient of recipients) {
@@ -154,7 +155,7 @@ export const notifyTaskCreated = async (task, actorId, actorName) => {
           NOTIFICATION_TYPES.TASK_CREATED,
           "task",
           task.taskId,
-          `${actorName} created a new task: "${task.title}"`
+          `${actorName} created a new task: "${task.title}"`,
         );
       }
       // Assignees do NOT get notified for task creation
@@ -180,7 +181,7 @@ export const notifyTaskUpdated = async (
   actorName,
   fieldName,
   oldValue,
-  newValue
+  newValue,
 ) => {
   console.log("notify Task Updated");
   try {
@@ -193,7 +194,7 @@ export const notifyTaskUpdated = async (
     const recipients = await getTaskNotificationRecipients(
       task.taskId,
       "updated",
-      actorId
+      actorId,
     );
 
     let message = "";
@@ -207,7 +208,7 @@ export const notifyTaskUpdated = async (
         break;
       case "dueDate":
         message = `${actorName} changed the due date to ${new Date(
-          newValue
+          newValue,
         ).toLocaleDateString()}`;
         notificationType = NOTIFICATION_TYPES.TASK_DUE_DATE_CHANGED;
         break;
@@ -234,7 +235,7 @@ export const notifyTaskUpdated = async (
           notificationType,
           "task",
           task.taskId,
-          message
+          message,
         );
       }
       // Assignees do NOT get notified for general task updates
@@ -256,7 +257,7 @@ export const notifyTaskDeleted = async (task, actorId, actorName) => {
     const recipients = await getTaskNotificationRecipients(
       task.taskId,
       "deleted",
-      actorId
+      actorId,
     );
 
     for (const recipient of recipients) {
@@ -267,7 +268,7 @@ export const notifyTaskDeleted = async (task, actorId, actorName) => {
           NOTIFICATION_TYPES.TASK_DELETED,
           "task",
           task.taskId,
-          `${actorName} deleted the task: "${task.title}"`
+          `${actorName} deleted the task: "${task.title}"`,
         );
       }
       // Assignees do NOT get notified for task deletion
@@ -291,7 +292,7 @@ export const notifyTaskAssigned = async (
   assigneeId,
   assigneeName,
   actorId,
-  actorName
+  actorName,
 ) => {
   try {
     // Notify the assignee
@@ -300,7 +301,7 @@ export const notifyTaskAssigned = async (
       NOTIFICATION_TYPES.TASK_ASSIGNED,
       "task",
       task.taskId,
-      `${actorName} assigned this task to you`
+      `${actorName} assigned this task to you`,
     );
 
     // Notify the task owner (if different from actor)
@@ -310,7 +311,7 @@ export const notifyTaskAssigned = async (
         NOTIFICATION_TYPES.TASK_ASSIGNED,
         "task",
         task.taskId,
-        `${actorName} assigned ${assigneeName} to your task`
+        `${actorName} assigned ${assigneeName} to your task`,
       );
     }
   } catch (error) {
@@ -331,7 +332,7 @@ export const notifyTaskUnassigned = async (
   unassignedUserId,
   unassignedUserName,
   actorId,
-  actorName
+  actorName,
 ) => {
   try {
     // Notify the unassigned user
@@ -340,7 +341,7 @@ export const notifyTaskUnassigned = async (
       NOTIFICATION_TYPES.TASK_UNASSIGNED,
       "task",
       task.taskId,
-      `${actorName} removed you from this task`
+      `${actorName} removed you from this task`,
     );
 
     // Notify the task owner (if different from actor)
@@ -350,7 +351,7 @@ export const notifyTaskUnassigned = async (
         NOTIFICATION_TYPES.TASK_UNASSIGNED,
         "task",
         task.taskId,
-        `${actorName} removed ${unassignedUserName}`
+        `${actorName} removed ${unassignedUserName}`,
       );
     }
   } catch (error) {
@@ -372,11 +373,11 @@ export const markNotificationAsRead = async (notificationId, userId) => {
           notificationId,
           userId, // Ensure user can only mark their own notifications as read
         },
-      }
+      },
     );
 
     console.log(
-      `📖 Marked notification ${notificationId} as read for user ${userId}`
+      `📖 Marked notification ${notificationId} as read for user ${userId}`,
     );
   } catch (error) {
     console.error("Error marking notification as read:", error);
@@ -398,11 +399,11 @@ export const markNotificationAsCleared = async (notificationId, userId) => {
           notificationId,
           userId, // Ensure user can only mark their own notifications as read
         },
-      }
+      },
     );
 
     console.log(
-      `📖 Marked notification ${notificationId} as cleared for user ${userId}`
+      `📖 Marked notification ${notificationId} as cleared for user ${userId}`,
     );
   } catch (error) {
     console.error("Error marking notification as read:", error);
@@ -491,7 +492,7 @@ export const getCaseNotificationRecipients = async (caseId, actorId) => {
     });
 
     console.log(
-      `📋 Found ${recipients.length} notification recipients for case ${caseId}`
+      `📋 Found ${recipients.length} notification recipients for case ${caseId}`,
     );
     return recipients;
   } catch (error) {
@@ -509,11 +510,11 @@ export const getCaseNotificationRecipients = async (caseId, actorId) => {
 export const notifyCaseCreated = async (theCase, actorId, actorName) => {
   try {
     console.log(
-      `🔔 Creating case creation notifications for case ${theCase.caseId}`
+      `🔔 Creating case creation notifications for case ${theCase.caseId}`,
     );
     const recipients = await getCaseNotificationRecipients(
       theCase.caseId,
-      actorId
+      actorId,
     );
 
     console.log(`📋 Found ${recipients.length} recipients for case creation`);
@@ -526,10 +527,10 @@ export const notifyCaseCreated = async (theCase, actorId, actorName) => {
           NOTIFICATION_TYPES.CASE_CREATED,
           "case",
           theCase.caseId,
-          `${actorName} created a new case: "${theCase.title}"`
+          `${actorName} created a new case: "${theCase.title}"`,
         );
         console.log(
-          `📢 Notified case owner ${recipient.userId} of case creation`
+          `📢 Notified case owner ${recipient.userId} of case creation`,
         );
       }
       // Assignees only get notified if they're assigned (which they would be for new cases)
@@ -539,10 +540,10 @@ export const notifyCaseCreated = async (theCase, actorId, actorName) => {
           NOTIFICATION_TYPES.CASE_ASSIGNED,
           "case",
           theCase.caseId,
-          `${actorName} assigned this case to you`
+          `${actorName} assigned this case to you`,
         );
         console.log(
-          `📢 Notified assignee ${recipient.userId} of case assignment`
+          `📢 Notified assignee ${recipient.userId} of case assignment`,
         );
       }
     }
@@ -566,12 +567,12 @@ export const notifyCaseUpdated = async (
   actorName,
   fieldName,
   oldValue,
-  newValue
+  newValue,
 ) => {
   try {
     const recipients = await getCaseNotificationRecipients(
       theCase.caseId,
-      actorId
+      actorId,
     );
 
     let message = "";
@@ -605,7 +606,7 @@ export const notifyCaseUpdated = async (
           notificationType,
           "case",
           theCase.caseId,
-          message
+          message,
         );
       }
       // Non-owners only get notified if they're assigned to the case
@@ -615,7 +616,7 @@ export const notifyCaseUpdated = async (
           notificationType,
           "case",
           theCase.caseId,
-          message
+          message,
         );
       }
     }
@@ -635,12 +636,12 @@ export const notifyCaseArchiveStatus = async (
   theCase,
   actorId,
   actorName,
-  isArchived
+  isArchived,
 ) => {
   try {
     const recipients = await getCaseNotificationRecipients(
       theCase.caseId,
-      actorId
+      actorId,
     );
 
     const notificationType = isArchived
@@ -655,7 +656,7 @@ export const notifyCaseArchiveStatus = async (
         notificationType,
         "case",
         theCase.caseId,
-        message
+        message,
       );
     }
   } catch (error) {
@@ -676,7 +677,7 @@ export const notifyCaseAssigned = async (
   assigneeId,
   assigneeName,
   actorId,
-  actorName
+  actorName,
 ) => {
   try {
     // Notify the assignee
@@ -685,7 +686,7 @@ export const notifyCaseAssigned = async (
       NOTIFICATION_TYPES.CASE_ASSIGNED,
       "case",
       theCase.caseId,
-      `${actorName} assigned this case to you`
+      `${actorName} assigned this case to you`,
     );
 
     // Notify the case owner (if different from actor)
@@ -695,7 +696,7 @@ export const notifyCaseAssigned = async (
         NOTIFICATION_TYPES.CASE_ASSIGNED,
         "case",
         theCase.caseId,
-        `${actorName} assigned ${assigneeName} to your case`
+        `${actorName} assigned ${assigneeName} to your case`,
       );
     }
   } catch (error) {
@@ -716,7 +717,7 @@ export const notifyCaseUnassigned = async (
   unassignedUserId,
   unassignedUserName,
   actorId,
-  actorName
+  actorName,
 ) => {
   try {
     // Notify the unassigned user
@@ -725,7 +726,7 @@ export const notifyCaseUnassigned = async (
       NOTIFICATION_TYPES.CASE_UNASSIGNED,
       "case",
       theCase.caseId,
-      `${actorName} removed you from this case`
+      `${actorName} removed you from this case`,
     );
 
     // Notify the case owner (if different from actor)
@@ -735,7 +736,7 @@ export const notifyCaseUnassigned = async (
         NOTIFICATION_TYPES.CASE_UNASSIGNED,
         "case",
         theCase.caseId,
-        `${actorName} removed ${unassignedUserName} from your case`
+        `${actorName} removed ${unassignedUserName} from your case`,
       );
     }
   } catch (error) {
@@ -752,7 +753,7 @@ export const notifyCaseUnassigned = async (
 export const notifyCommentCreated = async ({ object, actorId, actorName }) => {
   try {
     console.log(
-      `🔔 Creating comment creation notifications for ${object.objectType} ${object.objectId}`
+      `🔔 Creating comment creation notifications for ${object.objectType} ${object.objectId}`,
     );
 
     let recipients;
@@ -761,16 +762,16 @@ export const notifyCommentCreated = async ({ object, actorId, actorName }) => {
       console.log("case");
       recipients = await getCaseNotificationRecipients(
         object.objectId,
-        actorId
+        actorId,
       );
     } else
       recipients = await getTaskNotificationRecipients(
         object.objectId,
-        actorId
+        actorId,
       );
 
     console.log(
-      `📋 Found ${recipients.length} recipients for comment creation`
+      `📋 Found ${recipients.length} recipients for comment creation`,
     );
 
     for (const recipient of recipients) {
@@ -778,14 +779,23 @@ export const notifyCommentCreated = async ({ object, actorId, actorName }) => {
         return;
       }
       // Everyone gets notified of every comment
-      else
-        await createNotification(
+      else {
+        // create notification in db
+        const newNotification = await createNotification(
           recipient.userId,
           NOTIFICATION_TYPES.COMMENT_ADDED,
           object.objectType,
           object.objectId,
-          `${actorName} added a new comment "${object.content}"`
+          `${actorName} added a new comment "${object.content}"`,
         );
+        const io = getIO();
+        io.to(`user:${recipient.userId}`).emit("notification:new", {
+          type: "comment_created",
+          objectType: object.objectType,
+          objectId: object.objectId,
+          value: newNotification,
+        });
+      }
       console.log(`📢 Notified owner ${recipient.userId} of comment creation`);
     }
   } catch (error) {

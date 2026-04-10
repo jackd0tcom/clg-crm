@@ -45,8 +45,8 @@ const TaskFilter = ({
       try {
         await axios.get("/api/getCases").then((res) => {
           setCaseData(res.data);
-          if (paramCase !== 0) {
-            const currentCase = res.data.find(
+          if (paramCase.caseId && paramCase.caseId !== 0) {
+            const currentCase = res.data?.find(
               (data) => data.caseId === paramCase,
             );
             if (currentCase) {
@@ -61,7 +61,6 @@ const TaskFilter = ({
     const fetchSettings = async () => {
       try {
         await axios.get("/api/getUserSettings").then((res) => {
-          console.log(res.data);
           if (res.data.taskShowAssigned) {
             setShowAssigned(true);
           } else if (!res.data.taskShowAssigned) {
