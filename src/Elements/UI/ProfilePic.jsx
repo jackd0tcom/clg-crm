@@ -9,7 +9,8 @@ const ProfilePic = ({
   size = "medium",
 }) => {
   const { isAuthenticated, user } = useAuth0();
-  const imageSrc = src || user?.picture;
+  const userUrl = useSelector((state) => state.user.profilePic);
+  const imageSrc = src ?? userUrl ?? "/default-profile-pic.jpg";
   const [hasError, setHasError] = useState(false);
 
   const handleImageError = () => {
