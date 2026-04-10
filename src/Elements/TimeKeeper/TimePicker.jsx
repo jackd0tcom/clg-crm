@@ -55,6 +55,7 @@ const TimePicker = ({
     } else newEntry = { ...entry, startTime: newStart.toISOString() };
     setDuration(getDuration(newEntry));
     setEntry(newEntry);
+    console.log(newEntry);
   };
 
   const endChange = (date) => {

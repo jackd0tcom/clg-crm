@@ -64,8 +64,8 @@ const WidgetEntryView = ({ entry, setEntry, setShowEntryView, getEntries }) => {
           notes,
           caseId: entry.caseId,
           taskId: entry.taskId,
-          startTime: new Date(),
-          endTime: new Date(),
+          startTime: entry.startTime,
+          endTime: entry.endTime,
           userId: resolvedUserId,
         })
         .then((res) => {
@@ -76,8 +76,8 @@ const WidgetEntryView = ({ entry, setEntry, setShowEntryView, getEntries }) => {
               taskId: null,
               notes: "",
               currentTitle: null,
-              startTime: null,
-              endTime: null,
+              startTime: new Date(),
+              endTime: new Date(),
               userId: userStore.userId ?? null,
             });
             setShowEntryView(false);
