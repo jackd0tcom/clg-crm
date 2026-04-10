@@ -442,17 +442,17 @@ const Invoice = () => {
                     status={status}
                   />
                 ))}
-                {status === "draft" && (
-                  <div
-                    onClick={() => handleAddCustomCharge()}
-                    className="add-custom-item-wrapper"
-                  >
-                    <p>+ Add Custom Charge</p>
-                  </div>
-                )}
               </>
             ) : (
               <div className="no-invoice-items">No items to show</div>
+            )}
+            {status === "draft" && (
+              <div
+                onClick={() => handleAddCustomCharge()}
+                className="add-custom-item-wrapper"
+              >
+                <p>+ Add Custom Charge</p>
+              </div>
             )}
             <div className="invoice-items-list-item invoice-list-footer">
               <p>Subtotal</p>

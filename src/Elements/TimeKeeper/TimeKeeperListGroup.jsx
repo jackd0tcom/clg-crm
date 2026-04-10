@@ -22,14 +22,10 @@ const TimeKeeperListGroup = ({
     <div className="time-keeper-list-group-wrapper">
       <div
         className="list-group-project-item"
-        onClick={() =>
-          showEntries ? setShowEntries(false) : setShowEntries(true)
-        }
+        onClick={() => setShowEntries(!showEntries)}
       >
         <i
-          onClick={() =>
-            showEntries ? setShowEntries(false) : setShowEntries(true)
-          }
+          onClick={() => setShowEntries(!showEntries)}
           className={
             showEntries
               ? "fa-solid fa-angle-right list-group-toggle show-entries"
