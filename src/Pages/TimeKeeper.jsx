@@ -20,8 +20,8 @@ const TimeKeeper = () => {
     taskId: null,
     notes: "",
     currentTitle: null,
-    startTime: new Date(),
-    endTime: new Date(),
+    startTime: new Date().toISOString(),
+    endTime: new Date().toISOString(),
     userId: userStore.userId,
   });
   const [filter, setFilter] = useState({
@@ -64,9 +64,7 @@ const TimeKeeper = () => {
       return;
     }
     setEntry((prev) =>
-      prev.userId == null
-        ? { ...prev, userId: userStore.userId }
-        : prev,
+      prev.userId == null ? { ...prev, userId: userStore.userId } : prev,
     );
   }, [userStore.userId, showEntryView]);
 

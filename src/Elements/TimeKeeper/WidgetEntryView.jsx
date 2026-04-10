@@ -42,8 +42,8 @@ const WidgetEntryView = ({ entry, setEntry, setShowEntryView, getEntries }) => {
             taskId: null,
             notes: "",
             currentTitle: null,
-            startTime: new Date(),
-            endTime: new Date(),
+            startTime: new Date().toISOString(),
+            endTime: new Date().toISOString(),
             userId: userStore.userId ?? null,
           });
           setShowEntryView(false);
@@ -76,8 +76,8 @@ const WidgetEntryView = ({ entry, setEntry, setShowEntryView, getEntries }) => {
               taskId: null,
               notes: "",
               currentTitle: null,
-              startTime: new Date(),
-              endTime: new Date(),
+              startTime: new Date().toISOString(),
+              endTime: new Date().toISOString(),
               userId: userStore.userId ?? null,
             });
             setShowEntryView(false);
