@@ -99,9 +99,9 @@ const WidgetEntryView = ({ entry, setEntry, setShowEntryView, getEntries }) => {
         })
         .then((res) => {
           setStatus("success");
-          console.log(res);
           setShowDeleteModal(false);
           setShowEntryView(false);
+          getEntries?.();
         });
     } catch (error) {
       setStatus("error");
