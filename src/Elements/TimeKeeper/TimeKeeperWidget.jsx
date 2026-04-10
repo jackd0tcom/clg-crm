@@ -278,7 +278,6 @@ const TimeKeeperWidget = ({ caseId, title, taskId, isNav }) => {
                 <div className="time-keeper-widget-pickers">
                   <UserPicker
                     userId={userStore.userId}
-                    entry={entry}
                     setEntry={setEntry}
                   />
                   <ProjectPicker

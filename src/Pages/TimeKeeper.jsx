@@ -39,12 +39,14 @@ const TimeKeeper = () => {
 
   // Initial data hydration
   const getEntries = async () => {
+    console.log("getting entries");
     try {
       await axios.get("/api/time-entry/getUserEntries").then((res) => {
         if (!res.status === 200) {
           console.log(res);
           return;
         }
+        console.log("got entries");
         setEntryList(res.data.filter((entry) => entry !== null));
         setIsLoading(false);
       });
@@ -52,9 +54,21 @@ const TimeKeeper = () => {
       console.log(error);
     }
   };
+
   useEffect(() => {
     getEntries();
   }, []);
+
+  useEffect(() => {
+    if (userStore.userId == null) {
+      return;
+    }
+    setEntry((prev) =>
+      prev.userId == null
+        ? { ...prev, userId: userStore.userId }
+        : prev,
+    );
+  }, [userStore.userId, showEntryView]);
 
   const processedData = useMemo(() => {
     // console.log("processing..", filter);
@@ -173,7 +187,11 @@ const TimeKeeper = () => {
             showEntryView={showEntryView}
             setShowEntryView={setShowEntryView}
           />
-          {isLoading ? <Loader /> : <TimeKeeperList data={processedData} />}
+          {isLoading ? (
+            <Loader />
+          ) : (
+            <TimeKeeperList data={processedData} getEntries={getEntries} />
+          )}
         </>
       )}
     </div>

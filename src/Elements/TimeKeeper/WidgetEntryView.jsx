@@ -1,18 +1,20 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import axios from "axios";
+import { useSelector } from "react-redux";
 import { getDuration } from "../../helpers/helperFunctions";
 import ProjectPicker from "./ProjectPicker";
 import TimePicker from "./TimePicker";
 import UserPicker from "./UserPicker";
 
 const WidgetEntryView = ({ entry, setEntry, setShowEntryView, getEntries }) => {
+  const userStore = useSelector((state) => state.user);
   const [notes, setNotes] = useState(entry?.notes);
   const [status, setStatus] = useState("");
   const [showCaseTaskPicker, setShowCaseTaskPicker] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [duration, setDuration] = useState(entry.endTime && getDuration(entry));
   const [showTimePicker, setShowTimePicker] = useState(false);
-  const userId = entry.userId;
+  const resolvedUserId = entry.userId ?? userStore.userId;
 
   const newEntry = async () => {
     setStatus("saving");
@@ -31,7 +33,7 @@ const WidgetEntryView = ({ entry, setEntry, setShowEntryView, getEntries }) => {
           taskId: entry.taskId,
           startTime: entry.startTime,
           endTime: entry.endTime,
-          userId: entry.userId,
+          userId: resolvedUserId,
         })
         .then((res) => {
           setStatus("success");
@@ -40,7 +42,9 @@ const WidgetEntryView = ({ entry, setEntry, setShowEntryView, getEntries }) => {
             taskId: null,
             notes: "",
             currentTitle: null,
-            startTime: null,
+            startTime: new Date(),
+            endTime: new Date(),
+            userId: userStore.userId ?? null,
           });
           setShowEntryView(false);
           getEntries?.();
@@ -60,9 +64,9 @@ const WidgetEntryView = ({ entry, setEntry, setShowEntryView, getEntries }) => {
           notes,
           caseId: entry.caseId,
           taskId: entry.taskId,
-          startTime: entry.startTime,
-          endTime: entry.endTime,
-          userId: entry.userId,
+          startTime: new Date(),
+          endTime: new Date(),
+          userId: resolvedUserId,
         })
         .then((res) => {
           setStatus("success");
@@ -73,10 +77,12 @@ const WidgetEntryView = ({ entry, setEntry, setShowEntryView, getEntries }) => {
               notes: "",
               currentTitle: null,
               startTime: null,
+              endTime: null,
+              userId: userStore.userId ?? null,
             });
             setShowEntryView(false);
+            getEntries?.();
           }
-          getEntries?.();
         });
     } catch (error) {
       setStatus("error");
@@ -120,6 +126,9 @@ const WidgetEntryView = ({ entry, setEntry, setShowEntryView, getEntries }) => {
     const newDate = new Date(
       date.setMinutes(date.getMinutes() - 15),
     ).toISOString();
+    if (newDate < entry.startTime) {
+      return;
+    }
     const newEntry = { ...entry, endTime: newDate };
     setEntry(newEntry);
     setDuration(getDuration(newEntry));
@@ -182,11 +191,7 @@ const WidgetEntryView = ({ entry, setEntry, setShowEntryView, getEntries }) => {
               placeholder="Add a description"
             />
             <div className="picker-notes-wrapper">
-              <UserPicker
-                userId={entry.userId}
-                entry={entry}
-                setEntry={setEntry}
-              />
+              <UserPicker userId={entry.userId} setEntry={setEntry} />
               <ProjectPicker
                 showCaseTaskPicker={showCaseTaskPicker}
                 setShowCaseTaskPicker={setShowCaseTaskPicker}

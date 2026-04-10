@@ -648,6 +648,7 @@
   flex-direction: column;
   gap: 30px;
   align-items: center;
+  min-width: 200px;
 }
 .entry-view-description {
   padding: 10px;
@@ -705,14 +706,13 @@
 .duration-input {
   padding: 5px 15px;
   cursor: pointer;
-  border: 1px solid transparent;
+  border: 1px solid var(--light-border);
+  border-radius: 5px;
   transition: 200ms;
   color: black;
 }
 .duration-input:hover {
   background-color: var(--root-bg-color-light);
-  border-color: var(--light-border);
-  border-radius: 5px;
 }
 .time-increment {
   font-size: 0.9rem;
@@ -738,10 +738,16 @@
   z-index: 10;
   padding: 15px;
   top: 110%;
+  right: -50%;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 15px;
   color: black;
+}
+.time-picker-times {
+  display: flex;
+  gap: 15px;
 }
 .time-picker-container {
   display: flex;
@@ -751,6 +757,9 @@
   margin: 0;
   padding: 0 0 5px;
   font-size: 0.9rem;
+}
+.react-datepicker-popper {
+  z-index: 10 !important;
 }
 .time-picker-container .react-datepicker {
   display: flex;
