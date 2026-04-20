@@ -61,7 +61,10 @@ const UserPicker = ({ userId, entry, setEntry }) => {
 
   const handleUserSelect = (user) => {
     setCurrentUser(user);
-    setEntry({ ...entry, userId: user.userId });
+    setEntry((prev) => {
+      return { ...prev, userId: user.userId };
+    });
+    setShowUserPicker(false);
   };
 
   return (

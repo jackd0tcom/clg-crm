@@ -355,7 +355,7 @@ h5 {
 /* ProfilePic component */
 .profile-pic-wrapper img {
   width: 30px;
-  height: auto;
+  height: 30px;
   border-radius: 50%;
 }
 
