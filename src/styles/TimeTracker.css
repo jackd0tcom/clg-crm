@@ -906,7 +906,7 @@
 .time-keeper-list-head,
 .time-keeper-list-item {
   display: grid;
-  grid-template-columns: 0.2fr minmax(20px, 0.5fr) 2fr 2fr 1fr 1fr 0.5fr;
+  grid-template-columns: 0.2fr minmax(20px, 0.3fr) 2fr 2fr 1fr 1fr 0.5fr;
   gap: 10px;
   align-items: center;
   font-size: 0.9rem;
