@@ -10,6 +10,8 @@ import WidgetEntryView from "../Elements/TimeKeeper/WidgetEntryView";
 const TimeKeeper = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [entryList, setEntryList] = useState([]);
+  const [allEntries, setAllEntries] = useState([]);
+  const [showAllEntries, setShowAllEntries] = useState(false);
   const [showEntryView, setShowEntryView] = useState(false);
   const userStore = useSelector((state) => state.user);
   const now = new Date();
@@ -40,6 +42,10 @@ const TimeKeeper = () => {
   // Initial data hydration
   const getEntries = async () => {
     console.log("getting entries");
+    if (entryList.length > 0) {
+      setIsLoading(false);
+      return;
+    }
     try {
       await axios.get("/api/time-entry/getUserEntries").then((res) => {
         if (!res.status === 200) {
@@ -48,6 +54,23 @@ const TimeKeeper = () => {
         }
         console.log("got entries");
         setEntryList(res.data.filter((entry) => entry !== null));
+        setIsLoading(false);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getAllEntries = async () => {
+    setIsLoading(true);
+    if (allEntries.length > 0) {
+      setIsLoading(false);
+      return;
+    }
+    try {
+      console.log("getting all entries");
+      await axios.get("/api/time-entry/getAllEntries").then((res) => {
+        setAllEntries(res.data.filter((entry) => entry !== null));
         setIsLoading(false);
       });
     } catch (error) {
@@ -71,7 +94,13 @@ const TimeKeeper = () => {
   const processedData = useMemo(() => {
     // console.log("processing..", filter);
     // setup data variable
-    let data = [...entryList];
+    let data = [];
+
+    if (!showAllEntries) {
+      data = [...entryList];
+    } else {
+      data = [...allEntries];
+    }
 
     // filter data
     data = data.filter((item) => {
@@ -161,7 +190,7 @@ const TimeKeeper = () => {
     // console.log("Refined data", sorted);
 
     return sorted;
-  }, [filter, entryList]);
+  }, [filter, entryList, allEntries, showAllEntries]);
 
   return (
     <div className="time-tracker-page-wrapper">
@@ -179,11 +208,15 @@ const TimeKeeper = () => {
       ) : (
         <>
           <TimeKeeperFilter
+            setIsLoading={setIsLoading}
             filter={filter}
             setFilter={setFilter}
             entries={processedData}
             showEntryView={showEntryView}
             setShowEntryView={setShowEntryView}
+            getAllEntries={getAllEntries}
+            setShowAllEntries={setShowAllEntries}
+            showAllEntries={showAllEntries}
           />
           {isLoading ? (
             <Loader />

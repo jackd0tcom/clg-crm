@@ -186,7 +186,23 @@
   justify-content: space-between;
   width: 100%;
 }
-
+.entries-user-picker-wrapper {
+  position: relative;
+}
+.entries-user-button {
+  border: 1px solid var(--light-border);
+  background-color: unset;
+  font-size: 0.9rem;
+  transition: 200ms;
+  display: flex;
+  align-items: center;
+  padding: 8.5px 12px;
+  white-space: nowrap;
+}
+.entries-user-button:hover {
+  background-color: var(--root-bg-color-light);
+  color: black;
+}
 .new-entry-button-wrapper {
   display: flex;
   justify-content: flex-end;

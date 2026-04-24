@@ -271,6 +271,8 @@ h5 {
 .dropdown-item {
   padding: 8px 12px;
   cursor: pointer;
+  font-size: 0.9rem;
+  white-space: nowrap;
   border-bottom: 1px solid var(--light-border);
 }
 .dropdown:nth-last-child {

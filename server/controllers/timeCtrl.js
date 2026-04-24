@@ -181,6 +181,61 @@ export default {
       res.status(401).send(error);
     }
   },
+  getAllEntries: async (req, res) => {
+    try {
+      // Get all entries for user
+      console.log("getAllEntries");
+      if (!req.session.user) {
+        return res.status(401).send("User not authenticated");
+      }
+      const entries = await TimeEntry.findAll({
+        where: { endTime: { [Op.not]: null } },
+        order: [
+          ["endTime", "DESC"],
+          ["timeEntryId", "DESC"],
+        ],
+      });
+
+      const notNullEntries = entries.filter((entry) => entry !== null);
+
+      const entriesWithProjects = await Promise.all(
+        notNullEntries.map(async (entry) => {
+          const entryJson = entry.toJSON();
+
+          if (entry.caseId) {
+            const caseObject = await Case.findOne({
+              where: { caseId: entry.caseId },
+            });
+            return {
+              ...entryJson,
+              projectTitle: caseObject.title,
+            };
+          }
+
+          if (entry.taskId) {
+            const taskObject = await Task.findOne({
+              where: { taskId: entry.taskId },
+              include: [{ model: Case, as: "case" }],
+            });
+            const caseData = taskObject.case.toJSON();
+            return {
+              ...entryJson,
+              projectTitle: taskObject.title,
+              status: taskObject.status,
+              taskCaseId: caseData.caseId,
+            };
+          }
+        }),
+      );
+
+      if (!entries) {
+        res.status(200).send("No Entries Found");
+      } else res.status(200).send(entriesWithProjects);
+    } catch (error) {
+      console.log(error);
+      res.status(401).send(error);
+    }
+  },
   getUserEntries: async (req, res) => {
     try {
       // Get all entries for user
