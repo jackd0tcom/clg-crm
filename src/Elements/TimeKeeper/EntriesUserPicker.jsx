@@ -11,10 +11,11 @@ const EntriesUserPicker = ({
   const handleShowAllEntries = () => {
     if (!showAllEntries) {
       getAllEntries();
+      setShowDropdown(false);
       setTimeout(() => {
         setShowAllEntries(true);
       });
-    } else setShowAllEntries(false);
+    }
   };
   //   Handles blur
   useEffect(() => {
@@ -49,7 +50,13 @@ const EntriesUserPicker = ({
       </button>
       {showDropdown && (
         <div className="dropdown" ref={dropdownRef}>
-          <div className="dropdown-item" onClick={() => handleShowAllEntries()}>
+          <div
+            className="dropdown-item"
+            onClick={() => {
+              setShowAllEntries(false);
+              setShowDropdown(false);
+            }}
+          >
             My Entries
           </div>
           <div className="dropdown-item" onClick={() => handleShowAllEntries()}>

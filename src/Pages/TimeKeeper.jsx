@@ -6,8 +6,10 @@ import TimeKeeperList from "../Elements/TimeKeeper/TimeKeeperList";
 import TimeKeeperFilter from "../Elements/TimeKeeper/TimeKeeperFilter";
 import { useSelector } from "react-redux";
 import WidgetEntryView from "../Elements/TimeKeeper/WidgetEntryView";
+import { useNavigate } from "react-router";
 
 const TimeKeeper = () => {
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [entryList, setEntryList] = useState([]);
   const [allEntries, setAllEntries] = useState([]);
@@ -192,11 +194,40 @@ const TimeKeeper = () => {
     return sorted;
   }, [filter, entryList, allEntries, showAllEntries]);
 
+  const newInvoice = async () => {
+    const entryArray = processedData.map((entry) => entry.timeEntryId);
+    try {
+      axios.post("/api/newInvoice", { entries: entryArray }).then((res) => {
+        if (res.status === 200) {
+          navigate(`/invoice/${res.data.invoiceId}`);
+        }
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="time-tracker-page-wrapper">
       <div className="case-list-head">
         <h1 className="section-heading">Time Keeper</h1>
-        <TimeKeeperWidget />
+        <div className="time-keeper-filter-buttons">
+          <div className="new-entry-button-wrapper">
+            <button onClick={() => newInvoice()} className="new-invoice-button">
+              Create Invoice
+            </button>
+          </div>
+          <div className="new-entry-button-wrapper">
+            <button
+              onClick={() =>
+                showEntryView ? setShowEntryView(false) : setShowEntryView(true)
+              }
+              className="new-entry-button"
+            >
+              New Entry
+            </button>
+          </div>
+        </div>
       </div>
       {showEntryView ? (
         <WidgetEntryView

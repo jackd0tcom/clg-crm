@@ -169,10 +169,9 @@
   border: 1px solid var(--light-border);
   margin: 15px;
   border-radius: 5px;
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
+  display: flex;
   align-items: center;
-  justify-items: flex-start;
+  justify-content: space-between;
   gap: 15px;
 }
 .date-range-project-picker-wrapper {
@@ -183,8 +182,8 @@
 .time-keeper-filter-buttons {
   display: flex;
   align-items: center;
+  gap: 25px;
   justify-content: space-between;
-  width: 100%;
 }
 .entries-user-picker-wrapper {
   position: relative;
@@ -206,7 +205,6 @@
 .new-entry-button-wrapper {
   display: flex;
   justify-content: flex-end;
-  width: 100%;
 }
 .new-invoice-button {
   font-size: 0.9rem;
@@ -808,9 +806,9 @@
 .time-keeper-stats-wrapper {
   display: flex;
   align-items: center;
-  gap: 20%;
+  gap: 30px;
   border-radius: 5px;
-  width: 100%;
+  min-width: max-content;
 }
 
 .time-keeper-stat {
@@ -905,6 +903,7 @@
 }
 .time-keeper-list-item img {
   width: 25px !important;
+  height: 25px !important;
 }
 .time-keeper-list-item:hover {
   background-color: var(--root-bg-color-light);
