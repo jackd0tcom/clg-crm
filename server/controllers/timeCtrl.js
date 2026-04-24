@@ -194,6 +194,12 @@ export default {
           ["endTime", "DESC"],
           ["timeEntryId", "DESC"],
         ],
+        include: [
+          {
+            model: User,
+            as: "user",
+          },
+        ],
       });
 
       const notNullEntries = entries.filter((entry) => entry !== null);
@@ -248,6 +254,12 @@ export default {
         order: [
           ["endTime", "DESC"],
           ["timeEntryId", "DESC"],
+        ],
+        include: [
+          {
+            model: User,
+            as: "user",
+          },
         ],
       });
 

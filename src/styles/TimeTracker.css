@@ -842,7 +842,7 @@
 }
 .list-group-project-item {
   display: grid;
-  grid-template-columns: 0.15fr 2fr 2fr 1fr 1fr 0.5fr;
+  grid-template-columns: 0.2fr minmax(20px, 0.3fr) 2fr 2fr 1fr 1fr 0.5fr;
   gap: 10px;
   align-items: center;
   font-size: 0.9rem;
@@ -870,6 +870,24 @@
   display: flex;
   align-items: center;
   gap: 5px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.entry-group-users-wrapper {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+.entry-group-users-wrapper img {
+  height: 20px !important;
+  width: 20px !important;
+  border: 1px solid white;
+}
+.entry-group-users-wrapper div {
+  margin-left: -5px;
+}
+.entry-group-users-wrapper > div:first-child {
+  margin-left: 0;
 }
 .group-title-case {
   font-size: 0.9rem;
@@ -888,7 +906,7 @@
 .time-keeper-list-head,
 .time-keeper-list-item {
   display: grid;
-  grid-template-columns: 0.2fr 2fr 2fr 1fr 1fr 0.5fr;
+  grid-template-columns: 0.2fr minmax(20px, 0.5fr) 2fr 2fr 1fr 1fr 0.5fr;
   gap: 10px;
   align-items: center;
   font-size: 0.9rem;

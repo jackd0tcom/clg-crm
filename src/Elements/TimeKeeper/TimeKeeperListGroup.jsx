@@ -10,13 +10,20 @@ import TimeEntryStatusBadge from "../UI/TimeEntryStatusBadge";
 
 const TimeKeeperListGroup = ({
   group,
-  entry,
   setEntry,
   showEntryView,
   setShowEntryView,
   userId,
 }) => {
   const [showEntries, setShowEntries] = useState(false);
+  const includedUsers = [];
+
+  group.entries.forEach((entry) => {
+    const user = entry.user;
+    if (!includedUsers.some((us) => us.userId === user.userId)) {
+      includedUsers.push(user);
+    }
+  });
 
   return (
     <div className="time-keeper-list-group-wrapper">
@@ -32,6 +39,11 @@ const TimeKeeperListGroup = ({
               : "fa-solid fa-angle-right list-group-toggle"
           }
         ></i>
+        <div className="entry-group-users-wrapper">
+          {includedUsers.map((user) => (
+            <ProfilePic src={user.profilePic} />
+          ))}
+        </div>
         <div className="group-title">
           {group.type === "task" ? (
             <StatusIcon
@@ -43,8 +55,8 @@ const TimeKeeperListGroup = ({
           ) : (
             <i className="fa-solid fa-briefcase group-title-case"></i>
           )}
-          {group.projectTitle}
           <span className="group-entries">{`(${group.entries.length})`}</span>
+          {group.projectTitle}
         </div>
         <p></p>
         <p>{formatTimeFromSeconds(group.totalDuration)}</p>
@@ -79,7 +91,8 @@ const TimeKeeperListGroup = ({
                   : setShowEntryView(true);
               }}
             >
-              <ProfilePic />
+              <p></p>
+              <ProfilePic src={entry.user.profilePic} />
               <div className="time-keeper-item-project">
                 {entry.caseId ? (
                   <i className="fa-solid fa-briefcase"></i>
