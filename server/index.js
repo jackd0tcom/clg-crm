@@ -112,6 +112,7 @@ const {
   deleteEntry,
   runningTimer,
   getUserEntries,
+  getAllEntries,
   getRecentUserEntries,
   newEntry,
 } = timeCtrl;
@@ -292,6 +293,7 @@ app.post("/api/time-entry/newEntry", newEntry);
 app.post("/api/time-entry/delete", deleteEntry);
 app.get("/api/time-entry/running-timer", runningTimer);
 app.get("/api/time-entry/getUserEntries", getUserEntries);
+app.get("/api/time-entry/getAllEntries", getAllEntries);
 app.get("/api/time-entry/getRecentUserEntries", getRecentUserEntries);
 
 // Invoice endpoints

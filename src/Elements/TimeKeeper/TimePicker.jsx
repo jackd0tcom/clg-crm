@@ -5,13 +5,16 @@ import { getDuration } from "../../helpers/helperFunctions";
 const TimePicker = ({
   entry,
   setEntry,
-  duration,
   setDuration,
   setShowTimePicker,
   showTimePicker,
   updateEntry,
 }) => {
-  const [startDay, setStartDay] = useState(new Date(entry.startTime));
+  const [date, setDate] = useState(new Date(entry.startTime));
+  const [day, setDay] = useState(new Date(date).getDate());
+  const [month, setMonth] = useState(new Date(date).getMonth());
+  const [year, setYear] = useState(new Date(date).getFullYear());
+  const [startTime, setStartTime] = useState(new Date(entry.startTime));
   const [endDay, setEndDay] = useState(new Date(entry.endTime));
   const dropdownRef = useRef(null);
 
@@ -20,7 +23,9 @@ const TimePicker = ({
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowTimePicker(false);
-        updateEntry(false);
+        if (entry.timeEntryId) {
+          updateEntry(false);
+        }
       }
     };
 
@@ -34,40 +39,92 @@ const TimePicker = ({
   }, [showTimePicker]);
 
   const startChange = (date) => {
-    setStartDay(date);
-    const newEntry = { ...entry, startTime: date.toISOString() };
+    const hour = new Date(date).getHours();
+    const minute = new Date(date).getMinutes();
+    const newStart = new Date(year, month, day, hour, minute);
+    setStartTime(newStart);
+    let newEntry = {};
+    if (newStart > endDay) {
+      setStartTime(newStart);
+      newEntry = {
+        ...entry,
+        startTime: newStart.toISOString(),
+        endTime: newStart.toISOString(),
+      };
+      setEndDay(newStart);
+    } else newEntry = { ...entry, startTime: newStart.toISOString() };
+    setDuration(getDuration(newEntry));
+    setEntry(newEntry);
+    console.log(newEntry);
+  };
+
+  const endChange = (date) => {
+    if (date <= startTime) {
+      return;
+    }
+    const hour = date.getHours();
+    const minute = date.getMinutes();
+    const newEnd = new Date(year, month, day, hour, minute);
+    setEndDay(newEnd);
+    const newEntry = { ...entry, endTime: newEnd.toISOString() };
     setDuration(getDuration(newEntry));
     setEntry(newEntry);
   };
 
-  const endChange = (date) => {
-    setEndDay(date);
-    const newEntry = { ...entry, endTime: date.toISOString() };
-    setDuration(getDuration(newEntry));
+  const dateChange = (date) => {
+    const day = new Date(date).getDate();
+    const month = new Date(date).getMonth();
+    const year = new Date(date).getFullYear();
+    const startHour = new Date(startTime).getHours();
+    const startMinute = new Date(startTime).getMinutes();
+    const endHour = new Date(endDay).getHours();
+    const endMinute = new Date(endDay).getMinutes();
+    const newStart = new Date(year, month, day, startHour, startMinute);
+    const newEnd = new Date(year, month, day, endHour, endMinute);
+    setStartTime(newStart);
+    setEndDay(newEnd);
+    const newEntry = {
+      ...entry,
+      startTime: newStart.toISOString(),
+      endTime: newEnd.toISOString(),
+    };
     setEntry(newEntry);
+    setDate(new Date(date));
+    setDay(day);
+    setMonth(month);
+    setYear(year);
   };
 
   return (
     <div className="time-picker-wrapper" ref={dropdownRef}>
-      <div className="time-picker-container">
-        <p>Start</p>
-        <DatePicker
-          selected={startDay}
-          onChange={startChange}
-          showTimeInput
-          timeInputLabel="Time"
-          dateFormat="h:mm aa - dd MMM"
-        />
+      <div className="time-picker-times">
+        <div className="time-picker-container">
+          <p>Start</p>
+          <DatePicker
+            selected={startTime}
+            onChange={startChange}
+            showTimeSelect
+            showTimeCaption={false}
+            showTimeSelectOnly
+            timeIntervals={15}
+            dateFormat="h:mm aa"
+          />
+        </div>
+        <div className="time-picker-container">
+          <p>Stop</p>
+          <DatePicker
+            selected={endDay}
+            onChange={endChange}
+            showTimeSelect
+            showTimeCaption={false}
+            showTimeSelectOnly
+            timeIntervals={15}
+            dateFormat="h:mm aa"
+          />
+        </div>
       </div>
-      <div className="time-picker-container">
-        <p>Stop</p>
-        <DatePicker
-          selected={endDay}
-          onChange={endChange}
-          showTimeInput
-          timeInputLabel="Time"
-          dateFormat="h:mm aa - dd MMM"
-        />
+      <div className="time-picker-date">
+        <DatePicker selected={startTime} onChange={dateChange} inline />
       </div>
     </div>
   );

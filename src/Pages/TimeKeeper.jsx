@@ -6,10 +6,14 @@ import TimeKeeperList from "../Elements/TimeKeeper/TimeKeeperList";
 import TimeKeeperFilter from "../Elements/TimeKeeper/TimeKeeperFilter";
 import { useSelector } from "react-redux";
 import WidgetEntryView from "../Elements/TimeKeeper/WidgetEntryView";
+import { useNavigate } from "react-router";
 
 const TimeKeeper = () => {
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [entryList, setEntryList] = useState([]);
+  const [allEntries, setAllEntries] = useState([]);
+  const [showAllEntries, setShowAllEntries] = useState(false);
   const [showEntryView, setShowEntryView] = useState(false);
   const userStore = useSelector((state) => state.user);
   const now = new Date();
@@ -20,8 +24,8 @@ const TimeKeeper = () => {
     taskId: null,
     notes: "",
     currentTitle: null,
-    startTime: new Date(),
-    endTime: new Date(),
+    startTime: new Date().toISOString(),
+    endTime: new Date().toISOString(),
     userId: userStore.userId,
   });
   const [filter, setFilter] = useState({
@@ -39,12 +43,18 @@ const TimeKeeper = () => {
 
   // Initial data hydration
   const getEntries = async () => {
+    console.log("getting entries");
+    if (entryList.length > 0) {
+      setIsLoading(false);
+      return;
+    }
     try {
       await axios.get("/api/time-entry/getUserEntries").then((res) => {
         if (!res.status === 200) {
           console.log(res);
           return;
         }
+        console.log("got entries");
         setEntryList(res.data.filter((entry) => entry !== null));
         setIsLoading(false);
       });
@@ -52,14 +62,47 @@ const TimeKeeper = () => {
       console.log(error);
     }
   };
+
+  const getAllEntries = async () => {
+    setIsLoading(true);
+    if (allEntries.length > 0) {
+      setIsLoading(false);
+      return;
+    }
+    try {
+      console.log("getting all entries");
+      await axios.get("/api/time-entry/getAllEntries").then((res) => {
+        setAllEntries(res.data.filter((entry) => entry !== null));
+        setIsLoading(false);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     getEntries();
   }, []);
 
+  useEffect(() => {
+    if (userStore.userId == null) {
+      return;
+    }
+    setEntry((prev) =>
+      prev.userId == null ? { ...prev, userId: userStore.userId } : prev,
+    );
+  }, [userStore.userId, showEntryView]);
+
   const processedData = useMemo(() => {
     // console.log("processing..", filter);
     // setup data variable
-    let data = [...entryList];
+    let data = [];
+
+    if (!showAllEntries) {
+      data = [...entryList];
+    } else {
+      data = [...allEntries];
+    }
 
     // filter data
     data = data.filter((item) => {
@@ -149,13 +192,42 @@ const TimeKeeper = () => {
     // console.log("Refined data", sorted);
 
     return sorted;
-  }, [filter, entryList]);
+  }, [filter, entryList, allEntries, showAllEntries]);
+
+  const newInvoice = async () => {
+    const entryArray = processedData.map((entry) => entry.timeEntryId);
+    try {
+      axios.post("/api/newInvoice", { entries: entryArray }).then((res) => {
+        if (res.status === 200) {
+          navigate(`/invoice/${res.data.invoiceId}`);
+        }
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div className="time-tracker-page-wrapper">
       <div className="case-list-head">
         <h1 className="section-heading">Time Keeper</h1>
-        <TimeKeeperWidget />
+        <div className="time-keeper-filter-buttons">
+          <div className="new-entry-button-wrapper">
+            <button onClick={() => newInvoice()} className="new-invoice-button">
+              Create Invoice
+            </button>
+          </div>
+          <div className="new-entry-button-wrapper">
+            <button
+              onClick={() =>
+                showEntryView ? setShowEntryView(false) : setShowEntryView(true)
+              }
+              className="new-entry-button"
+            >
+              New Entry
+            </button>
+          </div>
+        </div>
       </div>
       {showEntryView ? (
         <WidgetEntryView
@@ -167,13 +239,21 @@ const TimeKeeper = () => {
       ) : (
         <>
           <TimeKeeperFilter
+            setIsLoading={setIsLoading}
             filter={filter}
             setFilter={setFilter}
             entries={processedData}
             showEntryView={showEntryView}
             setShowEntryView={setShowEntryView}
+            getAllEntries={getAllEntries}
+            setShowAllEntries={setShowAllEntries}
+            showAllEntries={showAllEntries}
           />
-          {isLoading ? <Loader /> : <TimeKeeperList data={processedData} />}
+          {isLoading ? (
+            <Loader />
+          ) : (
+            <TimeKeeperList data={processedData} getEntries={getEntries} />
+          )}
         </>
       )}
     </div>

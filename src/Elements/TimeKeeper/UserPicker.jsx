@@ -5,8 +5,11 @@ import axios from "axios";
 
 const UserPicker = ({ userId, entry, setEntry }) => {
   const [userList, setUserList] = useState([]);
+  const userStore = useSelector((state) => state.user);
   const [showUserPicker, setShowUserPicker] = useState(false);
-  const [currentUser, setCurrentUser] = useState(userId ? userId : {});
+  const [currentUser, setCurrentUser] = useState(
+    userId ? userId : userStore.userId,
+  );
   const dropdownRef = useRef(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -16,7 +19,13 @@ const UserPicker = ({ userId, entry, setEntry }) => {
         await axios.get("/api/getUsers").then((res) => {
           if (res.status === 200) {
             setUserList(res.data);
-            setCurrentUser(res.data.find((user) => user.userId === userId));
+            setCurrentUser(
+              res.data.find((user) =>
+                !userId
+                  ? user.userId === userId
+                  : user.userId === userStore.userId,
+              ),
+            );
             setIsLoading(false);
           }
         });
@@ -52,13 +61,18 @@ const UserPicker = ({ userId, entry, setEntry }) => {
 
   const handleUserSelect = (user) => {
     setCurrentUser(user);
-    setEntry({ ...entry, userId: user.userId });
+    setEntry((prev) => {
+      return { ...prev, userId: user.userId };
+    });
+    setShowUserPicker(false);
   };
 
   return (
     <div className="user-picker">
       <button onClick={setShowUserPicker} className="user-picker-button">
-        {currentUser.profilePic && <ProfilePic src={currentUser.profilePic} />}
+        {currentUser?.profilePic && (
+          <ProfilePic src={currentUser?.profilePic} />
+        )}
       </button>
       {showUserPicker && (
         <div className="user-picker-wrapper" ref={dropdownRef}>

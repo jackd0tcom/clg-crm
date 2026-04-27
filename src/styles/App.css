@@ -270,14 +270,15 @@ h5 {
   top: 115%;
   display: flex;
   flex-direction: column;
-  row-gap: 5px;
 }
 .dropdown-item {
   padding: 8px 12px;
   cursor: pointer;
+  font-size: 0.9rem;
+  white-space: nowrap;
   border-bottom: 1px solid var(--light-border);
 }
-.dropdown:nth-last-child {
+.dropdown-item:last-child {
   border-bottom: 0px;
 }
 .dropdown-item:hover {
@@ -359,7 +360,7 @@ h5 {
 /* ProfilePic component */
 .profile-pic-wrapper img {
   width: 30px;
-  height: auto;
+  height: 30px;
   border-radius: 50%;
 }
 

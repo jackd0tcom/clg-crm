@@ -55,6 +55,7 @@ const TimeKeeperList = ({ data, getEntries }) => {
         <>
           <div className="time-keeper-list-head">
             <p></p>
+            <p>Users</p>
             <p>Project</p>
             <p>Description</p>
             <p>Duration</p>

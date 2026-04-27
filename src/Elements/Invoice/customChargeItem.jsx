@@ -1,5 +1,12 @@
 import { useState } from "react";
 
+const isSameCharge = (row, item) => {
+  if (item.chargeId != null) {
+    return row.chargeId === item.chargeId;
+  }
+  return item.clientKey != null && row.clientKey === item.clientKey;
+};
+
 const CustomChargeItem = ({
   item,
   invoiceData,
@@ -14,35 +21,34 @@ const CustomChargeItem = ({
 
   const handleAmountChange = (e) => {
     setSomethingToSave(true);
-    setAmount(e.target.value);
-    setInvoiceData({
-      ...invoiceData,
-      customCharges: invoiceData.customCharges.map((charge, i) =>
-        i === index ? { ...charge, amount: e.target.value } : charge,
+    setInvoiceData((prev) => ({
+      ...prev,
+      customCharges: (prev.customCharges ?? []).map((charge) =>
+        isSameCharge(charge, item)
+          ? { ...charge, amount: e.target.value }
+          : charge,
       ),
-    });
+    }));
   };
-
   const handleDescriptionChange = (e) => {
     setSomethingToSave(true);
-    setDescription(e.target.value);
-    setInvoiceData({
-      ...invoiceData,
-      customCharges: invoiceData.customCharges.map((charge, i) =>
-        i === index ? { ...charge, description: e.target.value } : charge,
+    setInvoiceData((prev) => ({
+      ...prev,
+      customCharges: (prev.customCharges ?? []).map((charge) =>
+        isSameCharge(charge, item)
+          ? { ...charge, description: e.target.value }
+          : charge,
       ),
-    });
+    }));
   };
-
   const handleDeleteItem = () => {
     setSomethingToSave(true);
-    const newCharges = invoiceData.customCharges.filter(
-      (charge, idx) => idx !== index,
-    );
-    setInvoiceData({
-      ...invoiceData,
-      customCharges: newCharges,
-    });
+    setInvoiceData((prev) => ({
+      ...prev,
+      customCharges: (prev.customCharges ?? []).filter(
+        (charge) => !isSameCharge(charge, item),
+      ),
+    }));
   };
 
   return (
@@ -52,11 +58,11 @@ const CustomChargeItem = ({
       onMouseLeave={() => setShowTrash(false)}
     >
       {status !== "draft" ? (
-        <p>{description}</p>
+        <p>{item.description ?? ""}</p>
       ) : (
         <input
           type="text"
-          value={description}
+          value={item.description ?? ""}
           onChange={(e) => handleDescriptionChange(e)}
           className="custom-charge-description"
         />
@@ -66,11 +72,11 @@ const CustomChargeItem = ({
       <p></p>
       <div className="amount-wrapper">
         {status !== "draft" ? (
-          <p>{amount}</p>
+          <p>{item.amount ?? ""}</p>
         ) : (
           <input
             type="number"
-            value={amount}
+            value={item.amount ?? ""}
             onChange={(e) => handleAmountChange(e)}
             className="custom-charge-amount"
           />
