@@ -276,6 +276,7 @@
 
 .task-list-assignee-wrapper img {
   width: 25px !important;
+  height: 25px !important;
 }
 .new-task-toggle-wrapper {
   font-size: 1rem;
@@ -496,6 +497,7 @@
   overflow: hidden;
   white-space: nowrap;
   font-size: 0.9rem;
+  text-overflow: ellipsis;
   margin: 0;
 }
 .task-list-item-date {

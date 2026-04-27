@@ -12,6 +12,7 @@ import Notes from "../UI/Notes";
 import ExtraSettings from "../UI/ExtraSettings";
 import TaskCaseToggle from "./TaskCaseToggle";
 import TimeKeeperWidget from "../TimeKeeper/TimeKeeperWidget";
+import { socket } from "../../Services/socket";
 
 const TaskView = ({ taskId, setTaskId, isOpen, onClose, onTaskUpdate }) => {
   const [taskData, setTaskData] = useState();
@@ -28,6 +29,51 @@ const TaskView = ({ taskId, setTaskId, isOpen, onClose, onTaskUpdate }) => {
   const [dueDate, setDueDate] = useState();
   const [isCreatingTask, setIsCreatingTask] = useState(false);
   const navigate = useNavigate();
+
+  // Socket connection
+  useEffect(() => {
+    if (taskId) {
+      socket.emit("join-room", `task:${taskId}`);
+
+      const handleTaskUpdate = (data) => {
+        switch (data.field) {
+          case "status":
+            setStatus(data.value);
+            break;
+          case "dueDate":
+            setDueDate(new Date(data.value).toISOString());
+            break;
+          case "priority":
+            setPriority(data.value);
+            break;
+          case "notes":
+            setNotes(data.value);
+            break;
+          case "title":
+            setTitle(data.value);
+            break;
+          default:
+            refreshTaskData();
+        }
+      };
+
+      // Listen for new comments
+      const handleCommentCreated = (data) => {
+        if (data.objectType === "task" && data.objectId === parseInt(taskId)) {
+          refreshTaskActivityData();
+        }
+      };
+
+      socket.on("task:updated", handleTaskUpdate);
+      socket.on("comment:created", handleCommentCreated);
+
+      return () => {
+        socket.emit("leave-room", `task:${taskId}`);
+        socket.off("task:updated", handleTaskUpdate);
+        socket.off("comment:created", handleCommentCreated);
+      };
+    }
+  }, [taskId]);
 
   useEffect(() => {
     if (isOpen && taskId) {

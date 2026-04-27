@@ -10,6 +10,8 @@
   border: 1px solid transparent;
   border-radius: 5px;
   color: white;
+  display: flex;
+  align-items: center;
 }
 .nav-button i {
   color: var(--light-grey);
@@ -66,10 +68,26 @@
 }
 .notification-push {
   position: absolute;
-  right: -2px;
-  top: -1px;
+  width: 6px;
+  height: 6px;
+  right: 5px;
+  top: 0px;
+  border: 2px solid rgb(81, 81, 81);
   font-size: 0.5rem;
-  color: var(--red) !important;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  background-color: var(--red) !important;
+  border-radius: 50%;
+}
+.inactive-nav .notification-push {
+  border: 2px solid var(--dark-grey);
+}
+.notification-count {
+  font-size: 0.8rem;
+  margin-left: 6px;
 }
 
 @media screen and (max-width: 1100px) {

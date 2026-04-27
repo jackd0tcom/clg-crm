@@ -22,6 +22,7 @@ import Denied from "./Pages/Denied.jsx";
 import TimeKeeper from "./Pages/TimeKeeper.jsx";
 import InvoiceList from "./Pages/InvoiceList.jsx";
 import Invoice from "./Pages/Invoice.jsx";
+import { connectSocket, disconnectSocket } from "./Services/socket.js";
 
 function App() {
   const userStore = useSelector((state) => state.user);
@@ -35,6 +36,26 @@ function App() {
   const [className, setClassName] = useState("app-wrapper");
   const location = useLocation();
   const path = location.pathname;
+
+  useEffect(() => {
+    const denied =
+      isAuthenticated &&
+      userSynced &&
+      userStore.userId !== null &&
+      userStore.isAllowed === false;
+  
+    if (isAuthenticated && userSynced && !denied) {
+      connectSocket();
+      return () => disconnectSocket();
+    }
+  
+    disconnectSocket();
+  }, [
+    isAuthenticated,
+    userSynced,
+    userStore.userId,
+    userStore.isAllowed,
+  ]);
 
   useEffect(() => {
     if (path.startsWith("/case/") && path !== "/case/0") {

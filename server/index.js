@@ -1,6 +1,6 @@
 import express from "express";
 import ViteExpress from "vite-express";
-import session from "express-session";
+import { initializeSocketIO } from "./socketServer.js";
 import cors from "cors";
 import authCtrl from "./controllers/authCtrl.js";
 import caseCtrl from "./controllers/caseCtrl.js";
@@ -23,6 +23,7 @@ import {
   sessionConfig,
   validateEnvironment,
   syncRateLimit,
+  sessionMiddleware,
 } from "./config/security.js";
 
 import dotenv from "dotenv";
@@ -169,7 +170,7 @@ if (process.env.NODE_ENV === "production") {
 }
 
 // Session configuration
-app.use(session(sessionConfig));
+app.use(sessionMiddleware);
 
 // Final CSP removal middleware (runs after all other middleware)
 if (process.env.NODE_ENV !== "production") {
@@ -353,20 +354,21 @@ app.post("/api/cleanup/completed-tasks", cleanupCtrl.cleanupCompletedTasks);
 app.post("/api/cleanup/archived-cases", cleanupCtrl.cleanupArchivedCases);
 app.post("/api/cleanup/full", cleanupCtrl.runFullCleanup);
 
-ViteExpress.listen(
-  app,
-  PORT,
-  () => {
+// Socket setup
+const { io, httpServer } = initializeSocketIO(app);
+
+global.io = io;
+
+httpServer.listen(PORT, async () => {
+  await ViteExpress.bind(app, httpServer, () => {
     console.log(
-      `live on http://localhost:${PORT} ${
+      `Server live on http://localhost:${PORT} ${
         process.env.NODE_ENV === "production" ? "production" : "development"
       }`,
     );
+    console.log(`🔌 Socket.io initialized`);
 
     // Start automated cleanup scheduler
     cleanupScheduler.start();
-  },
-  {
-    mode: process.env.NODE_ENV === "production" ? "production" : "development",
-  },
-);
+  });
+});

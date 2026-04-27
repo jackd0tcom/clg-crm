@@ -1,6 +1,8 @@
 import { User, Case } from "../model.js";
 import { Op } from "sequelize";
+import { getIO } from "../socketServer.js";
 import { CaseAssignees } from "../model.js";
+import { getCaseNotificationRecipients } from "../helpers/notificationHelper.js";
 import {
   Task,
   Person,
@@ -430,6 +432,31 @@ export default {
         value,
       );
 
+      // Emit socket.io event
+      const io = getIO();
+      io.to(`case:${caseId}`).emit("case:updated", {
+        caseId: parseInt(caseId),
+        field: fieldName,
+        value: value,
+        oldValue: oldValue,
+        updatedBy: req.session.user,
+        timestamp: new Date().toISOString(),
+      });
+
+      // Also emit to user rooms for notifications
+      const recipients = await getCaseNotificationRecipients(
+        parseInt(caseId),
+        req.session.user.userId,
+      );
+
+      recipients.forEach((recipient) => {
+        io.to(`user:${recipient.userId}`).emit("notification:new", {
+          type: "case_updated",
+          caseId: parseInt(caseId),
+          message: `${req.session.user.firstName} updated "${currentCase.title}"`,
+        });
+      });
+
       res.status(200).send("Saved Case Successfully");
     } catch (err) {
       console.log(err);
@@ -474,6 +501,31 @@ export default {
         oldPhase,
         phase,
       );
+
+      // Emit socket.io event
+      const io = getIO();
+      io.to(`case:${caseId}`).emit("case:updated", {
+        caseId: parseInt(caseId),
+        field: "phase",
+        value: phase,
+        oldValue: oldPhase,
+        updatedBy: req.session.user,
+        timestamp: new Date().toISOString(),
+      });
+
+      // Also emit to user rooms for notifications
+      const recipients = await getCaseNotificationRecipients(
+        parseInt(caseId),
+        req.session.user.userId,
+      );
+
+      recipients.forEach((recipient) => {
+        io.to(`user:${recipient.userId}`).emit("notification:new", {
+          type: "case_updated",
+          caseId: parseInt(caseId),
+          message: `${req.session.user.firstName} updated "${currentCase.title}"`,
+        });
+      });
 
       res.status(200).send(currentCase);
     } catch (err) {
@@ -529,6 +581,17 @@ export default {
 
         currentCase.update({
           notes,
+        });
+
+        // Emit socket.io event
+        const io = getIO();
+        io.to(`case:${caseId}`).emit("case:updated", {
+          caseId: parseInt(caseId),
+          field: "notes",
+          value: notes,
+          oldValue: null,
+          updatedBy: req.session.user,
+          timestamp: new Date().toISOString(),
         });
       }
       res.status(200).send("Saved Case Notes Successfully");
@@ -602,6 +665,31 @@ export default {
         req.session.user.userId,
         actorName,
       );
+
+      // Emit socket.io event
+      const io = getIO();
+      io.to(`case:${caseId}`).emit("case:updated", {
+        caseId: parseInt(caseId),
+        field: "assignee",
+        value: assignedUser,
+        updatedBy: req.session.user,
+        timestamp: new Date().toISOString(),
+      });
+
+      // Also emit to user rooms for notifications
+      const recipients = await getCaseNotificationRecipients(
+        parseInt(caseId),
+        req.session.user.userId,
+      );
+
+      recipients.forEach((recipient) => {
+        io.to(`user:${recipient.userId}`).emit("notification:new", {
+          type: "case_updated",
+          caseId: parseInt(caseId),
+          message: `${req.session.user.firstName} updated "${caseExists.title}"`,
+        });
+      });
+
       res.status(201).json(assignedUser);
     } catch (err) {
       console.log(err);
@@ -651,6 +739,30 @@ export default {
         req.session.user.userId,
         actorName,
       );
+
+      // Emit socket.io event
+      const io = getIO();
+      io.to(`case:${caseId}`).emit("case:updated", {
+        caseId: parseInt(caseId),
+        field: "assignee",
+        value: oldAssignee,
+        updatedBy: req.session.user,
+        timestamp: new Date().toISOString(),
+      });
+
+      // Also emit to user rooms for notifications
+      const recipients = await getCaseNotificationRecipients(
+        parseInt(caseId),
+        req.session.user.userId,
+      );
+
+      recipients.forEach((recipient) => {
+        io.to(`user:${recipient.userId}`).emit("notification:new", {
+          type: "case_updated",
+          caseId: parseInt(caseId),
+          message: `${req.session.user.firstName} updated "${caseExists.title}"`,
+        });
+      });
 
       res.status(200).send("Case assignees updated successfully");
     } catch (err) {

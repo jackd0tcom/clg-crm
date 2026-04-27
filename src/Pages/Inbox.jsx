@@ -1,12 +1,32 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import NotificationList from "../Elements/Inbox/NotificationList";
+import { socket } from "../Services/socket";
+import { useSelector } from "react-redux";
 
 const Inbox = ({ openTaskView, setCheckNotifications, checkNotifications }) => {
   const [notifications, setNotifications] = useState([]);
   const [clearedNotifications, setClearedNotifications] = useState();
+  const user = useSelector((state) => state.user);
 
   const [showCleared, setShowCleared] = useState(false);
+
+  // Socket connection
+  useEffect(() => {
+    socket.emit("join-room", `user:${user.userId}`);
+
+    const handleNewNotification = (data) => {
+      setNotifications((prev) => [data.value, ...prev]);
+      setCheckNotifications((prev) => (prev += 1));
+    };
+
+    socket.on("notification:new", handleNewNotification);
+
+    return () => {
+      socket.emit("leave-room", `user:${user.userId}`);
+      socket.off("notification:new", handleNewNotification);
+    };
+  }, []);
 
   const fetch = async () => {
     try {

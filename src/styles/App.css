@@ -171,6 +171,10 @@
 
 /* General */
 
+p {
+  font-size: 0.9rem;
+}
+
 a {
   text-decoration: none;
 }
@@ -467,7 +471,7 @@ h5 {
 }
 #comment-profile-pic {
   width: 25px;
-  height: auto;
+  height: 25px;
   border-radius: 50%;
 }
 .comment-item-date {
@@ -658,6 +662,7 @@ div.date-picker-wrapper > div > div > input[type="text"] {
   max-width: 150px;
   overflow: scroll;
   max-height: 30vh;
+  scrollbar-width: none;
 }
 .assignee-add-toggle-wrapper p:nth-child(1) {
   margin: 0;

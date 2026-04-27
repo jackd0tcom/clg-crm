@@ -10,6 +10,7 @@ import Loader from "../Elements/UI/Loader";
 import DetailsTab from "../Elements/Case/DetailsTab";
 import PeopleTab from "../Elements/Case/PeopleTab";
 import TimeKeeperWidget from "../Elements/TimeKeeper/TimeKeeperWidget";
+import { socket } from "../Services/socket";
 
 const Case = ({ openTaskView, refreshKey }) => {
   const { caseId } = useParams();
@@ -19,15 +20,11 @@ const Case = ({ openTaskView, refreshKey }) => {
   const [phase, setPhase] = useState("");
   const [notes, setNotes] = useState();
   const [count, setCount] = useState(0);
-  const [personView, setPersonView] = useState(false);
-  const [selectedPerson, setSelectedPerson] = useState(null);
   const [title, setTitle] = useState();
   const [currentAreas, setCurrentAreas] = useState();
   const [isAddingArea, setIsAddingArea] = useState(false);
   const [newPracticeArea, setNewPracticeArea] = useState("");
   const [isNewCase, setIsNewCase] = useState(false);
-  const [isAddingPerson, setIsAddingPerson] = useState(false);
-  const [isNewPerson, setIsNewPerson] = useState(false);
   const [isArchived, setIsArchived] = useState(false);
   const [isCreatingCase, setIsCreatingCase] = useState(false);
   const [currentSOL, setCurrentSOl] = useState(null);
@@ -37,10 +34,76 @@ const Case = ({ openTaskView, refreshKey }) => {
   const [adverse, setAdverse] = useState([]);
   const [opposing, setOpposing] = useState([]);
   const [adverseOpposing, setAdverseOpposing] = useState([]);
-  const dropdownRef = useRef(null);
   const isCreatingCaseRef = useRef(false);
 
   const headings = ["Status", "Title", "Priority", "Assignees", "Due Date"];
+
+  // Socket connection
+  useEffect(() => {
+    if (caseId && caseId !== 0) {
+      socket.emit("join-room", `case:${caseId}`);
+
+      // Listen for case updates
+      const handleCaseUpdate = (data) => {
+        if (data.caseId === parseInt(caseId)) {
+          // Update local state based on field
+          switch (data.field) {
+            case "phase":
+              setPhase(data.value);
+              break;
+            case "title":
+              setTitle(data.value);
+              break;
+            case "priority":
+              // Update priority in caseData
+              setCaseData((prev) => ({
+                ...prev,
+                priority: data.value,
+              }));
+              break;
+            case "notes":
+              setNotes(data.value);
+              break;
+            default:
+              // Refresh full case data for other updates
+              getData();
+          }
+        }
+      };
+
+      // Listen for task updates in this case
+      const handleTaskUpdate = (data) => {
+        const cid = parseInt(caseId, 10);
+        const onThisCase = data.caseId === cid;
+        const taskMovedAwayFromThisCase =
+          data.field === "caseId" &&
+          data.oldValue != null &&
+          parseInt(data.oldValue, 10) === cid;
+        if (onThisCase || taskMovedAwayFromThisCase) {
+          getData();
+        }
+      };
+
+      // Listen for new comments
+      const handleCommentCreated = (data) => {
+        if (data.objectType === "case" && data.objectId === parseInt(caseId)) {
+          // Refresh activity data
+          refreshActivityData();
+        }
+      };
+
+      socket.on("case:updated", handleCaseUpdate);
+      socket.on("task:updated", handleTaskUpdate);
+      socket.on("comment:created", handleCommentCreated);
+
+      return () => {
+        socket.emit("leave-room", `case:${caseId}`);
+        socket.off("case:updated", handleCaseUpdate);
+        socket.off("task:updated", handleTaskUpdate);
+        socket.off("comment:created", handleCommentCreated);
+      };
+    }
+  }, [caseId]);
 
   const getData = async () => {
     try {

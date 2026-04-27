@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import axios from "axios";
@@ -12,6 +12,10 @@ const DueDatePicker = ({
 }) => {
   const [dueDate, setDueDate] = useState(currentDate);
   const [hover, setHover] = useState(false);
+
+  useEffect(() => {
+    setDueDate(currentDate);
+  }, [currentDate]);
 
   const onDateChange = async (date) => {
     try {
