@@ -125,18 +125,18 @@ const Invoice = () => {
 
   const handleAddCustomCharge = () => {
     setSomethingToSave(true);
-    const currentData = invoiceData;
-    setInvoiceData({
-      ...currentData,
+    setInvoiceData((prev) => ({
+      ...prev,
       customCharges: [
-        ...(currentData.customCharges ?? []),
+        ...(prev.customCharges ?? []),
         {
           chargeId: null,
+          clientKey: crypto.randomUUID(),
           amount: 0,
           description: "",
         },
       ],
-    });
+    }));
   };
 
   useEffect(() => {
@@ -440,6 +440,7 @@ const Invoice = () => {
                 {invoiceData?.customCharges?.map((charge, index) => (
                   <CustomChargeItem
                     setSomethingToSave={setSomethingToSave}
+                    key={charge.chargeId ?? charge.clientKey}
                     item={charge}
                     index={index}
                     invoiceData={invoiceData}
