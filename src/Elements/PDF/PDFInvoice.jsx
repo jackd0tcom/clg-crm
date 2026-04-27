@@ -21,7 +21,7 @@ const PDFInvoice = ({ invoiceData, billTo, payTo, defaultRate }) => {
   const customChargeTotal =
     invoiceData?.customCharges?.length > 0
       ? invoiceData?.customCharges?.reduce((acc, charge) => {
-          return acc + charge.amount;
+          return acc + Number(charge.amount);
         }, 0)
       : 0;
 
