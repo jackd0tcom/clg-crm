@@ -11,23 +11,22 @@ const Inbox = ({ openTaskView, setCheckNotifications, checkNotifications }) => {
 
   const [showCleared, setShowCleared] = useState(false);
 
-  // // Socket connection
-  // putting a hold on this since it's not the best use of current time
-  // useEffect(() => {
-  //   socket.emit("join-room", `user:${user.userId}`);
+  // Socket connection
+  useEffect(() => {
+    socket.emit("join-room", `user:${user.userId}`);
 
-  //   const handleNewNotification = (data) => {
-  //     setNotifications((prev) => [data.value, ...prev]);
-  //     setCheckNotifications((prev) => (prev += 1));
-  //   };
+    const handleNewNotification = (data) => {
+      setNotifications((prev) => [data.value, ...prev]);
+      setCheckNotifications((prev) => (prev += 1));
+    };
 
-  //   socket.on("notification:new", handleNewNotification);
+    socket.on("notification:new", handleNewNotification);
 
-  //   return () => {
-  //     socket.emit("leave-room", `user:${user.userId}`);
-  //     // socket.off("notification:new", handleNewNotification);
-  //   };
-  // }, []);
+    return () => {
+      socket.emit("leave-room", `user:${user.userId}`);
+      socket.off("notification:new", handleNewNotification);
+    };
+  }, []);
 
   const fetch = async () => {
     try {

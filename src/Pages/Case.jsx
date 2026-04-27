@@ -43,11 +43,8 @@ const Case = ({ openTaskView, refreshKey }) => {
     if (caseId && caseId !== 0) {
       socket.emit("join-room", `case:${caseId}`);
 
-      console.log(socket.active);
-
       // Listen for case updates
       const handleCaseUpdate = (data) => {
-        console.log(data);
         if (data.caseId === parseInt(caseId)) {
           // Update local state based on field
           switch (data.field) {
@@ -76,8 +73,13 @@ const Case = ({ openTaskView, refreshKey }) => {
 
       // Listen for task updates in this case
       const handleTaskUpdate = (data) => {
-        if (data.caseId === parseInt(caseId)) {
-          // Refresh task list
+        const cid = parseInt(caseId, 10);
+        const onThisCase = data.caseId === cid;
+        const taskMovedAwayFromThisCase =
+          data.field === "caseId" &&
+          data.oldValue != null &&
+          parseInt(data.oldValue, 10) === cid;
+        if (onThisCase || taskMovedAwayFromThisCase) {
           getData();
         }
       };

@@ -73,7 +73,7 @@ const TaskView = ({ taskId, setTaskId, isOpen, onClose, onTaskUpdate }) => {
         socket.off("comment:created", handleCommentCreated);
       };
     }
-  }, []);
+  }, [taskId]);
 
   useEffect(() => {
     if (isOpen && taskId) {

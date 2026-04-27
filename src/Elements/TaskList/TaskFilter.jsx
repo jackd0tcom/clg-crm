@@ -45,7 +45,7 @@ const TaskFilter = ({
       try {
         await axios.get("/api/getCases").then((res) => {
           setCaseData(res.data);
-          if (paramCase.caseId && paramCase.caseId !== 0) {
+          if (paramCase.caseId && Number(paramCase.caseId) !== 0) {
             const currentCase = res.data?.find(
               (data) => data.caseId === paramCase,
             );

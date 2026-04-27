@@ -399,27 +399,42 @@ export default {
           );
         }
 
-        // Emit socket.io event
+        // Emit socket.io event (task room + any case page viewing this task's case)
         const io = getIO();
-        io.to(`task:${taskId}`).emit("task:updated", {
-          caseId: parseInt(taskId),
+        const taskNumericId = parseInt(taskId, 10);
+        const taskCaseId = currentTask.caseId;
+        const taskUpdatedPayload = {
+          taskId: taskNumericId,
+          caseId: taskCaseId,
           field: fieldName,
           value: value,
           oldValue: oldValue,
           updatedBy: req.session.user,
           timestamp: new Date().toISOString(),
-        });
+        };
+        io.to(`task:${taskId}`).emit("task:updated", taskUpdatedPayload);
+        if (taskCaseId != null) {
+          io.to(`case:${taskCaseId}`).emit("task:updated", taskUpdatedPayload);
+        }
+        if (
+          fieldName === "caseId" &&
+          oldValue != null &&
+          parseInt(oldValue, 10) !== taskCaseId
+        ) {
+          io.to(`case:${oldValue}`).emit("task:updated", taskUpdatedPayload);
+        }
 
         // Also emit to user rooms for notifications
         const recipients = await getTaskNotificationRecipients(
-          parseInt(taskId),
+          taskNumericId,
           req.session.user.userId,
         );
 
         recipients.forEach((recipient) => {
           io.to(`user:${recipient.userId}`).emit("notification:new", {
             type: "task_updated",
-            caseId: parseInt(taskId),
+            taskId: taskNumericId,
+            caseId: taskCaseId,
             message: `${req.session.user.firstName} updated "${currentTask.title}"`,
           });
         });
@@ -581,14 +596,21 @@ export default {
 
       // Emit socket.io event
       const io = getIO();
-      io.to(`task:${taskId}`).emit("task:updated", {
-        caseId: parseInt(taskId),
+      const taskNumericId = parseInt(taskId, 10);
+      const taskCaseId = taskExists.caseId;
+      const assignAddedPayload = {
+        taskId: taskNumericId,
+        caseId: taskCaseId,
         field: "assignee",
-        value: value,
-        oldValue: oldValue,
+        value: assignedUser,
+        oldValue: null,
         updatedBy: req.session.user,
         timestamp: new Date().toISOString(),
-      });
+      };
+      io.to(`task:${taskId}`).emit("task:updated", assignAddedPayload);
+      if (taskCaseId != null) {
+        io.to(`case:${taskCaseId}`).emit("task:updated", assignAddedPayload);
+      }
 
       res.status(201).json(assignedUser);
     } catch (err) {
@@ -645,14 +667,21 @@ export default {
 
       // Emit socket.io event
       const io = getIO();
-      io.to(`task:${taskId}`).emit("task:updated", {
-        caseId: parseInt(taskId),
+      const taskNumericId = parseInt(taskId, 10);
+      const taskCaseId = taskExists.caseId;
+      const assignRemovedPayload = {
+        taskId: taskNumericId,
+        caseId: taskCaseId,
         field: "assignee",
-        value: value,
-        oldValue: oldValue,
+        value: null,
+        oldValue: oldAssignee,
         updatedBy: req.session.user,
         timestamp: new Date().toISOString(),
-      });
+      };
+      io.to(`task:${taskId}`).emit("task:updated", assignRemovedPayload);
+      if (taskCaseId != null) {
+        io.to(`case:${taskCaseId}`).emit("task:updated", assignRemovedPayload);
+      }
 
       res.status(200).send("Task assignees updated successfully");
     } catch (err) {

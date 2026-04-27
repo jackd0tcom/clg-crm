@@ -14,7 +14,6 @@ const Nav = ({ checkNotifications, userSynced }) => {
   const user = useSelector((state) => state.user);
   const { isAuthenticated } = useAuth0();
   const [notification, setNotification] = useState(false);
-  const [notificationCount, setNotificationCount] = useState(0);
   const navigate = useNavigate();
 
   // Socket connection
@@ -22,7 +21,7 @@ const Nav = ({ checkNotifications, userSynced }) => {
     socket.emit("join-room", `user:${user.userId}`);
 
     const handleNotify = () => {
-      return;
+      setNotification(true);
     };
 
     socket.on("notification:new", handleNotify);
@@ -31,7 +30,7 @@ const Nav = ({ checkNotifications, userSynced }) => {
       socket.emit("leave-room", `user:${user.userId}`);
       socket.off("notification:new", handleNotify);
     };
-  }, []);
+  }, [user.userId]);
 
   useEffect(() => {
     if (!userSynced) return;
@@ -42,7 +41,6 @@ const Nav = ({ checkNotifications, userSynced }) => {
         let unread = [];
         unread = res.data.filter((item) => !item.isCleared && !item.isRead);
         setNotification(unread?.length >= 1);
-        setNotificationCount(unread?.length);
       } catch (error) {
         console.log(error);
         setNotification(false);

@@ -579,6 +579,10 @@ export default {
         const { caseId, notes } = req.body;
         const currentCase = await Case.findOne({ where: { caseId } });
 
+        currentCase.update({
+          notes,
+        });
+
         // Emit socket.io event
         const io = getIO();
         io.to(`case:${caseId}`).emit("case:updated", {
@@ -588,10 +592,6 @@ export default {
           oldValue: null,
           updatedBy: req.session.user,
           timestamp: new Date().toISOString(),
-        });
-
-        currentCase.update({
-          notes,
         });
       }
       res.status(200).send("Saved Case Notes Successfully");
