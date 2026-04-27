@@ -150,20 +150,23 @@ export default {
         userId: req.session.user.userId,
       });
 
-      const updatedEntries = await Promise.all(
-        entries.map(async (entry) => {
-          const currentEntry = await TimeEntry.findByPk(entry);
-          await currentEntry.update({ invoiceId: newInvoice.invoiceId });
-          return currentEntry;
-        }),
-      );
-
+      let payload;
       const invoiceData = newInvoice.toJSON();
 
-      const payload = {
-        ...invoiceData,
-        entries: updatedEntries,
-      };
+      if (entries) {
+        const updatedEntries = await Promise.all(
+          entries.map(async (entry) => {
+            const currentEntry = await TimeEntry.findByPk(entry);
+            await currentEntry.update({ invoiceId: newInvoice.invoiceId });
+            return currentEntry;
+          }),
+        );
+
+        payload = {
+          ...invoiceData,
+          entries: updatedEntries,
+        };
+      } else payload = { ...invoiceData };
 
       res.status(200).send(payload);
     } catch (error) {

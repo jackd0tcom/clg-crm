@@ -80,6 +80,8 @@
   justify-content: space-between;
   padding: 15px;
   gap: 30px;
+  position: relative;
+  z-index: 10;
 }
 .billing-wrapper {
   display: flex;
@@ -235,10 +237,20 @@
   background-color: var(--root-bg-color-light);
   cursor: pointer;
 }
+
+/* invoice list */
 .invoice-list-footer {
   border-top: 1px solid var(--light-border);
 }
-
+.invoice-list-head {
+  position: relative;
+}
+.new-invoice-wrapper {
+  position: relative;
+}
+.new-invoice-dropdown {
+  right: 0;
+}
 .invoice-list {
   margin: 15px;
   display: flex;

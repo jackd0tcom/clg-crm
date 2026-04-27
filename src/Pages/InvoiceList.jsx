@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import ProfilePic from "../Elements/UI/ProfilePic";
 import { formatDateNoTime } from "../helpers/helperFunctions";
@@ -12,7 +12,9 @@ import { useNavigate } from "react-router";
 
 const InvoiceList = () => {
   const [invoiceList, setInvoiceList] = useState([{}]);
+  const [showDropdown, setShowDropdown] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
   const fetchInvoices = async () => {
@@ -32,21 +34,64 @@ const InvoiceList = () => {
     fetchInvoices();
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    };
+
+    if (showDropdown) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showDropdown]);
+
+  const newBlankInvoice = async () => {
+    try {
+      axios.post("/api/newInvoice").then((res) => {
+        if (res.status === 200) {
+          navigate(`/invoice/${res.data.invoiceId}`);
+        }
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="invoice-page-wrapper">
-      <div className="case-list-head">
+      <div className="case-list-head invoice-list-head">
         <h2 className="section-heading">Invoices</h2>
-        <button
-          className="new-invoice-button"
-          onClick={() => navigate("/time-keeper")}
-        >
-          New Invoice
-        </button>
+        <div className="new-invoice-wrapper">
+          <button
+            onClick={() => setShowDropdown(!showDropdown)}
+            className="new-invoice-button"
+          >
+            New Invoice
+          </button>
+          {showDropdown && (
+            <div className="dropdown new-invoice-dropdown" ref={dropdownRef}>
+              <div
+                onClick={() => navigate("/time-keeper")}
+                className="dropdown-item"
+              >
+                Create From Time Entries
+              </div>
+              <div onClick={() => newBlankInvoice()} className="dropdown-item">
+                Create Blank Invoice
+              </div>
+            </div>
+          )}
+        </div>
       </div>
       <div className="invoice-list">
         <div className="invoice-list-item invoice-list-head">
           <p></p>
-          <p>Title</p>
+          <p>Invoice ID</p>
           <p>Status</p>
           <p>Total Time</p>
           <p>Date Created</p>
@@ -57,10 +102,6 @@ const InvoiceList = () => {
           <div className="no-invoices">
             <i className="fa-solid fa-magnifying-glass"></i>
             <h2>No Invoices Found</h2>
-            <p>
-              To create an invoice, go the the Time Keeper, filter the entries
-              you want to include and hit "Create Invoice"
-            </p>
           </div>
         ) : (
           invoiceList?.map((invoice) => {

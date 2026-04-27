@@ -31,25 +31,28 @@ const Invoice = () => {
   const customChargeTotal =
     invoiceData?.customCharges?.length > 0
       ? invoiceData?.customCharges?.reduce((acc, charge) => {
-          return acc + charge.amount;
+          return acc + Number(charge.amount);
         }, 0)
       : 0;
   const totalAmount =
     Number(customChargeTotal) +
-    groupedData?.reduce((acc, group) => {
-      const groupTotal = group[1].reduce((innerAcc, entry) => {
-        return (
-          innerAcc +
-          getRoundedAmountOfEntry(
-            entry.rate ?? defaultRate,
-            entry,
-            invoiceData.roundingAmount,
-          )
-        );
-      }, 0);
+      Number(
+        groupedData?.length > 0 &&
+          groupedData?.reduce((acc, group) => {
+            const groupTotal = group[1].reduce((innerAcc, entry) => {
+              return (
+                innerAcc +
+                getRoundedAmountOfEntry(
+                  entry.rate ?? defaultRate,
+                  entry,
+                  invoiceData.roundingAmount,
+                )
+              );
+            }, 0);
 
-      return acc + groupTotal;
-    }, 0);
+            return acc + groupTotal;
+          }, 0),
+      ) ?? 0;
 
   const fetchInvoice = async () => {
     try {
@@ -58,8 +61,8 @@ const Invoice = () => {
         const data = res.data;
         setInvoiceData(data);
         setDefaultRate(data.settings.defaultRate);
-        setPayTo(data.payTo ?? data.settings.payTo);
-        const defaultClient = data.entries[0].case
+        setPayTo(data.payTo ?? data.settings.payTo ?? "");
+        const defaultClient = data.entries[0]?.case
           ? data.entries[0].case?.people[0]
           : null;
         const defaultBillTo = defaultClient
@@ -69,15 +72,17 @@ const Invoice = () => {
         setStatus(data.invoiceStatus);
 
         const entries = data?.entries ?? [];
-        setEntries(entries ?? [{}]);
+        setEntries(entries ?? []);
 
-        const byProject = entries.reduce((acc, entry) => {
+        const byProject = entries?.reduce((acc, entry) => {
           const project = entry.case?.title || entry.task?.title || "Untitled";
           if (!acc[project]) acc[project] = [];
           acc[project].push(entry);
           return acc;
         }, {});
-        setGroupedData(Object.entries(byProject));
+        if (entries?.length > 0) {
+          setGroupedData(Object.entries(byProject));
+        } else setGroupedData();
 
         setIsLoading(false);
       }
@@ -355,7 +360,7 @@ const Invoice = () => {
                 </button>
               </div>
               {isSettingRounding && (
-                <div className="rounding-dropdown" ref={dropdownRef}>
+                <div className="dropdown rounding-dropdown" ref={dropdownRef}>
                   <p
                     onClick={() => {
                       setIsSettingRounding(false);
@@ -364,7 +369,7 @@ const Invoice = () => {
                         roundingAmount: 0,
                       });
                     }}
-                    className="rounding-dropdown-item"
+                    className="dropdown-item rounding-dropdown-item"
                   >
                     0 Minutes
                   </p>
@@ -376,7 +381,7 @@ const Invoice = () => {
                         roundingAmount: 15,
                       });
                     }}
-                    className="rounding-dropdown-item"
+                    className="dropdown-item rounding-dropdown-item"
                   >
                     15 Minutes
                   </p>
@@ -388,7 +393,7 @@ const Invoice = () => {
                         roundingAmount: 30,
                       });
                     }}
-                    className="rounding-dropdown-item"
+                    className="dropdown-item rounding-dropdown-item"
                   >
                     30 Minutes
                   </p>
@@ -408,7 +413,7 @@ const Invoice = () => {
             </div>
             {isLoading ? (
               <Loader />
-            ) : groupedData?.length > 0 ? (
+            ) : (
               <>
                 {groupedData?.map((project, projectIndex) => (
                   <div className="invoice-project-item">
@@ -443,8 +448,6 @@ const Invoice = () => {
                   />
                 ))}
               </>
-            ) : (
-              <div className="no-invoice-items">No items to show</div>
             )}
             {status === "draft" && (
               <div

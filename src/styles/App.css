@@ -266,7 +266,6 @@ h5 {
   top: 115%;
   display: flex;
   flex-direction: column;
-  row-gap: 5px;
 }
 .dropdown-item {
   padding: 8px 12px;
@@ -275,7 +274,7 @@ h5 {
   white-space: nowrap;
   border-bottom: 1px solid var(--light-border);
 }
-.dropdown:nth-last-child {
+.dropdown-item:last-child {
   border-bottom: 0px;
 }
 .dropdown-item:hover {
