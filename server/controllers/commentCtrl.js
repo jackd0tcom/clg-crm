@@ -21,7 +21,7 @@ export default {
       });
 
       const notification = await notifyCommentCreated({
-        object: content,
+        object: newComment.dataValues,
         actorId: userId,
         actorName: req.session.user.firstName + " " + req.session.user.lastName,
       });
