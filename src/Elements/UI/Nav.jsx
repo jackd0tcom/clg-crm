@@ -20,7 +20,8 @@ const Nav = ({ checkNotifications, userSynced }) => {
   useEffect(() => {
     socket.emit("join-room", `user:${user.userId}`);
 
-    const handleNotify = () => {
+    const handleNotify = (data) => {
+      console.log(data);
       setNotification(true);
     };
 

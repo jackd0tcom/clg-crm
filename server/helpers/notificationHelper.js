@@ -65,13 +65,11 @@ export const createNotification = async (
 /**
  * Get users who should be notified for a task action
  * @param {number} taskId - The task ID
- * @param {string} action - The action being performed
  * @param {number} actorId - The user performing the action
  * @returns {Promise<Array>} Array of user objects to notify
  */
 export const getTaskNotificationRecipients = async (
   taskId,
-  action,
   actorId,
 ) => {
   try {
@@ -776,7 +774,7 @@ export const notifyCommentCreated = async ({ object, actorId, actorName }) => {
 
     for (const recipient of recipients) {
       if (recipient.userId === actorId) {
-        return;
+        continue;
       }
       // Everyone gets notified of every comment
       else {

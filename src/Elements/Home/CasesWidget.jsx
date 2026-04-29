@@ -3,11 +3,14 @@ import { useAuth0 } from "@auth0/auth0-react";
 import axios from "axios";
 import CaseListItem from "../CaseList/CaseListItem";
 import { useNavigate } from "react-router";
+import { useSelector } from "react-redux";
 
 const CasesWidget = ({ loading, setLoading, userSynced }) => {
   const [cases, setCases] = useState([]);
   const { isLoading, isAuthenticated } = useAuth0();
   const navigate = useNavigate();
+  const [openCaseCount, setOpenCaseCount] = useState(0);
+  const user = useSelector((state) => state.user);
 
   useEffect(() => {
     // Only fetch cases if user is synced
@@ -16,7 +19,15 @@ const CasesWidget = ({ loading, setLoading, userSynced }) => {
     async function fetch() {
       try {
         await axios.get("/api/getCases").then((res) => {
-          setCases(res.data);
+          const myCases = res.data.cases.filter((cas) => {
+            if (
+              cas.assignees.some((assignee) => assignee.userId === user.userId)
+            ) {
+              return cas;
+            }
+          });
+          setCases(myCases);
+          setOpenCaseCount(res.data.count);
           setLoading(false);
         });
       } catch (error) {
@@ -41,7 +52,9 @@ const CasesWidget = ({ loading, setLoading, userSynced }) => {
             My Cases
           </p>
           <div className="case-count-wrapper">
-            <p className="case-count">{cases.length} Open Cases</p>
+            {!isLoading && (
+              <p className="case-count">{openCaseCount} Open Cases</p>
+            )}
           </div>
         </div>
         <a

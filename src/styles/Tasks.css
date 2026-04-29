@@ -37,6 +37,12 @@
   top: 35px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
+.task-filter-search {
+  border: 1px solid var(--light-border);
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+}
 .tasks-sort-wrapper {
   display: flex;
   column-gap: 10px;
@@ -136,6 +142,10 @@
   color: var(--button-active-font);
   border-color: var(--button-active-border);
 }
+.filtered-cases {
+  background-color: var(--button-active-bg);
+  color: var(--button-active-font);
+}
 
 .new-task-button {
   font-size: 0.85rem;
@@ -156,16 +166,10 @@
   border-color: var(--button-active-border);
 }
 .active-filters {
-  position: absolute;
-  left: 100%;
-  top: 0;
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 5px;
-  margin-left: 10px;
-  z-index: 5;
 }
-
 .filter-tag {
   font-size: 0.8rem;
   margin: 0;
@@ -178,9 +182,15 @@
   border-color: var(--button-active-border);
   white-space: nowrap;
   transition: all 0.2s ease;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
 }
-.filter-tag:hover {
+.filter-tag-x:hover {
   background-color: var(--button-active-bg-hover);
+  transition: 150ms;
+  border-radius: 5px;
+  padding: 1px;
 }
 .task-page-task-list-wrapper {
   margin: 0 15px 15px 15px;
@@ -593,13 +603,27 @@
 }
 
 /* Case Assignment Toggle */
+.task-case-toggle {
+  min-width: 300px;
+  min-height: 300px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
 .task-case-toggle-wrapper {
   padding: 10px;
+  padding-top: 0;
 }
 .task-case-list-wrapper {
   display: flex;
   flex-direction: column;
   gap: 5px;
+}
+.task-case-list-search-wrapper {
+  margin-bottom: 10px;
+  border: 1px solid var(--light-border);
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
 }
 .task-case-toggle-heading {
   color: var(--dark-grey);
@@ -611,6 +635,7 @@
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  font-size: 0.9rem;
 }
 .task-case-item:hover {
   background-color: var(--root-bg-color-light);

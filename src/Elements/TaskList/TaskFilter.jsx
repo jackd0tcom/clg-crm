@@ -4,6 +4,7 @@ import {
   truncateTitleLonger,
 } from "../../helpers/helperFunctions";
 import axios from "axios";
+import ProjectPickerSearch from "../TimeKeeper/ProjectPickerSearch";
 
 const TaskFilter = ({
   tasks,
@@ -18,6 +19,8 @@ const TaskFilter = ({
   const [caseData, setCaseData] = useState([]);
   const [filteredCases, setFilteredCases] = useState([]);
   const [originalTasks, setOriginalTasks] = useState([]);
+  // For the project picker search, just narrows down the available cases
+  const [filteredData, setFilteredData] = useState([]);
   const dropdownRef = useRef(null);
   const hasAppliedUrlFilter = useRef(false);
   const isUpdatingTasksInternally = useRef(false);
@@ -44,7 +47,8 @@ const TaskFilter = ({
     const fetchCases = async () => {
       try {
         await axios.get("/api/getCases").then((res) => {
-          setCaseData(res.data);
+          setCaseData(res.data.cases);
+          setFilteredData(res.data.cases);
           if (paramCase.caseId && Number(paramCase.caseId) !== 0) {
             const currentCase = res.data?.find(
               (data) => data.caseId === paramCase,
@@ -209,7 +213,11 @@ const TaskFilter = ({
         </button>
         <div className="tasks-case-filter-wrapper">
           <button
-            className="tasks-case-filter-button"
+            className={
+              filteredCases.length > 0
+                ? "tasks-case-filter-button filtered-cases"
+                : "tasks-case-filter-button"
+            }
             onClick={() => setByCase(true)}
           >
             Filter by case
@@ -217,8 +225,29 @@ const TaskFilter = ({
 
           {byCase && (
             <div className="task-filter-dropdown" ref={dropdownRef}>
-              {caseData && caseData.length > 0 ? (
-                caseData
+              <div className="task-filter-search">
+                <ProjectPickerSearch
+                  originalData={caseData}
+                  setFilteredData={setFilteredData}
+                />
+              </div>
+              {filteredCases.length > 0 && (
+                <div className="active-filters">
+                  {filteredCases.map((ca) => (
+                    <p
+                      key={ca.caseId}
+                      className="filter-tag"
+                      onClick={() => handleCaseClick(ca)}
+                      title={ca.title}
+                    >
+                      {truncateTitle(ca.title)}{" "}
+                      <i className="filter-tag-x fa-solid fa-xmark"></i>
+                    </p>
+                  ))}
+                </div>
+              )}
+              {filteredData && filteredData.length > 0 ? (
+                filteredData
                   .filter(
                     (ca) => !filteredCases.some((c) => c.caseId === ca.caseId),
                   )
@@ -238,7 +267,7 @@ const TaskFilter = ({
             </div>
           )}
         </div>
-        {filteredCases.length > 0 && (
+        {/* {filteredCases.length > 0 && (
           <div className="active-filters">
             {filteredCases.map((ca) => (
               <p
@@ -251,7 +280,7 @@ const TaskFilter = ({
               </p>
             ))}
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );

@@ -43,7 +43,6 @@ export default {
         const assignedCaseIds = assignedCases.map((ac) => ac.caseId);
         const cases = await Case.findAll({
           where: {
-            [Op.or]: [{ caseId: { [Op.in]: assignedCaseIds } }],
             isArchived: false,
           },
           include: [
@@ -64,11 +63,12 @@ export default {
         const count = await Case.count({
           where: {
             isArchived: false,
+            phase: { [Op.ne]: "closed" },
           },
         });
 
         const payload = {
-          ...cases,
+          cases: [...cases],
           count,
         };
 

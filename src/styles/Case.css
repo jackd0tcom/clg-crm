@@ -145,8 +145,8 @@
 .case-card-wrapper {
   cursor: pointer;
   display: grid;
-  grid-auto-rows: 1fr 1.2fr;
-  row-gap: 40px;
+  grid-auto-rows: minmax(100px, 1fr) minmax(100px, 1fr);
+  row-gap: 20px;
   padding: 25px;
   border: 1px solid var(--light-border);
   border-radius: 8px;

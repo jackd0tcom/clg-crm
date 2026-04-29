@@ -1,10 +1,5 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
-import { capitalize } from "../helpers/helperFunctions";
-import CaseListItem from "../Elements/CaseList/CaseListItem";
-import axios from "axios";
 import Loader from "../Elements/UI/Loader";
 import { useAuth0 } from "@auth0/auth0-react";
 import ToDoWidget from "../Elements/Home/ToDoWidget";
@@ -13,7 +8,6 @@ import RecentItemsWidget from "../Elements/Home/RecentItemsWidget";
 import { formatDateWithDay } from "../helpers/helperFunctions";
 import LoginButton from "../Elements/Auth/LoginButton";
 import CasesWidget from "../Elements/Home/CasesWidget";
-import { Link } from "react-router-dom";
 
 const Home = ({
   openTaskView,
@@ -79,7 +73,11 @@ const Home = ({
           setCheckNotifications={setCheckNotifications}
           userSynced={userSynced}
         />
-        <ToDoWidget openTaskView={openTaskView} userSynced={userSynced} refreshKey={refreshKey} />
+        <ToDoWidget
+          openTaskView={openTaskView}
+          userSynced={userSynced}
+          refreshKey={refreshKey}
+        />
         <CasesWidget
           loading={loading}
           setLoading={setLoading}

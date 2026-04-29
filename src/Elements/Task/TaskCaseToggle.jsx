@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
-import { capitalize } from "../../helpers/helperFunctions";
+import Loader from "../UI/Loader";
+import ProjectPickerSearch from "../TimeKeeper/ProjectPickerSearch";
 
 const TaskCaseToggle = ({
   currentCase,
@@ -11,13 +12,17 @@ const TaskCaseToggle = ({
   isMovingCase,
   setIsMovingCase,
 }) => {
-  const [allCases, setAllCases] = useState();
+  const [allCases, setAllCases] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const dropdownRef = useRef(null);
 
   useEffect(() => {
     try {
       axios.get("/api/getCases").then((res) => {
-        setAllCases(res.data);
+        setAllCases(res.data.cases);
+        setFilteredData(res.data.cases);
+        setIsLoading(false);
       });
     } catch (error) {
       console.log(error);
@@ -60,12 +65,20 @@ const TaskCaseToggle = ({
   };
 
   return (
-    <div className="toggle-overlay" ref={dropdownRef}>
+    <div className="toggle-overlay task-case-toggle" ref={dropdownRef}>
       <div className="task-case-toggle-wrapper">
         <div className="task-case-list-wrapper">
-          <p className="task-case-toggle-heading">Assign to case:</p>
-          {allCases &&
-            allCases.map((current) => {
+          <div className="task-case-list-search-wrapper">
+            <ProjectPickerSearch
+              originalData={allCases}
+              setFilteredData={setFilteredData}
+            />
+          </div>
+          {isLoading ? (
+            <Loader />
+          ) : (
+            filteredData?.length > 0 &&
+            filteredData?.map((current) => {
               return (
                 <div key={current.caseId}>
                   <div
@@ -83,7 +96,8 @@ const TaskCaseToggle = ({
                   </div>
                 </div>
               );
-            })}
+            })
+          )}
         </div>
       </div>
     </div>
