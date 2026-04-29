@@ -36,23 +36,23 @@ const Invoice = () => {
       : 0;
   const totalAmount =
     Number(customChargeTotal) +
-      Number(
-        groupedData?.length > 0 &&
-          groupedData?.reduce((acc, group) => {
-            const groupTotal = group[1].reduce((innerAcc, entry) => {
-              return (
-                innerAcc +
-                getRoundedAmountOfEntry(
-                  entry.rate ?? defaultRate,
-                  entry,
-                  invoiceData.roundingAmount,
-                )
-              );
-            }, 0);
+    Number(
+      groupedData?.length > 0 &&
+        groupedData?.reduce((acc, group) => {
+          const groupTotal = group[1].reduce((innerAcc, entry) => {
+            return (
+              innerAcc +
+              getRoundedAmountOfEntry(
+                entry.rate ?? defaultRate,
+                entry,
+                invoiceData.roundingAmount,
+              )
+            );
+          }, 0);
 
-            return acc + groupTotal;
-          }, 0),
-      ) ?? 0;
+          return acc + groupTotal;
+        }, 0),
+    );
 
   const fetchInvoice = async () => {
     try {
