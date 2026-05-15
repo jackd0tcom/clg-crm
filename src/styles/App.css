@@ -483,6 +483,35 @@ h5 {
   font-size: 0.85rem;
 }
 
+.mentioner-wrapper {
+  max-height: 225px;
+  overflow: hidden;
+  left: 0;
+}
+.mentioner-list-item {
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+}
+.mentioner-list-item img {
+  width: 18px;
+  height: 18px;
+}
+.mentioner-list-item .status-icon-wrapper {
+  padding: 0;
+}
+.mentioner-list-item i {
+  font-size: 0.8rem;
+}
+.grey-case {
+  color: var(--grey);
+}
+.current-mention {
+  background-color: var(--light-light-grey);
+}
+
 /* Date Picker */
 div.date-picker-wrapper > div > div > input[type="text"] {
   border: none;

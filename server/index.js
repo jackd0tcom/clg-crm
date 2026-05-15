@@ -34,7 +34,7 @@ validateEnvironment();
 
 const { updatePerson, newPerson, deletePerson } = personCtrl;
 const { getUser, getUsers, getUserSettings, updateUserSettings } = userCtrl;
-const { createComment } = commentCtrl;
+const { createComment, getMentionData } = commentCtrl;
 
 const {
   getCases,
@@ -284,6 +284,7 @@ app.post("/api/notifications/mark-all-read", markAllAsRead);
 
 // Comment endpoints
 app.post("/api/createComment", createComment);
+app.get("/api/getMentionData", getMentionData);
 
 // Time endpoints
 app.post("/api/time-entry/start", startEntry);

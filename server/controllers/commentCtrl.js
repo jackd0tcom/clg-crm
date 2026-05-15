@@ -1,4 +1,4 @@
-import { Comment } from "../model.js";
+import { Comment, Case, Task, User } from "../model.js";
 import { Op } from "sequelize";
 import { notifyCommentCreated } from "../helpers/notificationHelper.js";
 import { getIO } from "../socketServer.js";
@@ -38,6 +38,37 @@ export default {
       });
 
       res.status(200).send(newComment);
+    } catch (error) {
+      console.error("Error creating comment:", error);
+      res.status(500).send("Error creating comment");
+    }
+  },
+  getMentionData: async (req, res) => {
+    try {
+      if (!req.session.user) {
+        return res.status(401).send("User not authenticated");
+      }
+      const { userId } = req.session.user;
+
+      const cases = await Case.findAll({ where: { isArchived: false } });
+
+      const tasks = await Task.findAll();
+
+      const users = await User.findAll({
+        where: {
+          userId: {
+            [Op.ne]: userId,
+          },
+        },
+      });
+
+      const payload = {
+        cases: cases,
+        tasks: tasks,
+        users: users,
+      };
+
+      res.status(200).send(payload);
     } catch (error) {
       console.error("Error creating comment:", error);
       res.status(500).send("Error creating comment");
