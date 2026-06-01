@@ -360,7 +360,7 @@
 }
 
 .task-view-wrapper {
-  min-height: calc(100vh - 70px);
+  min-height: calc(95vh - 70px);
   background-color: white;
   width: 80%;
   height: 85%;
