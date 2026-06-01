@@ -1,12 +1,14 @@
 import axios from "axios";
 import { useState, useEffect, useMemo, useRef } from "react";
 import Mentioner from "../UI/Mentioner";
+import { camelCase } from "../../helpers/helperFunctions";
 
 const CommentInput = ({
   objectType,
   objectId,
   refreshActivityData,
   mentionData,
+  openTaskView,
 }) => {
   const [comment, setComment] = useState();
   const [showTagger, setShowTagger] = useState(false);
@@ -14,16 +16,20 @@ const CommentInput = ({
   const [currentMention, setCurrentMention] = useState(null);
   const textAreaRef = useRef();
   const [cursorPos, setCursorPos] = useState(0);
+  const [mentions, setMentions] = useState([]);
+  const [query, setQuery] = useState("");
 
   const createMention = () => {
     console.log(currentMention);
-
     let type = "user";
     if (currentMention.caseId) {
       type = "case";
-    } else if (currentMention.taskId) {
+    }
+    if (currentMention.taskId) {
       type = "task";
     }
+
+    console.log(type);
 
     let id;
 
@@ -38,33 +44,53 @@ const CommentInput = ({
       name = `${currentMention.firstName}` ?? null;
     } else name = `${currentMention.title}` ?? null;
 
-    let profilePic = null;
+    let extra = null;
 
     if (type === "user") {
-      profilePic = currentMention.profilePic;
-    }
+      extra = currentMention.profilePic;
+    } else if (type === "task") extra = camelCase(currentMention.status);
 
     const commentWords = comment.split(" ");
 
-    const root = commentWords.findIndex((word) => word === `@${query}`);
+    const newQuery = `@${query.toLowerCase()}`;
 
-    const queryWords = query.split(" ");
+    const root = commentWords.findIndex(
+      (word) => word.toLowerCase() === `@${query}`,
+    );
 
-    const mention = `$:MENTION:${type}:${id}:${name}:${profilePic}`;
+    const mention = `$:MENTION:${type}:${id}:${name}:${extra}`;
 
-    commentWords[root] = mention;
+    commentWords[root] = `@${name}`;
 
-    const newComment = commentWords.join(" ");
+    setMentions((prev) => [...prev, { key: `@${name}`, mention: mention }]);
+
+    const newComment = commentWords.join(" ") + " ";
+
     setComment(newComment);
+    setQuery("");
     setShowTagger(false);
     return;
   };
 
-  let query = "";
-  if (comment?.includes("@")) {
-    const ampersand = comment.indexOf("@");
-    query = comment.slice(ampersand + 1).toLowerCase();
-  }
+  let filteredString = "";
+
+  const cueQuery = (string) => {
+    let words = string.split(" ");
+    for (const mention of mentions) {
+      const mentionWords = mention.key.split(" ");
+      const idx = words.findIndex(
+        (w) => w.toLowerCase() === mentionWords.join("").toLowerCase(),
+      );
+      if (idx !== -1) {
+        words.splice(idx, mentionWords.length, "");
+      }
+    }
+    filteredString = words.join(" ").replace(/\s+/g, " ").trim();
+    if (filteredString?.includes("@")) {
+      const ampersand = filteredString.indexOf("@");
+      setQuery(filteredString.slice(ampersand + 1).toLowerCase());
+    } else setShowTagger(false);
+  };
 
   const filteredData = useMemo(() => {
     if (!mentionData) return [];
@@ -99,18 +125,39 @@ const CommentInput = ({
   }, [query, mentionData]);
 
   const createComment = async () => {
-    if (comment !== " ") {
-      try {
-        const res = await axios.post("/api/createComment", {
-          objectType,
-          objectId,
-          content: comment,
-        });
-        setComment("");
-        refreshActivityData();
-      } catch (error) {
-        console.log(error);
-      }
+    if (!comment || comment === " " || comment.length <= 0) return;
+
+    console.log(mentions);
+    console.log(comment);
+
+    const newQuery = `@${query}`;
+
+    // let words = comment.split(" ");
+    let newComment = comment;
+    for (const mention of mentions) {
+      newComment = newComment.replace(mention.key, mention.mention);
+      // const mentionWords = mention.key.split(" ");
+      // const idx = words.findIndex(
+      //   (w) => w.toLowerCase() === mentionWords.join(" ").toLowerCase(),
+      // );
+      // console.log(idx);
+      // if (idx !== -1) {
+      //   words.splice(idx, mentionWords.length, mention.mention);
+      // }
+    }
+    // const newComment = words.join(" ").replace(/\s+/g, " ").trim();
+
+    try {
+      const res = await axios.post("/api/createComment", {
+        objectType,
+        objectId,
+        content: newComment,
+      });
+      setComment("");
+      refreshActivityData();
+      setMentions([]);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -137,6 +184,8 @@ const CommentInput = ({
     setCursorPos(e.target.selectionStart);
   };
 
+  // console.log(showTagger);
+
   return (
     <div
       className="comment-input-wrapper
@@ -146,6 +195,7 @@ const CommentInput = ({
         ref={textAreaRef}
         spellCheck={true}
         onChange={(e) => {
+          cueQuery(e.target.value);
           setComment(e.target.value);
           setCursorPos(e.target.selectionStart);
         }}
@@ -185,6 +235,7 @@ const CommentInput = ({
           mentionIndex={mentionIndex}
           setMentionIndex={mentionIndex}
           query={query}
+          openTaskView={openTaskView}
         />
       )}
       <i

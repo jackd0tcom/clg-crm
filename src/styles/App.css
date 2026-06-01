@@ -427,7 +427,8 @@ h5 {
   align-items: flex-end;
   box-shadow: 0px -10px 0px 0px var(--root-bg-color-light);
 }
-.comment-input-wrapper textarea {
+.comment-input-wrapper textarea,
+.comment-input {
   width: 100%;
   border: none;
   outline: none;
@@ -445,7 +446,43 @@ h5 {
 #comment-enter-icon:hover {
   color: var(--bright-dark-green);
 }
+.comment-item-comment {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  align-items: center;
+}
 
+/* Mentions */
+.mention-pill-wrapper {
+  padding: 0px 8px 0 0;
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 500;
+  color: #4c5c88;
+  background-color: var(--root-bg-color-light);
+  border: 1px solid var(--light-border);
+}
+.mention-pill-wrapper img {
+  height: 20px;
+  width: 20px;
+}
+.mention-pill-wrapper .status-icon-wrapper {
+  padding: 4px 0px 4px 4px;
+}
+.mention-hover {
+  cursor: pointer;
+}
+.mention-hover:hover {
+  border-color: #7d869f;
+  transition: 200ms ease-in-out;
+}
+.mention-pill-wrapper .fa-briefcase {
+  padding: 4px 0px 4px 4px;
+  font-size: 0.75rem;
+}
 /* Comment Items */
 .comment-item-wrapper {
   display: flex;

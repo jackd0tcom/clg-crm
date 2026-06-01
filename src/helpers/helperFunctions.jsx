@@ -359,3 +359,39 @@ export function formatTimeFromSeconds(inputSeconds) {
 
   return `${hours > 0 ? hours : "0"}:${minutes < 10 ? "0" : ""}${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
 }
+
+export const camelCase = (str) => {
+  const words = str
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .replace(/[-_]+/g, " ")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  if (words.length === 0) return "";
+
+  return words
+    .map((word, i) => {
+      const lower = word.toLowerCase();
+      if (i === 0) return lower;
+      return lower.charAt(0).toUpperCase() + lower.slice(1);
+    })
+    .join("");
+};
+
+export const undoCamelCase = (str) => {
+  const words = str
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .replace(/[-_]+/g, " ")
+    .trim()
+    .split(/(?=[A-Z])/)
+    .filter(Boolean);
+
+  if (words.length === 0) return "";
+
+  return words
+    .map((word, i) => {
+      return word.toLowerCase();
+    })
+    .join("");
+};

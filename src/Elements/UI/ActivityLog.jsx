@@ -6,7 +6,13 @@ import CommentInput from "../Comment/CommentInput";
 import axios from "axios";
 import Loader from "./Loader";
 
-const ActivityLog = ({ data, objectType, objectId, refreshActivityData }) => {
+const ActivityLog = ({
+  data,
+  objectType,
+  objectId,
+  refreshActivityData,
+  openTaskView,
+}) => {
   const [showAll, setShowAll] = useState(true);
   const [shortList, setShortList] = useState();
   const [mentionData, setMentionData] = useState({});
@@ -16,13 +22,13 @@ const ActivityLog = ({ data, objectType, objectId, refreshActivityData }) => {
 
   // auto scroll to bottom
   useEffect(() => {
-    if (activityLogRef.current) {
-      // Use requestAnimationFrame to ensure DOM is updated
-      requestAnimationFrame(() => {
-        activityLogRef.current.scrollTop = activityLogRef.current.scrollHeight;
-      });
-    }
-  }, [data]);
+    if (isLoading || !activityLogRef.current || !data?.length) return;
+  
+    requestAnimationFrame(() => {
+      const el = activityLogRef.current;
+      if (el) el.scrollTop = el.scrollHeight;
+    });
+  }, [data, isLoading]);
 
   const fetchMentionData = async () => {
     try {
@@ -80,7 +86,11 @@ const ActivityLog = ({ data, objectType, objectId, refreshActivityData }) => {
               ? data.map((act) => {
                   if (act.itemType === "comment") {
                     return (
-                      <CommentItem data={act} key={"comment" + act.commentId} />
+                      <CommentItem
+                        data={act}
+                        key={"comment" + act.commentId}
+                        openTaskView={openTaskView}
+                      />
                     );
                   } else
                     return (
@@ -98,6 +108,7 @@ const ActivityLog = ({ data, objectType, objectId, refreshActivityData }) => {
                         <CommentItem
                           data={act}
                           key={"comment" + act.commentId}
+                          openTaskView={openTaskView}
                         />
                       );
                     } else
@@ -115,6 +126,7 @@ const ActivityLog = ({ data, objectType, objectId, refreshActivityData }) => {
                         <CommentItem
                           data={act}
                           key={"comment" + act.commentId}
+                          openTaskView={openTaskView}
                         />
                       );
                     } else
@@ -132,6 +144,7 @@ const ActivityLog = ({ data, objectType, objectId, refreshActivityData }) => {
             objectType={objectType}
             objectId={objectId}
             refreshActivityData={refreshActivityData}
+            openTaskView={openTaskView}
           />
         </>
       )}

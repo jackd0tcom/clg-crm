@@ -419,6 +419,7 @@ const Case = ({ openTaskView, refreshKey }) => {
             objectId={caseId}
             objectType={"case"}
             refreshActivityData={refreshActivityData}
+            openTaskView={openTaskView}
           />
         </div>
       </div>
