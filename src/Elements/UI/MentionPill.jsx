@@ -18,7 +18,7 @@ const MentionPill = ({ data, user, openTaskView }) => {
       }}
     >
       {data.type === "user" ? (
-        <ProfilePic src={user.extra ?? null} />
+        <ProfilePic src={user?.extra ?? null} />
       ) : data.type === "case" ? (
         <i className="fa-solid fa-briefcase"></i>
       ) : (

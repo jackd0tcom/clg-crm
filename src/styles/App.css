@@ -464,6 +464,9 @@ h5 {
   color: #4c5c88;
   background-color: var(--root-bg-color-light);
   border: 1px solid var(--light-border);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .mention-pill-wrapper img {
   height: 20px;

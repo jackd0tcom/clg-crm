@@ -439,6 +439,7 @@ Notification.init(
         "case_phase_changed",
         "case_priority_changed",
         "comment_added",
+        "tag_added",
       ),
       allowNull: false,
     },

@@ -29,7 +29,7 @@
   column-gap: 10px;
 }
 .notification-item-title {
-  max-width: 50%;
+  /* max-width: 50%; */
 }
 .notification-item-wrapper:hover {
   background-color: var(--root-bg-color-light);
@@ -37,8 +37,25 @@
 .notification-item-span {
   display: grid;
   width: 90%;
-  grid-template-columns: 1fr 2fr;
+  grid-template-columns: minmax(25%, 0.8rem) minmax(70%, 2rem);
   gap: 2rem;
+}
+.notification-item-content {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.notification-item-content .mention-pill-wrapper {
+  margin: 0px 6px;
+  overflow: clip;
+  font-size: 0.9rem;
+}
+.notification-content-span {
+  white-space: nowrap;
+  /* overflow: hidden; */
+  /* text-overflow: ellipsis; */
+  font-size: 0.9rem;
 }
 .case-icon {
   padding: 4px 6px;

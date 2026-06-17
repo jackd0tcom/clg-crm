@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useSelector } from "react-redux";
+import MentionPill from "../UI/MentionPill";
 
 const NotificationItem = ({
   data,
@@ -17,6 +18,40 @@ const NotificationItem = ({
   const [isTask, setIsTask] = useState(false);
   const [message, setMessage] = useState(data.message);
   const user = useSelector((state) => state.user);
+
+  const MENTION_RE = /\$:MENTION:(\w+):([^:]*):([^:]*):(\S*)/g;
+
+  function renderCommentContent(content) {
+    const parts = [];
+    let last = 0;
+    let m;
+    while ((m = MENTION_RE.exec(content)) !== null) {
+      if (m.index > last)
+        parts.push({ type: "text", value: content.slice(last, m.index) });
+      parts.push({
+        // type: "mention",
+        type: m[1],
+        id: m[2],
+        name: m[3],
+        extra: m[4],
+      });
+      last = m.index + m[0].length;
+    }
+    if (last < content?.length)
+      parts.push({ type: "text", value: content.slice(last) });
+    return parts.map((part) =>
+      part.type === "text" ? (
+        <span className="notification-content-span">{part.value}</span>
+      ) : (
+        <MentionPill
+          data={part}
+          user={data.author}
+          openTaskView={openTaskView}
+        />
+      ),
+    );
+  }
+
   useEffect(() => {
     const formatMessage = () => {
       let name = user.firstName + " " + user.lastName;
@@ -72,7 +107,9 @@ const NotificationItem = ({
             {!isTask ? data.case?.title || "" : data.task?.title || ""}
           </p>
         </div>
-        <p>{message}</p>
+        <div className="notification-item-content">
+          {renderCommentContent(message)}
+        </div>
       </div>
       <div className="notification-item-button-wrapper">
         {!data.isCleared && hover ? (

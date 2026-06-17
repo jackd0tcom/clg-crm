@@ -16,7 +16,8 @@ const Inbox = ({ openTaskView, setCheckNotifications, checkNotifications }) => {
     socket.emit("join-room", `user:${user.userId}`);
 
     const handleNewNotification = (data) => {
-      setNotifications((prev) => [data.value, ...prev]);
+      // console.log(data);
+      // setNotifications((prev) => [data.value, ...prev]);
       setCheckNotifications((prev) => (prev += 1));
     };
 

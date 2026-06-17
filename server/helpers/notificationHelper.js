@@ -1,4 +1,4 @@
-import { Notification, User, Task } from "../model.js";
+import { Notification, User, Task, Case } from "../model.js";
 import { getIO } from "../socketServer.js";
 
 /**
@@ -26,6 +26,7 @@ export const NOTIFICATION_TYPES = {
   CASE_PHASE_CHANGED: "case_phase_changed",
   CASE_PRIORITY_CHANGED: "case_priority_changed",
   COMMENT_ADDED: "comment_added",
+  TAG_ADDED: "tag_added",
 };
 
 /**
@@ -54,8 +55,29 @@ export const createNotification = async (
       isRead: false,
     });
 
+    let project;
+
+    if (object.objectType === "task") {
+      let project = await Task.findOne({
+        where: {
+          taskId: object.objectId,
+        },
+      });
+    } else
+      project = await Case.findOne({
+        where: {
+          caseId: object.objectId,
+        },
+      });
+
+    const notificationData = notification.toJSON();
+    const payload = {
+      ...notificationData,
+      [objectType]: project,
+    };
+
     console.log(`📢 Created notification for user ${userId}: ${message}`);
-    return notification;
+    return payload;
   } catch (error) {
     console.error("Error creating notification:", error);
     throw error;
@@ -68,10 +90,7 @@ export const createNotification = async (
  * @param {number} actorId - The user performing the action
  * @returns {Promise<Array>} Array of user objects to notify
  */
-export const getTaskNotificationRecipients = async (
-  taskId,
-  actorId,
-) => {
+export const getTaskNotificationRecipients = async (taskId, actorId) => {
   try {
     const task = await Task.findByPk(taskId, {
       include: [
@@ -796,6 +815,62 @@ export const notifyCommentCreated = async ({ object, actorId, actorName }) => {
       }
       console.log(`📢 Notified owner ${recipient.userId} of comment creation`);
     }
+  } catch (error) {
+    console.error("Error creating comment creation notifications:", error);
+  }
+};
+
+/**
+ * Create notifications for comment creation
+ * @param {Object} object - Case or Task object
+ * @param {number} actorId - The user who created the comment
+ * @param {string} actorName - The name of the user who created the comment
+ * @param {number} recipient - the Id of the recipient user
+ */
+export const notifyTagging = async ({
+  object,
+  actorId,
+  actorName,
+  recipient,
+}) => {
+  try {
+    console.log(
+      `🔔 Creating tagging notifications for ${object.objectType} ${object.objectId}`,
+    );
+
+    // create notification in db
+    const newNotification = await createNotification(
+      recipient,
+      NOTIFICATION_TYPES.TAG_ADDED,
+      object.objectType,
+      object.objectId,
+      `${actorName} mentioned you in a comment: ${object.content}`,
+    );
+
+    let project;
+
+    if (object.objectType === "task") {
+      let project = await Task.findOne({
+        where: {
+          taskId: object.objectId,
+        },
+      });
+    } else
+      project = await Case.findOne({
+        where: {
+          caseId: object.objectId,
+        },
+      });
+
+    const notificationData = newNotification.toJSON();
+
+    const io = getIO();
+    io.to(`user:${recipient}`).emit("notification:new", {
+      type: "tag_added",
+      objectType: object.objectType,
+      objectId: object.objectId,
+      value: { ...notificationData, [object.objectType]: project },
+    });
   } catch (error) {
     console.error("Error creating comment creation notifications:", error);
   }
