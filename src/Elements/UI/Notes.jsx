@@ -1,8 +1,26 @@
-import { useRef } from "react";
-import { useEffect } from "react";
+import { useRef, useLayoutEffect } from "react";
 
-const Notes = ({ value, onChange, setCount, count, updateNotes }) => {
+const Notes = ({
+  value,
+  onChange,
+  setCount,
+  count,
+  updateNotes,
+  saveNotesKeepalive,
+}) => {
   const saveTimer = useRef(null);
+  const valueRef = useRef(value);
+  const isDirtyRef = useRef(false);
+  const updateNotesRef = useRef(updateNotes);
+  const saveNotesKeepaliveRef = useRef(saveNotesKeepalive);
+
+  updateNotesRef.current = updateNotes;
+  saveNotesKeepaliveRef.current = saveNotesKeepalive;
+
+  if (count === 0) {
+    isDirtyRef.current = false;
+    valueRef.current = value;
+  }
 
   const clearSaveTimer = () => {
     if (saveTimer.current) {
@@ -11,31 +29,48 @@ const Notes = ({ value, onChange, setCount, count, updateNotes }) => {
     }
   };
 
-  useEffect(() => {
+  const flushNotes = () => {
+    if (!isDirtyRef.current) return;
+    isDirtyRef.current = false;
+    updateNotesRef.current(valueRef.current);
+  };
+
+  const scheduleSave = () => {
     clearSaveTimer();
-    saveTimer.current = setTimeout(() => {
-      if (value) {
-        updateNotes();
-      }
-    }, 2000);
-    return () => {
-      clearSaveTimer();
-    };
-  }, [value]);
+    saveTimer.current = setTimeout(flushNotes, 2000);
+  };
+
+  const handleChange = (e) => {
+    const nextValue = e.target.value;
+    valueRef.current = nextValue;
+    isDirtyRef.current = true;
+    onChange(nextValue);
+    setCount((prevCount) => prevCount + 1);
+    scheduleSave();
+  };
 
   const handleBlur = () => {
     clearSaveTimer();
-    updateNotes();
+    flushNotes();
   };
+
+  useLayoutEffect(() => {
+    return () => {
+      clearSaveTimer();
+      if (!isDirtyRef.current) return;
+      if (saveNotesKeepaliveRef.current) {
+        saveNotesKeepaliveRef.current(valueRef.current);
+      } else {
+        updateNotesRef.current(valueRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div className="notes-wrapper">
       <h3 className="notes-heading">Notes</h3>
       <textarea
-        onChange={(e) => {
-          onChange(e.target.value);
-          setCount((prevCount) => prevCount + 1);
-        }}
+        onChange={handleChange}
         name="notes"
         id=""
         className="notes-textarea"

@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useLayoutEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router";
 import axios from "axios";
 import ActivityLog from "../Elements/UI/ActivityLog";
@@ -11,6 +11,7 @@ import DetailsTab from "../Elements/Case/DetailsTab";
 import PeopleTab from "../Elements/Case/PeopleTab";
 import TimeKeeperWidget from "../Elements/TimeKeeper/TimeKeeperWidget";
 import { socket } from "../Services/socket";
+import { saveCaseNotesKeepalive } from "../helpers/helperFunctions";
 
 const Case = ({ openTaskView, refreshKey }) => {
   const { caseId } = useParams();
@@ -20,6 +21,10 @@ const Case = ({ openTaskView, refreshKey }) => {
   const [phase, setPhase] = useState("");
   const [notes, setNotes] = useState();
   const [count, setCount] = useState(0);
+  const notesRef = useRef(notes);
+  const countRef = useRef(count);
+  notesRef.current = notes;
+  countRef.current = count;
   const [title, setTitle] = useState();
   const [currentAreas, setCurrentAreas] = useState();
   const [isAddingArea, setIsAddingArea] = useState(false);
@@ -222,19 +227,44 @@ const Case = ({ openTaskView, refreshKey }) => {
     } else return;
   };
 
-  const updateNotes = () => {
+  const updateNotes = (notesToSave) => {
+    if (!caseId) return;
+    const valueToSave = notesToSave !== undefined ? notesToSave : notes;
     try {
-      axios.post("/api/updateCaseNotes", { caseId, notes }).then((res) => {
-        setCount(0);
-      });
+      axios
+        .post("/api/updateCaseNotes", { caseId, notes: valueToSave })
+        .then((res) => {
+          setCount(0);
+        });
     } catch (error) {}
   };
   const handleUpdateNotes = (notes) => {
     setNotes(notes);
     if (count >= 75) {
-      updateNotes();
+      updateNotes(notes);
     }
   };
+  const handleTabChange = (tab) => {
+    setCurrentTab(tab);
+  };
+
+  useLayoutEffect(() => {
+    return () => {
+      if (countRef.current > 0 && caseId) {
+        saveCaseNotesKeepalive(caseId, notesRef.current);
+      }
+    };
+  }, [caseId]);
+
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (countRef.current > 0 && caseId) {
+        saveCaseNotesKeepalive(caseId, notesRef.current);
+      }
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [caseId]);
 
   const newCase = async () => {
     // Prevent duplicate case creation using ref (not affected by re-renders)
@@ -314,7 +344,7 @@ const Case = ({ openTaskView, refreshKey }) => {
               />
               <div className="case-tabs-wrapper">
                 <h4
-                  onClick={() => setCurrentTab("details")}
+                  onClick={() => handleTabChange("details")}
                   className={
                     currentTab === "details"
                       ? "case-tab-heading active-tab"
@@ -324,7 +354,7 @@ const Case = ({ openTaskView, refreshKey }) => {
                   Details
                 </h4>
                 <h4
-                  onClick={() => setCurrentTab("client")}
+                  onClick={() => handleTabChange("client")}
                   className={
                     currentTab === "client"
                       ? "case-tab-heading active-tab"
@@ -334,7 +364,7 @@ const Case = ({ openTaskView, refreshKey }) => {
                   Client
                 </h4>
                 <h4
-                  onClick={() => setCurrentTab("adverse")}
+                  onClick={() => handleTabChange("adverse")}
                   className={
                     currentTab === "adverse"
                       ? "case-tab-heading active-tab"
@@ -344,7 +374,7 @@ const Case = ({ openTaskView, refreshKey }) => {
                   Adverse Party
                 </h4>
                 <h4
-                  onClick={() => setCurrentTab("opposing")}
+                  onClick={() => handleTabChange("opposing")}
                   className={
                     currentTab === "opposing"
                       ? "case-tab-heading active-tab"
@@ -375,6 +405,9 @@ const Case = ({ openTaskView, refreshKey }) => {
                 count={count}
                 setCount={setCount}
                 updateNotes={updateNotes}
+                saveNotesKeepalive={(notesToSave) =>
+                  saveCaseNotesKeepalive(caseId, notesToSave)
+                }
                 newCase={newCase}
                 currentAreas={currentAreas}
                 setCurrentAreas={setCurrentAreas}

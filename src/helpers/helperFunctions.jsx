@@ -395,3 +395,27 @@ export const undoCamelCase = (str) => {
     })
     .join("");
 };
+
+export function saveCaseNotesKeepalive(caseId, notes) {
+  fetch("/api/updateCaseNotes", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    keepalive: true,
+    body: JSON.stringify({ caseId, notes }),
+  });
+}
+
+export function saveTaskNotesKeepalive(taskId, notes) {
+  fetch("/api/updateTask", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    keepalive: true,
+    body: JSON.stringify({
+      taskId,
+      fieldName: "notes",
+      value: notes,
+    }),
+  });
+}

@@ -26,6 +26,7 @@ const DetailsTab = ({
   count,
   setCount,
   updateNotes,
+  saveNotesKeepalive,
   newCase,
   currentAreas,
   setCurrentAreas,
@@ -116,6 +117,7 @@ const DetailsTab = ({
           count={count}
           setCount={setCount}
           updateNotes={updateNotes}
+          saveNotesKeepalive={saveNotesKeepalive}
         />
       </div>
     </div>

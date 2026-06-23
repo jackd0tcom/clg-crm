@@ -13,6 +13,7 @@ import ExtraSettings from "../UI/ExtraSettings";
 import TaskCaseToggle from "./TaskCaseToggle";
 import TimeKeeperWidget from "../TimeKeeper/TimeKeeperWidget";
 import { socket } from "../../Services/socket";
+import { saveTaskNotesKeepalive } from "../../helpers/helperFunctions";
 
 const TaskView = ({ taskId, setTaskId, isOpen, onClose, onTaskUpdate }) => {
   const [taskData, setTaskData] = useState();
@@ -29,6 +30,12 @@ const TaskView = ({ taskId, setTaskId, isOpen, onClose, onTaskUpdate }) => {
   const [dueDate, setDueDate] = useState();
   const [isCreatingTask, setIsCreatingTask] = useState(false);
   const navigate = useNavigate();
+  const notesRef = useRef(notes);
+  const countRef = useRef(count);
+  const taskDataRef = useRef(taskData);
+  notesRef.current = notes;
+  countRef.current = count;
+  taskDataRef.current = taskData;
 
   // Socket connection
   useEffect(() => {
@@ -153,11 +160,28 @@ const TaskView = ({ taskId, setTaskId, isOpen, onClose, onTaskUpdate }) => {
   }, [isOpen]);
 
   const handleClose = () => {
+    const taskIdToUse = taskDataRef.current?.taskId;
+    if (taskIdToUse && taskId !== "new" && countRef.current > 0) {
+      saveTaskNotesKeepalive(taskIdToUse, notesRef.current ?? "");
+    }
     if (onTaskUpdate) {
       onTaskUpdate();
     }
     onClose();
   };
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleBeforeUnload = () => {
+      const taskIdToUse = taskDataRef.current?.taskId;
+      if (taskIdToUse && taskId !== "new" && countRef.current > 0) {
+        saveTaskNotesKeepalive(taskIdToUse, notesRef.current ?? "");
+      }
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () =>
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [isOpen, taskId]);
 
   if (!isOpen) return null;
 
@@ -234,15 +258,22 @@ const TaskView = ({ taskId, setTaskId, isOpen, onClose, onTaskUpdate }) => {
       }
     }
   };
-  const updateNotes = async () => {
+  const updateNotes = async (notesToSave) => {
+    if (!taskData?.taskId || taskId === "new") return;
+    const valueToSave = notesToSave !== undefined ? notesToSave : notes;
     try {
       await axios
-        .post("/api/updateTask", {
-          fieldName: "notes",
-          value: notes,
-          taskId: taskData.taskId,
-        })
+        .post(
+          "/api/updateTask",
+          {
+            fieldName: "notes",
+            value: valueToSave,
+            taskId: taskData.taskId,
+          },
+          { keepAlive: true },
+        )
         .then((res) => {
+          setCount(0);
           if (onTaskUpdate) {
             onTaskUpdate();
           }
@@ -291,7 +322,7 @@ const TaskView = ({ taskId, setTaskId, isOpen, onClose, onTaskUpdate }) => {
   const handleUpdateNotes = (notes) => {
     setNotes(notes);
     if (count >= 75) {
-      updateNotes();
+      updateNotes(notes);
     }
   };
 
@@ -414,6 +445,12 @@ const TaskView = ({ taskId, setTaskId, isOpen, onClose, onTaskUpdate }) => {
                   count={count}
                   onChange={handleUpdateNotes}
                   updateNotes={updateNotes}
+                  saveNotesKeepalive={
+                    taskData?.taskId && taskId !== "new"
+                      ? (notesToSave) =>
+                          saveTaskNotesKeepalive(taskData.taskId, notesToSave)
+                      : undefined
+                  }
                 />
               </div>
             </div>
