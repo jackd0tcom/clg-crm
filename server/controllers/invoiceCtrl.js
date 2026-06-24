@@ -277,8 +277,32 @@ export default {
       const currentInvoice = await Invoice.findOne({ where: { invoiceId } });
 
       if (!currentInvoice) {
-        res.status(401).send("Invoice does not exist");
+        res.status(404).send("Invoice does not exist");
         return;
+      }
+
+      const charges = await CustomCharge.findAll({
+        where: {
+          invoiceId: currentInvoice.invoiceId,
+        },
+      });
+
+      if (charges.length > 0) {
+        charges.forEach(async (charge) => await charge.destroy());
+      }
+
+      const entries = await TimeEntry.findAll({
+        where: {
+          invoiceId: currentInvoice.invoiceId,
+        },
+      });
+
+      if (entries.length > 0) {
+        entries.forEach(async (entry) => {
+          await entry.update({
+            invoiceId: null,
+          });
+        });
       }
 
       await currentInvoice.destroy();
