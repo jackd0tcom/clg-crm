@@ -62,6 +62,52 @@ const InvoiceList = () => {
     }
   };
 
+  const createMonthlyInvoices = async () => {
+    try {
+      axios.post("/api/createMonthlyInvoices").then((res) => {
+        if (res.status === 200) {
+          if (res.data.length > 0) {
+            setInvoiceList((prev) => {
+              const updatedById = new Map(
+                res.data.map((invoice) => [invoice.invoiceId, invoice]),
+              );
+
+              const updatedList = prev.map((invoice) => {
+                const incoming = updatedById.get(invoice.invoiceId);
+                if (!incoming) return invoice;
+
+                const existingIds = new Set(
+                  (invoice.entries ?? []).map((entry) => entry.timeEntryId),
+                );
+
+                const newEntries = (incoming.entries ?? []).filter(
+                  (entry) => !existingIds.has(entry.timeEntryId),
+                );
+
+                if (newEntries.length === 0) return invoice;
+
+                return {
+                  ...invoice,
+                  entries: [...(invoice.entries ?? []), ...newEntries],
+                };
+              });
+
+              // Add invoices that didn't exist in the list yet
+              const existingIds = new Set(prev.map((inv) => inv.invoiceId));
+              const brandNewInvoices = res.data.filter(
+                (inv) => !existingIds.has(inv.invoiceId),
+              );
+
+              return [...brandNewInvoices, ...updatedList];
+            });
+          }
+        }
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="invoice-page-wrapper">
       <div className="case-list-head invoice-list-head">
@@ -76,13 +122,19 @@ const InvoiceList = () => {
           {showDropdown && (
             <div className="dropdown new-invoice-dropdown" ref={dropdownRef}>
               <div
+                onClick={() => createMonthlyInvoices()}
+                className="dropdown-item"
+              >
+                Monthly Invoices
+              </div>
+              <div onClick={() => newBlankInvoice()} className="dropdown-item">
+                Blank Invoice
+              </div>
+              <div
                 onClick={() => navigate("/time-keeper")}
                 className="dropdown-item"
               >
-                Create From Time Entries
-              </div>
-              <div onClick={() => newBlankInvoice()} className="dropdown-item">
-                Create Blank Invoice
+                From Time Entries
               </div>
             </div>
           )}

@@ -126,6 +126,8 @@ const {
   newCustomCharge,
   saveInvoice,
   updateInvoiceStatus,
+  createMonthlyInvoices,
+  deleteEntryFromInvoice,
 } = invoiceCtrl;
 
 // Express setup
@@ -306,6 +308,8 @@ app.post("/api/deleteInvoice", deleteInvoice);
 app.post("/api/newCustomCharge", newCustomCharge);
 app.post("/api/saveInvoice", saveInvoice);
 app.post("/api/updateInvoiceStatus", updateInvoiceStatus);
+app.post("/api/createMonthlyInvoices", createMonthlyInvoices);
+app.post("/api/deleteEntryFromInvoice", deleteEntryFromInvoice);
 
 // user access check endpoint
 app.get("/api/user/check-access", adminCtrl.checkUserAccess);

@@ -251,6 +251,11 @@ Case.init(
       allowNull: true,
       defaultValue: null,
     },
+    isBillable: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
+    },
     isArchived: {
       type: DataTypes.BOOLEAN,
       allowNull: false,

@@ -6,6 +6,7 @@ import {
 } from "../../helpers/helperFunctions";
 import { useState } from "react";
 import TimeEntryStatusBadge from "../UI/TimeEntryStatusBadge";
+import axios from "axios";
 
 const InvoiceItem = ({
   groupedData,
@@ -30,19 +31,31 @@ const InvoiceItem = ({
     setGroupedData(currentData);
   };
 
-  const handleDeleteItem = () => {
-    setSomethingToSave(true);
-    const newItems = groupedData[projectIndex][1].filter(
-      (_, idx) => idx !== index,
-    );
-    if (newItems.length < 1) {
-      setGroupedData(groupedData.filter((_, i) => i !== projectIndex));
-    } else {
-      setGroupedData(
-        groupedData.map((group, i) =>
-          i === projectIndex ? [group[0], newItems] : group,
-        ),
-      );
+  const handleDeleteItem = async () => {
+    try {
+      await axios
+        .post("/api/deleteEntryFromInvoice", {
+          timeEntryId: item.timeEntryId,
+        })
+        .then((res) => {
+          if (res.status === 200) {
+            setSomethingToSave(true);
+            const newItems = groupedData[projectIndex][1].filter(
+              (_, idx) => idx !== index,
+            );
+            if (newItems.length < 1) {
+              setGroupedData(groupedData.filter((_, i) => i !== projectIndex));
+            } else {
+              setGroupedData(
+                groupedData.map((group, i) =>
+                  i === projectIndex ? [group[0], newItems] : group,
+                ),
+              );
+            }
+          }
+        });
+    } catch (error) {
+      console.log(error);
     }
   };
 

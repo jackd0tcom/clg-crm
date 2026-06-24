@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router";
 import axios from "axios";
 import { useParams } from "react-router";
 import Loader from "../Elements/UI/Loader";
@@ -26,6 +27,8 @@ const Invoice = () => {
   const [isViewing, setIsViewing] = useState(false);
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
   const [somethingToSave, setSomethingToSave] = useState(false);
+  const [showDelete, setShowDelete] = useState(false);
+  const navigate = useNavigate();
   const dropdownRef = useRef(null);
   const statusRef = useRef(null);
   const customChargeTotal =
@@ -170,6 +173,18 @@ const Invoice = () => {
       console.log(error);
     }
   };
+  const handleDeleteInvoice = async () => {
+    try {
+      setSavingStatus("Deleting...");
+      await axios.post("/api/deleteInvoice", { invoiceId }).then((res) => {
+        if (res.status === 200) {
+          navigate("/invoices");
+        }
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleChangeStatus = async (status) => {
     const entryIds = entries.map((entry) => entry.timeEntryId);
@@ -293,6 +308,30 @@ const Invoice = () => {
           >
             {isViewing ? "Close PDF" : "View PDF"}
           </button>
+          {!isViewing && (
+            <div className="delete-invoice-button-wrapper">
+              <button
+                onClick={() => setShowDelete(!showDelete)}
+                className="delete-invoice"
+              >
+                <i className="fa-solid fa-trash"></i>
+              </button>
+              {showDelete && (
+                <div className="dropdown delete-invoice-modal">
+                  <p>Are you sure you want to delete this invoice?</p>
+                  <div className="delete-invoice-modal-buttons">
+                    <button
+                      className="delete-invoice-button"
+                      onClick={() => handleDeleteInvoice()}
+                    >
+                      Delete
+                    </button>
+                    <button onClick={() => setShowDelete(false)}>Cancel</button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
       {isViewing ? (

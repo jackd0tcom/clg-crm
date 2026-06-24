@@ -398,6 +398,12 @@ export default {
 
       let message = `changed the ${fieldName} from ${oldValue} to ${value}`;
 
+      if (fieldName === "isBillable") {
+        if (value) {
+          message = "changed this case to billable";
+        } else message = "changed this case to be not billable";
+      }
+
       if (fieldName === "sol") {
         if (!value) {
           message = `removed the SOL`;

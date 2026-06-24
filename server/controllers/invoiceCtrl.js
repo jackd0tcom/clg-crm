@@ -174,6 +174,78 @@ export default {
       res.status(500).send(error);
     }
   },
+  createMonthlyInvoices: async (req, res) => {
+    try {
+      console.log("createMonthlyInvoices");
+      if (!req.session.user) {
+        return res.status(401).send("User not authenticated");
+      }
+      const billableCases = await Case.findAll({
+        where: {
+          isBillable: true,
+          isArchived: false,
+          phase: { [Op.ne]: "closed" },
+        },
+      });
+
+      let payload;
+
+      const now = new Date();
+      const date = now.toISOString();
+      const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+      const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+      if (!billableCases.length) {
+        return res.status(200).send([]);
+      }
+
+      const casesWithEntries = (
+        await Promise.all(
+          billableCases.map(async (c) => {
+            const entries = await TimeEntry.findAll({
+              where: {
+                caseId: c.caseId,
+                startTime: {
+                  [Op.between]: [firstDay, lastDay],
+                },
+              },
+            });
+            if (!entries.length) return null;
+            return { ...c.toJSON(), entries };
+          }),
+        )
+      ).filter(Boolean);
+
+      const monthKey = new Date().toISOString().slice(0, 7); // "2025-06"
+
+      const invoices = await Promise.all(
+        casesWithEntries.map(async (c) => {
+          const invoiceTitle = `${monthKey}-${c.title}`;
+          const [invoice] = await Invoice.findOrCreate({
+            where: {
+              userId: req.session.user.userId,
+              invoiceTitle,
+            },
+          });
+
+          const entries = await Promise.all(
+            c.entries.map((entry) =>
+              entry.update({ invoiceId: invoice.invoiceId }),
+            ),
+          );
+
+          const invoiceData = invoice.toJSON();
+
+          return { ...invoiceData, entries: entries };
+        }),
+      );
+
+      return res.status(200).send(invoices);
+    } catch (error) {
+      console.log(error);
+      res.status(500).send(error);
+    }
+  },
   newCustomCharge: async (req, res) => {
     try {
       console.log("newCustomCharge");
@@ -373,6 +445,31 @@ export default {
     } catch (err) {
       console.log(err);
       res.status(500).send(err);
+    }
+  },
+  deleteEntryFromInvoice: async (req, res) => {
+    try {
+      console.log("deleteEntryFromInvoice");
+      const { timeEntryId } = req.body;
+
+      if (!req.session.user) {
+        return res.status(401).send("User not authenticated");
+      }
+      const currentEntry = await TimeEntry.findOne({ where: { timeEntryId } });
+
+      if (!currentEntry) {
+        res.status(401).send("Entry does not exist");
+        return;
+      }
+
+      const updatedEntry = await currentEntry.update({
+        invoiceId: null,
+      });
+
+      res.status(200).send(updatedEntry);
+    } catch (error) {
+      console.log(error);
+      res.status(401).send(error);
     }
   },
 };

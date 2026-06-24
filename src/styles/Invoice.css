@@ -328,3 +328,57 @@
   font-size: 3rem;
   color: var(--blue);
 }
+.delete-invoice-button-wrapper {
+  position: relative;
+  min-width: 38px;
+}
+.delete-invoice {
+  font-size: 0.9rem;
+  border: 1px solid var(--light-border);
+  transition: 150ms;
+  padding: 0;
+}
+.delete-invoice i {
+  color: var(--dark-grey);
+  padding: 0.7em;
+}
+.delete-invoice:hover {
+  background-color: var(--dark-red);
+  border-color: var(--dark-red);
+}
+.delete-invoice i:hover {
+  color: white;
+}
+.delete-invoice-modal {
+  padding: 15px;
+  right: 0;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  text-align: center;
+}
+.delete-invoice-modal-buttons button {
+  font-size: 0.9rem;
+  transition: 150ms;
+}
+.delete-invoice-modal-buttons {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+}
+.delete-invoice-modal-buttons button:hover {
+  background-color: var(--light-light-grey);
+  color: black;
+}
+.delete-invoice-button {
+  background-color: var(--red);
+  color: white;
+  border-color: var(--red);
+}
+.delete-invoice-button:hover {
+  background-color: var(--dark-red) !important;
+  color: white !important;
+  border-color: var(--dark-red) !important;
+}

@@ -178,6 +178,17 @@
   width: auto;
   color: var(--grey);
 }
+.case-practice-areas-billable {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+.billable-toggle-container {
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  align-items: center;
+  gap: 1rem;
+}
 .case-card-title {
   font-size: 1.35rem;
   margin-top: 10px;

@@ -248,6 +248,36 @@ const Case = ({ openTaskView, refreshKey }) => {
     setCurrentTab(tab);
   };
 
+  const updateCase = async (fieldName, value) => {
+    try {
+      await axios
+        .post("/api/updateCase", {
+          caseId,
+          fieldName,
+          value,
+        })
+        .then((res) => {
+          if (res.status === 200) {
+            if (fieldName === "isBillable") {
+              setCaseData({
+                ...caseData,
+                isBillable: value,
+              });
+            }
+          }
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleToggle = async (value) => {
+    try {
+      await updateCase("isBillable", value);
+    } finally {
+    }
+  };
+
   useLayoutEffect(() => {
     return () => {
       if (countRef.current > 0 && caseId) {
@@ -415,6 +445,7 @@ const Case = ({ openTaskView, refreshKey }) => {
                 setNewPracticeArea={setNewPracticeArea}
                 isAddingArea={isAddingArea}
                 setIsAddingArea={setIsAddingArea}
+                handleToggle={handleToggle}
               />
             )}
             {currentTab === "client" && (

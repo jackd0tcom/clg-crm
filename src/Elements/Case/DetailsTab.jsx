@@ -34,6 +34,7 @@ const DetailsTab = ({
   setNewPracticeArea,
   isAddingArea,
   setIsAddingArea,
+  handleToggle,
 }) => {
   return (
     <div className="case-details-tab-wrapper">
@@ -74,40 +75,56 @@ const DetailsTab = ({
           />
         </div>
       </div>
-      <div className="case-practice-areas">
-        <h4>Practice Areas</h4>
-        <div
-          className="case-practice-areas-wrapper"
-          onClick={() => {
-            if (!caseData?.caseId && !isCreatingCaseRef.current) {
-              console.log("Practice area: Creating new case...");
-              newCase().then(() => {
+      <div className="case-practice-areas-billable">
+        <div className="case-practice-areas">
+          <h4>Practice Areas</h4>
+          <div
+            className="case-practice-areas-wrapper"
+            onClick={() => {
+              if (!caseData?.caseId && !isCreatingCaseRef.current) {
+                console.log("Practice area: Creating new case...");
+                newCase().then(() => {
+                  setIsAddingArea(true);
+                });
+              } else if (caseData?.caseId) {
                 setIsAddingArea(true);
-              });
-            } else if (caseData?.caseId) {
-              setIsAddingArea(true);
-            }
-          }}
-        >
-          {isNewCase || caseData.practiceAreas.length < 1 ? (
-            <a className="case-practice-area no-area">Add Practice Area</a>
-          ) : (
-            formatPracticeAreas(caseData.practiceAreas)
+              }
+            }}
+          >
+            {isNewCase || caseData.practiceAreas.length < 1 ? (
+              <a className="case-practice-area no-area">Add Practice Area</a>
+            ) : (
+              formatPracticeAreas(caseData.practiceAreas)
+            )}
+          </div>
+          {isAddingArea && (
+            <PracticeAreaToggle
+              currentAreas={currentAreas}
+              setCurrentAreas={setCurrentAreas}
+              newPracticeArea={newPracticeArea}
+              setNewPracticeArea={setNewPracticeArea}
+              caseId={caseId}
+              refreshCaseData={refreshCaseData}
+              refreshActivityData={refreshActivityData}
+              isAddingArea={isAddingArea}
+              setIsAddingArea={setIsAddingArea}
+            />
           )}
         </div>
-        {isAddingArea && (
-          <PracticeAreaToggle
-            currentAreas={currentAreas}
-            setCurrentAreas={setCurrentAreas}
-            newPracticeArea={newPracticeArea}
-            setNewPracticeArea={setNewPracticeArea}
-            caseId={caseId}
-            refreshCaseData={refreshCaseData}
-            refreshActivityData={refreshActivityData}
-            isAddingArea={isAddingArea}
-            setIsAddingArea={setIsAddingArea}
-          />
-        )}
+        <div className="case-billable-wrapper">
+          <div className="billable-toggle-container">
+            <h4>Billable</h4>
+            <label className="switch">
+              <input
+                type="checkbox"
+                onChange={() => handleToggle(!caseData.isBillable)}
+                checked={caseData.isBillable}
+                // disabled={isLoading}
+              />
+              <span className="slider round"></span>
+            </label>
+          </div>
+        </div>
       </div>
       <div className="case-notes">
         <Notes
