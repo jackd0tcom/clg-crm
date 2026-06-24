@@ -184,7 +184,6 @@ export default {
         where: {
           isBillable: true,
           isArchived: false,
-          phase: { [Op.ne]: "closed" },
         },
       });
 
