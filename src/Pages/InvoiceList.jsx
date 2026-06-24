@@ -31,7 +31,9 @@ const InvoiceList = () => {
   };
 
   useEffect(() => {
-    fetchInvoices();
+    setTimeout(() => {
+      fetchInvoices();
+    }, 100);
   }, []);
 
   useEffect(() => {

@@ -1,12 +1,19 @@
 const Loader = () => {
+  let showLoader = false;
+
+  setTimeout(() => {
+    showLoader = true;
+  }, 100);
   return (
     <div className="loader-wrapper">
-      <div className="lds-ring">
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-      </div>
+      {showLoader && (
+        <div className="lds-ring">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+      )}
     </div>
   );
 };

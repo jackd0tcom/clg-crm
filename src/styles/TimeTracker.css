@@ -933,6 +933,10 @@
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  color: var(--dark-grey);
+}
+.time-keeper-item-project i {
+  color: var(--grey) !important;
 }
 .time-keeper-item-project i.fa-briefcase {
   color: var(--dark-grey);
