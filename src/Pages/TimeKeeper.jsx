@@ -44,10 +44,10 @@ const TimeKeeper = () => {
   // Initial data hydration
   const getEntries = async () => {
     console.log("getting entries");
-    if (entryList.length > 0) {
-      setIsLoading(false);
-      return;
-    }
+    // if (entryList.length > 0) {
+    //   setIsLoading(false);
+    //   return;
+    // }
     try {
       await axios.get("/api/time-entry/getUserEntries").then((res) => {
         if (!res.status === 200) {
