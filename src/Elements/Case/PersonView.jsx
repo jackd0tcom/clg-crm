@@ -26,7 +26,7 @@ const PersonView = ({
     try {
       await axios
         .delete("/api/deletePerson", {
-          data: { personId: personId },
+          data: { personId: personId, caseId },
         })
         .then((res) => {
           if (res.status === 200) {

@@ -81,10 +81,6 @@ Person.init(
       primaryKey: true,
       autoIncrement: true,
     },
-    caseId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
     firstName: {
       type: DataTypes.STRING,
       allowNull: true,
@@ -146,11 +142,6 @@ Person.init(
     email: {
       type: DataTypes.TEXT,
       allowNull: true,
-    },
-    type: {
-      type: DataTypes.ENUM("client", "adverse", "opposing"),
-      allowNull: true,
-      defaultValue: "client",
     },
   },
   {
@@ -295,7 +286,38 @@ Tribunal.init(
   },
 );
 
-// Junction table for case-practice area relationships
+// Junction table for case-person relationships
+class CasePerson extends Model {}
+CasePerson.init(
+  {
+    caseId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    personId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    type: {
+      type: DataTypes.ENUM("client", "adverse", "opposing"),
+      allowNull: false,
+      defaultValue: "client",
+    },
+  },
+  {
+    modelName: "casePerson",
+    sequelize: db,
+    timestamps: true,
+    indexes: [
+      {
+        unique: true,
+        fields: ["case_id", "person_id"],
+      },
+    ],
+  },
+);
+
+// Junction table for case-tribunal relationships
 class CaseTribunal extends Model {}
 CaseTribunal.init(
   {
@@ -817,17 +839,27 @@ Tribunal.belongsToMany(Case, {
   foreignKey: "tribunalId",
   otherKey: "caseId",
 });
-// Case has many people involved
-Case.hasMany(Person, { foreignKey: "caseId", as: "people" });
-Person.belongsTo(Case, { foreignKey: "caseId" });
+Case.belongsToMany(Person, {
+  through: CasePerson,
+  as: "people",
+  foreignKey: "caseId",
+  otherKey: "personId",
+});
+Person.belongsToMany(Case, {
+  through: CasePerson,
+  as: "cases",
+  foreignKey: "personId",
+  otherKey: "caseId",
+});
+
+CasePerson.belongsTo(Person, { foreignKey: "personId" });
+CasePerson.belongsTo(Case, { foreignKey: "caseId" });
+Person.hasMany(CasePerson, { foreignKey: "personId" });
+Case.hasMany(CasePerson, { foreignKey: "caseId" });
 
 // Case-Task relationships
 Case.hasMany(Task, { foreignKey: "caseId", as: "tasks" });
 Task.belongsTo(Case, { foreignKey: "caseId", as: "case" });
-
-// Case-Person relationships
-Case.hasMany(Person, { foreignKey: "caseId" });
-Person.belongsTo(Case, { foreignKey: "caseId" });
 
 // Comment relationships
 User.hasMany(Comment, { foreignKey: "authorId", as: "comments" });
@@ -947,6 +979,7 @@ export {
   Task,
   Case,
   Person,
+  CasePerson,
   ActivityLog,
   Comment,
   Notification,

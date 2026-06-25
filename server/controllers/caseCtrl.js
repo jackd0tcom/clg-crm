@@ -6,6 +6,7 @@ import { getCaseNotificationRecipients } from "../helpers/notificationHelper.js"
 import {
   Task,
   Person,
+  CasePerson,
   PracticeArea,
   CasePracticeAreas,
   Tribunal,
@@ -353,10 +354,16 @@ export default {
           ],
         });
 
-        const people = await Person.findAll({
+        const casePeople = await CasePerson.findAll({
           where: { caseId },
-          order: [["personId", "ASC"]],
+          include: [{ model: Person }],
+          order: [[Person, "personId", "ASC"]],
         });
+
+        const people = casePeople.map((cp) => ({
+          ...cp.person.toJSON(),
+          type: cp.type,
+        }));
 
         // Transform tribunal array to single object (or null)
         const caseData = foundCase.toJSON();
@@ -369,7 +376,7 @@ export default {
           ...caseData,
           tribunal, // Single object instead of array
           tasks: tasks.map((task) => task.toJSON()),
-          people: people.map((person) => person.toJSON()),
+          people: people,
         };
 
         res.send(data);

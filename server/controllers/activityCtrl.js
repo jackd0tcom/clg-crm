@@ -3,6 +3,7 @@ import {
   User,
   ActivityReaders,
   Person,
+  CasePerson,
   Comment,
 } from "../model.js";
 import { Op } from "sequelize";
@@ -54,11 +55,11 @@ export default {
       const { userId } = req.session.user;
 
       // Get person IDs for this case
-      const people = await Person.findAll({
+      const casePeople = await CasePerson.findAll({
         where: { caseId },
         attributes: ["personId"],
       });
-      const personIds = people.map((p) => p.personId);
+      const personIds = casePeople.map((cp) => cp.personId);
 
       // Get all activities for the case (including person activities)
       const activities = await ActivityLog.findAll({

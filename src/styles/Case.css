@@ -680,16 +680,39 @@ div.case-task-container
 }
 .add-person-page-button {
   cursor: pointer;
-  color: white;
-  background-color: var(--blue);
   font-size: 0.8rem;
   display: flex;
   border: 1px solid transparent;
   transition: 200ms;
+  border: 1px solid var(--light-border);
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 .add-person-page-button:hover {
+  color: black;
+  background-color: var(--light-border);
+}
+.choose-person-button:hover {
   color: white;
   background-color: var(--dark-blue);
+  border-color: var(--dark-blue);
+}
+.choose-person-button {
+  color: white;
+  background-color: var(--blue);
+  border-color: var(--blue);
+}
+#choose-person-icon {
+  font-size: 0.9rem;
+  padding: 0;
+  background-color: unset;
+}
+#add-person-icon {
+  font-size: 0.8rem;
+  padding: 0;
+  background-color: unset;
+  color: black;
 }
 .add-person-button {
   cursor: pointer;
@@ -716,6 +739,11 @@ div.case-task-container
 }
 .case-person-link:hover {
   color: black;
+}
+
+/* Person selector */
+.person-selector-wrapper {
+  position: relative;
 }
 
 /* PersonView */
@@ -984,6 +1012,21 @@ div.sol-input-wrapper > div > div > input[type="text"] {
   background-color: unset;
   outline: none;
   width: 100%;
+}
+.add-person-error {
+  text-align: center;
+  color: var(--dark-red);
+  padding: 6px;
+  border-radius: 5px;
+  font-size: 0.9rem;
+}
+.person-search {
+  padding: 12px;
+  border: 0px;
+  border-bottom: 1px solid var(--light-border);
+}
+.person-search:focus-visible {
+  outline: none;
 }
 
 @media screen and (min-width: 1800px) {

@@ -4,6 +4,7 @@ import {
   Task,
   Case,
   Person,
+  CasePerson,
   Comment,
   ActivityLog,
   Notification,
@@ -525,7 +526,16 @@ await db.sync({ alter: true }).then(async () => {
   await CasePracticeAreas.bulkCreate(casePracticeAreaRelations);
 
   console.log("Creating people...");
-  const createdPeople = await Person.bulkCreate(people);
+  const createdPeople = await Person.bulkCreate(
+    people.map(({ caseId, type, ...person }) => person),
+  );
+  await CasePerson.bulkCreate(
+    createdPeople.map((person, i) => ({
+      caseId: people[i].caseId,
+      personId: person.personId,
+      type: people[i].type,
+    })),
+  );
 
   console.log("Creating tasks...");
   const createdTasks = await Task.bulkCreate(tasks);

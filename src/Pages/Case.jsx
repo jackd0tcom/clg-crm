@@ -39,6 +39,7 @@ const Case = ({ openTaskView, refreshKey }) => {
   const [adverse, setAdverse] = useState([]);
   const [opposing, setOpposing] = useState([]);
   const [adverseOpposing, setAdverseOpposing] = useState([]);
+  const [peopleList, setPeopleList] = useState([]);
   const isCreatingCaseRef = useRef(false);
 
   const headings = ["Status", "Title", "Priority", "Assignees", "Due Date"];
@@ -139,6 +140,7 @@ const Case = ({ openTaskView, refreshKey }) => {
         const activityResponse = await axios.get(
           `/api/getCaseActivities/${caseId}`,
         );
+        fetchPeople();
         setCaseData(caseResponse.data);
         setActivityData(activityResponse.data);
         setPhase(caseResponse.data.phase);
@@ -180,6 +182,19 @@ const Case = ({ openTaskView, refreshKey }) => {
       getData();
     }
   }, [refreshKey]);
+
+  const fetchPeople = async () => {
+    try {
+      await axios.get("/api/getPeople").then((res) => {
+        if (res.status === 200) {
+          console.log(res.data);
+          setPeopleList(res.data);
+        }
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const refreshActivityData = async () => {
     try {
@@ -451,28 +466,34 @@ const Case = ({ openTaskView, refreshKey }) => {
             {currentTab === "client" && (
               <PeopleTab
                 people={clients}
+                setPeople={setClients}
                 refreshActivityData={refreshActivityData}
                 refreshCaseData={refreshCaseData}
                 caseId={caseId}
                 type={"client"}
+                peopleList={peopleList}
               />
             )}
             {currentTab === "adverse" && (
               <PeopleTab
                 people={adverse}
+                setPeople={setAdverse}
                 refreshActivityData={refreshActivityData}
                 refreshCaseData={refreshCaseData}
                 caseId={caseId}
                 type={"adverse"}
+                peopleList={peopleList}
               />
             )}
             {currentTab === "opposing" && (
               <PeopleTab
                 people={opposing}
+                setPeople={setOpposing}
                 refreshActivityData={refreshActivityData}
                 refreshCaseData={refreshCaseData}
                 caseId={caseId}
                 type={"opposing"}
+                peopleList={peopleList}
               />
             )}
           </div>

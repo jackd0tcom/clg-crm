@@ -5,6 +5,7 @@ import {
   TaskAssignees,
   Person,
   Case,
+  CasePerson,
 } from "../model.js";
 
 export function capitalize(str) {
@@ -103,17 +104,23 @@ export async function createActivityLog({
         //   readerIds.push(task.ownerId);
         // }
       } else if (objectType === "person") {
-        // For person activities, get case assignees since people are related to cases
-        const person = await Person.findByPk(objectId);
-        if (person && person.caseId) {
+        const caseLinks = await CasePerson.findAll({
+          where: { personId: objectId },
+          attributes: ["caseId"],
+        });
+
+        for (const link of caseLinks) {
           const caseAssignees = await CaseAssignees.findAll({
-            where: { caseId: person.caseId },
+            where: { caseId: link.caseId },
             attributes: ["userId"],
           });
-          readerIds = caseAssignees.map((ca) => ca.userId);
+          caseAssignees.forEach((ca) => {
+            if (!readerIds.includes(ca.userId)) {
+              readerIds.push(ca.userId);
+            }
+          });
 
-          // Add case owner
-          const caseData = await Case.findByPk(person.caseId);
+          const caseData = await Case.findByPk(link.caseId);
           if (caseData && !readerIds.includes(caseData.ownerId)) {
             readerIds.push(caseData.ownerId);
           }

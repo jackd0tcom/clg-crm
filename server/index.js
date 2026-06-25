@@ -32,7 +32,8 @@ dotenv.config();
 // Validate environment variables
 validateEnvironment();
 
-const { updatePerson, newPerson, deletePerson } = personCtrl;
+const { updatePerson, newPerson, deletePerson, getPeople, assignPersonToCase } =
+  personCtrl;
 const { getUser, getUsers, getUserSettings, updateUserSettings } = userCtrl;
 const { createComment, getMentionData } = commentCtrl;
 
@@ -236,8 +237,10 @@ app.get("/api/getTribunals", getTribunals);
 app.post("/api/updateCaseTribunal", updateCaseTribunal);
 
 // Person endpoints
+app.get("/api/getPeople", getPeople);
 app.post("/api/updatePerson", updatePerson);
 app.post("/api/newPerson", newPerson);
+app.post("/api/assignPersonToCase", assignPersonToCase);
 
 // task endpoints
 app.get("/api/getAllTasks", getAllTasks);
