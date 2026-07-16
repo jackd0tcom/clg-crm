@@ -8,7 +8,7 @@ import WidgetEntryView from "./WidgetEntryView";
 import TimeKeeperListGroup from "./TimeKeeperListGroup";
 import { getDurationNumber } from "../../helpers/helperFunctions";
 
-const TimeKeeperList = ({ data, getEntries }) => {
+const TimeKeeperList = ({ data, getEntries, entryServices }) => {
   const userStore = useSelector((state) => state.user);
   const [showEntryView, setShowEntryView] = useState(false);
   const [entry, setEntry] = useState({
@@ -18,6 +18,7 @@ const TimeKeeperList = ({ data, getEntries }) => {
     startTime: null,
     endTime: null,
     currentTitle: null,
+    entryServiceId: null,
     userId: userStore.userId,
   });
 
@@ -50,6 +51,7 @@ const TimeKeeperList = ({ data, getEntries }) => {
           setEntry={setEntry}
           setShowEntryView={setShowEntryView}
           getEntries={getEntries}
+          entryServices={entryServices}
         />
       ) : (
         <>
@@ -71,6 +73,7 @@ const TimeKeeperList = ({ data, getEntries }) => {
                 showEntryView={showEntryView}
                 setShowEntryView={setShowEntryView}
                 userId={userStore.userId}
+                entryServices={entryServices}
               />
             ))
           ) : (

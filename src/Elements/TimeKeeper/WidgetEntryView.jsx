@@ -160,7 +160,22 @@ const WidgetEntryView = ({
       }
     >
       {!widgetView && (
-        <p className="back-button" onClick={() => setShowEntryView(false)}>
+        <p
+          className="back-button"
+          onClick={() => {
+            setShowEntryView(false);
+            setEntry({
+              caseId: null,
+              taskId: null,
+              notes: "",
+              currentTitle: null,
+              startTime: new Date().toISOString(),
+              endTime: new Date().toISOString(),
+              entryServiceId: null,
+              userId: userStore.userId,
+            });
+          }}
+        >
           Back
         </p>
       )}

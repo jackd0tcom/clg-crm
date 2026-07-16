@@ -27,6 +27,7 @@ const Invoice = () => {
   const [isViewing, setIsViewing] = useState(false);
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
   const [somethingToSave, setSomethingToSave] = useState(false);
+  const [entryServices, setEntryServices] = useState([]);
   const [showDelete, setShowDelete] = useState(false);
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
@@ -57,12 +58,20 @@ const Invoice = () => {
         }, 0),
     );
 
+  const getServiceTitle = (id) => {
+    return (
+      entryServices.find((service) => service.entryServiceId === id)
+        ?.serviceTitle ?? ""
+    );
+  };
+
   const fetchInvoice = async () => {
     try {
       const res = await axios.get(`/api/getInvoice/${invoiceId}`);
       if (res.status === 200) {
         const data = res.data;
         setInvoiceData(data);
+        setEntryServices(res.data.entryServices);
         setDefaultRate(data.settings.defaultRate);
         setPayTo(data.payTo ?? data.settings.payTo ?? "");
         const defaultClient = data.entries[0]?.case
@@ -340,6 +349,7 @@ const Invoice = () => {
           billTo={billedTo}
           payTo={payTo}
           defaultRate={defaultRate}
+          entryServices={entryServices}
         />
       ) : (
         <div className="invoice-body">
@@ -472,6 +482,7 @@ const Invoice = () => {
                         index={index}
                         rounding={invoiceData.roundingAmount}
                         status={status}
+                        entryServices={entryServices}
                       />
                     ))}
                   </div>
@@ -485,6 +496,7 @@ const Invoice = () => {
                     invoiceData={invoiceData}
                     setInvoiceData={setInvoiceData}
                     status={status}
+                    entryServices={entryServices}
                   />
                 ))}
               </>

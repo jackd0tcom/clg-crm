@@ -304,6 +304,8 @@ export default {
 
       const notNullEntries = entries.filter((entry) => entry !== null);
 
+      const entryServices = await EntryService.findAll();
+
       const entriesWithProjects = await Promise.all(
         notNullEntries.map(async (entry) => {
           const entryJson = entry.toJSON();
@@ -334,9 +336,14 @@ export default {
         }),
       );
 
+      const payload = {
+        entries: entriesWithProjects,
+        entryServices: entryServices,
+      };
+
       if (!entries) {
         res.status(200).send("No Entries Found");
-      } else res.status(200).send(entriesWithProjects);
+      } else res.status(200).send(payload);
     } catch (error) {
       console.log(error);
       res.status(401).send(error);

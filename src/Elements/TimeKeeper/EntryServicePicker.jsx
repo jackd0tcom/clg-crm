@@ -35,7 +35,7 @@ const EntryServicePicker = ({ entryServices, entry, setEntry }) => {
   };
 
   const currentEntryTitle = entry.entryServiceId
-    ? (entryServices.find(
+    ? (entryServices?.find(
         (service) => service.entryServiceId === entry.entryServiceId,
       ).serviceTitle ?? "")
     : "Pick a service";

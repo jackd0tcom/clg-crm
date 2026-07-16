@@ -19,6 +19,7 @@ const TimeKeeper = () => {
   const now = new Date();
   const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
   const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  const [entryServices, setEntryServices] = useState([]);
   const [entry, setEntry] = useState({
     caseId: null,
     taskId: null,
@@ -26,6 +27,7 @@ const TimeKeeper = () => {
     currentTitle: null,
     startTime: new Date().toISOString(),
     endTime: new Date().toISOString(),
+    entryServiceId: null,
     userId: userStore.userId,
   });
   const [filter, setFilter] = useState({
@@ -43,7 +45,6 @@ const TimeKeeper = () => {
 
   // Initial data hydration
   const getEntries = async () => {
-    console.log("getting entries");
     // if (entryList.length > 0) {
     //   setIsLoading(false);
     //   return;
@@ -54,9 +55,9 @@ const TimeKeeper = () => {
           console.log(res);
           return;
         }
-        console.log("got entries");
-        setEntryList(res.data.filter((entry) => entry !== null));
+        setEntryList(res.data.entries.filter((entry) => entry !== null));
         setIsLoading(false);
+        setEntryServices(res.data.entryServices);
       });
     } catch (error) {
       console.log(error);
@@ -235,6 +236,7 @@ const TimeKeeper = () => {
           setEntry={setEntry}
           setShowEntryView={setShowEntryView}
           getEntries={getEntries}
+          entryServices={entryServices}
         />
       ) : (
         <>
@@ -252,7 +254,11 @@ const TimeKeeper = () => {
           {isLoading ? (
             <Loader />
           ) : (
-            <TimeKeeperList data={processedData} getEntries={getEntries} />
+            <TimeKeeperList
+              data={processedData}
+              getEntries={getEntries}
+              entryServices={entryServices}
+            />
           )}
         </>
       )}

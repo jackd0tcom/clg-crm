@@ -7,6 +7,7 @@ import {
   Invoice,
   UserSettings,
   CustomCharge,
+  EntryService,
 } from "../model.js";
 import { Op } from "sequelize";
 
@@ -23,6 +24,8 @@ export default {
       if (!req.session.user) {
         return res.status(401).send("User not authenticated");
       }
+
+      const entryServices = await EntryService.findAll();
 
       const invoice = await Invoice.findOne({
         where: { invoiceId },
@@ -62,6 +65,7 @@ export default {
         ...invoiceData,
         entries: invoiceItems,
         settings: userSettings,
+        entryServices: entryServices,
       };
 
       res.status(200).send(invoiceWithItems);

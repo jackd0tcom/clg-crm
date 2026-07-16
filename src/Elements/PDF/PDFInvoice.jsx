@@ -14,9 +14,22 @@ import {
   Image,
 } from "@react-pdf/renderer";
 
-const PDFInvoice = ({ invoiceData, billTo, payTo, defaultRate }) => {
+const PDFInvoice = ({
+  invoiceData,
+  billTo,
+  payTo,
+  defaultRate,
+  entryServices,
+}) => {
   const now = new Date();
   const today = formatDateNoTimeWithYear(now);
+
+  const getServiceTitle = (id) => {
+    return (
+      entryServices?.find((service) => service.entryServiceId === id)
+        ?.serviceTitle ?? ""
+    );
+  };
 
   const customChargeTotal =
     invoiceData?.customCharges?.length > 0
@@ -115,7 +128,7 @@ const PDFInvoice = ({ invoiceData, billTo, payTo, defaultRate }) => {
             {invoiceData.entries.map((entry) => (
               <View style={styles.row}>
                 <Text style={[styles.text, { flexBasis: 250 }]}>
-                  {entry.notes}
+                  {getServiceTitle(entry.entryServiceId) ?? entry.notes}
                 </Text>
                 <Text style={[styles.text, { flexBasis: 30 }]}>
                   {entry.rate ?? defaultRate}

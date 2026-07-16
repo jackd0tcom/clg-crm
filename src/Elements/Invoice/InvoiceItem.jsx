@@ -18,10 +18,18 @@ const InvoiceItem = ({
   rounding,
   setSomethingToSave,
   status,
+  entryServices,
 }) => {
   const [showTrash, setShowTrash] = useState(true);
 
   const rate = item.rate ?? defaultRate;
+
+  const getServiceTitle = (id) => {
+    return (
+      entryServices.find((service) => service.entryServiceId === id)
+        ?.serviceTitle ?? ""
+    );
+  };
 
   const handleRateChange = (e) => {
     setSomethingToSave(true);
@@ -65,7 +73,7 @@ const InvoiceItem = ({
       onMouseEnter={() => setShowTrash(true)}
       onMouseLeave={() => setShowTrash(false)}
     >
-      <p>{item.notes}</p>
+      <p>{getServiceTitle(item.entryServiceId) ?? item.notes}</p>
       <TimeEntryStatusBadge status={item.paidStatus} />
       {status !== "draft" ? (
         <p>{rate}</p>

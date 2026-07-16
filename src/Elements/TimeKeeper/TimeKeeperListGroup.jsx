@@ -14,9 +14,17 @@ const TimeKeeperListGroup = ({
   showEntryView,
   setShowEntryView,
   userId,
+  entryServices,
 }) => {
   const [showEntries, setShowEntries] = useState(false);
   const includedUsers = [];
+
+  const getServiceTitle = (id) => {
+    return (
+      entryServices.find((service) => service.entryServiceId === id)
+        ?.serviceTitle ?? ""
+    );
+  };
 
   group.entries.forEach((entry) => {
     const user = entry.user;
@@ -107,7 +115,7 @@ const TimeKeeperListGroup = ({
 
                 {entry.projectTitle}
               </div>
-              <p>{entry.notes}</p>
+              <p>{getServiceTitle(entry.entryServiceId) ?? entry.notes}</p>
               <p>{getDuration(entry)}</p>
               <p>{formatDateNoTime(entry.startTime)}</p>
               <TimeEntryStatusBadge status={entry.paidStatus} />
