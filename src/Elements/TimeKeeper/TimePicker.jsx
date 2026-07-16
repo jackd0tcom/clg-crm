@@ -5,7 +5,6 @@ import { getDuration } from "../../helpers/helperFunctions";
 const TimePicker = ({
   entry,
   setEntry,
-  setDuration,
   setShowTimePicker,
   showTimePicker,
   updateEntry,
@@ -53,7 +52,6 @@ const TimePicker = ({
       };
       setEndDay(newStart);
     } else newEntry = { ...entry, startTime: newStart.toISOString() };
-    setDuration(getDuration(newEntry));
     setEntry(newEntry);
     console.log(newEntry);
   };
@@ -67,7 +65,6 @@ const TimePicker = ({
     const newEnd = new Date(year, month, day, hour, minute);
     setEndDay(newEnd);
     const newEntry = { ...entry, endTime: newEnd.toISOString() };
-    setDuration(getDuration(newEntry));
     setEntry(newEntry);
   };
 

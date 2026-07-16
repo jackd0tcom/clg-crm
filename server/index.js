@@ -116,6 +116,7 @@ const {
   getAllEntries,
   getRecentUserEntries,
   newEntry,
+  getEntryServices,
 } = timeCtrl;
 
 const {
@@ -301,6 +302,7 @@ app.get("/api/time-entry/running-timer", runningTimer);
 app.get("/api/time-entry/getUserEntries", getUserEntries);
 app.get("/api/time-entry/getAllEntries", getAllEntries);
 app.get("/api/time-entry/getRecentUserEntries", getRecentUserEntries);
+app.get("/api/time-entry/getEntryServices", getEntryServices);
 
 // Invoice endpoints
 app.get("/api/getInvoice/:invoiceId", getInvoice);

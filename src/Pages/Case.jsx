@@ -187,7 +187,7 @@ const Case = ({ openTaskView, refreshKey }) => {
     try {
       await axios.get("/api/getPeople").then((res) => {
         if (res.status === 200) {
-          console.log(res.data);
+          // console.log(res.data);
           setPeopleList(res.data);
         }
       });

@@ -15,6 +15,7 @@ import {
   CasePracticeAreas,
   Tribunal,
   AllowedEmails,
+  EntryService,
 } from "./model.js";
 
 const db = await connectToDB(
@@ -505,6 +506,59 @@ const taskAssignments = [
   { taskId: 6, userId: 3 },
 ];
 
+const entryServices = [
+  {
+    serviceTitle: "Prepare",
+  },
+  {
+    serviceTitle: "Call with client",
+  },
+  {
+    serviceTitle: "Call with OC",
+  },
+  {
+    serviceTitle: "Call with Court",
+  },
+  {
+    serviceTitle: "Email with Client",
+  },
+  {
+    serviceTitle: "Email with OC",
+  },
+  {
+    serviceTitle: "Email with Court",
+  },
+  {
+    serviceTitle: "Meet with Client",
+  },
+  {
+    serviceTitle: "Document Review",
+  },
+  {
+    serviceTitle: "File Review",
+  },
+  {
+    serviceTitle: "Drafting",
+    isDynamic: true,
+  },
+  {
+    serviceTitle: "Travel",
+  },
+  {
+    serviceTitle: "Court Time",
+  },
+  {
+    serviceTitle: "Filing at proth",
+  },
+  {
+    serviceTitle: "Legal research",
+  },
+  {
+    serviceTitle: "Other",
+    isDynamic: true,
+  },
+];
+
 // Sync database and seed data
 await db.sync({ alter: true }).then(async () => {
   console.log("Creating users...");
@@ -557,6 +611,9 @@ await db.sync({ alter: true }).then(async () => {
 
   console.log("Creating activity readers...");
   await ActivityReaders.bulkCreate(activityReaders);
+
+  console.log("Creating entry services...");
+  await EntryService.bulkCreate(entryServices);
 
   console.log("Database reset and seeded successfully!");
   console.log(

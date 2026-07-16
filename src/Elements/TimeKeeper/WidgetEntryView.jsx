@@ -5,16 +5,31 @@ import { getDuration } from "../../helpers/helperFunctions";
 import ProjectPicker from "./ProjectPicker";
 import TimePicker from "./TimePicker";
 import UserPicker from "./UserPicker";
+import EntryServicePicker from "./EntryServicePicker";
 
-const WidgetEntryView = ({ entry, setEntry, setShowEntryView, getEntries }) => {
+const WidgetEntryView = ({
+  entry,
+  setEntry,
+  setShowEntryView,
+  getEntries,
+  entryServices,
+  widgetView,
+  setEntriesRefreshKey,
+  caseId,
+  taskId,
+  title,
+}) => {
   const userStore = useSelector((state) => state.user);
   const [notes, setNotes] = useState(entry?.notes);
   const [status, setStatus] = useState("");
   const [showCaseTaskPicker, setShowCaseTaskPicker] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [duration, setDuration] = useState(entry.endTime && getDuration(entry));
   const [showTimePicker, setShowTimePicker] = useState(false);
   const resolvedUserId = entry.userId ?? userStore.userId;
+
+  const duration = getDuration(entry);
+  const isProject = entry.caseId || entry.taskId;
+  const canSave = entry.entryServiceId && isProject && duration !== "0:00:00";
 
   const newEntry = async () => {
     setStatus("saving");
@@ -33,21 +48,24 @@ const WidgetEntryView = ({ entry, setEntry, setShowEntryView, getEntries }) => {
           taskId: entry.taskId,
           startTime: entry.startTime,
           endTime: entry.endTime,
+          entryServiceId: entry.entryServiceId,
           userId: resolvedUserId,
         })
         .then((res) => {
           setStatus("success");
           setEntry({
-            caseId: null,
-            taskId: null,
+            caseId: caseId ? caseId : null,
+            taskId: taskId ? taskId : null,
             notes: "",
-            currentTitle: null,
+            currentTitle: title ? title : "",
             startTime: new Date().toISOString(),
             endTime: new Date().toISOString(),
+            entryServiceId: null,
             userId: userStore.userId ?? null,
           });
           setShowEntryView(false);
           getEntries?.();
+          setEntriesRefreshKey((prev) => (prev += 1));
         });
     } catch (error) {
       setStatus("error");
@@ -66,22 +84,25 @@ const WidgetEntryView = ({ entry, setEntry, setShowEntryView, getEntries }) => {
           taskId: entry.taskId,
           startTime: entry.startTime,
           endTime: entry.endTime,
+          entryServiceId: entry.entryServiceId,
           userId: resolvedUserId,
         })
         .then((res) => {
           setStatus("success");
           if (hide) {
             setEntry({
-              caseId: null,
-              taskId: null,
+              caseId: caseId ? caseId : null,
+              taskId: taskId ? taskId : null,
               notes: "",
-              currentTitle: null,
+              currentTitle: title ? title : "",
               startTime: new Date().toISOString(),
               endTime: new Date().toISOString(),
+              entryServiceId: null,
               userId: userStore.userId ?? null,
             });
             setShowEntryView(false);
             getEntries?.();
+            setEntriesRefreshKey((prev) => (prev += 1));
           }
         });
     } catch (error) {
@@ -117,7 +138,6 @@ const WidgetEntryView = ({ entry, setEntry, setShowEntryView, getEntries }) => {
     ).toISOString();
     const newEntry = { ...entry, endTime: newDate };
     setEntry(newEntry);
-    setDuration(getDuration(newEntry));
   };
 
   const decrement = () => {
@@ -126,20 +146,29 @@ const WidgetEntryView = ({ entry, setEntry, setShowEntryView, getEntries }) => {
     const newDate = new Date(
       date.setMinutes(date.getMinutes() - 15),
     ).toISOString();
-    if (newDate < entry.startTime) {
+    if (newDate < entry.startTime.toISOString()) {
       return;
     }
     const newEntry = { ...entry, endTime: newDate };
     setEntry(newEntry);
-    setDuration(getDuration(newEntry));
   };
 
   return (
-    <div className="entry-view-wrapper">
-      <p className="back-button" onClick={() => setShowEntryView(false)}>
-        Back
-      </p>
-      <div className="entry-view-container">
+    <div
+      className={
+        widgetView ? "widget-entry-view-wrapper" : "entry-view-wrapper"
+      }
+    >
+      {!widgetView && (
+        <p className="back-button" onClick={() => setShowEntryView(false)}>
+          Back
+        </p>
+      )}
+      <div
+        className={
+          widgetView ? "widget-entry-view-container" : "entry-view-container"
+        }
+      >
         {showDeleteModal ? (
           <>
             <p>Are you sure you want to delete this time entry?</p>
@@ -176,20 +205,24 @@ const WidgetEntryView = ({ entry, setEntry, setShowEntryView, getEntries }) => {
                   entry={entry}
                   setEntry={setEntry}
                   duration={duration}
-                  setDuration={setDuration}
                   setShowTimePicker={setShowTimePicker}
                   showTimePicker={showTimePicker}
                   updateEntry={updateEntry}
                 />
               )}
             </div>
-            <input
+            <EntryServicePicker
+              entryServices={entryServices}
+              entry={entry}
+              setEntry={setEntry}
+            />
+            {/* <input
               className="entry-view-description"
               onChange={(e) => setNotes(e.target.value)}
               type="text"
               value={notes}
               placeholder="Add a description"
-            />
+            /> */}
             <div className="picker-notes-wrapper">
               <UserPicker userId={entry.userId} setEntry={setEntry} />
               <ProjectPicker
@@ -203,20 +236,24 @@ const WidgetEntryView = ({ entry, setEntry, setShowEntryView, getEntries }) => {
               {status === "no project" && (
                 <div className="no-project">Please add a task or case</div>
               )}
-              <button
-                onClick={() => {
-                  entry.timeEntryId ? updateEntry(true) : newEntry();
-                }}
-                className="entry-save-button"
-              >
-                Save
-              </button>
-              <button
-                onClick={() => setShowDeleteModal(true)}
-                className="entry-delete-button"
-              >
-                Delete
-              </button>
+              {canSave && (
+                <button
+                  onClick={() => {
+                    entry.timeEntryId ? updateEntry(true) : newEntry();
+                  }}
+                  className="entry-save-button"
+                >
+                  Save
+                </button>
+              )}
+              {!widgetView && (
+                <button
+                  onClick={() => setShowDeleteModal(true)}
+                  className="entry-delete-button"
+                >
+                  Delete
+                </button>
+              )}
             </div>
           </>
         )}

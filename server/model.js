@@ -587,6 +587,10 @@ TimeEntry.init(
       type: DataTypes.TEXT,
       allowNull: true,
     },
+    entryServiceId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
     startTime: {
       type: DataTypes.DATE,
       allowNull: false,
@@ -614,6 +618,30 @@ TimeEntry.init(
   },
   {
     modelName: "timeEntry",
+    sequelize: db,
+    timestamps: true,
+  },
+);
+
+class EntryService extends Model {}
+EntryService.init(
+  {
+    entryServiceId: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    serviceTitle: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    isDynamic: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+  },
+  {
+    modelName: "entryService",
     sequelize: db,
     timestamps: true,
   },
@@ -938,6 +966,16 @@ Case.hasMany(TimeEntry, {
   as: "timeEntries",
 });
 
+// Time entry has one entry
+TimeEntry.belongsTo(EntryService, {
+  foreignKey: "entryServiceId",
+  as: "entryService",
+});
+EntryService.hasMany(TimeEntry, {
+  foreignKey: "entryServiceId",
+  as: "timeEntries",
+});
+
 // Invoice
 TimeEntry.belongsTo(Invoice, {
   foreignKey: "invoiceId",
@@ -995,4 +1033,5 @@ export {
   UserSettings,
   CustomCharge,
   AllowedEmails,
+  EntryService,
 };

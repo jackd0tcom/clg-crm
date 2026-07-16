@@ -9,8 +9,16 @@ const WidgetEntryList = ({
   startTimer,
   setShowEntryView,
   entriesRefreshKey,
+  entryServices,
 }) => {
   const [recentEntries, setRecentEntries] = useState([]);
+
+  const getServiceTitle = (id) => {
+    return (
+      entryServices.find((service) => service.entryServiceId === id)
+        ?.serviceTitle ?? ""
+    );
+  };
 
   useEffect(() => {
     const fetch = async () => {
@@ -109,7 +117,8 @@ const WidgetEntryList = ({
                             : "widget-entry-item-notes no-notes"
                         }
                       >
-                        {entry.notes ? entry.notes : "Add a Description"}
+                        {getServiceTitle(entry.entryServiceId) ??
+                          "Add a Description"}
                       </p>
                       <p>{getDuration(entry)}</p>
                     </div>
@@ -130,14 +139,6 @@ const WidgetEntryList = ({
                         )}
                         {entry.projectTitle}
                       </div>
-                      <i
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handlePressPlay(entry);
-                        }}
-                        id="time-entry-start"
-                        className="fa-solid fa-play"
-                      ></i>
                     </div>
                   </div>
                 ))

@@ -8,6 +8,7 @@ import Timer from "./Timer";
 import WidgetEntryList from "./WidgetEntryList";
 import WidgetEntryView from "./WidgetEntryView";
 import UserPicker from "./UserPicker";
+import EntryServicePicker from "./EntryServicePicker";
 
 const TimeKeeperWidget = ({ caseId, title, taskId, isNav }) => {
   const dispatch = useDispatch();
@@ -22,21 +23,24 @@ const TimeKeeperWidget = ({ caseId, title, taskId, isNav }) => {
   const [resetTimer, setResetTimer] = useState(false);
   const [showEntryView, setShowEntryView] = useState(false);
   const [entriesRefreshKey, setEntriesRefreshKey] = useState(0);
+  const [entryServices, setEntryServices] = useState([]);
   const [entry, setEntry] = useState({
     caseId: caseId ? caseId : null,
     taskId: taskId ? taskId : null,
     notes: "",
     currentTitle: title ? title : "",
-    startTime: null,
+    startTime: new Date(),
+    endTime: new Date(),
     userId: userStore.userId,
+    entryServiceId: null,
   });
 
-  // When Redux says timer is running but this instance doesn't have the entry, fetch it
-  useEffect(() => {
-    if (isRunning && !timeEntryId) {
-      fetch();
-    }
-  }, [isRunning]);
+  // // When Redux says timer is running but this instance doesn't have the entry, fetch it
+  // useEffect(() => {
+  //   if (isRunning && !timeEntryId) {
+  //     fetch();
+  //   }
+  // }, [isRunning]);
 
   const navProjectTitle = entry.currentTitle ? entry.currentTitle : "";
 
@@ -48,18 +52,18 @@ const TimeKeeperWidget = ({ caseId, title, taskId, isNav }) => {
   const fetch = async () => {
     try {
       await axios.get("/api/time-entry/running-timer").then((res) => {
-        if (res.status !== 200) {
-          console.log(res);
-          return;
-        }
-        if (res.data !== "No active entries") {
+        setEntryServices(res.data.entryServices);
+        if (res.data.timeEntryId) {
+          setEntryServices(res.data.entryServices);
           setTimeEntryId(res.data.timeEntryId);
           setEntry({
             caseId: res.data.caseId,
             taskId: res.data.taskId,
             notes: res.data.notes,
             startTime: res.data.startTime,
+            endTime: res.data.endTime,
             currentTitle: res.data.case.title,
+            entryServiceId: res.data.entryServiceId,
           });
           dispatch(timerStarted({ startTime: res.data.startTime }));
         }
@@ -75,16 +79,16 @@ const TimeKeeperWidget = ({ caseId, title, taskId, isNav }) => {
         setShowWidget(false);
         setShowEntryView(false);
         setShowCaseTaskPicker(false);
-        if (!isRunning) {
-          setEntry({
-            caseId: null,
-            taskId: null,
-            notes: "",
-            currentTitle: "",
-            startTime: null,
-            userId: userStore.userId,
-          });
-        }
+        setEntry({
+          caseId: caseId ? caseId : null,
+          taskId: taskId ? taskId : null,
+          notes: "",
+          currentTitle: title ? title : "",
+          startTime: new Date(),
+          endTime: new Date(),
+          entryServiceId: null,
+          userId: userStore.userId,
+        });
       }
     };
 
@@ -230,76 +234,30 @@ const TimeKeeperWidget = ({ caseId, title, taskId, isNav }) => {
               entry={entry}
               setEntry={setEntry}
               setShowEntryView={setShowEntryView}
+              entryServices={entryServices}
+              widgetView={false}
+              setEntriesRefreshKey={setEntriesRefreshKey}
+              caseId={caseId}
+              taskId={taskId}
+              title={title}
             />
           ) : (
             <>
-              <div className="time-keeper-widget-first">
-                <input
-                  className="time-keeper-description"
-                  type="text"
-                  placeholder="Description"
-                  value={entry.notes}
-                  onChange={(e) =>
-                    setEntry({ ...entry, notes: e.target.value })
-                  }
-                />
-                <div className="time-keeper-widget-timer-wrapper">
-                  <Timer
-                    isRunning={isRunning}
-                    reset={resetTimer}
-                    startTime={
-                      isRunning && reduxStartTime != null
-                        ? reduxStartTime
-                        : entry.startTime
-                    }
-                  />
-                  <button
-                    onClick={() => handlePlayButtonClick()}
-                    className={
-                      !isRunning
-                        ? "time-keeper-start-stop"
-                        : "time-keeper-start-stop running-toggle"
-                    }
-                  >
-                    <i
-                      className={
-                        !isRunning ? "fa-solid fa-play" : "fa-solid fa-stop"
-                      }
-                    ></i>
-                  </button>
-                </div>
-                {showWarning && (
-                  <div className="time-keeper-warning-wrapper">
-                    <p>Choose a Case or Task first!</p>
-                  </div>
-                )}
-              </div>
-              <div className="time-keeper-widget-second">
-                <div className="time-keeper-widget-pickers">
-                  <UserPicker
-                    userId={userStore.userId}
-                    setEntry={setEntry}
-                  />
-                  <ProjectPicker
-                    entry={entry}
-                    setEntry={setEntry}
-                    showCaseTaskPicker={showCaseTaskPicker}
-                    setShowCaseTaskPicker={setShowCaseTaskPicker}
-                  />
-                </div>
-                <div className="quick-add-wrapper">
-                  <button
-                    disabled={!isRunning}
-                    onClick={addFifteen}
-                    className="time-increment"
-                  >
-                    +15 Min
-                  </button>
-                </div>
-              </div>
+              <WidgetEntryView
+                entry={entry}
+                setEntry={setEntry}
+                setShowEntryView={setShowEntryView}
+                entryServices={entryServices}
+                widgetView={true}
+                setEntriesRefreshKey={setEntriesRefreshKey}
+                caseId={caseId}
+                taskId={taskId}
+                title={title}
+              />
               <WidgetEntryList
                 entry={entry}
                 setEntry={setEntry}
+                entryServices={entryServices}
                 startTimer={startTimer}
                 setShowEntryView={setShowEntryView}
                 entriesRefreshKey={entriesRefreshKey}

@@ -832,3 +832,7 @@ div.date-picker-wrapper > div > div > input[type="text"] {
 #activity-heading {
   margin-bottom: 3px;
 }
+
+.relative {
+  position: relative;
+}

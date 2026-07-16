@@ -1,4 +1,4 @@
-import { Case, User, Person, Task, TimeEntry } from "../model.js";
+import { Case, User, Person, Task, TimeEntry, EntryService } from "../model.js";
 import {
   createActivityLog,
   ACTIVITY_ACTIONS,
@@ -68,8 +68,16 @@ export default {
   updateEntry: async (req, res) => {
     try {
       console.log("updateEntry");
-      const { timeEntryId, notes, caseId, taskId, startTime, endTime, userId } =
-        req.body;
+      const {
+        timeEntryId,
+        notes,
+        caseId,
+        taskId,
+        startTime,
+        endTime,
+        userId,
+        entryServiceId,
+      } = req.body;
       if (!req.session.user) {
         return res.status(401).send("User not authenticated");
       }
@@ -86,6 +94,7 @@ export default {
         taskId,
         startTime,
         endTime,
+        entryServiceId,
         userId: userId ? userId : req.session.user.userId,
       });
 
@@ -120,7 +129,16 @@ export default {
   newEntry: async (req, res) => {
     try {
       console.log("newEntry");
-      const { caseId, taskId, notes, userId, startTime, endTime } = req.body;
+      const {
+        caseId,
+        taskId,
+        notes,
+        userId,
+        startTime,
+        endTime,
+        entryServiceId,
+      } = req.body;
+
       if (!req.session.user) {
         return res.status(401).send("User not authenticated");
       }
@@ -131,6 +149,7 @@ export default {
         notes,
         startTime,
         endTime,
+        entryServiceId,
         isRunning: false,
       });
 
@@ -152,8 +171,10 @@ export default {
         where: { isRunning: true, userId: req.session.user.userId },
       });
 
+      const services = await EntryService.findAll();
+
       if (!activeEntry) {
-        res.status(200).send("No active entries");
+        res.status(201).send({ entryServices: services });
         return;
       }
 
@@ -173,9 +194,27 @@ export default {
       const payload = {
         ...activeEntry.toJSON(),
         case: currentProject?.toJSON?.(),
+        entryServices: services,
       };
 
       res.status(200).send(payload);
+    } catch (error) {
+      console.log(error);
+      res.status(401).send(error);
+    }
+  },
+  getEntryServices: async (req, res) => {
+    try {
+      // Check for active entries
+      // Return if there is one
+      console.log("getEntryServices");
+      if (!req.session.user) {
+        return res.status(401).send("User not authenticated");
+      }
+
+      const services = await EntryService.findAll();
+
+      res.status(200).send(services);
     } catch (error) {
       console.log(error);
       res.status(401).send(error);

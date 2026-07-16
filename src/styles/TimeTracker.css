@@ -57,7 +57,7 @@
   border: 1px solid var(--light-border);
   border-radius: 5px;
   min-width: 375px;
-  background-color: white;
+  background-color: var(--root-bg-color-light);
   display: flex;
   flex-direction: column;
   gap: 15px;
@@ -83,11 +83,40 @@
   border: 1px solid var(--light-border);
   font-size: 0.9rem;
 }
-.time-keeper-widget-first {
+.widget-entry-view-container {
   display: flex;
-  justify-content: space-between;
-  padding: 15px 15px 0px;
+  flex-direction: column;
+  align-items: center;
   gap: 20px;
+  padding: 20px;
+  border-bottom: 1px solid var(--light-border);
+  background-color: white;
+}
+.entry-service-picker {
+  width: 100%;
+}
+.service-picker-wrapper {
+  display: flex;
+  padding: 5px;
+  border: 1px solid var(--light-border);
+  border-radius: 5px;
+  gap: 10px;
+  background-color: white;
+}
+.entry-service-notes {
+  border: none;
+}
+
+.duration-input {
+  background-color: white;
+}
+.widget-entry-view-container .picker-notes-wrapper {
+  justify-content: center;
+}
+.entry-service-picker-button {
+  font-size: 0.9rem;
+  padding: 6px 12px;
+  border: 1px solid var(--light-border);
 }
 .time-keeper-widget-second {
   position: relative;
@@ -581,7 +610,6 @@
 .widget-entry-group {
   background-color: white;
   margin-bottom: 15px;
-  border-top: 1px solid var(--light-border);
   color: black;
 }
 .widget-entry-day {
