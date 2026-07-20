@@ -1,5 +1,5 @@
 import connectToDB from "./db.js";
-import { PracticeArea, Tribunal } from "./model.js";
+import { PracticeArea, Tribunal, Rate } from "./model.js";
 
 const db = await connectToDB(
   process.env.DATABASE_URL || "postgresql:///clg-db",
@@ -43,6 +43,25 @@ const tribunalData = [
   { name: "susquehanna" },
 ];
 
+const rates = [
+  {
+    rateTitle: "Secretary",
+    rate: 165,
+  },
+  {
+    rateTitle: "Attorney",
+    rate: 395,
+  },
+  {
+    rateTitle: "Attorney - Court Time",
+    rate: 495,
+  },
+  {
+    rateTitle: "Attorney - Probate",
+    rate: 495,
+  },
+];
+
 try {
   console.log("🌱 Starting production seed...");
 
@@ -55,6 +74,17 @@ try {
     console.log(`✅ Created ${practiceAreasData.length} practice areas`);
   } else {
     console.log(`📋 Practice areas already exist (${existingAreas} found)`);
+  }
+
+  // Check if practice areas already exist
+  const existingRates = await Rate.count();
+
+  if (existingRates === 0) {
+    console.log("📋 Creating rates...");
+    await Rate.bulkCreate(rates);
+    console.log(`✅ Created ${rates.length} rates`);
+  } else {
+    console.log(`📋 Rates already exist (${rates} found)`);
   }
 
   // Check if tribunals already exist
