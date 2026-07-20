@@ -1,4 +1,4 @@
-import { User, UserSettings } from "../model.js";
+import { User, UserSettings, Rate } from "../model.js";
 
 export default {
   getUser: async (req, res) => {
@@ -36,11 +36,20 @@ export default {
         where: { userId: req.session.user.userId },
       });
 
+      const rates = await Rate.findAll({ order: [["rateId", "DESC"]] });
+
+      const userData = userSettings.toJSON();
+
+      const payload = {
+        userData,
+        rates: rates,
+      };
+
       if (!userSettings) {
-        res.status(404).send("User settings not found");
+        res.status(404).send(rates);
         return;
       }
-      res.status(200).send(userSettings);
+      res.status(200).send(payload);
     } catch (err) {
       console.log(err);
       res.status(500).send("Failed to save user settings");
@@ -80,6 +89,43 @@ export default {
       }
 
       res.status(200).send(updatedSettings);
+    } catch (err) {
+      console.log(err);
+      res.status(500).send(err);
+    }
+  },
+  updateRate: async (req, res) => {
+    try {
+      console.log("updateRate");
+
+      if (!req.session.user) {
+        res.status(401).send("User not authenticated");
+        return;
+      }
+
+      const { rateId, value } = req.body;
+
+      const rate = await Rate.findOne({
+        where: { rateId },
+      });
+
+      if (!rate) {
+        res.status(404).send("rate not found");
+        return;
+      }
+
+      const updatedRate = await rate.update({
+        rate: value,
+      });
+
+      if (!updatedRate) {
+        res.status(404).send("rate failed to update");
+        return;
+      }
+
+      const allRates = await Rate.findAll({ order: [["rateId", "DESC"]] });
+
+      res.status(200).send(allRates);
     } catch (err) {
       console.log(err);
       res.status(500).send(err);

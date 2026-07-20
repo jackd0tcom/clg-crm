@@ -16,6 +16,7 @@ import {
   Tribunal,
   AllowedEmails,
   EntryService,
+  Rate,
 } from "./model.js";
 
 const db = await connectToDB(
@@ -57,6 +58,25 @@ const users = [
     lastName: "Ball",
     role: "user",
     isAllowed: true,
+  },
+];
+
+const rates = [
+  {
+    rateTitle: "Secretary",
+    rate: 165,
+  },
+  {
+    rateTitle: "Attorney",
+    rate: 395,
+  },
+  {
+    rateTitle: "Attorney - Court Time",
+    rate: 495,
+  },
+  {
+    rateTitle: "Attorney - Probate",
+    rate: 495,
   },
 ];
 
@@ -615,12 +635,15 @@ await db.sync({ alter: true }).then(async () => {
   console.log("Creating entry services...");
   await EntryService.bulkCreate(entryServices);
 
+  console.log("Creating rates...");
+  await Rate.bulkCreate(rates);
+
   console.log("Database reset and seeded successfully!");
   console.log(
     `Created ${createdUsers.length} users, ${createdCases.length} cases, ${createdPeople.length} people, and ${createdTasks.length} tasks`,
   );
   console.log(
-    `Created ${caseAssignments.length} case assignments, ${taskAssignments.length} task assignments, and ${activityReaders.length} activity readers`,
+    `Created ${caseAssignments.length} case assignments, ${taskAssignments.length} task assignments, and ${activityReaders.length} activity readers and ${rates.length} rates`,
   );
 });
 

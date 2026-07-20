@@ -282,6 +282,7 @@ h5 {
   font-size: 0.9rem;
   white-space: nowrap;
   border-bottom: 1px solid var(--light-border);
+  color: black;
 }
 .dropdown-item:last-child {
   border-bottom: 0px;
@@ -835,4 +836,7 @@ div.date-picker-wrapper > div > div > input[type="text"] {
 
 .relative {
   position: relative;
+}
+.rate-selector-dropdown {
+  color: black;
 }

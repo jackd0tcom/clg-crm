@@ -3,6 +3,7 @@ import axios from "axios";
 import Loader from "../Elements/UI/Loader";
 import "../styles/Settings.css";
 import { useAuth0 } from "@auth0/auth0-react";
+import RateInput from "../Elements/Settings/RateInput";
 
 const Settings = () => {
   const [isGoogleConnected, setIsGoogleConnected] = useState(false);
@@ -24,6 +25,7 @@ const Settings = () => {
   const [originalDefaultRate, setOriginalDefaultRate] = useState(0);
   const [showRateSave, setShowRateSave] = useState(false);
   const [showPayToSave, setShowPayToSave] = useState(false);
+  const [rates, setRates] = useState([]);
   const { user } = useAuth0();
 
   const fetchUserSettings = async () => {
@@ -31,6 +33,7 @@ const Settings = () => {
       await axios.get("/api/getUserSettings").then((res) => {
         if (res.status === 200) {
           setPayTo(res.data.payTo);
+          setRates(res.data.rates);
           setOriginalPayTo(res.data.payTo);
           setDefaultRate(res.data.defaultRate);
           setOriginalDefaultRate(res.data.defaultRate);
@@ -44,7 +47,7 @@ const Settings = () => {
   useEffect(() => {
     checkGoogleConnection();
     fetchUserSettings();
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     const handleCalendarReconnect = (event) => {
@@ -273,6 +276,16 @@ const Settings = () => {
     }
   };
 
+  const updateRate = async (rateId, value) => {
+    try {
+      await axios.post("/api/updateRate", { rateId, value }).then((res) => {
+        setRates(res.data);
+      });
+    } catch (error) {
+      console.log(console.error());
+    }
+  };
+
   return (
     <div className="settings-wrapper">
       <div className="settings-header">
@@ -287,32 +300,10 @@ const Settings = () => {
             </p>
           </div>
           <div className="invoice-settings">
-            <div className="invoice-settings-section">
-              <p>Default Invoice Rate</p>
-              <div className="invoice-settings-input-wrapper">
-                <input
-                  type="number"
-                  value={defaultRate}
-                  onChange={(e) => {
-                    if (Number(e.target.value) !== originalDefaultRate) {
-                      setShowRateSave(true);
-                    } else setShowRateSave(false);
-                    setDefaultRate(e.target.value);
-                  }}
-                />
-                {showRateSave && (
-                  <button
-                    className="invoice-settings-save-button"
-                    onClick={() => {
-                      handleUpdateUserSettings("defaultRate", defaultRate);
-                      setOriginalDefaultRate(defaultRate);
-                      setShowRateSave(false);
-                    }}
-                  >
-                    Save
-                  </button>
-                )}
-              </div>
+            <div className="invoice-settings-section rates-section">
+              {rates?.map((rate) => (
+                <RateInput rate={rate} updateRate={updateRate} />
+              ))}
             </div>
             <div className="invoice-settings-section">
               <p>Default Pay To Address</p>

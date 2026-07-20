@@ -152,6 +152,9 @@
   padding: 10px 15px;
   border-bottom: 1px solid var(--light-border);
 }
+.invoice-status-icon .status-icon-wrapper {
+  padding: 0;
+}
 
 .invoice-items-list-item {
   display: grid;

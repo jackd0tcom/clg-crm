@@ -82,8 +82,8 @@
 .users-list-head,
 .admin-user-toggle-wrapper {
   display: grid;
-  grid-template-columns: 0.25fr 1fr 1fr 1fr 1fr 0.1fr;
-  row-gap: 2rem;
+  grid-template-columns: 0.25fr 0.75fr 0.75fr 1fr 1fr 1fr 0.2fr;
+  gap: 2rem;
   align-items: center;
   font-size: 0.9rem;
 }
@@ -368,4 +368,12 @@ input:checked + .slider:before {
   background-color: #f8d7da;
   color: #721c24;
   border: 1px solid #f5c6cb;
+}
+
+.rate-selector-button {
+  border: 1px solid var(--light-border);
+  font-size: 0.8rem;
+}
+.rate-selector-button:hover {
+  color: black;
 }

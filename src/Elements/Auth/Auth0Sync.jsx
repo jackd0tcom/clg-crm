@@ -17,13 +17,13 @@ const Auth0Sync = ({ onSyncComplete }) => {
     try {
       // Debug: Log the full user object to see what Auth0 provides
       // console.log('🔍 Auth0 user object:', user);
-      
+
       // Get Auth0 access token for Management API calls
       const auth0AccessToken = await getAccessTokenSilently();
-      
+
       // console.log('🔄 Syncing user with Auth0...');
       // console.log('🔑 Auth0 access token available:', !!auth0AccessToken);
-      
+
       const response = await axios.post("/api/sync-auth0-user", {
         auth0Id: user.sub,
         email: user.email,
@@ -31,7 +31,7 @@ const Auth0Sync = ({ onSyncComplete }) => {
         picture: user.picture,
         auth0AccessToken, // Pass Auth0 token for Management API calls
       });
-      
+
       // Update Redux store with user data from sync response
       if (response.data.user) {
         dispatch({
@@ -44,10 +44,11 @@ const Auth0Sync = ({ onSyncComplete }) => {
             role: response.data.user.role,
             profilePic: response.data.user.profilePic,
             isAllowed: response.data.user.isAllowed,
-          }
+            rateId: response.data.user.rateId,
+          },
         });
       }
-      
+
       onSyncComplete();
     } catch (error) {
       // console.error("❌ Failed to sync user:", error);

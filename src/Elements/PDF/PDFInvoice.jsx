@@ -20,9 +20,14 @@ const PDFInvoice = ({
   payTo,
   defaultRate,
   entryServices,
+  rates,
 }) => {
   const now = new Date();
   const today = formatDateNoTimeWithYear(now);
+
+  const getRate = (item) => {
+    return rates.find((rate) => rate.rateId === item.rateId)?.rate ?? 0;
+  };
 
   const getServiceTitle = (id) => {
     return (
@@ -44,7 +49,7 @@ const PDFInvoice = ({
       return (
         acc +
         getRoundedAmountOfEntry(
-          entry.rate ?? defaultRate,
+          getRate(entry),
           entry,
           invoiceData.roundingAmount,
         )
@@ -131,7 +136,7 @@ const PDFInvoice = ({
                   {getServiceTitle(entry.entryServiceId) ?? entry.notes}
                 </Text>
                 <Text style={[styles.text, { flexBasis: 30 }]}>
-                  {entry.rate ?? defaultRate}
+                  {getRate(entry)}
                 </Text>
                 <Text style={[styles.text, { flexBasis: 50 }]}>
                   {getRoundedDuration(entry, invoiceData.roundingAmount)}
@@ -141,7 +146,7 @@ const PDFInvoice = ({
                 >
                   $
                   {getRoundedAmountOfEntry(
-                    entry.rate ?? defaultRate,
+                    getRate(entry),
                     entry,
                     invoiceData.roundingAmount,
                   )}

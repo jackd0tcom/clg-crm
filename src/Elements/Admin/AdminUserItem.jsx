@@ -1,6 +1,7 @@
 import { useState } from "react";
 import ProfilePic from "../UI/ProfilePic";
 import axios from "axios";
+import RateSelector from "../UI/RateSelector";
 
 const AdminUserToggle = ({
   user,
@@ -8,6 +9,8 @@ const AdminUserToggle = ({
   handleRoleChange,
   setUsers,
   users,
+  rates,
+  handleUpdateUser,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [roleLoading, setRoleLoading] = useState(false);
@@ -93,6 +96,12 @@ const AdminUserToggle = ({
           </button>
         </div>
       </div>
+      <RateSelector
+        user={user}
+        rates={rates}
+        handleUpdateUser={handleUpdateUser}
+        isAdminPage={true}
+      />
       <div className="toggle-container">
         <p>Blocked</p>
         <label htmlFor={`allow-toggle-${user.userId}`} className="switch">

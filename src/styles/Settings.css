@@ -63,6 +63,25 @@
   gap: 10px;
   margin-bottom: 25px;
 }
+.rate-input-container {
+  display: flex;
+  gap: 5px;
+  flex-direction: column;
+}
+.rate-input-wrapper {
+  display: flex;
+  gap: 10px;
+  align-items: end;
+}
+.save-rate-button {
+  font-size: 0.9rem;
+  background-color: var(--bright-green);
+  color: white;
+}
+.save-rate-button:hover {
+  color: white;
+  background-color: var(--bright-dark-green);
+}
 .invoice-settings-input-wrapper {
   display: flex;
   align-items: start;

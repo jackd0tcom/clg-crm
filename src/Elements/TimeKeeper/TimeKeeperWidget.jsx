@@ -24,6 +24,7 @@ const TimeKeeperWidget = ({ caseId, title, taskId, isNav }) => {
   const [showEntryView, setShowEntryView] = useState(false);
   const [entriesRefreshKey, setEntriesRefreshKey] = useState(0);
   const [entryServices, setEntryServices] = useState([]);
+  const [rates, setRates] = useState([]);
   const [entry, setEntry] = useState({
     caseId: caseId ? caseId : null,
     taskId: taskId ? taskId : null,
@@ -33,14 +34,8 @@ const TimeKeeperWidget = ({ caseId, title, taskId, isNav }) => {
     endTime: new Date(),
     userId: userStore.userId,
     entryServiceId: null,
+    rateId: userStore.rateId ?? null,
   });
-
-  // // When Redux says timer is running but this instance doesn't have the entry, fetch it
-  // useEffect(() => {
-  //   if (isRunning && !timeEntryId) {
-  //     fetch();
-  //   }
-  // }, [isRunning]);
 
   const navProjectTitle = entry.currentTitle ? entry.currentTitle : "";
 
@@ -53,6 +48,7 @@ const TimeKeeperWidget = ({ caseId, title, taskId, isNav }) => {
     try {
       await axios.get("/api/time-entry/running-timer").then((res) => {
         setEntryServices(res.data.entryServices);
+        setRates(res.data.rates);
         if (res.data.timeEntryId) {
           setEntryServices(res.data.entryServices);
           setTimeEntryId(res.data.timeEntryId);
@@ -88,6 +84,7 @@ const TimeKeeperWidget = ({ caseId, title, taskId, isNav }) => {
           endTime: new Date(),
           entryServiceId: null,
           userId: userStore.userId,
+          rateId: userStore.rateId,
         });
       }
     };
@@ -240,6 +237,7 @@ const TimeKeeperWidget = ({ caseId, title, taskId, isNav }) => {
               caseId={caseId}
               taskId={taskId}
               title={title}
+              rates={rates}
             />
           ) : (
             <>
@@ -253,6 +251,7 @@ const TimeKeeperWidget = ({ caseId, title, taskId, isNav }) => {
                 caseId={caseId}
                 taskId={taskId}
                 title={title}
+                rates={rates}
               />
               <WidgetEntryList
                 entry={entry}

@@ -11,6 +11,7 @@ import {
   capitalize,
 } from "../helpers/helperFunctions";
 import PDFInvoice from "../Elements/PDF/PDFInvoice";
+import StatusIcon from "../Elements/Task/StatusIcon";
 
 const Invoice = () => {
   const { invoiceId } = useParams();
@@ -28,6 +29,7 @@ const Invoice = () => {
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
   const [somethingToSave, setSomethingToSave] = useState(false);
   const [entryServices, setEntryServices] = useState([]);
+  const [rates, setRates] = useState([]);
   const [showDelete, setShowDelete] = useState(false);
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
@@ -71,6 +73,7 @@ const Invoice = () => {
       if (res.status === 200) {
         const data = res.data;
         setInvoiceData(data);
+        setRates(data.rates);
         setEntryServices(res.data.entryServices);
         setDefaultRate(data.settings.defaultRate);
         setPayTo(data.payTo ?? data.settings.payTo ?? "");
@@ -88,7 +91,10 @@ const Invoice = () => {
 
         const byProject = entries?.reduce((acc, entry) => {
           const project = entry.case?.title || entry.task?.title || "Untitled";
-          if (!acc[project]) acc[project] = [];
+          if (!acc[project]) {
+            acc[project] = [];
+            acc[project].type = entry.case ? "case" : "task";
+          }
           acc[project].push(entry);
           return acc;
         }, {});
@@ -350,6 +356,7 @@ const Invoice = () => {
           payTo={payTo}
           defaultRate={defaultRate}
           entryServices={entryServices}
+          rates={rates}
         />
       ) : (
         <div className="invoice-body">
@@ -383,15 +390,6 @@ const Invoice = () => {
                   setPayTo(e.target.value);
                 }}
               ></textarea>
-            </div>
-            <div className="billing-wrapper">
-              <p>Default Rate:</p>
-              <input
-                type="number"
-                value={defaultRate}
-                disabled={status !== "draft"}
-                onChange={(e) => setDefaultRate(Number(e.target.value))}
-              />
             </div>
             <div className="billing-wrapper">
               <p>Rounding</p>
@@ -464,29 +462,45 @@ const Invoice = () => {
               <Loader />
             ) : (
               <>
-                {groupedData?.map((project, projectIndex) => (
-                  <div className="invoice-project-item">
-                    <div className="invoice-project-item-head">
-                      <i className="fa-solid fa-briefcase"></i>
-                      <p>{project[0]}</p>
+                {groupedData?.map((project, projectIndex) => {
+                  console.log(project[1][0].task?.status);
+                  return (
+                    <div className="invoice-project-item">
+                      <div className="invoice-project-item-head">
+                        {project[1]?.type === "case" ? (
+                          <i className="fa-solid fa-briefcase"></i>
+                        ) : (
+                          <div className="invoice-status-icon">
+                            <StatusIcon
+                              status={project[1][0].task?.status}
+                              hasIcon={true}
+                              hasTitle={false}
+                              noBg={true}
+                            />
+                          </div>
+                        )}
+
+                        <p>{project[0]}</p>
+                      </div>
+                      {project[1].map((item, index) => (
+                        <InvoiceItem
+                          setSomethingToSave={setSomethingToSave}
+                          key={`${projectIndex}-${index}`}
+                          setGroupedData={setGroupedData}
+                          groupedData={groupedData}
+                          item={item}
+                          defaultRate={defaultRate}
+                          projectIndex={projectIndex}
+                          index={index}
+                          rounding={invoiceData.roundingAmount}
+                          status={status}
+                          entryServices={entryServices}
+                          rates={rates}
+                        />
+                      ))}
                     </div>
-                    {project[1].map((item, index) => (
-                      <InvoiceItem
-                        setSomethingToSave={setSomethingToSave}
-                        key={`${projectIndex}-${index}`}
-                        setGroupedData={setGroupedData}
-                        groupedData={groupedData}
-                        item={item}
-                        defaultRate={defaultRate}
-                        projectIndex={projectIndex}
-                        index={index}
-                        rounding={invoiceData.roundingAmount}
-                        status={status}
-                        entryServices={entryServices}
-                      />
-                    ))}
-                  </div>
-                ))}
+                  );
+                })}
                 {invoiceData?.customCharges?.map((charge, index) => (
                   <CustomChargeItem
                     setSomethingToSave={setSomethingToSave}

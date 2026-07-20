@@ -19,10 +19,11 @@ const InvoiceItem = ({
   setSomethingToSave,
   status,
   entryServices,
+  rates,
 }) => {
   const [showTrash, setShowTrash] = useState(true);
 
-  const rate = item.rate ?? defaultRate;
+  const rate = rates.find((rate) => rate.rateId === item.rateId)?.rate ?? 0;
 
   const getServiceTitle = (id) => {
     return (
@@ -75,16 +76,7 @@ const InvoiceItem = ({
     >
       <p>{getServiceTitle(item.entryServiceId) ?? item.notes}</p>
       <TimeEntryStatusBadge status={item.paidStatus} />
-      {status !== "draft" ? (
-        <p>{rate}</p>
-      ) : (
-        <input
-          type="number"
-          value={rate}
-          onChange={(e) => handleRateChange(e)}
-        />
-      )}
-
+      <p>${rate}</p>
       <p>{getRoundedDuration(item, rounding)}</p>
       <div className="amount-wrapper">
         <p>{getRoundedAmountOfEntry(rate, item, rounding)}</p>

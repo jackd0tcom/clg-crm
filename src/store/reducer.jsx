@@ -8,6 +8,7 @@ const initialState = {
     profilePic: null,
     isAllowed: false,
     isAdmin: false,
+    rateId: null,
   },
   isAuthenticated: false,
   isRunning: false,
@@ -34,6 +35,7 @@ const reducer = (state = initialState, action) => {
           profilePic: action.payload.profilePic,
           isAllowed: action.payload.isAllowed,
           isAdmin: action.payload.role === "admin",
+          rateId: action.payload.rateId,
         },
         isAuthenticated: true,
         isRunning: false,
@@ -50,6 +52,7 @@ const reducer = (state = initialState, action) => {
           profilePic: null,
           isAllowed: false,
           isAdmin: false,
+          rateId: null,
         },
         isAuthenticated: false,
         isRunning: false,
@@ -93,3 +96,4 @@ export default reducer;
 export const timerStarted = (payload) => ({ type: TIMER_STARTED, payload });
 export const timerStopped = () => ({ type: TIMER_STOPPED });
 export const timerUpdated = (payload) => ({ type: TIMER_UPDATED, payload });
+export const updateUser = (payload) => ({ type: UPDATE_USER, payload });

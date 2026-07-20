@@ -6,6 +6,7 @@ import ProjectPicker from "./ProjectPicker";
 import TimePicker from "./TimePicker";
 import UserPicker from "./UserPicker";
 import EntryServicePicker from "./EntryServicePicker";
+import RateSelector from "../UI/RateSelector";
 
 const WidgetEntryView = ({
   entry,
@@ -18,6 +19,7 @@ const WidgetEntryView = ({
   caseId,
   taskId,
   title,
+  rates,
 }) => {
   const userStore = useSelector((state) => state.user);
   const [notes, setNotes] = useState(entry?.notes);
@@ -50,6 +52,7 @@ const WidgetEntryView = ({
           endTime: entry.endTime,
           entryServiceId: entry.entryServiceId,
           userId: resolvedUserId,
+          rateId: entry.rateId ?? null,
         })
         .then((res) => {
           setStatus("success");
@@ -62,10 +65,11 @@ const WidgetEntryView = ({
             endTime: new Date().toISOString(),
             entryServiceId: null,
             userId: userStore.userId ?? null,
+            rateId: userStore.rateId ?? null,
           });
           setShowEntryView(false);
           getEntries?.();
-          setEntriesRefreshKey((prev) => (prev += 1));
+          setEntriesRefreshKey?.((prev) => (prev += 1));
         });
     } catch (error) {
       setStatus("error");
@@ -74,6 +78,7 @@ const WidgetEntryView = ({
   };
 
   const updateEntry = async (hide) => {
+    console.log("saving", entry.rateId);
     setStatus("saving");
     try {
       await axios
@@ -86,6 +91,7 @@ const WidgetEntryView = ({
           endTime: entry.endTime,
           entryServiceId: entry.entryServiceId,
           userId: resolvedUserId,
+          rateId: entry.rateId,
         })
         .then((res) => {
           setStatus("success");
@@ -99,10 +105,11 @@ const WidgetEntryView = ({
               endTime: new Date().toISOString(),
               entryServiceId: null,
               userId: userStore.userId ?? null,
+              rateId: userStore.rateId ?? null,
             });
             setShowEntryView(false);
             getEntries?.();
-            setEntriesRefreshKey((prev) => (prev += 1));
+            setEntriesRefreshKey?.((prev) => (prev += 1));
           }
         });
     } catch (error) {
@@ -153,6 +160,10 @@ const WidgetEntryView = ({
     setEntry(newEntry);
   };
 
+  const handleUpdateEntry = (rateId) => {
+    setEntry({ ...entry, rateId: rateId });
+  };
+
   return (
     <div
       className={
@@ -172,7 +183,8 @@ const WidgetEntryView = ({
               startTime: new Date().toISOString(),
               endTime: new Date().toISOString(),
               entryServiceId: null,
-              userId: userStore.userId,
+              userId: userStore.userId ?? null,
+              rateId: userStore.rateId ?? null,
             });
           }}
         >
@@ -231,13 +243,6 @@ const WidgetEntryView = ({
               entry={entry}
               setEntry={setEntry}
             />
-            {/* <input
-              className="entry-view-description"
-              onChange={(e) => setNotes(e.target.value)}
-              type="text"
-              value={notes}
-              placeholder="Add a description"
-            /> */}
             <div className="picker-notes-wrapper">
               <UserPicker userId={entry.userId} setEntry={setEntry} />
               <ProjectPicker
@@ -245,6 +250,13 @@ const WidgetEntryView = ({
                 setShowCaseTaskPicker={setShowCaseTaskPicker}
                 entry={entry}
                 setEntry={setEntry}
+              />
+              <RateSelector
+                user={userStore}
+                rates={rates}
+                handleUpdateUser={handleUpdateEntry}
+                entry={entry}
+                handleUpdateEntry={handleUpdateEntry}
               />
             </div>
             <div className="entry-button-wrapper">

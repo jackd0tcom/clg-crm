@@ -1,4 +1,12 @@
-import { Case, User, Person, Task, TimeEntry, EntryService } from "../model.js";
+import {
+  Case,
+  User,
+  Person,
+  Task,
+  TimeEntry,
+  EntryService,
+  Rate,
+} from "../model.js";
 import {
   createActivityLog,
   ACTIVITY_ACTIONS,
@@ -77,6 +85,7 @@ export default {
         endTime,
         userId,
         entryServiceId,
+        rateId,
       } = req.body;
       if (!req.session.user) {
         return res.status(401).send("User not authenticated");
@@ -96,6 +105,7 @@ export default {
         endTime,
         entryServiceId,
         userId: userId ? userId : req.session.user.userId,
+        rateId,
       });
 
       res.status(200).send(updatedEntry);
@@ -137,6 +147,7 @@ export default {
         startTime,
         endTime,
         entryServiceId,
+        rateId,
       } = req.body;
 
       if (!req.session.user) {
@@ -151,6 +162,7 @@ export default {
         endTime,
         entryServiceId,
         isRunning: false,
+        rateId,
       });
 
       res.status(200).send(newEntry);
@@ -172,9 +184,10 @@ export default {
       });
 
       const services = await EntryService.findAll();
+      const rates = await Rate.findAll();
 
       if (!activeEntry) {
-        res.status(201).send({ entryServices: services });
+        res.status(201).send({ entryServices: services, rates });
         return;
       }
 
@@ -195,6 +208,7 @@ export default {
         ...activeEntry.toJSON(),
         case: currentProject?.toJSON?.(),
         entryServices: services,
+        rates,
       };
 
       res.status(200).send(payload);
@@ -306,6 +320,8 @@ export default {
 
       const entryServices = await EntryService.findAll();
 
+      const rates = await Rate.findAll();
+
       const entriesWithProjects = await Promise.all(
         notNullEntries.map(async (entry) => {
           const entryJson = entry.toJSON();
@@ -339,6 +355,7 @@ export default {
       const payload = {
         entries: entriesWithProjects,
         entryServices: entryServices,
+        rates,
       };
 
       if (!entries) {

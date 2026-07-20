@@ -1,4 +1,4 @@
-import { User, UserSettings, AllowedEmails } from "../model.js";
+import { User, UserSettings, AllowedEmails, Rate } from "../model.js";
 import bcrypt from "bcryptjs";
 
 export default {
@@ -112,7 +112,15 @@ export default {
       const { auth0Id, email, name, picture, auth0AccessToken } = req.body;
 
       // Check if user exists by auth0Id
-      let user = await User.findOne({ where: { auth0Id } });
+      let user = await User.findOne({
+        where: { auth0Id },
+        include: [
+          {
+            model: Rate,
+            as: "rate",
+          },
+        ],
+      });
       let isNewUser = false;
 
       if (!user) {
@@ -210,6 +218,7 @@ export default {
         authProvider: "auth0",
         profilePic: user.profilePic,
         isAllowed: user.isAllowed,
+        rateId: user.rateId,
       };
 
       res.status(200).json({ user: req.session.user });

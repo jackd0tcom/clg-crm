@@ -65,6 +65,12 @@ User.init(
       allowNull: false,
       defaultValue: false,
     },
+    userType: {
+      type: DataTypes.ENUM("attorney", "secretary"),
+    },
+    rateId: {
+      type: DataTypes.INTEGER,
+    },
   },
   {
     modelName: "user",
@@ -611,7 +617,7 @@ TimeEntry.init(
       type: DataTypes.ENUM("draft", "posted", "paid"),
       defaultValue: "draft",
     },
-    rate: {
+    rateId: {
       type: DataTypes.INTEGER,
       allowNull: true,
     },
@@ -809,6 +815,28 @@ CasePracticeAreas.init(
   },
 );
 
+class Rate extends Model {}
+Rate.init(
+  {
+    rateId: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    rateTitle: {
+      type: DataTypes.STRING,
+    },
+    rate: {
+      type: DataTypes.INTEGER,
+    },
+  },
+  {
+    modelName: "rate",
+    sequelize: db,
+    timestamps: true,
+  },
+);
+
 // Many-to-many relationships for assignees
 Task.belongsToMany(User, {
   through: TaskAssignees,
@@ -839,6 +867,12 @@ User.belongsToMany(Case, {
 // One-to-many relationships for ownership
 User.hasMany(Task, { foreignKey: "ownerId", as: "ownedTasks" });
 Task.belongsTo(User, { as: "owner", foreignKey: "ownerId" });
+
+Rate.hasMany(User, { foreignKey: "rateId", as: "users" });
+User.belongsTo(Rate, { as: "rate", foreignKey: "rateId" });
+
+Rate.hasMany(TimeEntry, { foreignKey: "rateId", as: "entries" });
+TimeEntry.belongsTo(Rate, { as: "rate", foreignKey: "rateId" });
 
 User.hasMany(Case, { foreignKey: "ownerId", as: "ownedCases" });
 Case.belongsTo(User, { as: "owner", foreignKey: "ownerId" });
@@ -1034,4 +1068,5 @@ export {
   CustomCharge,
   AllowedEmails,
   EntryService,
+  Rate,
 };

@@ -1,4 +1,4 @@
-import { User, AllowedEmails, UserSettings } from "../model.js";
+import { User, AllowedEmails, UserSettings, Rate } from "../model.js";
 
 export default {
   requireAdmin: (req, res, next) => {
@@ -24,29 +24,26 @@ export default {
           "isAllowed",
           "createdAt",
           "profilePic",
+          "rateId",
         ],
         order: [["createdAt", "DESC"]],
+        include: [
+          {
+            model: Rate,
+            as: "rate",
+          },
+        ],
       });
+
+      const rates = await Rate.findAll();
 
       const allowed = await AllowedEmails.findAll();
 
       res.json({
         success: true,
-        users: users.map((user) => ({
-          userId: user.userId,
-          username: user.username,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          email: user.email,
-          role: user.role,
-          isAllowed: user.isAllowed,
-          createdAt: user.createdAt,
-          profilePic: user.profilePic,
-          fullName:
-            `${user.firstName || ""} ${user.lastName || ""}`.trim() ||
-            user.username,
-        })),
+        users,
         allowedEmails: allowed,
+        rates: rates,
       });
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -371,6 +368,57 @@ export default {
     } catch (error) {
       console.log(error);
       res.status(500).send("Failed to remove person from case");
+    }
+  },
+  updateUser: async (req, res) => {
+    try {
+      console.log("updateUser");
+
+      if (!req.session.user) {
+        res.status(401).send("User not authenticated");
+        return;
+      }
+
+      const { fieldName, value, userId } = req.body;
+
+      const user = await User.findOne({
+        where: { userId },
+      });
+
+      if (!user) {
+        res.status(404).send("user not found");
+        return;
+      }
+
+      const updateUser = await user.update({
+        [fieldName]: value,
+      });
+
+      if (!updateUser) {
+        res.status(404).send("User failed to update");
+        return;
+      }
+
+      if (fieldName === "rateId") {
+        const userWithRate = await User.findOne({
+          where: {
+            userId,
+          },
+          include: [
+            {
+              model: Rate,
+              as: "rate",
+            },
+          ],
+        });
+        res.status(200).send(userWithRate);
+        return;
+      }
+
+      res.status(200).send(updateUser);
+    } catch (err) {
+      console.log(err);
+      res.status(500).send(err);
     }
   },
 };

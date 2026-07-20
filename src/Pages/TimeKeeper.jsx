@@ -20,6 +20,7 @@ const TimeKeeper = () => {
   const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
   const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
   const [entryServices, setEntryServices] = useState([]);
+  const [rates, setRates] = useState([]);
   const [entry, setEntry] = useState({
     caseId: null,
     taskId: null,
@@ -29,6 +30,7 @@ const TimeKeeper = () => {
     endTime: new Date().toISOString(),
     entryServiceId: null,
     userId: userStore.userId,
+    rateId: userStore.rateId ?? null,
   });
   const [filter, setFilter] = useState({
     dateRange: {
@@ -58,6 +60,7 @@ const TimeKeeper = () => {
         setEntryList(res.data.entries.filter((entry) => entry !== null));
         setIsLoading(false);
         setEntryServices(res.data.entryServices);
+        setRates(res.data.rates);
       });
     } catch (error) {
       console.log(error);
@@ -83,7 +86,7 @@ const TimeKeeper = () => {
 
   useEffect(() => {
     getEntries();
-  }, []);
+  }, [userStore]);
 
   useEffect(() => {
     if (userStore.userId == null) {
@@ -237,6 +240,7 @@ const TimeKeeper = () => {
           setShowEntryView={setShowEntryView}
           getEntries={getEntries}
           entryServices={entryServices}
+          rates={rates}
         />
       ) : (
         <>
@@ -258,6 +262,7 @@ const TimeKeeper = () => {
               data={processedData}
               getEntries={getEntries}
               entryServices={entryServices}
+              rates={rates}
             />
           )}
         </>

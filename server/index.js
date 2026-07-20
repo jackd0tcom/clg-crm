@@ -34,8 +34,11 @@ validateEnvironment();
 
 const { updatePerson, newPerson, deletePerson, getPeople, assignPersonToCase } =
   personCtrl;
-const { getUser, getUsers, getUserSettings, updateUserSettings } = userCtrl;
+const { getUser, getUsers, getUserSettings, updateUserSettings, updateRate } =
+  userCtrl;
 const { createComment, getMentionData } = commentCtrl;
+
+const { updateUser } = adminCtrl;
 
 const {
   getCases,
@@ -318,9 +321,11 @@ app.post("/api/deleteEntryFromInvoice", deleteEntryFromInvoice);
 
 // user access check endpoint
 app.get("/api/user/check-access", adminCtrl.checkUserAccess);
+app.post("/api/updateRate", updateRate);
 
 // admin endpoints (require admin role)
 app.get("/api/admin/users", requireAccess, requireAdmin, adminCtrl.getAllUsers);
+app.post("/api/admin/updateUser", updateUser);
 app.post(
   "/api/admin/users/:userId/access",
   requireAccess,

@@ -8,6 +8,7 @@ import {
   UserSettings,
   CustomCharge,
   EntryService,
+  Rate,
 } from "../model.js";
 import { Op } from "sequelize";
 
@@ -59,6 +60,8 @@ export default {
         where: { userId: req.session.user.userId },
       });
 
+      const rates = await Rate.findAll();
+
       const invoiceData = invoice.toJSON();
 
       const invoiceWithItems = {
@@ -66,6 +69,7 @@ export default {
         entries: invoiceItems,
         settings: userSettings,
         entryServices: entryServices,
+        rates: rates,
       };
 
       res.status(200).send(invoiceWithItems);
@@ -205,12 +209,19 @@ export default {
       const casesWithEntries = (
         await Promise.all(
           billableCases.map(async (c) => {
+            const tasks = await Task.findAll({
+              where: { caseId: c.caseId },
+              attributes: ["taskId"],
+            });
+            const taskIds = tasks.map((t) => t.taskId);
+
             const entries = await TimeEntry.findAll({
               where: {
-                caseId: c.caseId,
-                startTime: {
-                  [Op.between]: [firstDay, lastDay],
-                },
+                startTime: { [Op.between]: [firstDay, lastDay] },
+                [Op.or]: [
+                  { caseId: c.caseId },
+                  ...(taskIds.length ? [{ taskId: { [Op.in]: taskIds } }] : []),
+                ],
               },
             });
             if (!entries.length) return null;

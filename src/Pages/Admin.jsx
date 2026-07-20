@@ -5,6 +5,9 @@ import { useAuth0 } from "@auth0/auth0-react";
 import Loader from "../Elements/UI/Loader";
 import ProfilePic from "../Elements/UI/ProfilePic";
 import PendingUserItem from "../Elements/Admin/PendingUserItem";
+import { useDispatch } from "react-redux";
+import { updateUser } from "../store/reducer";
+import { useSelector } from "react-redux";
 
 const Admin = () => {
   const [users, setUsers] = useState([]);
@@ -12,10 +15,14 @@ const Admin = () => {
   const [loading, setLoading] = useState(true);
   const { isAuthenticated, isLoading } = useAuth0();
   const [newUser, setNewUser] = useState("");
+  const dispatch = useDispatch();
   const [showAddUser, setShowAddUser] = useState(false);
+  const [rates, setRates] = useState([]);
+  const userStore = useSelector((state) => state.user);
 
   const fetchUsers = async () => {
     await axios.get("/api/admin/users").then((res) => {
+      setRates(res.data.rates);
       setPendingUsers(res.data.allowedEmails);
       setUsers(res.data.users);
       setLoading(false);
@@ -70,6 +77,28 @@ const Admin = () => {
           ),
         );
       }
+    } catch (error) {
+      console.error("❌ Failed to update user role:", error);
+      // Optionally show an error message
+    }
+  };
+
+  const handleUpdateUser = async (fieldName, value, userId) => {
+    try {
+      const response = await axios
+        .post("/api/admin/updateUser", {
+          fieldName,
+          value,
+          userId,
+        })
+        .then((res) => {
+          setUsers((prevUsers) =>
+            prevUsers.map((u) => (u.userId === userId ? res.data : u)),
+          );
+          if (userId === userStore.userId) {
+            dispatch(updateUser(res.data));
+          }
+        });
     } catch (error) {
       console.error("❌ Failed to update user role:", error);
       // Optionally show an error message
@@ -136,6 +165,7 @@ const Admin = () => {
                 <p>Name</p>
                 <p>Email</p>
                 <p>Role</p>
+                <p>Rate</p>
                 <p>Permission</p>
               </div>
               <div className="admin-users-list">
@@ -153,6 +183,8 @@ const Admin = () => {
                             handleRoleChange={handleRoleChange}
                             users={users}
                             setUsers={setUsers}
+                            rates={rates}
+                            handleUpdateUser={handleUpdateUser}
                           />
                         );
                       })}

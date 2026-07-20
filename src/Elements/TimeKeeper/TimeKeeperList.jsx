@@ -8,7 +8,7 @@ import WidgetEntryView from "./WidgetEntryView";
 import TimeKeeperListGroup from "./TimeKeeperListGroup";
 import { getDurationNumber } from "../../helpers/helperFunctions";
 
-const TimeKeeperList = ({ data, getEntries, entryServices }) => {
+const TimeKeeperList = ({ data, getEntries, entryServices, rates }) => {
   const userStore = useSelector((state) => state.user);
   const [showEntryView, setShowEntryView] = useState(false);
   const [entry, setEntry] = useState({
@@ -20,6 +20,7 @@ const TimeKeeperList = ({ data, getEntries, entryServices }) => {
     currentTitle: null,
     entryServiceId: null,
     userId: userStore.userId,
+    rateId: userStore.rateId ?? null,
   });
 
   const groupedByProject = Object.values(
@@ -52,6 +53,7 @@ const TimeKeeperList = ({ data, getEntries, entryServices }) => {
           setShowEntryView={setShowEntryView}
           getEntries={getEntries}
           entryServices={entryServices}
+          rates={rates}
         />
       ) : (
         <>
@@ -85,60 +87,6 @@ const TimeKeeperList = ({ data, getEntries, entryServices }) => {
               </p>
             </div>
           )}
-          {/* {data?.length > 0 ? (
-            data.map((entry) => {
-              return (
-                <div
-                  key={entry.timeEntryId}
-                  className="time-keeper-list-item"
-                  onClick={() => {
-                    setEntry({
-                      ...entry,
-                      timeEntryId: entry.timeEntryId,
-                      caseId: entry.caseId,
-                      taskId: entry.taskId,
-                      notes: entry.notes,
-                      startTime: entry.startTime,
-                      endTime: entry.endTime,
-                      currentTitle: entry.projectTitle,
-                      userId: userStore.userId,
-                      status: entry.status || null,
-                    });
-                    showEntryView
-                      ? setShowEntryView(false)
-                      : setShowEntryView(true);
-                  }}
-                >
-                  <ProfilePic />
-                  <div className="time-keeper-item-project">
-                    {entry.caseId ? (
-                      <i className="fa-solid fa-briefcase"></i>
-                    ) : (
-                      <StatusIcon
-                        status={entry.status}
-                        hasIcon={true}
-                        hasTitle={false}
-                        noBg={true}
-                      />
-                    )}
-
-                    {entry.projectTitle}
-                  </div>
-                  <p>{entry.notes}</p>
-                  <p>{getDuration(entry)}</p>
-                  <p>{formatDateNoTime(entry.startTime)}</p>
-                </div>
-              );
-            })
-          ) : (
-            <div className="no-entries">
-              <i className="fa-solid fa-magnifying-glass"></i>
-              <p>No entries available for the current selected range.</p>
-              <p>
-                Try changing the date range or filters to see existing entries.
-              </p>
-            </div>
-          )} */}
         </>
       )}
     </div>
