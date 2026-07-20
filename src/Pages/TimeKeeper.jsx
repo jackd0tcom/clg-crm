@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import axios from "axios";
 import Loader from "../Elements/UI/Loader";
 import TimeKeeperWidget from "../Elements/TimeKeeper/TimeKeeperWidget";
@@ -14,6 +14,8 @@ const TimeKeeper = () => {
   const [entryList, setEntryList] = useState([]);
   const [allEntries, setAllEntries] = useState([]);
   const [showAllEntries, setShowAllEntries] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef(null);
   const [showEntryView, setShowEntryView] = useState(false);
   const userStore = useSelector((state) => state.user);
   const now = new Date();
@@ -211,15 +213,82 @@ const TimeKeeper = () => {
     }
   };
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    };
+
+    if (showDropdown) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showDropdown]);
+
+  const createMonthlyInvoices = async () => {
+    try {
+      axios.post("/api/createMonthlyInvoices").then((res) => {
+        if (res.status === 200) {
+          navigate("/invoices");
+        }
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const newBlankInvoice = async () => {
+    try {
+      axios.post("/api/newInvoice").then((res) => {
+        if (res.status === 200) {
+          navigate(`/invoice/${res.data.invoiceId}`);
+        }
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="time-tracker-page-wrapper">
       <div className="case-list-head">
         <h1 className="section-heading">Time Keeper</h1>
         <div className="time-keeper-filter-buttons">
           <div className="new-entry-button-wrapper">
-            <button onClick={() => newInvoice()} className="new-invoice-button">
-              Create Invoice
-            </button>
+            <div className="new-invoice-wrapper">
+              <button
+                onClick={() => setShowDropdown(!showDropdown)}
+                className="new-invoice-button"
+              >
+                Create Invoice
+              </button>
+              {showDropdown && (
+                <div
+                  className="dropdown new-invoice-dropdown"
+                  ref={dropdownRef}
+                >
+                  <div
+                    onClick={() => createMonthlyInvoices()}
+                    className="dropdown-item"
+                  >
+                    Monthly Invoices
+                  </div>
+                  <div
+                    onClick={() => newBlankInvoice()}
+                    className="dropdown-item"
+                  >
+                    Blank Invoice
+                  </div>
+                  <div onClick={() => newInvoice()} className="dropdown-item">
+                    From Time Entries
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
           <div className="new-entry-button-wrapper">
             <button

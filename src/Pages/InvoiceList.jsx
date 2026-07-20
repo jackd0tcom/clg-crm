@@ -119,7 +119,7 @@ const InvoiceList = () => {
             onClick={() => setShowDropdown(!showDropdown)}
             className="new-invoice-button"
           >
-            New Invoice
+            Create Invoice
           </button>
           {showDropdown && (
             <div className="dropdown new-invoice-dropdown" ref={dropdownRef}>
