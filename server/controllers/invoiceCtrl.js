@@ -376,7 +376,7 @@ export default {
             isRunning,
             invoiceId,
             isPaid,
-            rate,
+            rateId,
           } = entry;
           return await foundEntry.update({
             notes,
@@ -385,7 +385,7 @@ export default {
             isRunning,
             invoiceId,
             isPaid,
-            rate,
+            rateId,
           });
         }),
       );

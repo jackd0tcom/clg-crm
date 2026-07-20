@@ -45,16 +45,16 @@ const RateSelector = ({
         className="rate-selector-button"
         onClick={() => setShowDropdown(!showDropdown)}
       >
-        {rateTitle}
+        $ {rateTitle}
       </button>
       {showDropdown && (
         <div className="dropdown rate-selector-dropdown" ref={dropdownRef}>
           {rates?.map((rate) => (
             <div
               onClick={() => {
-                if (isAdminPage)
+                if (isAdminPage) {
                   handleUpdateUser("rateId", rate.rateId, user.userId);
-                handleUpdateEntry(rate.rateId);
+                } else handleUpdateEntry(rate.rateId);
                 setShowDropdown(false);
               }}
               className="dropdown-item"

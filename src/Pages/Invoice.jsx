@@ -34,6 +34,9 @@ const Invoice = () => {
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
   const statusRef = useRef(null);
+  const getRate = (item) => {
+    return rates.find((rate) => rate.rateId === item.rateId)?.rate ?? 0;
+  };
   const customChargeTotal =
     invoiceData?.customCharges?.length > 0
       ? invoiceData?.customCharges?.reduce((acc, charge) => {
@@ -49,7 +52,7 @@ const Invoice = () => {
             return (
               innerAcc +
               getRoundedAmountOfEntry(
-                entry.rate ?? defaultRate,
+                getRate(entry),
                 entry,
                 invoiceData.roundingAmount,
               )

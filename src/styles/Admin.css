@@ -371,9 +371,14 @@ input:checked + .slider:before {
 }
 
 .rate-selector-button {
-  border: 1px solid var(--light-border);
+  background-color: var(--button-active-bg);
+  color: var(--button-active-font);
+  border: 1px solid var(--button-active-border);
   font-size: 0.8rem;
+  transition: 150ms;
 }
 .rate-selector-button:hover {
-  color: black;
+  background-color: var(--button-active-bg-hover);
+  color: var(--button-active-font);
+  border: 1px solid var(--button-active-border);
 }

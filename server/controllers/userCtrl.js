@@ -38,17 +38,18 @@ export default {
 
       const rates = await Rate.findAll({ order: [["rateId", "DESC"]] });
 
-      const userData = userSettings.toJSON();
-
-      const payload = {
-        userData,
-        rates: rates,
-      };
-
       if (!userSettings) {
         res.status(404).send(rates);
         return;
       }
+
+      const userData = userSettings.toJSON();
+
+      const payload = {
+        ...userData,
+        rates: rates,
+      };
+
       res.status(200).send(payload);
     } catch (err) {
       console.log(err);

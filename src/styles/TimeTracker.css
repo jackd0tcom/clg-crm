@@ -2,6 +2,7 @@
   display: flex;
   flex-direction: column;
   max-height: 100%;
+  height: 100%;
 }
 
 .time-keeper-widget-wrapper {
@@ -91,6 +92,7 @@
   padding: 20px;
   border-bottom: 1px solid var(--light-border);
   background-color: white;
+  border-radius: 5px 5px 0px 0px;
 }
 .entry-service-picker {
   width: 100%;
@@ -113,10 +115,21 @@
 .widget-entry-view-container .picker-notes-wrapper {
   justify-content: center;
 }
+.widget-rate-selector {
+  color: black;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
 .entry-service-picker-button {
   font-size: 0.9rem;
   padding: 6px 12px;
   border: 1px solid var(--light-border);
+  transition: 150ms;
+}
+.entry-service-picker-button:hover {
+  background-color: var(--light-border);
+  color: black;
 }
 .time-keeper-widget-second {
   position: relative;
@@ -511,7 +524,7 @@
 
 .project-picker-button {
   font-size: 0.9rem;
-  max-width: 200px;
+  max-width: 175px;
   text-align: left;
   border: 1px solid var(--light-border);
   transition: 200ms;
@@ -754,12 +767,17 @@
   color: black;
 }
 .duration-input:hover {
-  background-color: var(--root-bg-color-light);
+  background-color: var(--light-blue);
+  color: white;
+  border: 1px solid var(--light-blue);
 }
 .time-increment {
   font-size: 0.9rem;
   padding: 5px 8px;
   border: 1px solid var(--light-border);
+  background-color: var(--light-blue);
+  color: white;
+  border: 1px solid var(--light-blue);
 }
 .time-increment:disabled {
   color: var(--light-grey);
@@ -769,7 +787,9 @@
   color: var(--light-grey);
 }
 .time-increment:hover {
-  color: black;
+  color: white;
+  background-color: var(--blue);
+  border: 1px solid var(--blue);
 }
 .time-picker-wrapper {
   position: absolute;

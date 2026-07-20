@@ -245,18 +245,18 @@ const WidgetEntryView = ({
             />
             <div className="picker-notes-wrapper">
               <UserPicker userId={entry.userId} setEntry={setEntry} />
-              <ProjectPicker
-                showCaseTaskPicker={showCaseTaskPicker}
-                setShowCaseTaskPicker={setShowCaseTaskPicker}
-                entry={entry}
-                setEntry={setEntry}
-              />
               <RateSelector
                 user={userStore}
                 rates={rates}
                 handleUpdateUser={handleUpdateEntry}
                 entry={entry}
                 handleUpdateEntry={handleUpdateEntry}
+              />
+              <ProjectPicker
+                showCaseTaskPicker={showCaseTaskPicker}
+                setShowCaseTaskPicker={setShowCaseTaskPicker}
+                entry={entry}
+                setEntry={setEntry}
               />
             </div>
             <div className="entry-button-wrapper">

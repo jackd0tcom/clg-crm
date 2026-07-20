@@ -4,6 +4,7 @@ import Loader from "../Elements/UI/Loader";
 import "../styles/Settings.css";
 import { useAuth0 } from "@auth0/auth0-react";
 import RateInput from "../Elements/Settings/RateInput";
+import { useSelector } from "react-redux";
 
 const Settings = () => {
   const [isGoogleConnected, setIsGoogleConnected] = useState(false);
@@ -27,6 +28,7 @@ const Settings = () => {
   const [showPayToSave, setShowPayToSave] = useState(false);
   const [rates, setRates] = useState([]);
   const { user } = useAuth0();
+  const userStore = useSelector((state) => state.user);
 
   const fetchUserSettings = async () => {
     try {
@@ -47,7 +49,7 @@ const Settings = () => {
   useEffect(() => {
     checkGoogleConnection();
     fetchUserSettings();
-  }, [user]);
+  }, [userStore]);
 
   useEffect(() => {
     const handleCalendarReconnect = (event) => {
@@ -300,11 +302,13 @@ const Settings = () => {
             </p>
           </div>
           <div className="invoice-settings">
-            <div className="invoice-settings-section rates-section">
-              {rates?.map((rate) => (
-                <RateInput rate={rate} updateRate={updateRate} />
-              ))}
-            </div>
+            {userStore?.isAdmin && (
+              <div className="invoice-settings-section rates-section">
+                {rates?.map((rate) => (
+                  <RateInput rate={rate} updateRate={updateRate} />
+                ))}
+              </div>
+            )}
             <div className="invoice-settings-section">
               <p>Default Pay To Address</p>
               <div className="invoice-settings-input-wrapper">
