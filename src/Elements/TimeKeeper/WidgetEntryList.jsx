@@ -15,7 +15,7 @@ const WidgetEntryList = ({
 
   const getServiceTitle = (id) => {
     return (
-      entryServices.find((service) => service.entryServiceId === id)
+      entryServices?.find((service) => service.entryServiceId === id)
         ?.serviceTitle ?? ""
     );
   };

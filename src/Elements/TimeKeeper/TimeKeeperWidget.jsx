@@ -30,8 +30,8 @@ const TimeKeeperWidget = ({ caseId, title, taskId, isNav }) => {
     taskId: taskId ? taskId : null,
     notes: "",
     currentTitle: title ? title : "",
-    startTime: new Date(),
-    endTime: new Date(),
+    startTime: new Date().toISOString(),
+    endTime: new Date().toISOString(),
     userId: userStore.userId,
     entryServiceId: null,
     rateId: userStore.rateId ?? null,
@@ -39,35 +39,36 @@ const TimeKeeperWidget = ({ caseId, title, taskId, isNav }) => {
 
   const navProjectTitle = entry.currentTitle ? entry.currentTitle : "";
 
-  useEffect(() => {
-    fetch();
-  }, []);
-
   //   Checks for an actively running timer, and if so set's everything up accordingly
   const fetch = async () => {
     try {
-      await axios.get("/api/time-entry/running-timer").then((res) => {
-        setEntryServices(res.data.entryServices);
-        setRates(res.data.rates);
-        if (res.data.timeEntryId) {
-          setEntryServices(res.data.entryServices);
-          setTimeEntryId(res.data.timeEntryId);
-          setEntry({
-            caseId: res.data.caseId,
-            taskId: res.data.taskId,
-            notes: res.data.notes,
-            startTime: res.data.startTime,
-            endTime: res.data.endTime,
-            currentTitle: res.data.case.title,
-            entryServiceId: res.data.entryServiceId,
-          });
-          dispatch(timerStarted({ startTime: res.data.startTime }));
-        }
-      });
+      const res = await axios.get("/api/time-entry/running-timer");
+      setEntryServices(res.data.entryServices ?? []);
+      setRates(res.data.rates ?? []);
+      if (res.data.timeEntryId) {
+        setTimeEntryId(res.data.timeEntryId);
+        setEntry({
+          caseId: res.data.caseId,
+          taskId: res.data.taskId,
+          notes: res.data.notes,
+          startTime: res.data.startTime,
+          endTime: res.data.endTime,
+          currentTitle: res.data.case?.title ?? "",
+          entryServiceId: res.data.entryServiceId ?? null,
+          userId: res.data.userId ?? userStore.userId,
+          rateId: res.data.rateId ?? userStore.rateId ?? null,
+        });
+        dispatch(timerStarted({ startTime: res.data.startTime }));
+      }
     } catch (error) {
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    if (!userStore.userId) return;
+    fetch();
+  }, [userStore.userId]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -80,11 +81,11 @@ const TimeKeeperWidget = ({ caseId, title, taskId, isNav }) => {
           taskId: taskId ? taskId : null,
           notes: "",
           currentTitle: title ? title : "",
-          startTime: new Date(),
-          endTime: new Date(),
+          startTime: new Date().toISOString(),
+          endTime: new Date().toISOString(),
           entryServiceId: null,
           userId: userStore.userId,
-          rateId: userStore.rateId,
+          rateId: userStore.rateId ?? null,
         });
       }
     };
@@ -129,10 +130,15 @@ const TimeKeeperWidget = ({ caseId, title, taskId, isNav }) => {
       await axios.post("/api/time-entry/stop", { timeEntryId }).then((res) => {
         setResetTimer(true);
         setEntry({
-          caseId: null,
-          taskId: null,
+          caseId: caseId ? caseId : null,
+          taskId: taskId ? taskId : null,
           notes: "",
+          currentTitle: title ? title : "",
+          startTime: new Date().toISOString(),
+          endTime: new Date().toISOString(),
+          entryServiceId: null,
           userId: userStore.userId,
+          rateId: userStore.rateId ?? null,
         });
         // Reset the resetTimer flag after a brief moment
         setTimeout(() => setResetTimer(false), 100);
@@ -207,9 +213,16 @@ const TimeKeeperWidget = ({ caseId, title, taskId, isNav }) => {
               ? "time-keeper-toggle"
               : "time-keeper-toggle running-button"
         }
-        onClick={() =>
-          !showWidget ? setShowWidget(true) : setShowWidget(false)
-        }
+        onClick={() => {
+          if (!showWidget) {
+            setShowWidget(true);
+            if (!entryServices.length || !rates.length) {
+              fetch();
+            }
+          } else {
+            setShowWidget(false);
+          }
+        }}
       >
         <i className="fa-solid fa-clock"></i>
         {isNav && (

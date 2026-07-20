@@ -71,6 +71,7 @@
 }
 .nav-time-keeper .entry-view-wrapper {
   min-height: unset;
+  min-width: 375px;
   padding: 20px;
   border-radius: 5px;
 }
@@ -524,7 +525,7 @@
 
 .project-picker-button {
   font-size: 0.9rem;
-  max-width: 175px;
+  max-width: 150px;
   text-align: left;
   border: 1px solid var(--light-border);
   transition: 200ms;

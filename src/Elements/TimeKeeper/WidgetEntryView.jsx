@@ -153,7 +153,7 @@ const WidgetEntryView = ({
     const newDate = new Date(
       date.setMinutes(date.getMinutes() - 15),
     ).toISOString();
-    if (newDate < entry.startTime.toISOString()) {
+    if (newDate < new Date(entry.startTime).toISOString()) {
       return;
     }
     const newEntry = { ...entry, endTime: newDate };
