@@ -238,7 +238,7 @@ export default {
         )
       ).filter(Boolean);
 
-      const monthKey = new Date().toISOString().slice(0, 7); // "2025-06"
+      const monthKey = new Date(firstDay).toISOString().slice(0, 7); // "2025-06"
 
       const invoices = await Promise.all(
         casesWithEntries.map(async (c) => {

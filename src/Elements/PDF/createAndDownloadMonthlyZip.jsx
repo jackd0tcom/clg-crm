@@ -68,7 +68,10 @@ async function createAndDownloadMonthlyZip({
   const zipBlob = await zip.generateAsync({ type: "blob" });
   await ensureMinDuration(zipStarted, MIN_STEP_MS);
 
-  saveAs(zipBlob, `invoices-${new Date().toISOString().slice(0, 7)}.zip`);
+  saveAs(
+    zipBlob,
+    `invoices-${new Date(startDate).toISOString().slice(0, 7)}.zip`,
+  );
   setZipStatus?.(`Done — ${total} invoices downloaded`);
   return { ok: true, count: total };
 }
