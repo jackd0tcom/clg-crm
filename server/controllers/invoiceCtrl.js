@@ -188,6 +188,8 @@ export default {
       if (!req.session.user) {
         return res.status(401).send("User not authenticated");
       }
+      const { startDate, endDate } = req.body;
+
       const billableCases = await Case.findAll({
         where: {
           isBillable: true,
@@ -199,8 +201,12 @@ export default {
 
       const now = new Date();
       const date = now.toISOString();
-      const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-      const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      const firstDay = startDate
+        ? new Date(startDate)
+        : new Date(now.getFullYear(), now.getMonth(), 1);
+      const lastDay = endDate
+        ? new Date(endDate)
+        : new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
       if (!billableCases.length) {
         return res.status(200).send([]);
@@ -217,7 +223,9 @@ export default {
 
             const entries = await TimeEntry.findAll({
               where: {
-                startTime: { [Op.between]: [firstDay, lastDay] },
+                startTime: {
+                  [Op.between]: [firstDay, lastDay],
+                },
                 [Op.or]: [
                   { caseId: c.caseId },
                   ...(taskIds.length ? [{ taskId: { [Op.in]: taskIds } }] : []),

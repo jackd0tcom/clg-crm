@@ -19,8 +19,6 @@ const TimeKeeperListGroup = ({
   const [showEntries, setShowEntries] = useState(false);
   const includedUsers = [];
 
-  console.log(group);
-
   const getServiceTitle = (id) => {
     return (
       entryServices.find((service) => service.entryServiceId === id)

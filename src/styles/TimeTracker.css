@@ -255,6 +255,9 @@
   color: white;
   border: none;
   transition: 200ms;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 .new-invoice-button:hover {
   background-color: var(--dark-blue);
@@ -880,6 +883,7 @@
   height: 100vh;
   overflow-y: scroll;
   scrollbar-width: thin;
+  background-color: var(--root-bg-color-light);
 }
 .time-keeper-list-head {
   padding: 10px 15px;
@@ -888,6 +892,7 @@
 .time-keeper-list-group-wrapper {
   display: flex;
   flex-direction: column;
+  background-color: white;
 }
 .list-group-project-item {
   display: grid;

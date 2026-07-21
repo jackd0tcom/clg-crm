@@ -841,3 +841,34 @@ div.date-picker-wrapper > div > div > input[type="text"] {
 .rate-selector-dropdown {
   color: black;
 }
+.small-loader {
+  --color-1: #fff;
+  --size: 0.25px;
+  width: calc(48 * var(--size));
+  height: calc(48 * var(--size));
+  border: calc(10 * var(--size)) solid var(--color-1);
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+.dropdown-header {
+  cursor: default;
+  background-color: var(--blue);
+  color: white;
+  font-weight: 500;
+}
+.dropdown-header:hover {
+  background-color: var(--blue);
+  color: white;
+}

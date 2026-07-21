@@ -41,6 +41,14 @@ export function formatDate(data) {
     hour12: true,
   }).format(date);
 }
+export function formatNumericalDate(data) {
+  const date = new Date(data);
+  return new Intl.DateTimeFormat("en-US", {
+    day: "numeric",
+    month: "numeric",
+    year: "numeric",
+  }).format(date);
+}
 export function formatDateNoTime(data) {
   const date = new Date(data);
   return new Intl.DateTimeFormat("en-US", {

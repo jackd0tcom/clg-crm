@@ -123,12 +123,6 @@ const InvoiceList = () => {
           </button>
           {showDropdown && (
             <div className="dropdown new-invoice-dropdown" ref={dropdownRef}>
-              <div
-                onClick={() => createMonthlyInvoices()}
-                className="dropdown-item"
-              >
-                Monthly Invoices
-              </div>
               <div onClick={() => newBlankInvoice()} className="dropdown-item">
                 Blank Invoice
               </div>

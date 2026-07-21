@@ -262,6 +262,7 @@
   border: 1px solid var(--light-border);
   border-radius: 5px;
   overflow-y: scroll;
+  background-color: var(--root-bg-color-light);
 }
 .invoice-list-item {
   display: grid;
@@ -270,6 +271,7 @@
   padding: 8px 15px;
   align-items: center;
   justify-items: start;
+  background-color: white;
 }
 .invoice-list-item:hover {
   background-color: var(--root-bg-color-light);

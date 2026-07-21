@@ -7,6 +7,8 @@ import TimeKeeperFilter from "../Elements/TimeKeeper/TimeKeeperFilter";
 import { useSelector } from "react-redux";
 import WidgetEntryView from "../Elements/TimeKeeper/WidgetEntryView";
 import { useNavigate } from "react-router";
+import createAndDownloadMonthlyZip from "../Elements/PDF/createAndDownloadMonthlyZip";
+import { formatDateNoTime } from "../helpers/helperFunctions";
 
 const TimeKeeper = () => {
   const navigate = useNavigate();
@@ -16,6 +18,7 @@ const TimeKeeper = () => {
   const [showAllEntries, setShowAllEntries] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
+  const [zipStatus, setZipStatus] = useState("");
   const [showEntryView, setShowEntryView] = useState(false);
   const userStore = useSelector((state) => state.user);
   const now = new Date();
@@ -230,12 +233,18 @@ const TimeKeeper = () => {
   }, [showDropdown]);
 
   const createMonthlyInvoices = async () => {
+    console.log(filter);
     try {
-      axios.post("/api/createMonthlyInvoices").then((res) => {
-        if (res.status === 200) {
-          navigate("/invoices");
-        }
-      });
+      axios
+        .post("/api/createMonthlyInvoices", {
+          startDate: filter.dateRange.startDate,
+          endDate: filter.dateRange.endDate,
+        })
+        .then((res) => {
+          if (res.status === 200) {
+            navigate("/invoices");
+          }
+        });
     } catch (error) {
       console.log(error);
     }
@@ -253,6 +262,25 @@ const TimeKeeper = () => {
     }
   };
 
+  const delay = (ms) => new Promise((r) => setTimeout(r, ms));
+
+  const handleZip = async () => {
+    setShowDropdown(false);
+    setZipStatus("Creating invoices…");
+    try {
+      await createAndDownloadMonthlyZip({
+        startDate: filter.dateRange.startDate,
+        endDate: filter.dateRange.endDate,
+        setZipStatus,
+      });
+      await delay(3000);
+      setZipStatus("");
+    } catch (err) {
+      console.error(err);
+      setZipStatus("Error — try again");
+    }
+  };
+
   return (
     <div className="time-tracker-page-wrapper">
       <div className="case-list-head">
@@ -263,19 +291,27 @@ const TimeKeeper = () => {
               <button
                 onClick={() => setShowDropdown(!showDropdown)}
                 className="new-invoice-button"
+                disabled={zipStatus !== ""}
               >
-                Create Invoice
+                {zipStatus !== "" ? zipStatus : "Create Invoice"}
               </button>
               {showDropdown && (
                 <div
                   className="dropdown new-invoice-dropdown"
                   ref={dropdownRef}
                 >
+                  <div className="dropdown-item dropdown-header">
+                    {formatDateNoTime(filter.dateRange.startDate)} -{" "}
+                    {formatDateNoTime(filter.dateRange.endDate)}
+                  </div>
                   <div
                     onClick={() => createMonthlyInvoices()}
                     className="dropdown-item"
                   >
-                    Monthly Invoices
+                    Create Invoices
+                  </div>
+                  <div onClick={() => handleZip()} className="dropdown-item">
+                    Create and Download Invoices
                   </div>
                   <div
                     onClick={() => newBlankInvoice()}
@@ -283,9 +319,9 @@ const TimeKeeper = () => {
                   >
                     Blank Invoice
                   </div>
-                  <div onClick={() => newInvoice()} className="dropdown-item">
+                  {/* <div onClick={() => newInvoice()} className="dropdown-item">
                     From Time Entries
-                  </div>
+                  </div> */}
                 </div>
               )}
             </div>

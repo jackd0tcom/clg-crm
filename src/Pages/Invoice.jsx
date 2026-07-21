@@ -466,7 +466,6 @@ const Invoice = () => {
             ) : (
               <>
                 {groupedData?.map((project, projectIndex) => {
-                  console.log(project[1][0].task?.status);
                   return (
                     <div className="invoice-project-item">
                       <div className="invoice-project-item-head">

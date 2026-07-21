@@ -3,6 +3,7 @@ import { formatDateNoTimeWithYear } from "../../helpers/helperFunctions";
 import {
   getRoundedDuration,
   getRoundedAmountOfEntry,
+  formatNumericalDate,
 } from "../../helpers/helperFunctions";
 import {
   Page,
@@ -114,35 +115,33 @@ const PDFInvoice = ({
           </View>
           <View style={{ marginTop: 20 }}>
             <View style={styles.row}>
+              <Text style={[styles.tableHeader, { flexBasis: 100 }]}>DATE</Text>
               <Text style={[styles.tableHeader, { flexBasis: 250 }]}>
                 DESCRIPTION
               </Text>
-              <Text style={[styles.tableHeader, { flexBasis: 30 }]}>RATE</Text>
-              <Text style={[styles.tableHeader, { flexBasis: 65 }]}>
-                QUANTITY
-              </Text>
+              <Text style={[styles.tableHeader, { flexBasis: 80 }]}>TIME</Text>
               <Text
                 style={[
                   styles.tableHeader,
-                  { flexBasis: 50, textAlign: "right" },
+                  { flexBasis: 80, textAlign: "right" },
                 ]}
               >
-                AMOUNT
+                TOTAL
               </Text>
             </View>
             {invoiceData.entries.map((entry) => (
               <View style={styles.row}>
+                <Text style={[styles.text, { flexBasis: 100 }]}>
+                  {formatNumericalDate(entry.endTime) ?? ""}
+                </Text>
                 <Text style={[styles.text, { flexBasis: 250 }]}>
                   {getServiceTitle(entry.entryServiceId) ?? entry.notes}
                 </Text>
-                <Text style={[styles.text, { flexBasis: 30 }]}>
-                  {getRate(entry)}
-                </Text>
-                <Text style={[styles.text, { flexBasis: 50 }]}>
+                <Text style={[styles.text, { flexBasis: 80 }]}>
                   {getRoundedDuration(entry, invoiceData.roundingAmount)}
                 </Text>
                 <Text
-                  style={[styles.text, { flexBasis: 40, textAlign: "right" }]}
+                  style={[styles.text, { flexBasis: 80, textAlign: "right" }]}
                 >
                   $
                   {getRoundedAmountOfEntry(
@@ -171,7 +170,7 @@ const PDFInvoice = ({
           </View>
           <View style={{ marginTop: 25 }}>
             <Text style={styles.subText}>
-              Billing Questions? Please contact our office at (570) 767-52212.
+              Billing Questions? Please contact our office at (570) 676-2527.
               Visa, MC, Discover and American Express accepted, a service fee of
               4% is added for all Credit Card Accounts! A late charge of 1.5%
               per month applies to all outstanding invoices over 30 days.
