@@ -6,6 +6,7 @@ import {
   TimeEntry,
   EntryService,
   Rate,
+  CustomCharge,
 } from "../model.js";
 import {
   createActivityLog,
@@ -417,6 +418,27 @@ export default {
     } catch (error) {
       console.log(error);
       res.status(401).send(error);
+    }
+  },
+  newCharge: async (req, res) => {
+    try {
+      console.log("newCharge");
+      const { caseId, invoiceId, description, amount } = req.body;
+
+      if (!req.session.user) {
+        return res.status(401).send("User not authenticated");
+      }
+      const newCharge = await CustomCharge.create({
+        caseId,
+        invoiceId,
+        description,
+        amount,
+      });
+
+      res.status(200).send(newCharge);
+    } catch (error) {
+      console.log(error);
+      res.status(500).send(error);
     }
   },
 };

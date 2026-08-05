@@ -7,9 +7,12 @@
   overflow: hidden;
 }
 .invoice-body {
-  overflow-y: scroll;
   scrollbar-width: thin;
-  padding-bottom: 25px;
+  padding-bottom: 15px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 .invoice-page-wrapper iframe {
   height: 100%;
@@ -22,6 +25,12 @@
   display: flex;
   gap: 10px;
   font-size: 0.9rem;
+  align-items: center;
+}
+.invoice-id {
+  display: flex;
+  gap: 5px;
+  margin-right: 15px;
   align-items: center;
 }
 
@@ -43,7 +52,6 @@
 .marked-paid {
   background-color: #8bbda1;
 }
-
 .invoice-save-button {
   font-size: 0.9rem;
   display: flex;
@@ -133,12 +141,29 @@
   background-color: var(--root-bg-color-light);
   cursor: pointer;
 }
-
+.invoice-case-title:hover {
+  cursor: pointer;
+  font-weight: 500;
+  transition: 200ms;
+}
 .invoice-items-list {
-  margin: 15px;
+  margin: 10px 15px 0px;
   border: 1px solid var(--light-border);
   border-radius: 5px;
+  display: flex;
+  flex-direction: column;
   background-color: #f4f4f4;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+.invoice-items-list > :nth-last-child(1 of .invoice-projects-wrapper) {
+  margin-bottom: 42px;
+}
+
+.invoice-projects-wrapper {
+  overflow-x: scroll;
+  scrollbar-width: none;
 }
 .invoice-project-item {
   /* margin-bottom: 15px; */
@@ -244,6 +269,9 @@
 /* invoice list */
 .invoice-list-footer {
   border-top: 1px solid var(--light-border);
+  position: absolute;
+  bottom: 0;
+  width: calc(100% - 44px);
 }
 .invoice-list-head {
   position: relative;
@@ -386,4 +414,118 @@
   background-color: var(--dark-red) !important;
   color: white !important;
   border-color: var(--dark-red) !important;
+}
+/* Pay Modal */
+.submit-payment-button {
+  font-size: 0.9rem;
+  border: 1px solid var(--button-active-border);
+  background-color: var(--button-active-bg);
+  color: var(--button-active-font);
+  transition: 200ms;
+}
+.submit-payment-button:hover {
+  font-size: 0.9rem;
+  border: 1px solid var(--button-active-border);
+  background-color: var(--button-active-bg-hover);
+  color: var(--button-active-font);
+}
+.submit-payment-icon {
+  padding: 0;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--bright-light-green);
+  background-color: transparent;
+  transition: 200ms;
+}
+.submit-payment-icon:hover {
+  padding: 0;
+  border: none;
+  color: var(--bright-dark-green);
+  background-color: transparent;
+}
+.unpaid {
+  background-color: var(--bright-green);
+  color: white;
+  border: none;
+}
+.unpaid:hover {
+  background-color: var(--bright-dark-green);
+  color: white;
+  border: none;
+}
+.pay-modal {
+  display: flex;
+  flex-direction: column;
+  max-height: unset !important;
+  overflow-y: visible !important;
+}
+.pay-modal-header {
+  border-bottom: 1px solid var(--light-border);
+  padding: 5px;
+  display: flex;
+  text-align: center;
+  justify-content: center;
+  background-color: var(--bright-green);
+  color: white;
+  border-radius: 4px 4px 0px 0;
+}
+.pay-modal-header h4 {
+  font-weight: 500;
+}
+.pay-modal-body {
+  padding: 10px 15px 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.pay-modal-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.pay-modal-amount {
+  display: flex;
+  padding: 5px;
+  border: 1px solid var(--light-border);
+  align-items: center;
+  border-radius: 5px;
+}
+.pay-modal-amount:hover {
+  background-color: var(--root-bg-color-light);
+}
+.pay-modal-amount input {
+  border: none;
+  background-color: transparent;
+}
+.pay-modal-amount input:focus-visible {
+  outline: none;
+}
+.pay-modal-description {
+  top: 105% !important;
+}
+.pay-modal-description-item {
+  font-size: 0.8rem !important;
+}
+.pay-modal-description-button {
+  font-size: 0.8rem;
+  border: 1px solid var(--light-border);
+  background-color: white;
+  transition: 150ms;
+}
+.pay-modal-description-button:hover {
+  border: 1px solid var(--light-border);
+  background-color: var(--root-bg-color-light);
+  color: black;
+}
+.pay-modal-save {
+  margin-top: 10px;
+  color: white;
+  background-color: var(--bright-green);
+  border: none;
+  transition: 200ms;
+}
+.pay-modal-save:hover {
+  color: white;
+  background-color: var(--bright-dark-green);
+  border: none;
 }

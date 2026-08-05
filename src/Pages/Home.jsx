@@ -25,7 +25,7 @@ const Home = ({
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      setClassName("home-wrapper");
+      setClassName && setClassName("home-wrapper");
     }
   }, [isLoading]);
 

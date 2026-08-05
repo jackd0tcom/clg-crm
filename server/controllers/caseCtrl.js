@@ -11,6 +11,10 @@ import {
   CasePracticeAreas,
   Tribunal,
   CaseTribunal,
+  Payment,
+  Invoice,
+  TimeEntry,
+  Rate,
 } from "../model.js";
 import {
   createActivityLog,
@@ -320,6 +324,27 @@ export default {
               as: "tribunal",
               through: { attributes: [] },
               attributes: ["tribunalId", "name"],
+            },
+            {
+              model: Payment,
+              as: "payments",
+              include: [{ model: Person, as: "person" }],
+            },
+            {
+              model: TimeEntry,
+              as: "timeEntries",
+              include: [
+                { model: Rate, as: "rate", attributes: ["rate"] },
+                {
+                  model: Invoice,
+                  as: "invoice",
+                  required: false,
+                },
+              ],
+            },
+            {
+              model: Person,
+              as: "people",
             },
           ],
         });

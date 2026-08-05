@@ -12,6 +12,10 @@ import {
 } from "../helpers/helperFunctions";
 import PDFInvoice from "../Elements/PDF/PDFInvoice";
 import StatusIcon from "../Elements/Task/StatusIcon";
+import PayModal from "../Elements/Invoice/PayModal";
+import { useSelector } from "react-redux";
+import PaymentList from "../Elements/Statements/PaymentList";
+import { formatDollarNoCents } from "../helpers/helperFunctions";
 
 const Invoice = () => {
   const { invoiceId } = useParams();
@@ -22,6 +26,7 @@ const Invoice = () => {
   const [defaultRate, setDefaultRate] = useState(0);
   const [billedTo, setBilledTo] = useState("");
   const [payTo, setPayTo] = useState("");
+  const userStore = useSelector((state) => state.user);
   const [isSettingRounding, setIsSettingRounding] = useState(false);
   const [savingStatus, setSavingStatus] = useState("Save");
   const [status, setStatus] = useState("Draft");
@@ -30,7 +35,15 @@ const Invoice = () => {
   const [somethingToSave, setSomethingToSave] = useState(false);
   const [entryServices, setEntryServices] = useState([]);
   const [rates, setRates] = useState([]);
+  const [payments, setPayments] = useState([]);
   const [showDelete, setShowDelete] = useState(false);
+  const [defaultClient, setDefaultClient] = useState({});
+  const [clientList, setClientList] = useState([]);
+  const [caseId, setCaseId] = useState(0);
+  const paymentTotal = payments.reduce((acc, payment) => {
+    return acc + payment.amount;
+  }, 0);
+
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
   const statusRef = useRef(null);
@@ -76,13 +89,16 @@ const Invoice = () => {
       if (res.status === 200) {
         const data = res.data;
         setInvoiceData(data);
+        setCaseId(data.entries[0].case?.caseId ?? 0);
         setRates(data.rates);
+        setPayments(data.payments);
+        setClientList(data.entries[0]?.case?.people ?? []);
         setEntryServices(res.data.entryServices);
         setDefaultRate(data.settings.defaultRate);
         setPayTo(data.payTo ?? data.settings.payTo ?? "");
-        const defaultClient = data.entries[0]?.case
-          ? data.entries[0].case?.people[0]
-          : null;
+        setDefaultClient(
+          data.entries[0]?.case ? data.entries[0].case?.people[0] : null,
+        );
         const defaultBillTo = defaultClient
           ? `${defaultClient.firstName ?? ""} ${defaultClient.lastName ?? ""}\n${defaultClient.address ?? ""} ${defaultClient.city ?? ""}, ${defaultClient.state ?? ""} ${defaultClient.zip ?? ""}\n${defaultClient.phoneNumber ?? ""}  `
           : "";
@@ -164,7 +180,7 @@ const Invoice = () => {
     if (invoiceId !== 0) {
       fetchInvoice();
     } else setIsLoading(false);
-  }, [invoiceId]);
+  }, [invoiceId, userStore.userId]);
 
   const handleSaveInvoice = async () => {
     try {
@@ -240,21 +256,64 @@ const Invoice = () => {
     }
   };
 
+  const handlePay = async (payment) => {
+    try {
+      setSavingStatus("Saving...");
+      await axios
+        .post("/api/addPayment", {
+          objects: [
+            { type: "invoice", id: invoiceId },
+            { type: "case", id: caseId },
+          ],
+          payment,
+          personId: payment.personId,
+        })
+        .then((res) => {
+          console.log(res.data);
+          setPayments([res.data, ...payments]);
+
+          setTimeout(() => {
+            setSavingStatus("Saved");
+          }, 800);
+          setTimeout(() => {
+            setSavingStatus("Save");
+            setSomethingToSave(false);
+          }, 1800);
+        });
+    } catch (error) {
+      setSavingStatus("Error");
+      setTimeout(() => {
+        setSavingStatus("Save");
+        setSomethingToSave(false);
+      }, 1800);
+      console.log(error);
+    }
+  };
+
   return (
     <div className="invoice-page-wrapper">
       <div className="page-header">
         <h2 className="section-heading">Invoice</h2>
         <div className="invoice-id-wrapper">
-          <p>Invoice ID:</p>
-          <input
-            type="text"
-            className="invoice-id-input"
-            value={invoiceData.invoiceTitle}
-            onChange={(e) => {
-              setSomethingToSave(true);
-              setInvoiceData({ ...invoiceData, invoiceTitle: e.target.value });
-            }}
-          />
+          <div className="invoice-id">
+            <p>Invoice ID:</p>
+            {status === "draft" ? (
+              <input
+                type="text"
+                className="invoice-id-input"
+                value={invoiceData.invoiceTitle}
+                onChange={(e) => {
+                  setSomethingToSave(true);
+                  setInvoiceData({
+                    ...invoiceData,
+                    invoiceTitle: e.target.value,
+                  });
+                }}
+              />
+            ) : (
+              <p>{invoiceData.invoiceTitle}</p>
+            )}
+          </div>
           {!isViewing && (
             <div className="invoice-status-wrapper">
               <button
@@ -301,6 +360,15 @@ const Invoice = () => {
                 </div>
               )}
             </div>
+          )}
+          {!isViewing && !isLoading && (
+            <PayModal
+              project={invoiceData}
+              existingPayment={null}
+              handlePay={handlePay}
+              clientList={clientList}
+              icon={false}
+            />
           )}
         </div>
         <div className="invoice-buttons-wrapper">
@@ -464,7 +532,7 @@ const Invoice = () => {
             {isLoading ? (
               <Loader />
             ) : (
-              <>
+              <div className="invoice-projects-wrapper">
                 {groupedData?.map((project, projectIndex) => {
                   return (
                     <div className="invoice-project-item">
@@ -482,7 +550,15 @@ const Invoice = () => {
                           </div>
                         )}
 
-                        <p>{project[0]}</p>
+                        <p
+                          className="invoice-case-title"
+                          onClick={() => {
+                            project[1].type === "case" &&
+                              navigate(`/case/${project[1][0].caseId}`);
+                          }}
+                        >
+                          {project[0]}
+                        </p>
                       </div>
                       {project[1].map((item, index) => (
                         <InvoiceItem
@@ -515,14 +591,14 @@ const Invoice = () => {
                     entryServices={entryServices}
                   />
                 ))}
-              </>
-            )}
-            {status === "draft" && (
-              <div
-                onClick={() => handleAddCustomCharge()}
-                className="add-custom-item-wrapper"
-              >
-                <p>+ Add Custom Charge</p>
+                {status === "draft" && (
+                  <div
+                    onClick={() => handleAddCustomCharge()}
+                    className="add-custom-item-wrapper"
+                  >
+                    <p>+ Add Custom Charge</p>
+                  </div>
+                )}
               </div>
             )}
             <div className="invoice-items-list-item invoice-list-footer">
@@ -532,6 +608,20 @@ const Invoice = () => {
               <p></p>
               <div className="amount-wrapper">
                 <p>${totalAmount}</p>
+              </div>
+            </div>
+          </div>
+          <div className="invoice-payment-list">
+            <div className="invoice-payment-list-top-bar">
+              <h3>Payments</h3>
+            </div>
+            <PaymentList payments={payments} />
+            <div className="invoice-payment-footer payment-item">
+              <div>Total</div>
+              <div></div>
+              <div></div>
+              <div className="payment-item-total">
+                {formatDollarNoCents(paymentTotal)}
               </div>
             </div>
           </div>

@@ -211,9 +211,9 @@
 /* Case page */
 .case-container {
   display: grid;
-  grid-template-rows: 1.75fr 1fr;
+  grid-template-rows: minmax(400px, 70%) minmax(200px, 30%);
   height: 100%;
-  overflow-y: scroll;
+  overflow: hidden;
 }
 .case-wrapper {
   display: grid;
@@ -225,8 +225,9 @@
   padding: 15px;
 }
 .case-details-container {
-  padding: 15px 20px 0px 20px;
+  /* padding: 15px 20px 0px 20px; */
   display: flex;
+  gap: 10px;
   flex-direction: column;
   order: 1;
 }
@@ -234,7 +235,19 @@
   display: flex;
   justify-content: space-between;
   min-height: 25px;
-  /* flex-basis: 10%; */
+  align-items: center;
+  padding-bottom: 5px;
+  border-bottom: 1px solid var(--light-border);
+  padding: 15px 15px;
+}
+.case-top-bar-first {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  width: 70%;
+}
+.case-top-bar-first .case-input-wrapper {
+  width: 100%;
 }
 .case-top-bar a {
   color: var(--light-grey);
@@ -247,6 +260,7 @@
 }
 .case-top-bar-container {
   display: flex;
+  align-items: center;
   gap: 20px;
 }
 .extra-settings-wrapper {
@@ -287,6 +301,11 @@
 }
 .drop-down-item:hover {
   background-color: var(--root-bg-color-light);
+}
+.case-client-tab-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 /* Phase */
@@ -456,7 +475,6 @@ div.case-task-container
   border-left: 1px solid var(--light-border);
   border-bottom: 1px solid var(--light-border);
   background-color: var(--root-bg-color-light);
-  border-radius: 5px;
   padding: 0px 20px;
   scrollbar-width: none;
   height: 100%;
@@ -476,15 +494,12 @@ div.case-task-container
   gap: 15px;
 }
 .case-title-input {
-  width: calc(100% - 10px);
+  width: 100%;
   border: 1px solid transparent;
   border-radius: 5px;
   padding: 6px 8px;
-  font-size: 1.4em;
-  margin: 0px 20px 5px 0px;
+  font-size: 1rem;
   font-weight: 600;
-}
-.case-title-input:hover {
   background-color: var(--root-bg-color-light);
 }
 .case-title-input:focus-visible {
@@ -601,6 +616,7 @@ div.case-task-container
   margin-bottom: 15px;
   overflow-x: scroll;
   scrollbar-width: none;
+  padding: 0px 15px;
 }
 .case-tab-heading {
   margin: 0px;
@@ -620,6 +636,7 @@ div.case-task-container
   flex-direction: column;
   gap: 1rem;
   height: 100%;
+  padding: 0px 15px;
 }
 .active-tab {
   border-bottom: 2px solid var(--light-border);
@@ -635,7 +652,6 @@ div.case-task-container
   margin-top: -15px;
   display: flex;
   border-bottom: 1px solid var(--light-border);
-  margin-bottom: 10px;
   overflow-x: scroll;
   scrollbar-width: none;
 }
@@ -762,7 +778,7 @@ div.case-task-container
 }
 .person-view-wrapper {
   background-color: white;
-  border-radius: 5px;
+  height: 100%;
   z-index: 999;
   padding: 15px;
   min-width: 500px;
@@ -1027,6 +1043,24 @@ div.sol-input-wrapper > div > div > input[type="text"] {
 }
 .person-search:focus-visible {
   outline: none;
+}
+
+.statements-tab-wrapper {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 0px 15px;
+}
+.invoice-link {
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 90%;
+  text-overflow: ellipsis;
+}
+.invoice-link:hover {
+  font-weight: 500;
+  transition: 100ms;
+  cursor: pointer;
 }
 
 @media screen and (min-width: 1800px) {

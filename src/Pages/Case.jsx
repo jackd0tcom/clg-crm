@@ -5,6 +5,7 @@ import ActivityLog from "../Elements/UI/ActivityLog";
 import TaskList from "../Elements/TaskList/TaskList";
 import Notes from "../Elements/UI/Notes";
 import CaseInput from "../Elements/Case/CaseInput";
+import StatementsTab from "../Elements/Case/StatementsTab";
 import ExtraSettings from "../Elements/UI/ExtraSettings";
 import Loader from "../Elements/UI/Loader";
 import DetailsTab from "../Elements/Case/DetailsTab";
@@ -12,11 +13,14 @@ import PeopleTab from "../Elements/Case/PeopleTab";
 import TimeKeeperWidget from "../Elements/TimeKeeper/TimeKeeperWidget";
 import { socket } from "../Services/socket";
 import { saveCaseNotesKeepalive } from "../helpers/helperFunctions";
+import { getAmountOfEntry } from "../helpers/helperFunctions";
+import PayModal from "../Elements/Invoice/PayModal";
 
 const Case = ({ openTaskView, refreshKey }) => {
   const { caseId } = useParams();
   const navigate = useNavigate();
   const [caseData, setCaseData] = useState();
+  const [payments, setPayments] = useState([]);
   const [activityData, setActivityData] = useState();
   const [phase, setPhase] = useState("");
   const [notes, setNotes] = useState();
@@ -29,6 +33,7 @@ const Case = ({ openTaskView, refreshKey }) => {
   const [currentAreas, setCurrentAreas] = useState();
   const [isAddingArea, setIsAddingArea] = useState(false);
   const [newPracticeArea, setNewPracticeArea] = useState("");
+  const [clientList, setClientList] = useState([]);
   const [isNewCase, setIsNewCase] = useState(false);
   const [isArchived, setIsArchived] = useState(false);
   const [isCreatingCase, setIsCreatingCase] = useState(false);
@@ -40,6 +45,8 @@ const Case = ({ openTaskView, refreshKey }) => {
   const [opposing, setOpposing] = useState([]);
   const [adverseOpposing, setAdverseOpposing] = useState([]);
   const [peopleList, setPeopleList] = useState([]);
+  const [timeEntries, setTimeEntries] = useState([]);
+  const [invoices, setInvoices] = useState([]);
   const isCreatingCaseRef = useRef(false);
 
   const headings = ["Status", "Title", "Priority", "Assignees", "Due Date"];
@@ -141,8 +148,34 @@ const Case = ({ openTaskView, refreshKey }) => {
           `/api/getCaseActivities/${caseId}`,
         );
         fetchPeople();
+        setTimeEntries(caseResponse.data.timeEntries ?? []);
+        const getInvoiceStatementItems = (entries) => {
+          return Object.values(
+            entries.reduce((invoices, entry) => {
+              if (!entry.invoiceId) return invoices;
+              const invoiceId = entry.invoiceId;
+              const amount = getAmountOfEntry(entry.rate?.rate ?? 0, entry);
+              if (!invoices[invoiceId]) {
+                invoices[invoiceId] = {
+                  invoiceId,
+                  title: entry.invoice?.invoiceTitle,
+                  amount: 0,
+                  createdAt: entry.invoice?.createdAt,
+                  description: "Invoice",
+                };
+              }
+              invoices[invoiceId].amount += amount;
+              return invoices;
+            }, {}),
+          );
+        };
+        setInvoices(
+          getInvoiceStatementItems(caseResponse.data.timeEntries) ?? [],
+        );
         setCaseData(caseResponse.data);
         setActivityData(activityResponse.data);
+        setClientList(caseResponse.data.people ?? []);
+        setPayments(caseResponse.data.payments);
         setPhase(caseResponse.data.phase);
         setNotes(caseResponse.data.notes);
         setTitle(caseResponse.data.title);
@@ -353,6 +386,23 @@ const Case = ({ openTaskView, refreshKey }) => {
     }
   };
 
+  const handlePay = async (payment) => {
+    try {
+      await axios
+        .post("/api/addPayment", {
+          objects: [{ type: "case", id: caseId }],
+          payment,
+          personId: payment.personId,
+        })
+        .then((res) => {
+          console.log(res.data);
+          setPayments([res.data, ...payments]);
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return !caseData ? (
     <Loader />
   ) : (
@@ -360,11 +410,30 @@ const Case = ({ openTaskView, refreshKey }) => {
       <div className="case-wrapper">
         <div className="case-details-container">
           <div className="case-top-bar">
-            <Link to="/cases">
-              <i className="fa-solid fa-arrow-left"></i>
-            </Link>
+            <div className="case-top-bar-first">
+              <Link to="/cases">
+                <i className="fa-solid fa-arrow-left"></i>
+              </Link>
+              <CaseInput
+                title={title}
+                setTitle={setTitle}
+                refreshActivityData={refreshActivityData}
+                refreshCaseData={refreshCaseData}
+                caseId={caseId}
+                isNewCase={isNewCase}
+                newCase={newCase}
+                isCreatingCase={isCreatingCase}
+              />
+            </div>
             <div className="case-top-bar-container">
               <TimeKeeperWidget caseId={caseId} title={title} />
+              <PayModal
+                project={caseData}
+                existingPayment={null}
+                handlePay={handlePay}
+                clientList={clientList}
+                icon={true}
+              />
               <ExtraSettings
                 Id={caseId}
                 handleRefresh={refreshCaseData}
@@ -377,16 +446,6 @@ const Case = ({ openTaskView, refreshKey }) => {
           <div className="case-card">
             <div className="case-header">
               {isArchived && <h3>Archived</h3>}
-              <CaseInput
-                title={title}
-                setTitle={setTitle}
-                refreshActivityData={refreshActivityData}
-                refreshCaseData={refreshCaseData}
-                caseId={caseId}
-                isNewCase={isNewCase}
-                newCase={newCase}
-                isCreatingCase={isCreatingCase}
-              />
               <div className="case-tabs-wrapper">
                 <h4
                   onClick={() => handleTabChange("details")}
@@ -427,6 +486,16 @@ const Case = ({ openTaskView, refreshKey }) => {
                   }
                 >
                   Opposing Council
+                </h4>
+                <h4
+                  onClick={() => handleTabChange("statements")}
+                  className={
+                    currentTab === "statements"
+                      ? "case-tab-heading active-tab"
+                      : "case-tab-heading"
+                  }
+                >
+                  Statements
                 </h4>
               </div>
             </div>
@@ -495,6 +564,9 @@ const Case = ({ openTaskView, refreshKey }) => {
                 type={"opposing"}
                 peopleList={peopleList}
               />
+            )}
+            {currentTab === "statements" && (
+              <StatementsTab payments={payments} invoices={invoices} />
             )}
           </div>
         </div>

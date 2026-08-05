@@ -427,3 +427,44 @@ export function saveTaskNotesKeepalive(taskId, notes) {
     }),
   });
 }
+export function formatDollarNoCents(number) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(number);
+}
+
+/** Resolve a dotted path ("person.firstName") or run a getter fn on an item. */
+function getByPath(item, path) {
+  if (typeof path === "function") return path(item);
+  return String(path)
+    .split(".")
+    .reduce((acc, key) => acc?.[key], item);
+}
+
+/**
+ * Build unique { id, title } options for FilterDropdown.
+ * id/title can be a dotted path string or a function (item) => value.
+ *
+ * @example buildFilters(payments, "personId", "person.firstName")
+ * @example buildFilters(payments, "personId", (p) => `${p.person?.firstName} ${p.person?.lastName}`)
+ */
+export function buildFilters(items, idPath, titlePath) {
+  const array = [];
+
+  items.forEach((item) => {
+    const id = getByPath(item, idPath);
+    if (id == null || array.some((it) => it.id === id)) return;
+
+    array.push({
+      id,
+      title: getByPath(item, titlePath),
+    });
+  });
+
+  console.log(array);
+
+  return array;
+}

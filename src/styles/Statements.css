@@ -1,0 +1,106 @@
+.statements-page-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.statements-page-body {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.statements-list {
+  padding: 15px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.statements-list-wrapper {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--root-bg-color-light);
+}
+.invoice-payment-list {
+  display: flex;
+  flex-direction: column;
+  padding: 15px 15px 0px;
+  height: 50%;
+}
+.payment-items-wrapper {
+  height: 100%;
+}
+.payment-list-wrapper {
+  border: 1px solid var(--light-border);
+  border-radius: 5px;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.payment-item {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 10px;
+  padding: 10px 30px;
+  border-bottom: 1px solid var(--light-border);
+  font-size: 0.9rem;
+  background-color: white;
+}
+.statement-list-head {
+  border: 1px solid var(--light-border);
+  border-radius: 5px 5px 0 0;
+  padding: 8px 30px;
+  border-bottom: 0;
+}
+.payment-list-head {
+  border-radius: 5px 5px 0 0;
+  padding: 8px 30px;
+}
+.payment-item-total {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+}
+.payment-items-wrapper {
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+  height: 100%;
+  width: 100%;
+  background-color: var(--root-bg-color-light);
+}
+.no-top-radius {
+  border-radius: 0px 0px 0px 0px;
+}
+.statements-footer-wrapper .payment-item {
+  border-top: 1px solid var(--light-border);
+  border-radius: 0px 0px 5px 5px;
+}
+.client-picker-wrapper button {
+  font-size: 0.8rem;
+  border: 1px solid var(--light-border);
+  background-color: white;
+  transition: 150ms;
+  width: 100%;
+}
+.client-picker-wrapper button:hover {
+  border: 1px solid var(--light-border);
+  background-color: var(--root-bg-color-light);
+  color: black;
+}
+.pay-modal-item .date-picker-wrapper {
+  width: 100%;
+}
+.case-payments-wrapper {
+  scrollbar-width: none;
+}
+.case-payments-wrapper .payment-item {
+  grid-template-columns: 1fr 2.5fr 2fr 0.5fr;
+  gap: 20px;
+  padding: 10px 15px;
+}
+.case-payments-head {
+  grid-template-columns: 1fr 2.5fr 2fr 0.5fr;
+  gap: 20px;
+  padding: 10px 15px;
+}

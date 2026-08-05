@@ -53,8 +53,8 @@
 
 .time-keeper-widget-container {
   position: absolute;
-  top: 110%;
-  right: 0;
+  top: 130%;
+  /* right: 0; */
   border: 1px solid var(--light-border);
   border-radius: 5px;
   min-width: 375px;
@@ -63,6 +63,7 @@
   flex-direction: column;
   gap: 15px;
   z-index: 999;
+  box-shadow: var(--shadow);
 }
 .nav-time-keeper {
   left: 105%;
@@ -186,7 +187,7 @@
   padding: 0;
   border: none;
   background-color: transparent;
-  color: var(--light-grey);
+  color: var(--light-blue);
   transition: 200ms;
   display: flex;
   align-items: center;
@@ -194,7 +195,7 @@
   width: 100%;
 }
 .time-keeper-toggle:hover {
-  color: var(--grey);
+  color: var(--blue);
   border: none;
   background-color: transparent;
 }

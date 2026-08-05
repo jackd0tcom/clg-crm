@@ -695,6 +695,65 @@ Invoice.init(
   },
 );
 
+class Payment extends Model {}
+Payment.init(
+  {
+    paymentId: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    personId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      indexes: [
+        {
+          name: "person_id_index",
+          fields: ["personId"],
+        },
+      ],
+    },
+    invoiceId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      indexes: [
+        {
+          name: "invoice_id_index",
+          fields: ["invoiceId"],
+        },
+      ],
+    },
+    caseId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      indexes: [
+        {
+          name: "case_id_index",
+          fields: ["caseId"],
+        },
+      ],
+    },
+    description: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    amount: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
+    paidDate: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+  },
+  {
+    modelName: "payment",
+    sequelize: db,
+    timestamps: true,
+  },
+);
+
 class CustomCharge extends Model {}
 CustomCharge.init(
   {
@@ -705,7 +764,11 @@ CustomCharge.init(
     },
     invoiceId: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
+    },
+    caseId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
     },
     description: {
       type: DataTypes.STRING,
@@ -876,6 +939,15 @@ TimeEntry.belongsTo(Rate, { as: "rate", foreignKey: "rateId" });
 
 User.hasMany(Case, { foreignKey: "ownerId", as: "ownedCases" });
 Case.belongsTo(User, { as: "owner", foreignKey: "ownerId" });
+
+Invoice.hasMany(Payment, { foreignKey: "invoiceId", as: "payments" });
+Payment.belongsTo(Invoice, { foreignKey: "invoiceId", as: "invoice" });
+
+Person.hasMany(Payment, { foreignKey: "personId", as: "payments" });
+Payment.belongsTo(Person, { foreignKey: "personId", as: "person" });
+
+Case.hasMany(Payment, { foreignKey: "caseId", as: "payments" });
+Payment.belongsTo(Case, { foreignKey: "caseId", as: "case" });
 
 Case.belongsToMany(PracticeArea, {
   through: CasePracticeAreas,
@@ -1069,4 +1141,5 @@ export {
   AllowedEmails,
   EntryService,
   Rate,
+  Payment,
 };

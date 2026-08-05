@@ -3,6 +3,7 @@ import {
   getAmountOfEntry,
   getRoundedDuration,
   getRoundedAmountOfEntry,
+  formatDollarNoCents,
 } from "../../helpers/helperFunctions";
 import { useState } from "react";
 import TimeEntryStatusBadge from "../UI/TimeEntryStatusBadge";
@@ -21,7 +22,7 @@ const InvoiceItem = ({
   entryServices,
   rates,
 }) => {
-  const [showTrash, setShowTrash] = useState(true);
+  const [showTrash, setShowTrash] = useState(false);
 
   const rate = rates.find((rate) => rate.rateId === item.rateId)?.rate ?? 0;
 
@@ -79,7 +80,9 @@ const InvoiceItem = ({
       <p>${rate}</p>
       <p>{getRoundedDuration(item, rounding)}</p>
       <div className="amount-wrapper">
-        <p>{getRoundedAmountOfEntry(rate, item, rounding)}</p>
+        <p>
+          {formatDollarNoCents(getRoundedAmountOfEntry(rate, item, rounding))}
+        </p>
       </div>
       {status === "draft" && showTrash && (
         <div className="trash-wrapper">

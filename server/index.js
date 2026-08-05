@@ -16,6 +16,7 @@ import adminCtrl from "./controllers/adminCtrl.js";
 import commentCtrl from "./controllers/commentCtrl.js";
 import timeCtrl from "./controllers/timeCtrl.js";
 import invoiceCtrl from "./controllers/invoiceCtrl.js";
+import statementCtrl from "./controllers/statementCtrl.js";
 
 import { requireAccess, requireAdmin } from "./middleware/authMiddleware.js";
 import {
@@ -120,6 +121,7 @@ const {
   getRecentUserEntries,
   newEntry,
   getEntryServices,
+  newCharge,
 } = timeCtrl;
 
 const {
@@ -134,6 +136,8 @@ const {
   createMonthlyInvoices,
   deleteEntryFromInvoice,
 } = invoiceCtrl;
+
+const { updatePayment, addPayment, getPayments } = statementCtrl;
 
 // Express setup
 const app = express();
@@ -306,6 +310,7 @@ app.get("/api/time-entry/getUserEntries", getUserEntries);
 app.get("/api/time-entry/getAllEntries", getAllEntries);
 app.get("/api/time-entry/getRecentUserEntries", getRecentUserEntries);
 app.get("/api/time-entry/getEntryServices", getEntryServices);
+app.post("/api/newCharge", newCharge);
 
 // Invoice endpoints
 app.get("/api/getInvoice/:invoiceId", getInvoice);
@@ -318,6 +323,11 @@ app.post("/api/saveInvoice", saveInvoice);
 app.post("/api/updateInvoiceStatus", updateInvoiceStatus);
 app.post("/api/createMonthlyInvoices", createMonthlyInvoices);
 app.post("/api/deleteEntryFromInvoice", deleteEntryFromInvoice);
+
+// Statement endpoints
+app.post("/api/updatePayment", updatePayment);
+app.post("/api/addPayment", addPayment);
+app.get("/api/getPayments", getPayments);
 
 // user access check endpoint
 app.get("/api/user/check-access", adminCtrl.checkUserAccess);

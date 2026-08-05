@@ -9,6 +9,7 @@ import {
   CustomCharge,
   EntryService,
   Rate,
+  Payment,
 } from "../model.js";
 import { Op } from "sequelize";
 
@@ -34,6 +35,18 @@ export default {
           {
             model: CustomCharge,
             as: "customCharges",
+          },
+          {
+            model: Payment,
+            as: "payments",
+            include: [
+              { model: Person, as: "person", required: false },
+              {
+                model: Case,
+                as: "case",
+                required: false,
+              },
+            ],
           },
         ],
       });
@@ -243,17 +256,35 @@ export default {
       const invoices = await Promise.all(
         casesWithEntries.map(async (c) => {
           const invoiceTitle = `${monthKey}-${c.title}`;
-          const [invoice] = await Invoice.findOrCreate({
+          let [invoice] = await Invoice.findOrCreate({
             where: {
               userId: req.session.user.userId,
               invoiceTitle,
             },
           });
 
+          if (invoice && invoice.invoiceStatus === "paid") {
+            [invoice] = await Invoice.findOrCreate({
+              where: {
+                userId: req.session.user.userId,
+                invoiceTitle: `${invoiceTitle} (1)`,
+              },
+            });
+          }
+          if (invoice && invoice.invoiceStatus === "paid") {
+            [invoice] = await Invoice.findOrCreate({
+              where: {
+                userId: req.session.user.userId,
+                invoiceTitle: `${invoiceTitle} (2)`,
+              },
+            });
+          }
+
           const entries = await Promise.all(
-            c.entries.map((entry) =>
-              entry.update({ invoiceId: invoice.invoiceId }),
-            ),
+            c.entries.map((entry) => {
+              if (entry.paidStatus !== "paid")
+                return entry.update({ invoiceId: invoice.invoiceId });
+            }),
           );
 
           const invoiceData = invoice.toJSON();
@@ -323,6 +354,7 @@ export default {
         entries.forEach(async (entry) => {
           await entry.update({
             invoiceId: null,
+            paidStatus: "draft",
           });
         });
       }
@@ -359,8 +391,6 @@ export default {
       if (invoice.userId !== req.session.user.userId) {
         return res.status(403).send("Not authorized to edit this invoice");
       }
-
-      console.log(invoiceData);
 
       const updatedInvoice = await invoice.update({
         invoiceTitle: invoiceData.invoiceTitle,

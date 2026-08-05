@@ -22,6 +22,7 @@ import Denied from "./Pages/Denied.jsx";
 import TimeKeeper from "./Pages/TimeKeeper.jsx";
 import InvoiceList from "./Pages/InvoiceList.jsx";
 import Invoice from "./Pages/Invoice.jsx";
+import Statements from "./Pages/Statements.js";
 import { connectSocket, disconnectSocket } from "./Services/socket.js";
 
 function App() {
@@ -43,19 +44,14 @@ function App() {
       userSynced &&
       userStore.userId !== null &&
       userStore.isAllowed === false;
-  
+
     if (isAuthenticated && userSynced && !denied) {
       connectSocket();
       return () => disconnectSocket();
     }
-  
+
     disconnectSocket();
-  }, [
-    isAuthenticated,
-    userSynced,
-    userStore.userId,
-    userStore.isAllowed,
-  ]);
+  }, [isAuthenticated, userSynced, userStore.userId, userStore.isAllowed]);
 
   useEffect(() => {
     if (path.startsWith("/case/") && path !== "/case/0") {
@@ -234,6 +230,12 @@ function App() {
                 path="/time-keeper"
                 element={
                   !isAuthenticated ? <Navigate to="/login" /> : <TimeKeeper />
+                }
+              />
+              <Route
+                path="/statements"
+                element={
+                  !isAuthenticated ? <Navigate to="/login" /> : <Statements />
                 }
               />
               <Route
