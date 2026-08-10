@@ -105,7 +105,7 @@ export default {
       });
 
       if (invoiceItems.length > 0) {
-        caseId = invoiceItems[0].case.caseId;
+        caseId = invoiceItems[0].case.caseId ?? invoiceItems[1]?.case?.caseId;
       } else if (charges.length > 0) {
         caseId = charges[0].caseId;
       }
@@ -401,8 +401,10 @@ export default {
       });
 
       if (charges.length > 0) {
-        charges.forEach(
-          async (charge) => await charge.update({ invoiceId: null }),
+        await Promise.all(
+          charges.forEach(
+            async (charge) => await charge.update({ invoiceId: null }),
+          ),
         );
       }
 

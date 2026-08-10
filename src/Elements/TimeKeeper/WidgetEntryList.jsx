@@ -60,7 +60,7 @@ const WidgetEntryList = ({
       const day = charge.createdAt
         ? new Date(charge.createdAt).toISOString().split("T")[0]
         : null;
-      charge.projectTitle = charge.case.title ?? "";
+      charge.projectTitle = charge?.case?.title ?? "";
       if (day) {
         if (!groups[day]) groups[day] = [];
         groups[day].push(charge);
