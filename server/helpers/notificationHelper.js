@@ -57,7 +57,7 @@ export const createNotification = async (
 
     let project;
 
-    if (object.objectType === "task") {
+    if (objectType === "task") {
       let project = await Task.findOne({
         where: {
           taskId: object.objectId,
