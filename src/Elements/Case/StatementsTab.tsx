@@ -2,6 +2,7 @@ import PaymentList from "../Statements/PaymentList";
 
 interface props {
   payments: any;
+  charges: any;
   invoices: any;
 }
 

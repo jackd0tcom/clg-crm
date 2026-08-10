@@ -16,6 +16,7 @@ import PayModal from "../Elements/Invoice/PayModal";
 import { useSelector } from "react-redux";
 import PaymentList from "../Elements/Statements/PaymentList";
 import { formatDollarNoCents } from "../helpers/helperFunctions";
+import { getInvoiceStatementItems } from "../helpers/helperFunctions";
 
 const Invoice = () => {
   const { invoiceId } = useParams();
@@ -29,7 +30,7 @@ const Invoice = () => {
   const userStore = useSelector((state) => state.user);
   const [isSettingRounding, setIsSettingRounding] = useState(false);
   const [savingStatus, setSavingStatus] = useState("Save");
-  const [status, setStatus] = useState("Draft");
+  const [status, setStatus] = useState("draft");
   const [isViewing, setIsViewing] = useState(false);
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
   const [somethingToSave, setSomethingToSave] = useState(false);
@@ -37,9 +38,9 @@ const Invoice = () => {
   const [rates, setRates] = useState([]);
   const [payments, setPayments] = useState([]);
   const [showDelete, setShowDelete] = useState(false);
-  const [defaultClient, setDefaultClient] = useState({});
   const [clientList, setClientList] = useState([]);
   const [caseId, setCaseId] = useState(0);
+  const [invoices, setInvoices] = useState([]);
   const paymentTotal = payments.reduce((acc, payment) => {
     return acc + payment.amount;
   }, 0);
@@ -96,13 +97,14 @@ const Invoice = () => {
         setEntryServices(res.data.entryServices);
         setDefaultRate(data.settings.defaultRate);
         setPayTo(data.payTo ?? data.settings.payTo ?? "");
-        setDefaultClient(
-          data.entries[0]?.case ? data.entries[0].case?.people[0] : null,
-        );
+        const defaultClient = data.entries[0]?.case
+          ? data.entries[0].case?.people[0]
+          : null;
         const defaultBillTo = defaultClient
-          ? `${defaultClient.firstName ?? ""} ${defaultClient.lastName ?? ""}\n${defaultClient.address ?? ""} ${defaultClient.city ?? ""}, ${defaultClient.state ?? ""} ${defaultClient.zip ?? ""}\n${defaultClient.phoneNumber ?? ""}  `
-          : "";
-        setBilledTo(data.billTo ?? defaultBillTo ?? "");
+          ? `${defaultClient.firstName ?? ""} ${defaultClient.lastName ?? ""}\n${defaultClient.address ?? ""} ${defaultClient.city ?? ""} ${defaultClient.state ?? ""} ${defaultClient.zip ?? ""}\n${defaultClient.phoneNumber ?? ""}  `
+          : (data.billTo ?? "");
+        setInvoices(getInvoiceStatementItems(data.caseEntries, data.charges));
+        setBilledTo(defaultBillTo);
         setStatus(data.invoiceStatus);
 
         const entries = data?.entries ?? [];
@@ -297,7 +299,7 @@ const Invoice = () => {
         <div className="invoice-id-wrapper">
           <div className="invoice-id">
             <p>Invoice ID:</p>
-            {status === "draft" ? (
+            {status?.toLowerCase() === "draft" ? (
               <input
                 type="text"
                 className="invoice-id-input"
@@ -615,15 +617,15 @@ const Invoice = () => {
             <div className="invoice-payment-list-top-bar">
               <h3>Payments</h3>
             </div>
-            <PaymentList payments={payments} />
-            <div className="invoice-payment-footer payment-item">
+            <PaymentList payments={payments} invoices={invoices} />
+            {/* <div className="invoice-payment-footer payment-item">
               <div>Total</div>
               <div></div>
               <div></div>
               <div className="payment-item-total">
                 {formatDollarNoCents(paymentTotal)}
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       )}

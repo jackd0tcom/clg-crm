@@ -10,8 +10,9 @@
   scrollbar-width: thin;
   padding-bottom: 15px;
   height: 100%;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: minmax(100px, 1fr) minmax(100px, 3fr) minmax(100px, 2fr);
+  gap: 10px;
   overflow: hidden;
 }
 .invoice-page-wrapper iframe {

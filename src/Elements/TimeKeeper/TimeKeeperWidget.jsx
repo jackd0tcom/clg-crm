@@ -9,6 +9,7 @@ import WidgetEntryList from "./WidgetEntryList";
 import WidgetEntryView from "./WidgetEntryView";
 import UserPicker from "./UserPicker";
 import EntryServicePicker from "./EntryServicePicker";
+import CustomChargeWidget from "./CustomChargeWidget";
 
 const TimeKeeperWidget = ({ caseId, title, taskId, isNav }) => {
   const dispatch = useDispatch();
@@ -23,8 +24,14 @@ const TimeKeeperWidget = ({ caseId, title, taskId, isNav }) => {
   const [resetTimer, setResetTimer] = useState(false);
   const [showEntryView, setShowEntryView] = useState(false);
   const [entriesRefreshKey, setEntriesRefreshKey] = useState(0);
+  const [showChargeView, setShowChargeView] = useState(false);
   const [entryServices, setEntryServices] = useState([]);
   const [rates, setRates] = useState([]);
+  const [charge, setCharge] = useState({
+    chargeId: null,
+    description: "",
+    amount: 0,
+  });
   const [entry, setEntry] = useState({
     caseId: caseId ? caseId : null,
     taskId: taskId ? taskId : null,
@@ -75,6 +82,7 @@ const TimeKeeperWidget = ({ caseId, title, taskId, isNav }) => {
       if (widgetRef.current && !widgetRef.current.contains(event.target)) {
         setShowWidget(false);
         setShowEntryView(false);
+        setShowChargeView(false);
         setShowCaseTaskPicker(false);
         setEntry({
           caseId: caseId ? caseId : null,
@@ -86,6 +94,11 @@ const TimeKeeperWidget = ({ caseId, title, taskId, isNav }) => {
           entryServiceId: null,
           userId: userStore.userId,
           rateId: userStore.rateId ?? null,
+        });
+        setCharge({
+          chargeId: null,
+          description: "",
+          amount: 0,
         });
       }
     };
@@ -239,6 +252,39 @@ const TimeKeeperWidget = ({ caseId, title, taskId, isNav }) => {
               : "time-keeper-widget-container"
           }
         >
+          <div className="time-keeper-header">
+            <div className="time-keeper-header-buttons">
+              <button
+                onClick={() => {
+                  setShowChargeView(false);
+                  setCharge({
+                    chargeId: null,
+                    description: "",
+                    amount: 0,
+                  });
+                }}
+                id="time-keeper-button"
+                className={
+                  showChargeView
+                    ? "time-keeper-header-button inactive-time"
+                    : "time-keeper-header-button"
+                }
+              >
+                Time Keeper
+              </button>
+              <button
+                id="charge-button"
+                onClick={() => setShowChargeView(true)}
+                className={
+                  showChargeView
+                    ? "time-keeper-header-button"
+                    : "time-keeper-header-button inactive-time"
+                }
+              >
+                Custom Charge
+              </button>
+            </div>
+          </div>
           {showEntryView ? (
             <WidgetEntryView
               entry={entry}
@@ -254,25 +300,36 @@ const TimeKeeperWidget = ({ caseId, title, taskId, isNav }) => {
             />
           ) : (
             <>
-              <WidgetEntryView
-                entry={entry}
-                setEntry={setEntry}
-                setShowEntryView={setShowEntryView}
-                entryServices={entryServices}
-                widgetView={true}
-                setEntriesRefreshKey={setEntriesRefreshKey}
-                caseId={caseId}
-                taskId={taskId}
-                title={title}
-                rates={rates}
-              />
+              {!showChargeView ? (
+                <WidgetEntryView
+                  entry={entry}
+                  setEntry={setEntry}
+                  setShowEntryView={setShowEntryView}
+                  entryServices={entryServices}
+                  widgetView={true}
+                  setEntriesRefreshKey={setEntriesRefreshKey}
+                  caseId={caseId}
+                  taskId={taskId}
+                  title={title}
+                  rates={rates}
+                />
+              ) : (
+                <CustomChargeWidget
+                  setEntriesRefreshKey={setEntriesRefreshKey}
+                  caseId={caseId}
+                  charge={charge}
+                  setCharge={setCharge}
+                />
+              )}
               <WidgetEntryList
+                setShowChargeView={setShowChargeView}
                 entry={entry}
                 setEntry={setEntry}
                 entryServices={entryServices}
                 startTimer={startTimer}
                 setShowEntryView={setShowEntryView}
                 entriesRefreshKey={entriesRefreshKey}
+                setCharge={setCharge}
               />
             </>
           )}

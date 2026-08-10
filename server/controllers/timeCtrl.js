@@ -376,7 +376,7 @@ export default {
       }
       const entries = await TimeEntry.findAll({
         where: { userId: req.session.user.userId, endTime: { [Op.not]: null } },
-        limit: 12,
+        limit: 32,
         order: [
           ["endTime", "DESC"],
           ["timeEntryId", "DESC"],
@@ -412,9 +412,25 @@ export default {
         }),
       );
 
+      const charges = await CustomCharge.findAll({
+        limit: 24,
+        include: [
+          {
+            model: Case,
+            as: "case",
+            required: false,
+          },
+        ],
+      });
+
+      const payload = {
+        entries: [...entriesWithProjects],
+        charges: charges,
+      };
+
       if (!entries) {
         res.status(200).send("No Entries Found");
-      } else res.status(200).send(entriesWithProjects);
+      } else res.status(200).send(payload);
     } catch (error) {
       console.log(error);
       res.status(401).send(error);
@@ -436,6 +452,30 @@ export default {
       });
 
       res.status(200).send(newCharge);
+    } catch (error) {
+      console.log(error);
+      res.status(500).send(error);
+    }
+  },
+  updateCharge: async (req, res) => {
+    try {
+      console.log("updateCharge");
+      const { chargeId, description, amount } = req.body;
+
+      if (!req.session.user) {
+        return res.status(401).send("User not authenticated");
+      }
+
+      const charge = await CustomCharge.findByPk(chargeId);
+
+      if (charge) {
+        const updatedCharge = await charge.update({
+          description,
+          amount,
+        });
+      } else res.status(400).send("error updating charge");
+
+      res.status(200).send(updateCharge);
     } catch (error) {
       console.log(error);
       res.status(500).send(error);

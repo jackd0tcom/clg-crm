@@ -73,6 +73,38 @@ export default {
         where: { userId: req.session.user.userId },
       });
 
+      let payments;
+      let caseEntries;
+      let charges;
+      if (invoiceItems && invoiceItems.length > 0) {
+        payments = await Payment.findAll({
+          where: {
+            caseId: invoiceItems[0].caseId,
+          },
+          include: [{ model: Person, as: "person" }],
+        });
+      }
+
+      caseEntries = await TimeEntry.findAll({
+        where: {
+          caseId: invoiceItems[0].caseId,
+          invoiceId: { [Op.ne]: null },
+        },
+        include: [
+          { model: Rate, as: "rate", attributes: ["rate"] },
+          {
+            model: Invoice,
+            as: "invoice",
+            required: false,
+          },
+        ],
+      });
+      charges = await CustomCharge.findAll({
+        where: {
+          caseId: invoiceItems[0].caseId,
+        },
+      });
+
       const rates = await Rate.findAll();
 
       const invoiceData = invoice.toJSON();
@@ -83,6 +115,9 @@ export default {
         settings: userSettings,
         entryServices: entryServices,
         rates: rates,
+        payments: payments,
+        caseEntries: caseEntries,
+        charges: charges,
       };
 
       res.status(200).send(invoiceWithItems);
@@ -280,6 +315,21 @@ export default {
             });
           }
 
+          const charges = await CustomCharge.findAll({
+            where: {
+              caseId: c.caseId,
+              invoiceId: null,
+            },
+          });
+
+          const updatedCharges = await Promise.all(
+            charges.map(async (charge) => {
+              await charge.update({
+                invoiceId: invoice.invoiceId,
+              });
+            }),
+          );
+
           const entries = await Promise.all(
             c.entries.map((entry) => {
               if (entry.paidStatus !== "paid")
@@ -289,7 +339,7 @@ export default {
 
           const invoiceData = invoice.toJSON();
 
-          return { ...invoiceData, entries: entries };
+          return { ...invoiceData, entries: entries, charges: updatedCharges };
         }),
       );
 

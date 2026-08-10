@@ -263,16 +263,15 @@ const WidgetEntryView = ({
               {status === "no project" && (
                 <div className="no-project">Please add a task or case</div>
               )}
-              {canSave && (
-                <button
-                  onClick={() => {
-                    entry.timeEntryId ? updateEntry(true) : newEntry();
-                  }}
-                  className="entry-save-button"
-                >
-                  Save
-                </button>
-              )}
+              <button
+                disabled={!canSave}
+                onClick={() => {
+                  entry.timeEntryId ? updateEntry(true) : newEntry();
+                }}
+                className="entry-save-button"
+              >
+                Save
+              </button>
               {!widgetView && (
                 <button
                   onClick={() => setShowDeleteModal(true)}

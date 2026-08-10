@@ -15,6 +15,7 @@ import {
   Invoice,
   TimeEntry,
   Rate,
+  CustomCharge,
 } from "../model.js";
 import {
   createActivityLog,
@@ -328,7 +329,11 @@ export default {
             {
               model: Payment,
               as: "payments",
+              where: {
+                caseId: caseId,
+              },
               include: [{ model: Person, as: "person" }],
+              required: false,
             },
             {
               model: TimeEntry,
@@ -343,11 +348,27 @@ export default {
               ],
             },
             {
+              model: CustomCharge,
+              as: "charge",
+              include: [
+                {
+                  model: Invoice,
+                  as: "invoice",
+                  required: false,
+                },
+              ],
+            },
+            {
               model: Person,
               as: "people",
             },
           ],
         });
+
+        if (!foundCase) {
+          res.status(404).send("no case found with that id!");
+          return;
+        }
 
         // Get tasks with their assignees
         const tasks = await Task.findAll({
@@ -391,7 +412,7 @@ export default {
         }));
 
         // Transform tribunal array to single object (or null)
-        const caseData = foundCase.toJSON();
+        const caseData = foundCase?.toJSON();
         const tribunal =
           Array.isArray(caseData.tribunal) && caseData.tribunal.length > 0
             ? caseData.tribunal[0]

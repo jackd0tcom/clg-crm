@@ -468,3 +468,38 @@ export function buildFilters(items, idPath, titlePath) {
 
   return array;
 }
+export const getInvoiceStatementItems = (entries, charges) => {
+  const invoices = (entries ?? []).reduce((acc, entry) => {
+    if (!entry.invoiceId) return acc;
+    const invoiceId = entry.invoiceId;
+    const amount = getAmountOfEntry(entry.rate?.rate ?? 0, entry);
+    if (!acc[invoiceId]) {
+      acc[invoiceId] = {
+        invoiceId,
+        title: entry.invoice?.invoiceTitle,
+        amount: 0,
+        createdAt: entry.invoice?.createdAt,
+        description: "Invoice",
+      };
+    }
+    acc[invoiceId].amount += amount;
+    return acc;
+  }, {});
+
+  (charges ?? []).forEach((charge) => {
+    if (!charge.invoiceId) return;
+    if (invoices[charge.invoiceId]) {
+      invoices[charge.invoiceId].amount += charge.amount ?? 0;
+      return;
+    }
+    invoices[charge.invoiceId] = {
+      invoiceId: charge.invoiceId,
+      title: charge.invoice?.invoiceTitle,
+      amount: charge.amount ?? 0,
+      createdAt: charge.invoice?.createdAt ?? charge.createdAt,
+      description: "Invoice",
+    };
+  });
+
+  return Object.values(invoices);
+};

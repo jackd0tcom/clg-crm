@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import StatusIcon from "../Task/StatusIcon";
 import { getDuration, formatDay } from "../../helpers/helperFunctions";
+import { formatDollarNoCents } from "../../helpers/helperFunctions";
 
 const WidgetEntryList = ({
   entry,
@@ -10,8 +11,11 @@ const WidgetEntryList = ({
   setShowEntryView,
   entriesRefreshKey,
   entryServices,
+  setShowChargeView,
+  setCharge,
 }) => {
   const [recentEntries, setRecentEntries] = useState([]);
+  const [recentCharges, setRecentCharges] = useState([]);
 
   const getServiceTitle = (id) => {
     return (
@@ -25,7 +29,10 @@ const WidgetEntryList = ({
       try {
         await axios.get("/api/time-entry/getRecentUserEntries").then((res) => {
           if (res.status === 200) {
-            setRecentEntries(res.data.filter((entry) => entry !== null));
+            setRecentEntries(
+              res.data.entries.filter((entry) => entry !== null),
+            );
+            setRecentCharges(res.data.charges);
           } else {
             console.log(res);
             setRecentEntries([{}]);
@@ -49,9 +56,26 @@ const WidgetEntryList = ({
         groups[day].push(entry);
       }
     }
+    recentCharges.forEach((charge) => {
+      const day = charge.createdAt
+        ? new Date(charge.createdAt).toISOString().split("T")[0]
+        : null;
+      charge.projectTitle = charge.case.title;
+      if (day) {
+        if (!groups[day]) groups[day] = [];
+        groups[day].push(charge);
+      }
+    });
     return Object.entries(groups)
       .sort(([a], [b]) => b.localeCompare(a))
-      .map(([day, entries]) => ({ day, entries }));
+      .map(([day, entries]) => {
+        const sortedEntries = entries.sort(
+          (a, b) =>
+            new Date(b.startTime ? b.startTime : b.createdAt).getTime() -
+            new Date(a.startTime ? a.startTime : a.createdAt).getTime(),
+        );
+        return { day, entries: sortedEntries };
+      });
   };
 
   const getDurationNumber = (entry) => {
@@ -85,10 +109,13 @@ const WidgetEntryList = ({
     <div className="widget-entry-list-wrapper">
       {recentEntries?.length > 0 &&
         groupedEntries.map(({ day, entries }) => {
-          const dailySeconds = entries.reduce(
-            (acc, entry) => acc + getDurationNumber(entry),
-            0,
-          );
+          const dailySeconds = entries?.reduce((acc, entry) => {
+            let duration = 0;
+            if (!entry.chargeId) {
+              duration = getDurationNumber(entry);
+            }
+            return acc + duration;
+          }, 0);
           return (
             <div key={day} className="widget-entry-group">
               <div className="widget-entry-day">
@@ -99,12 +126,21 @@ const WidgetEntryList = ({
                 entries?.map((entry) => (
                   <div
                     onClick={() => {
-                      setEntry({
-                        ...entry,
-                        currentTitle: entry.projectTitle,
-                        endTime: entry.endTime,
-                      });
-                      setShowEntryView(true);
+                      if (entry.chargeId) {
+                        setCharge({
+                          chargeId: entry.chargeId,
+                          description: entry.description,
+                          amount: entry.amount,
+                        });
+                        setShowChargeView(true);
+                      } else {
+                        setEntry({
+                          ...entry,
+                          currentTitle: entry.projectTitle,
+                          endTime: entry.endTime,
+                        });
+                        setShowEntryView(true);
+                      }
                     }}
                     className="widget-entry-item"
                     key={entry.timeEntryId}
@@ -117,10 +153,16 @@ const WidgetEntryList = ({
                             : "widget-entry-item-notes no-notes"
                         }
                       >
-                        {getServiceTitle(entry.entryServiceId) ??
-                          "Add a Description"}
+                        {entry.chargeId
+                          ? entry.description
+                          : (getServiceTitle(entry.entryServiceId) ??
+                            "Add a Description")}
                       </p>
-                      <p>{getDuration(entry)}</p>
+                      <p>
+                        {entry.chargeId
+                          ? formatDollarNoCents(entry.amount)
+                          : getDuration(entry)}
+                      </p>
                     </div>
                     <div className="widget-entry-item-bottom">
                       <div className="widget-entry-item-project">

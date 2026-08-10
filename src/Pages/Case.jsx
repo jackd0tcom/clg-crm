@@ -15,6 +15,7 @@ import { socket } from "../Services/socket";
 import { saveCaseNotesKeepalive } from "../helpers/helperFunctions";
 import { getAmountOfEntry } from "../helpers/helperFunctions";
 import PayModal from "../Elements/Invoice/PayModal";
+import { getInvoiceStatementItems } from "../helpers/helperFunctions";
 
 const Case = ({ openTaskView, refreshKey }) => {
   const { caseId } = useParams();
@@ -45,6 +46,7 @@ const Case = ({ openTaskView, refreshKey }) => {
   const [opposing, setOpposing] = useState([]);
   const [adverseOpposing, setAdverseOpposing] = useState([]);
   const [peopleList, setPeopleList] = useState([]);
+  const [charges, setCharges] = useState([]);
   const [timeEntries, setTimeEntries] = useState([]);
   const [invoices, setInvoices] = useState([]);
   const isCreatingCaseRef = useRef(false);
@@ -149,33 +151,17 @@ const Case = ({ openTaskView, refreshKey }) => {
         );
         fetchPeople();
         setTimeEntries(caseResponse.data.timeEntries ?? []);
-        const getInvoiceStatementItems = (entries) => {
-          return Object.values(
-            entries.reduce((invoices, entry) => {
-              if (!entry.invoiceId) return invoices;
-              const invoiceId = entry.invoiceId;
-              const amount = getAmountOfEntry(entry.rate?.rate ?? 0, entry);
-              if (!invoices[invoiceId]) {
-                invoices[invoiceId] = {
-                  invoiceId,
-                  title: entry.invoice?.invoiceTitle,
-                  amount: 0,
-                  createdAt: entry.invoice?.createdAt,
-                  description: "Invoice",
-                };
-              }
-              invoices[invoiceId].amount += amount;
-              return invoices;
-            }, {}),
-          );
-        };
         setInvoices(
-          getInvoiceStatementItems(caseResponse.data.timeEntries) ?? [],
+          getInvoiceStatementItems(
+            caseResponse.data.timeEntries,
+            caseResponse.data.charge,
+          ) ?? [],
         );
         setCaseData(caseResponse.data);
         setActivityData(activityResponse.data);
         setClientList(caseResponse.data.people ?? []);
         setPayments(caseResponse.data.payments);
+        setCharges(caseResponse.data.charge ?? []);
         setPhase(caseResponse.data.phase);
         setNotes(caseResponse.data.notes);
         setTitle(caseResponse.data.title);

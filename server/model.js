@@ -949,6 +949,9 @@ Payment.belongsTo(Person, { foreignKey: "personId", as: "person" });
 Case.hasMany(Payment, { foreignKey: "caseId", as: "payments" });
 Payment.belongsTo(Case, { foreignKey: "caseId", as: "case" });
 
+Case.hasMany(CustomCharge, { foreignKey: "caseId", as: "charge" });
+CustomCharge.belongsTo(Case, { foreignKey: "caseId", as: "case" });
+
 Case.belongsToMany(PracticeArea, {
   through: CasePracticeAreas,
   as: "practiceAreas",

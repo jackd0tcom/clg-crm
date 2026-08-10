@@ -6,9 +6,16 @@ interface props {
   headless: boolean;
   invoices: any;
   caseView: boolean;
+  total?: number;
 }
 
-const PaymentList = ({ payments, headless, invoices, caseView }: props) => {
+const PaymentList = ({
+  payments,
+  headless,
+  invoices,
+  caseView,
+  total,
+}: props) => {
   let items = payments;
   if (invoices) {
     const combined = [...payments, ...invoices];
@@ -50,7 +57,7 @@ const PaymentList = ({ payments, headless, invoices, caseView }: props) => {
           <PaymentItem payment={payment} />
         ))}
       </div>
-      <StatementsFooter payments={items} />
+      <StatementsFooter payments={items} total={total} />
     </div>
   );
 };
