@@ -76,14 +76,7 @@ export default {
       let payments;
       let caseEntries;
       let charges;
-      if (invoiceItems && invoiceItems.length > 0 && invoiceItems[0].case) {
-        payments = await Payment.findAll({
-          where: {
-            caseId: invoiceItems[0].caseId,
-          },
-          include: [{ model: Person, as: "person" }],
-        });
-      }
+      let caseId;
       caseEntries = await TimeEntry.findAll({
         where: {
           invoiceId,
@@ -102,6 +95,25 @@ export default {
         where: {
           invoiceId,
         },
+        include: [
+          {
+            model: Case,
+            as: "case",
+            include: [{ model: Person, as: "people" }],
+          },
+        ],
+      });
+
+      if (invoiceItems.length > 0) {
+        caseId = invoiceItems[0].case.caseId;
+      } else if (charges.length > 0) {
+        caseId = charges[0].caseId;
+      }
+      payments = await Payment.findAll({
+        where: {
+          caseId,
+        },
+        include: [{ model: Person, as: "person" }],
       });
 
       const rates = await Rate.findAll();
@@ -389,7 +401,9 @@ export default {
       });
 
       if (charges.length > 0) {
-        charges.forEach(async (charge) => await charge.destroy());
+        charges.forEach(
+          async (charge) => await charge.update({ invoiceId: null }),
+        );
       }
 
       const entries = await TimeEntry.findAll({

@@ -473,9 +473,9 @@ export default {
           description,
           amount,
         });
+        res.status(200).send(updatedCharge);
+        return;
       } else res.status(400).send("error updating charge");
-
-      res.status(200).send(updatedCharge);
     } catch (error) {
       console.log(error);
       res.status(500).send(error);
