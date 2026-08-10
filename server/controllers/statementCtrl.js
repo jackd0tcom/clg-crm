@@ -135,7 +135,7 @@ export default {
       const updatedPayment = await foundPayment.update({
         description: payment.description,
         amount: payment.amount,
-        paidDate: payment.amount,
+        paidDate: payment.paidDate,
       });
 
       res.status(200).send(updatedPayment);

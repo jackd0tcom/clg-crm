@@ -70,7 +70,7 @@ const Statements = () => {
       if (filter.date.length > 0) {
         if (
           !filter.date.some(
-            (filter: any) => filter.id === payment.paidDate.slice(0, 7),
+            (filter: any) => filter.id === payment.paidDate?.slice(0, 7),
           )
         )
           return false;

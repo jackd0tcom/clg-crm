@@ -76,7 +76,7 @@ export default {
       let payments;
       let caseEntries;
       let charges;
-      if (invoiceItems && invoiceItems.length > 0) {
+      if (invoiceItems && invoiceItems.length > 0 && invoiceItems[0].case) {
         payments = await Payment.findAll({
           where: {
             caseId: invoiceItems[0].caseId,
@@ -87,7 +87,7 @@ export default {
 
       caseEntries = await TimeEntry.findAll({
         where: {
-          caseId: invoiceItems[0].caseId,
+          caseId: invoiceItems[0]?.caseId,
           invoiceId: { [Op.ne]: null },
         },
         include: [

@@ -90,7 +90,7 @@ const Invoice = () => {
       if (res.status === 200) {
         const data = res.data;
         setInvoiceData(data);
-        setCaseId(data.entries[0].case?.caseId ?? 0);
+        setCaseId(data.entries[0]?.case?.caseId ?? 0);
         setRates(data.rates);
         setPayments(data.payments);
         setClientList(data.entries[0]?.case?.people ?? []);
@@ -104,7 +104,7 @@ const Invoice = () => {
           ? `${defaultClient.firstName ?? ""} ${defaultClient.lastName ?? ""}\n${defaultClient.address ?? ""} ${defaultClient.city ?? ""} ${defaultClient.state ?? ""} ${defaultClient.zip ?? ""}\n${defaultClient.phoneNumber ?? ""}  `
           : (data.billTo ?? "");
         setInvoices(getInvoiceStatementItems(data.caseEntries, data.charges));
-        setBilledTo(defaultBillTo);
+        setBilledTo(data.billTo ?? defaultBillTo);
         setStatus(data.invoiceStatus);
 
         const entries = data?.entries ?? [];
