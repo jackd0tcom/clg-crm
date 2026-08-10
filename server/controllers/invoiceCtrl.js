@@ -84,11 +84,9 @@ export default {
           include: [{ model: Person, as: "person" }],
         });
       }
-
       caseEntries = await TimeEntry.findAll({
         where: {
-          caseId: invoiceItems[0]?.caseId,
-          invoiceId: { [Op.ne]: null },
+          invoiceId,
         },
         include: [
           { model: Rate, as: "rate", attributes: ["rate"] },
@@ -99,9 +97,10 @@ export default {
           },
         ],
       });
+
       charges = await CustomCharge.findAll({
         where: {
-          caseId: invoiceItems[0].caseId,
+          invoiceId,
         },
       });
 
@@ -280,8 +279,14 @@ export default {
                 ],
               },
             });
-            if (!entries.length) return null;
-            return { ...c.toJSON(), entries };
+            const charges = await CustomCharge.findAll({
+              where: {
+                invoiceId: null,
+                caseId: c.caseId,
+              },
+            });
+            if (!entries.length && !charges.length) return null;
+            return { ...c.toJSON(), entries, charges };
           }),
         )
       ).filter(Boolean);
@@ -315,15 +320,8 @@ export default {
             });
           }
 
-          const charges = await CustomCharge.findAll({
-            where: {
-              caseId: c.caseId,
-              invoiceId: null,
-            },
-          });
-
           const updatedCharges = await Promise.all(
-            charges.map(async (charge) => {
+            c.charges?.map(async (charge) => {
               await charge.update({
                 invoiceId: invoice.invoiceId,
               });
@@ -331,7 +329,7 @@ export default {
           );
 
           const entries = await Promise.all(
-            c.entries.map((entry) => {
+            c.entries?.map((entry) => {
               if (entry.paidStatus !== "paid")
                 return entry.update({ invoiceId: invoice.invoiceId });
             }),

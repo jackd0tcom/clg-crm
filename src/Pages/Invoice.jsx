@@ -41,7 +41,7 @@ const Invoice = () => {
   const [clientList, setClientList] = useState([]);
   const [caseId, setCaseId] = useState(0);
   const [invoices, setInvoices] = useState([]);
-  const paymentTotal = payments.reduce((acc, payment) => {
+  const paymentTotal = payments?.reduce((acc, payment) => {
     return acc + payment.amount;
   }, 0);
 
@@ -91,8 +91,8 @@ const Invoice = () => {
         const data = res.data;
         setInvoiceData(data);
         setCaseId(data.entries[0]?.case?.caseId ?? 0);
-        setRates(data.rates);
-        setPayments(data.payments);
+        setRates(data.rates ?? []);
+        setPayments(data.payments ?? []);
         setClientList(data.entries[0]?.case?.people ?? []);
         setEntryServices(res.data.entryServices);
         setDefaultRate(data.settings.defaultRate);
