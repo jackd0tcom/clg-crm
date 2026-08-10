@@ -733,7 +733,7 @@
   border-bottom: 1px solid var(--light-border);
   display: flex;
   justify-content: space-between;
-  background-color: var(--light-light-grey);
+  border-top: 1px solid var(--light-border);
 }
 .widget-entry-item {
   display: flex;

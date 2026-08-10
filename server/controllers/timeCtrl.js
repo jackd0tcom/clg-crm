@@ -445,10 +445,10 @@ export default {
         return res.status(401).send("User not authenticated");
       }
       const newCharge = await CustomCharge.create({
-        caseId,
-        invoiceId,
-        description,
-        amount,
+        caseId: caseId ?? null,
+        invoiceId: invoiceId ?? null,
+        description: description ?? null,
+        amount: amount ?? null,
       });
 
       res.status(200).send(newCharge);
