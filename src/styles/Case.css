@@ -485,6 +485,12 @@ div.case-task-container
   height: 100%;
   position: relative;
   order: 2;
+  min-height: 0;
+}
+.case-activity-container .activity-log-wrapper {
+  max-height: unset;
+  margin-bottom: unset;
+  height: calc(100% - 65px);
 }
 .case-stats-wrapper {
   display: grid;
