@@ -464,8 +464,6 @@ export function buildFilters(items, idPath, titlePath) {
     });
   });
 
-  console.log(array);
-
   return array;
 }
 export const getInvoiceStatementItems = (entries, charges) => {
@@ -502,4 +500,35 @@ export const getInvoiceStatementItems = (entries, charges) => {
   });
 
   return Object.values(invoices);
+};
+export const getInvoiceStatementItemFromInvoice = (invoices) => {
+  return invoices.map((invoice) => {
+    const chargesTotal =
+      invoice.customCharges.length > 0
+        ? invoice.customCharges?.reduce((acc, charge) => {
+            return acc + charge.amount;
+          }, 0)
+        : 0;
+    const entriesTotal =
+      invoice.timeEntries?.length > 0
+        ? invoice.timeEntries?.reduce((acc, entry) => {
+            return acc + getAmountOfEntry(entry.rate?.rate, entry);
+          }, 0)
+        : 0;
+    const person = invoice.timeEntries[0]?.person;
+    const firstName = invoice.timeEntries?.person?.firstName ?? "";
+    const lastName = invoice.timeEntries?.person?.lastName ?? "";
+    const clientName = `${firstName} ${lastName}`;
+    const grandTotal = chargesTotal + entriesTotal;
+    console.log(invoice.timeEntries[0]);
+    return {
+      createdAt: invoice.createdAt,
+      title: invoice.invoiceTitle,
+      invoiceId: invoice.invoiceId,
+      description: invoice.invoiceTitle,
+      person: person,
+      amount: grandTotal,
+      paidDate: invoice.createdAt,
+    };
+  });
 };

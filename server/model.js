@@ -679,6 +679,10 @@ Invoice.init(
       defaultValue: 15,
       allowNull: false,
     },
+    caseId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
     payTo: {
       type: DataTypes.TEXT,
       allowNull: true,
@@ -692,6 +696,12 @@ Invoice.init(
     modelName: "invoice",
     sequelize: db,
     timestamps: true,
+    indexes: [
+      {
+        name: "invoice_case_id_index",
+        fields: ["caseId"],
+      },
+    ],
   },
 );
 
@@ -1093,6 +1103,15 @@ TimeEntry.belongsTo(Invoice, {
 Invoice.hasMany(TimeEntry, {
   foreignKey: "invoiceId",
   as: "timeEntries",
+});
+
+Invoice.belongsTo(Case, {
+  foreignKey: "caseId",
+  as: "case",
+});
+Case.hasMany(Invoice, {
+  foreignKey: "caseId",
+  as: "invoices",
 });
 
 UserSettings.belongsTo(User, {

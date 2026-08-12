@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router";
 import {
-  formatNumericalDate,
   formatDollarNoCents,
+  formatDateNoTimeWithYear,
 } from "../../helpers/helperFunctions";
 
 interface props {
@@ -16,7 +16,9 @@ const PaymentItem = ({ payment }: props) => {
   return (
     <div className="payment-item">
       <div>
-        {formatNumericalDate(payment?.paidDate ?? payment?.createdAt ?? null)}
+        {formatDateNoTimeWithYear(
+          payment?.paidDate ?? payment?.createdAt ?? null,
+        )}
       </div>
       <div
         className={payment.title && "invoice-link"}

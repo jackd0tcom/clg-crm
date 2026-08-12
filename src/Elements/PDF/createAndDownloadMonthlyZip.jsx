@@ -39,9 +39,7 @@ async function createAndDownloadMonthlyZip({
     const stepStarted = Date.now();
 
     const { data } = await axios.get(`/api/getInvoice/${inv.invoiceId}`);
-    const defaultClient = data.entries[0]?.case
-      ? data.entries[0].case?.people[0]
-      : null;
+    const defaultClient = data.case?.people?.[0] ?? null;
     const defaultBillTo = defaultClient
       ? `${defaultClient.firstName ?? ""} ${defaultClient.lastName ?? ""}\n${defaultClient.address ?? ""} ${defaultClient.city ?? ""}, ${defaultClient.state ?? ""} ${defaultClient.zip ?? ""}\n${defaultClient.phoneNumber ?? ""}  `
       : "";

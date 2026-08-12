@@ -156,11 +156,31 @@ export default {
         include: [{ model: Person, as: "person" }],
       });
 
+      const invoices = await Invoice.findAll({
+        include: [
+          {
+            model: TimeEntry,
+            as: "timeEntries",
+            include: [{ model: Rate, as: "rate" }],
+          },
+          {
+            model: CustomCharge,
+            as: "customCharges",
+          },
+          {},
+        ],
+      });
+
       if (!payments) {
         return res.status(404).send("No payments found");
       }
 
-      res.status(200).send(payments);
+      const payload = {
+        payments,
+        invoices,
+      };
+
+      res.status(200).send(payload);
     } catch (err) {
       console.log(err);
       res.status(500).send(err);

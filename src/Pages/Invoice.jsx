@@ -90,24 +90,23 @@ const Invoice = () => {
       if (res.status === 200) {
         const data = res.data;
         setInvoiceData(data);
-        setCaseId(
-          data.entries[0]?.case?.caseId ?? data.charges[0]?.case?.caseId ?? 0,
-        );
+        setCaseId(data.caseId ?? data.case?.caseId ?? 0);
         setRates(data.rates ?? []);
         setPayments(data.payments ?? []);
-        setClientList(
-          data.entries[0]?.case?.people ?? data.charges[0]?.case?.people ?? [],
-        );
+        setClientList(data.case?.people ?? []);
         setEntryServices(res.data.entryServices);
         setDefaultRate(data.settings.defaultRate);
         setPayTo(data.payTo ?? data.settings.payTo ?? "");
-        const defaultClient = data.entries[0]?.case
-          ? data.entries[0].case?.people[0]
-          : (data.charges[0]?.case?.people[0] ?? "");
+        const defaultClient = data.case?.people?.[0] ?? null;
         const defaultBillTo = defaultClient
           ? `${defaultClient.firstName ?? ""} ${defaultClient.lastName ?? ""}\n${defaultClient.address ?? ""} ${defaultClient.city ?? ""} ${defaultClient.state ?? ""} ${defaultClient.zip ?? ""}\n${defaultClient.phoneNumber ?? ""}  `
           : (data.billTo ?? "");
-        setInvoices(getInvoiceStatementItems(data.caseEntries, data.charges));
+        setInvoices(
+          getInvoiceStatementItems(
+            data.caseEntries ?? data.entries,
+            data.charges ?? data.customCharges,
+          ),
+        );
         setBilledTo(data.billTo ?? defaultBillTo);
         setStatus(data.invoiceStatus);
 

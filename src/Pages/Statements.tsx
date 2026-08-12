@@ -1,12 +1,14 @@
 import { useState, useEffect, useMemo } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router";
+import { getInvoiceStatementItemFromInvoice } from "../helpers/helperFunctions";
 import Loader from "../Elements/UI/Loader";
 import FilterDropdown from "../Elements/UI/FilterDropdown";
 import { usePersistedFilter } from "../Hooks/usePersistedFilter";
 import { useSelector } from "react-redux";
 import PaymentList from "../Elements/Statements/PaymentList";
 import { buildFilters } from "../helpers/helperFunctions";
+import FilterDateRangeSelector from "../Elements/TimeKeeper/FilterDateRangeSelector";
+import PDFStatement from "../Elements/PDF/PDFStatement";
 
 const Statements = () => {
   const [paymentList, setPaymentList] = useState([]);
@@ -15,6 +17,11 @@ const Statements = () => {
   const [dates, setDates] = useState<any>([]);
   const [clients, setClients] = useState<any>([]);
   const [description, setDescription] = useState<any>([]);
+  const [showPDF, setShowPDF] = useState(false);
+  const now = new Date();
+  const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+  const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  const [combinedItems, setCombinedItems] = useState<any>([]);
   const [filter, setFilter] = usePersistedFilter(
     "statements",
     userStore.userId,
@@ -24,6 +31,10 @@ const Statements = () => {
       client: [],
       description: [],
       direction: "up",
+      dateRange: {
+        startDate: firstDay,
+        endDate: lastDay,
+      },
     },
   );
 
@@ -31,11 +42,14 @@ const Statements = () => {
     try {
       await axios.get("/api/getPayments").then((res: any) => {
         if (res.status === 200) {
-          setPaymentList(res.data);
-          console.log(res.data);
+          const payments = res.data.payments;
+          const invoices = res.data.invoices;
+          const invoiceItems = getInvoiceStatementItemFromInvoice(invoices);
+          setPaymentList(payments);
+          setCombinedItems([...payments, ...invoiceItems]);
           setDates(
             buildFilters(
-              res.data,
+              payments,
               (item: any) => item.paidDate?.slice(0, 7), // unique key: "2024-03"
               (item: any) => {
                 const [year, month] = item.paidDate.split("-");
@@ -44,11 +58,11 @@ const Statements = () => {
             ),
           );
           setClients(
-            buildFilters(res.data, "personId", (p: any) =>
+            buildFilters(payments, "personId", (p: any) =>
               `${p.person?.firstName ?? ""} ${p.person?.lastName ?? ""}`.trim(),
             ),
           );
-          setDescription(buildFilters(res.data, "description", "description"));
+          setDescription(buildFilters(payments, "description", "description"));
           setIsLoading(false);
         }
       });
@@ -64,9 +78,29 @@ const Statements = () => {
   }, []);
 
   const filteredPayments = useMemo(() => {
-    let data = paymentList;
+    let data = combinedItems;
 
     data = data.filter((payment: any) => {
+      const rangeStart = filter.dateRange.startDate
+        ? new Date(filter.dateRange.startDate)
+        : null;
+      const rangeEnd = filter.dateRange.endDate
+        ? new Date(filter.dateRange.endDate)
+        : null;
+      if (
+        rangeStart &&
+        payment.paidDate &&
+        payment.paidDate < rangeStart.toISOString()
+      ) {
+        return false;
+      }
+      if (
+        rangeEnd &&
+        payment.paidDate &&
+        payment.paidDate > rangeEnd.toISOString()
+      ) {
+        return false;
+      }
       if (filter.date.length > 0) {
         if (
           !filter.date.some(
@@ -104,20 +138,24 @@ const Statements = () => {
     <div className="statements-page-wrapper">
       <div className="page-header">
         <h2 className="section-heading">Statements</h2>
+        <button
+          onClick={() => setShowPDF(!showPDF)}
+          className="new-invoice-button"
+        >
+          PDF
+        </button>
       </div>
       <div className="statements-page-body">
         {isLoading ? (
           <Loader />
+        ) : showPDF ? (
+          <div className="statement-pdf-wrapper">
+            <PDFStatement statementData={null} statements={filteredPayments} />
+          </div>
         ) : (
           <div className="statements-list">
             <div className="payment-item statement-list-head">
-              <FilterDropdown
-                filter={filter}
-                setFilter={setFilter}
-                options={dates}
-                array={true}
-                heading="Date"
-              />
+              <FilterDateRangeSelector filter={filter} setFilter={setFilter} />
               <FilterDropdown
                 filter={filter}
                 setFilter={setFilter}
