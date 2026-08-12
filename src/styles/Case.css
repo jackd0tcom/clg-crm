@@ -211,7 +211,7 @@
 /* Case page */
 .case-container {
   display: grid;
-  grid-template-rows: minmax(400px, 70%) minmax(200px, 30%);
+  grid-template-rows: minmax(400px, 65%) minmax(200px, 35%);
   height: 100%;
   overflow: hidden;
 }
@@ -415,13 +415,14 @@
 }
 #root .case-view-task-wrapper > div > div.task-sections-wrapper {
   height: 100%;
+  overflow: hidden;
 }
 .case-view-task-wrapper > div > div.task-sections-wrapper > div.tasks-list-row {
   padding: 0;
   flex: 1;
-  overflow-y: auto;
+  overflow-y: scroll;
   cursor: default;
-  max-height: 21vh;
+  height: 100%;
 }
 .case-view-task-wrapper
   > div
@@ -440,7 +441,7 @@
   > div.task-sections-wrapper
   > div.tasks-list-row
   > div {
-  margin-left: 10px;
+  padding-left: 10px;
 }
 div.case-task-container
   > div
