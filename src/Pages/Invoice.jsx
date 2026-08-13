@@ -90,6 +90,7 @@ const Invoice = () => {
       if (res.status === 200) {
         const data = res.data;
         setInvoiceData(data);
+        console.log(data);
         setCaseId(data.caseId ?? data.case?.caseId ?? 0);
         setRates(data.rates ?? []);
         setPayments(data.payments ?? []);

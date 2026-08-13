@@ -696,12 +696,6 @@ Invoice.init(
     modelName: "invoice",
     sequelize: db,
     timestamps: true,
-    indexes: [
-      {
-        name: "invoice_case_id_index",
-        fields: ["caseId"],
-      },
-    ],
   },
 );
 

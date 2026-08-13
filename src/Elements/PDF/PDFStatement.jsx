@@ -31,7 +31,9 @@ const PDFStatement = ({ statementData, statements }) => {
 
   return (
     <PDFViewer>
-      <Document>
+      <Document
+        title={`${formatNumericalDate(today)}-${clientName}-Statements`}
+      >
         <Page style={styles.body}>
           <View
             style={{ flexDirection: "row", justifyContent: "space-between" }}
@@ -73,30 +75,42 @@ const PDFStatement = ({ statementData, statements }) => {
                   {formatNumericalDate(statement.paidDate) ?? ""}
                 </Text>
                 <Text style={[styles.text, { flexBasis: 250 }]}>
-                  {statement.description ?? ""}
+                  {statement.paymentId
+                    ? (statement.description ?? "")
+                    : `Invoice - ${statement.description}`}
                 </Text>
                 <Text
-                  style={[styles.text, { flexBasis: 80, textAlign: "right" }]}
+                  style={
+                    !statement.paymentId
+                      ? [
+                          styles.text,
+                          {
+                            flexBasis: 80,
+                            textAlign: "right",
+                            color: "darkred",
+                          },
+                        ]
+                      : [styles.text, { flexBasis: 80, textAlign: "right" }]
+                  }
                 >
-                  ${statement.amount}
+                  {statement.paymentId
+                    ? `$${statement.amount}`
+                    : `($${statement.amount})`}
                 </Text>
               </View>
             ))}
-            {/* {invoiceData.customCharges?.map((charge) => (
-              <View style={styles.row}>
-                <Text style={styles.text}>{charge.description}</Text>
-                <Text style={styles.text}></Text>
-                <Text style={styles.text}>${charge.amount}</Text>
-              </View>
-            ))} */}
-            <View style={styles.row}>
+            {/* <View style={styles.row}>
               <Text style={styles.text}>SUBTOTAL</Text>
               <Text style={styles.text}>${totalAmount}</Text>
-            </View>
+            </View> */}
           </View>
           <View style={{ alignItems: "flex-end", padding: 10 }}>
-            <Text style={styles.text}>TOTAL</Text>
-            <Text>${totalAmount}</Text>
+            <Text style={styles.text}>
+              {totalAmount > 0 ? "BALANCE" : "BALANCE OWED"}
+            </Text>
+            <Text>
+              ${totalAmount > 0 ? totalAmount : Math.abs(totalAmount)}
+            </Text>
           </View>
           <View style={{ marginTop: 25 }}>
             <Text style={styles.subText}>

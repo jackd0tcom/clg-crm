@@ -357,8 +357,6 @@ export default {
             where: {
               userId: req.session.user.userId,
               invoiceTitle,
-            },
-            defaults: {
               caseId: c.caseId,
             },
           });
@@ -368,8 +366,6 @@ export default {
               where: {
                 userId: req.session.user.userId,
                 invoiceTitle: `${invoiceTitle} (1)`,
-              },
-              defaults: {
                 caseId: c.caseId,
               },
             });
@@ -379,8 +375,6 @@ export default {
               where: {
                 userId: req.session.user.userId,
                 invoiceTitle: `${invoiceTitle} (2)`,
-              },
-              defaults: {
                 caseId: c.caseId,
               },
             });
@@ -465,7 +459,9 @@ export default {
 
       if (charges.length > 0) {
         await Promise.all(
-          charges.map(async (charge) => await charge.update({ invoiceId: null })),
+          charges.map(
+            async (charge) => await charge.update({ invoiceId: null }),
+          ),
         );
       }
 

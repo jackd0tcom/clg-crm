@@ -138,7 +138,8 @@ const {
   deleteEntryFromInvoice,
 } = invoiceCtrl;
 
-const { updatePayment, addPayment, getPayments } = statementCtrl;
+const { updatePayment, addPayment, getPayments, createMonthlyStatements } =
+  statementCtrl;
 
 // Express setup
 const app = express();
@@ -329,6 +330,7 @@ app.post("/api/deleteEntryFromInvoice", deleteEntryFromInvoice);
 // Statement endpoints
 app.post("/api/updatePayment", updatePayment);
 app.post("/api/addPayment", addPayment);
+app.post("/api/createMonthlyStatements", createMonthlyStatements);
 app.get("/api/getPayments", getPayments);
 
 // user access check endpoint

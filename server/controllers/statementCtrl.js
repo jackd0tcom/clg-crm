@@ -167,7 +167,14 @@ export default {
             model: CustomCharge,
             as: "customCharges",
           },
-          {},
+          {
+            model: Case,
+            as: "case",
+            include: {
+              model: Person,
+              as: "people",
+            },
+          },
         ],
       });
 
@@ -184,6 +191,79 @@ export default {
     } catch (err) {
       console.log(err);
       res.status(500).send(err);
+    }
+  },
+  createMonthlyStatements: async (req, res) => {
+    try {
+      console.log("createMonthlyStatements");
+      if (!req.session.user) {
+        return res.status(401).send("User not authenticated");
+      }
+      const { startDate, endDate } = req.body;
+
+      const now = new Date();
+      const firstDay = startDate
+        ? new Date(startDate)
+        : new Date(now.getFullYear(), now.getMonth(), 1);
+      const lastDay = endDate
+        ? new Date(endDate)
+        : new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+      const dateRange = { [Op.between]: [firstDay, lastDay] };
+
+      const entriesInRange = await Payment.findAll({
+        attributes: ["caseId"],
+        where: { paidDate: dateRange, caseId: { [Op.ne]: null } },
+        group: ["caseId"],
+        raw: true,
+      });
+      const invoicesInRange = await Invoice.findAll({
+        attributes: ["caseId"],
+        where: { createdAt: dateRange, caseId: { [Op.ne]: null } },
+        group: ["caseId"],
+        raw: true,
+      });
+      const caseIds = [
+        ...new Set([
+          ...entriesInRange.map((e) => e.caseId),
+          ...invoicesInRange.map((i) => i.caseId),
+        ]),
+      ];
+      if (!caseIds.length) {
+        return res.status(200).send([]);
+      }
+      const billableCases = await Case.findAll({
+        where: { caseId: { [Op.in]: caseIds } },
+        include: [
+          { model: Payment, as: "payments", required: false },
+          {
+            model: Invoice,
+            as: "invoices",
+            required: false,
+            include: [
+              {
+                model: TimeEntry,
+                as: "timeEntries",
+                include: [{ model: Rate, as: "rate" }],
+              },
+              {
+                model: CustomCharge,
+                as: "customCharges",
+              },
+            ],
+          },
+          { model: Person, as: "people" },
+        ],
+      });
+
+      if (!billableCases.length) {
+        return res.status(200).send([]);
+      }
+
+      return res.status(200).send(billableCases);
+    } catch (error) {
+      console.log(error);
+      res.status(500).send(error);
     }
   },
 };

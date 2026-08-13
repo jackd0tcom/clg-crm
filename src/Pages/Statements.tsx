@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import axios from "axios";
 import { getInvoiceStatementItemFromInvoice } from "../helpers/helperFunctions";
 import Loader from "../Elements/UI/Loader";
@@ -6,9 +6,10 @@ import FilterDropdown from "../Elements/UI/FilterDropdown";
 import { usePersistedFilter } from "../Hooks/usePersistedFilter";
 import { useSelector } from "react-redux";
 import PaymentList from "../Elements/Statements/PaymentList";
-import { buildFilters } from "../helpers/helperFunctions";
+import { buildFilters, formatDateNoTime } from "../helpers/helperFunctions";
 import FilterDateRangeSelector from "../Elements/TimeKeeper/FilterDateRangeSelector";
 import PDFStatement from "../Elements/PDF/PDFStatement";
+import createAndDownloadMonthlyStatementZip from "../Elements/PDF/createAndDownloadMonthlyStatementZip";
 
 const Statements = () => {
   const [paymentList, setPaymentList] = useState([]);
@@ -21,7 +22,10 @@ const Statements = () => {
   const now = new Date();
   const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
   const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  const [zipStatus, setZipStatus] = useState("");
+  const [showDropdown, setShowDropdown] = useState(false);
   const [combinedItems, setCombinedItems] = useState<any>([]);
+  const dropdownRef = useRef<HTMLInputElement>(null);
   const [filter, setFilter] = usePersistedFilter(
     "statements",
     userStore.userId,
@@ -76,6 +80,22 @@ const Statements = () => {
       fetchPayments();
     }, 100);
   }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: any) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    };
+
+    if (showDropdown) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showDropdown]);
 
   const filteredPayments = useMemo(() => {
     let data = combinedItems;
@@ -134,16 +154,54 @@ const Statements = () => {
     return data;
   }, [filter, paymentList]);
 
+  const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
+  const handleZip = async () => {
+    setShowDropdown(false);
+    setZipStatus("Creating invoices…");
+    try {
+      await createAndDownloadMonthlyStatementZip({
+        startDate: filter.dateRange.startDate,
+        endDate: filter.dateRange.endDate,
+        setZipStatus,
+      });
+      await delay(3000);
+      setZipStatus("");
+    } catch (err) {
+      console.error(err);
+      setZipStatus("Error — try again");
+    }
+  };
+
   return (
     <div className="statements-page-wrapper">
       <div className="page-header">
         <h2 className="section-heading">Statements</h2>
-        <button
-          onClick={() => setShowPDF(!showPDF)}
-          className="new-invoice-button"
-        >
-          PDF
-        </button>
+        <div className="relative">
+          <div className=""></div>
+          <button
+            className="new-invoice-button"
+            onClick={() => setShowDropdown(!showDropdown)}
+          >
+            {zipStatus !== "" ? zipStatus : "Create PDF"}
+          </button>
+          {showDropdown && (
+            <div className="dropdown right" ref={dropdownRef}>
+              <div className="dropdown-item dropdown-header">
+                {formatDateNoTime(filter.dateRange.startDate)} -{" "}
+                {formatDateNoTime(filter.dateRange.endDate)}
+              </div>
+              <div onClick={() => handleZip()} className="dropdown-item">
+                Download PDFs
+              </div>
+              <div
+                onClick={() => setShowPDF(!showPDF)}
+                className="dropdown-item"
+              >
+                View PDF
+              </div>
+            </div>
+          )}
+        </div>
       </div>
       <div className="statements-page-body">
         {isLoading ? (

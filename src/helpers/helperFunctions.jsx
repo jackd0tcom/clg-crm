@@ -515,12 +515,11 @@ export const getInvoiceStatementItemFromInvoice = (invoices) => {
             return acc + getAmountOfEntry(entry.rate?.rate, entry);
           }, 0)
         : 0;
-    const person = invoice.timeEntries[0]?.person;
-    const firstName = invoice.timeEntries?.person?.firstName ?? "";
-    const lastName = invoice.timeEntries?.person?.lastName ?? "";
+    const person = invoice.case?.people[0];
+    const firstName = person?.firstName ?? "";
+    const lastName = person?.lastName ?? "";
     const clientName = `${firstName} ${lastName}`;
     const grandTotal = chargesTotal + entriesTotal;
-    console.log(invoice.timeEntries[0]);
     return {
       createdAt: invoice.createdAt,
       title: invoice.invoiceTitle,
