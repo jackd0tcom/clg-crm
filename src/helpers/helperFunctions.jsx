@@ -455,13 +455,21 @@ export function buildFilters(items, idPath, titlePath) {
   const array = [];
 
   items.forEach((item) => {
-    const id = getByPath(item, idPath);
-    if (idPath === "personId") console.log(id, array);
+    let id = getByPath(item, idPath);
+    let title = getByPath(item, idPath);
+    if (
+      idPath === "description" &&
+      id !== "Retainer Payment" &&
+      id !== "Invoice Payment"
+    ) {
+      id = "invoice";
+      title = "Invoice";
+    }
     if (id == null || array.some((it) => it.id === id)) return;
 
     array.push({
       id,
-      title: getByPath(item, titlePath),
+      title,
     });
   });
 

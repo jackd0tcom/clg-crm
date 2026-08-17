@@ -64,7 +64,7 @@ const Statements = () => {
             ),
           );
           setClients(
-            buildFilters(combined, "personId", (p: any) =>
+            buildFilters(combined, "person.personId", (p: any) =>
               `${p.person?.firstName ?? ""} ${p.person?.lastName ?? ""}`.trim(),
             ),
           );
@@ -143,9 +143,15 @@ const Statements = () => {
       }
       if (filter.description.length > 0) {
         if (
-          !filter.description.some(
-            (filter: any) => filter.id === payment.description,
-          )
+          !filter.description.some((filter: any) => {
+            if (
+              filter.id === "invoice" &&
+              payment.description !== "Retainer Payment" &&
+              payment.description !== "Invoice Payment"
+            ) {
+              return true;
+            } else return filter.id === payment.description;
+          })
         )
           return false;
       }
