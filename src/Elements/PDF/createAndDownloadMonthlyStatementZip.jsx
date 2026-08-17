@@ -33,10 +33,18 @@ async function createAndDownloadMonthlyStatementZip({
     return { ok: false, count: 0 };
   }
 
-  const zip = new JSZip();
-  const total = cases.length;
+  const uniqueCases = [];
+  const seenCaseIds = new Set();
+  for (const cas of cases) {
+    if (seenCaseIds.has(cas.caseId)) continue;
+    seenCaseIds.add(cas.caseId);
+    uniqueCases.push(cas);
+  }
 
-  for (const [index, cas] of cases.entries()) {
+  const zip = new JSZip();
+  const total = uniqueCases.length;
+
+  for (const [index, cas] of uniqueCases.entries()) {
     setZipStatus?.(`Generating PDF ${index + 1} of ${total}…`);
     const stepStarted = Date.now();
 

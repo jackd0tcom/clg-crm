@@ -72,9 +72,12 @@ const PDFDocument = ({
           >
             <Text style={styles.title}>Invoice</Text>
             <Text style={styles.subtitle}>
-              Invoice ID: {invoiceData.invoiceTitle}
+              <Text style={styles.bold}>INVOICE ID:</Text>{" "}
+              {invoiceData.invoiceTitle}
             </Text>
-            <Text style={styles.subtitle}>Invoice Date: {today}</Text>
+            <Text style={styles.subtitle}>
+              <Text style={styles.bold}>INVOICE DATE:</Text> {today}
+            </Text>
           </View>
           <Image style={styles.image} src="/Clause-Law-Group-Logo-Green.png" />
         </View>
@@ -95,7 +98,7 @@ const PDFDocument = ({
               gap: 8,
             }}
           >
-            <Text style={styles.subtitle}>Billed To:</Text>
+            <Text style={[styles.subtitle, styles.bold]}>Billed To:</Text>
             <Text style={styles.subtitle}>{billTo}</Text>
           </View>
           <View
@@ -105,12 +108,12 @@ const PDFDocument = ({
               gap: 8,
             }}
           >
-            <Text style={styles.subtitle}>Pay To:</Text>
+            <Text style={[styles.subtitle, styles.bold]}>Pay To:</Text>
             <Text style={styles.subtitle}>{payTo}</Text>
           </View>
         </View>
         <View style={{ marginTop: 20 }}>
-          <View style={styles.row}>
+          <View style={styles.topRow}>
             <Text style={[styles.tableHeader, { flexBasis: 100 }]}>DATE</Text>
             <Text style={[styles.tableHeader, { flexBasis: 250 }]}>
               DESCRIPTION
@@ -160,9 +163,9 @@ const PDFDocument = ({
             <Text style={styles.text}>${totalAmount}</Text>
           </View>
         </View>
-        <View style={{ alignItems: "flex-end", padding: 10 }}>
+        <View style={styles.footer}>
           <Text style={styles.text}>TOTAL</Text>
-          <Text>${totalAmount}</Text>
+          <Text style={styles.total}>${totalAmount}</Text>
         </View>
         <View style={{ marginTop: 25 }}>
           <Text style={styles.subText}>
@@ -187,9 +190,11 @@ const styles = StyleSheet.create({
     gap: 25,
   },
   title: {
-    fontSize: 24,
+    fontSize: 20,
     textAlign: "center",
+    textTransform: "uppercase",
     marginBottom: 10,
+    fontWeight: 600,
   },
   author: {
     fontSize: 12,
@@ -199,9 +204,22 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 12,
   },
+  bold: {
+    fontWeight: 600,
+    fontSize: 12,
+    textTransform: "uppercase",
+  },
   tableHeader: {
     fontSize: 12,
-    color: "grey",
+    color: "white",
+  },
+  topRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: 10,
+    paddingVertical: 6,
+    backgroundColor: "#08331e",
   },
   row: {
     flexDirection: "row",
@@ -219,14 +237,14 @@ const styles = StyleSheet.create({
     textAlign: "justify",
   },
   image: {
-    width: 150,
-    height: 50,
+    width: 200,
+    height: 60,
   },
   header: {
     fontSize: 12,
     marginBottom: 20,
     textAlign: "center",
-    color: "grey",
+    color: "white",
   },
   pageNumber: {
     position: "absolute",
@@ -236,6 +254,20 @@ const styles = StyleSheet.create({
     right: 0,
     textAlign: "center",
     color: "grey",
+  },
+  footer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#f6f6f6",
+    justifyContent: "flex-end",
+    gap: 20,
+  },
+  total: {
+    backgroundColor: "#08331e",
+    padding: 10,
+    paddingHorizontal: 30,
+    color: "white",
+    fontWeight: 500,
   },
 });
 

@@ -235,11 +235,12 @@ export default {
       const billableCases = await Case.findAll({
         where: { caseId: { [Op.in]: caseIds } },
         include: [
-          { model: Payment, as: "payments", required: false },
+          { model: Payment, as: "payments", required: false, separate: true },
           {
             model: Invoice,
             as: "invoices",
             required: false,
+            separate: true,
             include: [
               {
                 model: TimeEntry,

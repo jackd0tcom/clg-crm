@@ -10,6 +10,7 @@ import { buildFilters, formatDateNoTime } from "../helpers/helperFunctions";
 import FilterDateRangeSelector from "../Elements/TimeKeeper/FilterDateRangeSelector";
 import PDFStatement from "../Elements/PDF/PDFStatement";
 import createAndDownloadMonthlyStatementZip from "../Elements/PDF/createAndDownloadMonthlyStatementZip";
+import createAndDownloadMonthlyDocuments from "../Elements/PDF/createAndDownloadMonthlyDocuments";
 
 const Statements = () => {
   const [paymentList, setPaymentList] = useState([]);
@@ -157,9 +158,26 @@ const Statements = () => {
   const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
   const handleZip = async () => {
     setShowDropdown(false);
-    setZipStatus("Creating invoices…");
+    setZipStatus("Creating statements");
     try {
       await createAndDownloadMonthlyStatementZip({
+        startDate: filter.dateRange.startDate,
+        endDate: filter.dateRange.endDate,
+        setZipStatus,
+      });
+      await delay(3000);
+      setZipStatus("");
+    } catch (err) {
+      console.error(err);
+      setZipStatus("Error — try again");
+    }
+  };
+
+  const handleZipInvoicesAndStatements = async () => {
+    setShowDropdown(false);
+    setZipStatus("Creating invoices…");
+    try {
+      await createAndDownloadMonthlyDocuments({
         startDate: filter.dateRange.startDate,
         endDate: filter.dateRange.endDate,
         setZipStatus,
@@ -196,8 +214,14 @@ const Statements = () => {
                 {formatDateNoTime(filter.dateRange.startDate)} -{" "}
                 {formatDateNoTime(filter.dateRange.endDate)}
               </div>
+              <div
+                onClick={() => handleZipInvoicesAndStatements()}
+                className="dropdown-item"
+              >
+                Download Monthly Documents
+              </div>
               <div onClick={() => handleZip()} className="dropdown-item">
-                Download PDFs
+                Download Statements
               </div>
               <div
                 onClick={() => {
