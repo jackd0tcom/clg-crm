@@ -20,22 +20,23 @@ const PaymentItem = ({ payment }: props) => {
           payment?.paidDate ?? payment?.createdAt ?? null,
         )}
       </div>
+      <div>{clientName}</div>
       <div
         className={payment.title && "invoice-link"}
         onClick={() => payment.title && nav(`/invoice/${payment.invoiceId}`)}
       >
-        {clientName}
+        {payment.description}
       </div>
-      <div>{payment.description}</div>
       <div
         className={
-          payment.description === "Invoice"
+          !payment.paymentId
             ? "payment-item-total subtract-payment"
             : "payment-item-total add-payment"
         }
       >
-        {payment.description === "Invoice" && "-"}
-        {formatDollarNoCents(payment.amount)}
+        {payment.paymentId
+          ? formatDollarNoCents(payment.amount)
+          : `(${formatDollarNoCents(payment.amount)})`}
       </div>
     </div>
   );

@@ -180,9 +180,15 @@ const Statements = () => {
           <div className=""></div>
           <button
             className="new-invoice-button"
-            onClick={() => setShowDropdown(!showDropdown)}
+            onClick={() => {
+              showPDF ? setShowPDF(false) : setShowDropdown(!showDropdown);
+            }}
           >
-            {zipStatus !== "" ? zipStatus : "Create PDF"}
+            {zipStatus !== ""
+              ? zipStatus
+              : showPDF
+                ? "View Statements"
+                : "Create PDF"}
           </button>
           {showDropdown && (
             <div className="dropdown right" ref={dropdownRef}>
@@ -194,7 +200,10 @@ const Statements = () => {
                 Download PDFs
               </div>
               <div
-                onClick={() => setShowPDF(!showPDF)}
+                onClick={() => {
+                  setShowPDF(!showPDF);
+                  setShowDropdown(false);
+                }}
                 className="dropdown-item"
               >
                 View PDF
