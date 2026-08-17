@@ -11,8 +11,8 @@ interface props {
 const PaymentItem = ({ payment }: props) => {
   const nav = useNavigate();
   const clientName = payment.person
-    ? `${payment.person?.firstName} ${payment.person?.lastName}`
-    : payment.title;
+    ? `${payment.person?.firstName ?? ""} ${payment.person?.lastName ?? ""}`
+    : (payment.title ?? "");
   return (
     <div className="payment-item">
       <div>
