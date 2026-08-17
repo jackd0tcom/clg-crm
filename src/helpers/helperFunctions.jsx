@@ -456,7 +456,7 @@ export function buildFilters(items, idPath, titlePath) {
 
   items.forEach((item) => {
     let id = getByPath(item, idPath);
-    let title = getByPath(item, idPath);
+    let title = getByPath(item, titlePath);
     if (
       idPath === "description" &&
       id !== "Retainer Payment" &&
