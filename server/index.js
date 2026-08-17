@@ -310,7 +310,7 @@ app.post("/api/time-entry/delete", deleteEntry);
 app.get("/api/time-entry/running-timer", runningTimer);
 app.get("/api/time-entry/getUserEntries", getUserEntries);
 app.get("/api/time-entry/getAllEntries", getAllEntries);
-app.get("/api/time-entry/getRecentUserEntries", getRecentUserEntries);
+app.post("/api/time-entry/getRecentUserEntries", getRecentUserEntries);
 app.get("/api/time-entry/getEntryServices", getEntryServices);
 app.post("/api/newCharge", newCharge);
 app.post("/api/updateCharge", updateCharge);

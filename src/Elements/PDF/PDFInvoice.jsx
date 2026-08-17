@@ -57,6 +57,15 @@ const PDFInvoice = ({
       );
     }, 0);
 
+  const combined = [...invoiceData.entries, ...invoiceData.customCharges];
+
+  const sorted = combined.sort((a, b) => {
+    const aStart = a.chargeId ? a.createdAt : a.endTime;
+    const bStart = b.chargeId ? b.createdAt : b.endTime;
+
+    return new Date(aStart).getTime() - new Date(bStart).getTime();
+  });
+
   return (
     <PDFViewer>
       <Document>
@@ -132,7 +141,47 @@ const PDFInvoice = ({
                 TOTAL
               </Text>
             </View>
-            {invoiceData.entries.map((entry) => (
+            {sorted.map((entry) => {
+              return entry.chargeId ? (
+                <View style={styles.row}>
+                  <Text style={[styles.text, { flexBasis: 100 }]}>
+                    {formatNumericalDate(entry.createdAt)}
+                  </Text>
+                  <Text style={[styles.text, { flexBasis: 250 }]}>
+                    {entry.description}
+                  </Text>
+                  <Text style={[styles.text, { flexBasis: 80 }]}></Text>
+                  <Text
+                    style={[styles.text, { flexBasis: 80, textAlign: "right" }]}
+                  >
+                    ${entry.amount}
+                  </Text>
+                </View>
+              ) : (
+                <View style={styles.row}>
+                  <Text style={[styles.text, { flexBasis: 100 }]}>
+                    {formatNumericalDate(entry.endTime) ?? ""}
+                  </Text>
+                  <Text style={[styles.text, { flexBasis: 250 }]}>
+                    {getServiceTitle(entry.entryServiceId) ?? entry.notes}
+                  </Text>
+                  <Text style={[styles.text, { flexBasis: 80 }]}>
+                    {getRoundedDuration(entry, invoiceData.roundingAmount)}
+                  </Text>
+                  <Text
+                    style={[styles.text, { flexBasis: 80, textAlign: "right" }]}
+                  >
+                    $
+                    {getRoundedAmountOfEntry(
+                      getRate(entry),
+                      entry,
+                      invoiceData.roundingAmount,
+                    )}
+                  </Text>
+                </View>
+              );
+            })}
+            {/* {invoiceData.entries.map((entry) => (
               <View style={styles.row}>
                 <Text style={[styles.text, { flexBasis: 100 }]}>
                   {formatNumericalDate(entry.endTime) ?? ""}
@@ -154,14 +203,23 @@ const PDFInvoice = ({
                   )}
                 </Text>
               </View>
-            ))}
-            {invoiceData.customCharges?.map((charge) => (
+            ))} */}
+            {/* {invoiceData.customCharges?.map((charge) => (
               <View style={styles.row}>
-                <Text style={styles.text}>{charge.description}</Text>
-                <Text style={styles.text}></Text>
-                <Text style={styles.text}>${charge.amount}</Text>
+                <Text style={[styles.text, { flexBasis: 100 }]}>
+                  {formatNumericalDate(charge.createdAt)}
+                </Text>
+                <Text style={[styles.text, { flexBasis: 250 }]}>
+                  {charge.description}
+                </Text>
+                <Text style={[styles.text, { flexBasis: 80 }]}></Text>
+                <Text
+                  style={[styles.text, { flexBasis: 80, textAlign: "right" }]}
+                >
+                  ${charge.amount}
+                </Text>
               </View>
-            ))}
+            ))} */}
             <View style={styles.row}>
               <Text style={styles.text}>SUBTOTAL</Text>
               <Text style={styles.text}>${totalAmount}</Text>

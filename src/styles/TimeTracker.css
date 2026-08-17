@@ -118,18 +118,19 @@
   gap: 20px;
 }
 .custom-charge-item {
-  display: flex;
-  gap: 5px;
+  display: grid;
+  grid-template-columns: minmax(75px, 0.5fr) 2fr;
+  gap: 10px;
   align-items: center;
 }
 .custom-charge-item p {
   font-size: 0.9rem;
+  text-align: right;
 }
 .custom-charge-input {
   padding: 8px 12px;
   border: 1px solid var(--light-border);
   border-radius: 5px;
-  width: 100%;
 }
 .custom-charge-input:focus-visible {
   outline: none;
@@ -142,7 +143,6 @@
 .custom-charge-amount-item {
   display: flex;
   align-items: center;
-  width: 100%;
   border: 1px solid var(--light-border);
   border-radius: 5px;
   padding: 0px 12px;
