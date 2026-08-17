@@ -51,7 +51,8 @@ const Statements = () => {
           const invoices = res.data.invoices;
           const invoiceItems = getInvoiceStatementItemFromInvoice(invoices);
           setPaymentList(payments);
-          setCombinedItems([...payments, ...invoiceItems]);
+          const combined = [...payments, ...invoiceItems];
+          setCombinedItems(combined);
           setDates(
             buildFilters(
               payments,
@@ -63,11 +64,11 @@ const Statements = () => {
             ),
           );
           setClients(
-            buildFilters(payments, "personId", (p: any) =>
+            buildFilters(combined, "personId", (p: any) =>
               `${p.person?.firstName ?? ""} ${p.person?.lastName ?? ""}`.trim(),
             ),
           );
-          setDescription(buildFilters(payments, "description", "description"));
+          setDescription(buildFilters(combined, "description", "description"));
           setIsLoading(false);
         }
       });

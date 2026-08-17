@@ -456,6 +456,7 @@ export function buildFilters(items, idPath, titlePath) {
 
   items.forEach((item) => {
     const id = getByPath(item, idPath);
+    if (idPath === "personId") console.log(id, array);
     if (id == null || array.some((it) => it.id === id)) return;
 
     array.push({
