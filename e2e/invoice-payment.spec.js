@@ -1,5 +1,4 @@
-import { test, expect } from "@playwright/test";
-import { linkInvoiceToCase, loginAsE2EUser } from "./helpers/auth.js";
+import { test, expect, linkInvoiceToCase, loginAsE2EUser } from "./fixtures.js";
 
 test("login, create an invoice, and record a payment", async ({ page }) => {
   await page.goto("/");

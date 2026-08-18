@@ -219,6 +219,7 @@ app.post("/api/sync-auth0-user", syncAuth0User);
 if (process.env.NODE_ENV !== "production") {
   app.post("/api/e2e/session", requireE2eSecret, e2eCtrl.createSession);
   app.post("/api/e2e/link-invoice", requireE2eSecret, e2eCtrl.linkInvoice);
+  app.post("/api/e2e/cleanup", requireE2eSecret, e2eCtrl.cleanup);
 }
 
 // user endpoints

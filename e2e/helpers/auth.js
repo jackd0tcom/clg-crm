@@ -37,3 +37,15 @@ export async function linkInvoiceToCase(page, { invoiceId, caseId, personId }) {
     throw new Error(`Failed to link invoice ${invoiceId} to case ${caseId}`);
   }
 }
+
+export async function cleanupE2eData(page) {
+  const response = await page.request.post("/api/e2e/cleanup", {
+    headers: { "x-e2e-secret": E2E_SECRET },
+  });
+
+  if (!response.ok()) {
+    throw new Error(
+      `E2E cleanup failed (${response.status()}). Invoice/payment/case data may still be in the database.`,
+    );
+  }
+}

@@ -156,6 +156,12 @@ const Statements = () => {
           return false;
       }
 
+      // Sort by date
+      data = data.sort(
+        (a: any, b: any) =>
+          new Date(a.paidDate).getTime() - new Date(b.paidDate).getTime(),
+      );
+
       return payment;
     });
 
