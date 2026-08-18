@@ -330,6 +330,7 @@ export default {
                 startTime: {
                   [Op.between]: [firstDay, lastDay],
                 },
+                paidStatus: { [Op.not]: "paid" },
                 [Op.or]: [
                   { caseId: c.caseId },
                   ...(taskIds.length ? [{ taskId: { [Op.in]: taskIds } }] : []),
@@ -386,7 +387,7 @@ export default {
 
           const updatedCharges = await Promise.all(
             c.charges?.map(async (charge) => {
-              await charge.update({
+              return await charge.update({
                 invoiceId: invoice.invoiceId,
                 caseId: charge.caseId ?? c.caseId,
               });
@@ -394,9 +395,9 @@ export default {
           );
 
           const entries = await Promise.all(
-            c.entries?.map((entry) => {
+            c.entries?.map(async (entry) => {
               if (entry.paidStatus !== "paid")
-                return entry.update({ invoiceId: invoice.invoiceId });
+                return await entry.update({ invoiceId: invoice.invoiceId });
             }),
           );
 
