@@ -515,13 +515,13 @@ export const getInvoiceStatementItemFromInvoice = (invoices) => {
     const chargesTotal =
       invoice.customCharges.length > 0
         ? invoice.customCharges?.reduce((acc, charge) => {
-            return acc + charge.amount ?? 0;
+            return acc + charge.amount;
           }, 0)
         : 0;
     const entriesTotal =
       invoice.timeEntries?.length > 0
         ? invoice.timeEntries?.reduce((acc, entry) => {
-            return acc + getAmountOfEntry(entry.rate?.rate, entry) ?? 0;
+            return acc + getAmountOfEntry(entry.rate?.rate, entry);
           }, 0)
         : 0;
     const person = invoice.case?.people[0];

@@ -258,6 +258,10 @@ Case.init(
       allowNull: false,
       defaultValue: false,
     },
+    billableContact: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
   },
   {
     modelName: "case",
@@ -691,6 +695,10 @@ Invoice.init(
       type: DataTypes.TEXT,
       allowNull: true,
     },
+    personId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
   },
   {
     modelName: "invoice",
@@ -949,6 +957,18 @@ Payment.belongsTo(Invoice, { foreignKey: "invoiceId", as: "invoice" });
 
 Person.hasMany(Payment, { foreignKey: "personId", as: "payments" });
 Payment.belongsTo(Person, { foreignKey: "personId", as: "person" });
+
+Case.belongsTo(Person, {
+  as: "billablePerson",
+  foreignKey: "billableContact",
+});
+Person.hasMany(Case, {
+  as: "billableCases",
+  foreignKey: "billableContact",
+});
+
+Invoice.belongsTo(Person, { as: "person", foreignKey: "personId" });
+Person.hasMany(Invoice, { as: "invoices", foreignKey: "personId" });
 
 Case.hasMany(Payment, { foreignKey: "caseId", as: "payments" });
 Payment.belongsTo(Case, { foreignKey: "caseId", as: "case" });
