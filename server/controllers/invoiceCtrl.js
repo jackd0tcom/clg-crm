@@ -60,7 +60,7 @@ const invoiceDetailInclude = [
     model: Case,
     as: "case",
     required: false,
-    include: [{ model: Person, as: "people" }],
+    include: [{ model: Person, as: "billablePerson" }],
   },
   {
     model: CustomCharge,

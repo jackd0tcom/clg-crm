@@ -524,7 +524,7 @@ export const getInvoiceStatementItemFromInvoice = (invoices) => {
             return acc + getAmountOfEntry(entry.rate?.rate, entry);
           }, 0)
         : 0;
-    const person = invoice.case?.people[0];
+    const person = invoice.case?.billablePerson;
     const firstName = person?.firstName ?? "";
     const lastName = person?.lastName ?? "";
     const clientName = `${firstName} ${lastName}`;

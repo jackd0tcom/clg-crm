@@ -13,15 +13,11 @@ const ensureMinDuration = async (startedAt, ms) => {
   if (elapsed < ms) await delay(ms - elapsed);
 };
 
-const getDefaultPerson = (people) => {
-  const clients = people?.filter((person) => person.type === "client") ?? [];
-  return clients[0] ?? people?.[0] ?? null;
-};
-
-const getClientFolderName = (startDate, people) => {
+const getClientFolderName = (startDate, caseData) => {
   const monthKey = new Date(startDate).toISOString().slice(0, 7);
-  const client = getDefaultPerson(people);
-  const clientName = `${client?.firstName ?? ""} ${client?.lastName ?? ""}`.trim();
+  const client = caseData?.billablePerson;
+  const clientName =
+    `${client?.firstName ?? ""} ${client?.lastName ?? ""}`.trim();
   return `${monthKey} ${clientName}`.trim();
 };
 
@@ -75,7 +71,7 @@ async function createAndDownloadMonthlyDocuments({
       const stepStarted = Date.now();
 
       const { data } = await axios.get(`/api/getInvoice/${inv.invoiceId}`);
-      const defaultClient = getDefaultPerson(data.case?.people);
+      const defaultClient = data.case?.billablePerson;
       const defaultBillTo = defaultClient
         ? `${defaultClient.firstName ?? ""} ${defaultClient.lastName ?? ""}\n${defaultClient.address ?? ""} ${defaultClient.city ?? ""}, ${defaultClient.state ?? ""} ${defaultClient.zip ?? ""}\n${defaultClient.phoneNumber ?? ""}  `
         : "";
@@ -91,10 +87,7 @@ async function createAndDownloadMonthlyDocuments({
 
       const caseId = data.caseId ?? data.case?.caseId ?? inv.caseId;
       const folderName = getFolderNameForCase(caseId, data.case?.people);
-      zip.file(
-        `${folderName}/${data.invoiceTitle || inv.invoiceId}.pdf`,
-        blob,
-      );
+      zip.file(`${folderName}/${data.invoiceTitle || inv.invoiceId}.pdf`, blob);
 
       await ensureMinDuration(stepStarted, MIN_STEP_MS);
       MIN_STEP_MS -= 150;
@@ -122,7 +115,7 @@ async function createAndDownloadMonthlyDocuments({
       );
       const stepStarted = Date.now();
 
-      const defaultPerson = getDefaultPerson(cas.people);
+      const defaultPerson = cas.billablePerson;
       const people = defaultPerson
         ? [
             defaultPerson,

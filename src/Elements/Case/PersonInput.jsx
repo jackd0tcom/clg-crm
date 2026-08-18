@@ -140,7 +140,6 @@ const PersonInput = ({
           .post("/api/updatePerson", { personId, fieldName, value: data })
           .then((res) => {
             if (res.status === 200) {
-              console.log(res.data, data);
               setOriginalValue(data);
               refreshActivityData();
               refreshCaseData();

@@ -93,7 +93,6 @@ const PeopleTab = ({
     if (isNewPerson) {
       return [...people, emptyPersonObject];
     }
-    console.log("tabs");
     return people;
   }, [people, isNewPerson]);
 
@@ -153,6 +152,7 @@ const PeopleTab = ({
             setPeople((prev) => [res.data, ...prev]);
             setShowAddPersonPage(false);
             setCurrentTab(personId);
+            refreshCaseData();
           }
         });
     } catch (error) {

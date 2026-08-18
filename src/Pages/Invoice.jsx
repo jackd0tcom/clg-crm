@@ -98,7 +98,7 @@ const Invoice = () => {
         setEntryServices(res.data.entryServices);
         setDefaultRate(data.settings.defaultRate);
         setPayTo(data.payTo ?? data.settings.payTo ?? "");
-        const defaultClient = data.case?.people?.[0] ?? null;
+        const defaultClient = data.case?.billablePerson ?? null;
         const defaultBillTo = defaultClient
           ? `${defaultClient.firstName ?? ""} ${defaultClient.lastName ?? ""}\n${defaultClient.address ?? ""} ${defaultClient.city ?? ""} ${defaultClient.state ?? ""} ${defaultClient.zip ?? ""}\n${defaultClient.phoneNumber ?? ""}  `
           : (data.billTo ?? "");

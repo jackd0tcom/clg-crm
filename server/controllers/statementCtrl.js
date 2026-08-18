@@ -172,7 +172,7 @@ export default {
             as: "case",
             include: {
               model: Person,
-              as: "people",
+              as: "billablePerson",
             },
           },
         ],
