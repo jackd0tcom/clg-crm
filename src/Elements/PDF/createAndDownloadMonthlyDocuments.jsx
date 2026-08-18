@@ -4,6 +4,11 @@ import { saveAs } from "file-saver";
 import PDFDocument from "./PDFDocument";
 import StatementPDFDocument from "./StatementPDFDocument";
 import axios from "axios";
+import {
+  formatBillTo,
+  getClientPeople,
+  resolveBillablePerson,
+} from "../../helpers/billingHelpers";
 
 const delay = (ms) => new Promise((r) => setTimeout(r, ms));
 let MIN_STEP_MS = 600;
@@ -13,12 +18,21 @@ const ensureMinDuration = async (startedAt, ms) => {
   if (elapsed < ms) await delay(ms - elapsed);
 };
 
-const getClientFolderName = (startDate, caseData) => {
+const sanitizeZipPathPart = (value) =>
+  String(value ?? "")
+    .replace(/[\\/:*?"<>|]/g, "-")
+    .replace(/\s+/g, " ")
+    .trim();
+
+const getCaseFolderName = (startDate, caseData) => {
   const monthKey = new Date(startDate).toISOString().slice(0, 7);
-  const client = caseData?.billablePerson;
+  const client = resolveBillablePerson(caseData);
   const clientName =
     `${client?.firstName ?? ""} ${client?.lastName ?? ""}`.trim();
-  return `${monthKey} ${clientName}`.trim();
+  const caseTitle = (caseData?.title ?? "").trim();
+  return sanitizeZipPathPart(
+    [monthKey, clientName, caseTitle].filter(Boolean).join(" - "),
+  );
 };
 
 const uniqueCasesById = (cases) => {
@@ -43,11 +57,17 @@ async function createAndDownloadMonthlyDocuments({
   let invoiceTotal = 0;
   let statementTotal = 0;
 
-  const getFolderNameForCase = (caseId, people) => {
+  const getFolderNameForCase = (caseId, caseData) => {
     if (caseId != null && foldersByCaseId[caseId]) {
       return foldersByCaseId[caseId];
     }
-    const folderName = getClientFolderName(startDate, people);
+    let folderName = getCaseFolderName(startDate, caseData);
+    const usedNames = new Set(Object.values(foldersByCaseId));
+    if (!folderName || usedNames.has(folderName)) {
+      folderName = sanitizeZipPathPart(
+        `${folderName || new Date(startDate).toISOString().slice(0, 7)} (${caseId ?? "case"})`,
+      );
+    }
     if (caseId != null) {
       foldersByCaseId[caseId] = folderName;
     }
@@ -63,7 +83,7 @@ async function createAndDownloadMonthlyDocuments({
   });
   await ensureMinDuration(invoiceCreateStarted, MIN_STEP_MS);
 
-  if (invoices.length) {
+  if (Array.isArray(invoices) && invoices.length) {
     invoiceTotal = invoices.length;
 
     for (const [index, inv] of invoices.entries()) {
@@ -71,15 +91,12 @@ async function createAndDownloadMonthlyDocuments({
       const stepStarted = Date.now();
 
       const { data } = await axios.get(`/api/getInvoice/${inv.invoiceId}`);
-      const defaultClient = data.case?.billablePerson;
-      const defaultBillTo = defaultClient
-        ? `${defaultClient.firstName ?? ""} ${defaultClient.lastName ?? ""}\n${defaultClient.address ?? ""} ${defaultClient.city ?? ""}, ${defaultClient.state ?? ""} ${defaultClient.zip ?? ""}\n${defaultClient.phoneNumber ?? ""}  `
-        : "";
+      const defaultClient = resolveBillablePerson(data.case, data);
       const blob = await pdf(
         <PDFDocument
           invoiceData={data}
-          billTo={data.billTo ?? defaultBillTo ?? ""}
-          payTo={data.payTo ?? data.settings.payTo ?? ""}
+          billTo={data.billTo ?? formatBillTo(defaultClient)}
+          payTo={data.payTo ?? data.settings?.payTo ?? ""}
           entryServices={data.entryServices}
           rates={data.rates}
         />,
@@ -87,7 +104,10 @@ async function createAndDownloadMonthlyDocuments({
 
       const caseId = data.caseId ?? data.case?.caseId ?? inv.caseId;
       const folderName = getFolderNameForCase(caseId, data.case);
-      zip.file(`${folderName}/${data.invoiceTitle || inv.invoiceId}.pdf`, blob);
+      zip.file(
+        `${folderName}/${sanitizeZipPathPart(data.invoiceTitle || inv.invoiceId)}.pdf`,
+        blob,
+      );
 
       await ensureMinDuration(stepStarted, MIN_STEP_MS);
       MIN_STEP_MS -= 150;
@@ -104,7 +124,7 @@ async function createAndDownloadMonthlyDocuments({
   });
   await ensureMinDuration(statementCreateStarted, MIN_STEP_MS);
 
-  const uniqueCases = uniqueCasesById(cases);
+  const uniqueCases = uniqueCasesById(Array.isArray(cases) ? cases : []);
 
   if (uniqueCases.length) {
     statementTotal = uniqueCases.length;
@@ -115,22 +135,22 @@ async function createAndDownloadMonthlyDocuments({
       );
       const stepStarted = Date.now();
 
-      const defaultPerson = cas.billablePerson;
-      const people = defaultPerson
-        ? [
-            defaultPerson,
-            ...(cas.people ?? []).filter(
-              (person) => person.personId !== defaultPerson.personId,
-            ),
-          ]
-        : cas.people;
-      const fileName = `${new Date(startDate).toISOString().slice(0, 7)}-${cas.title}-statements.pdf`;
+      const defaultPerson = resolveBillablePerson(cas);
+      const people = getClientPeople(cas.people, defaultPerson);
+      const fileName = sanitizeZipPathPart(
+        `${new Date(startDate).toISOString().slice(0, 7)}-${cas.title}-statements`,
+      );
       const blob = await pdf(
-        <StatementPDFDocument caseData={{ ...cas, people }} />,
+        <StatementPDFDocument
+          caseData={{ ...cas, billablePerson: defaultPerson, people }}
+        />,
       ).toBlob();
 
-      const folderName = getFolderNameForCase(cas.caseId, cas.data);
-      zip.file(`${folderName}/${fileName}`, blob);
+      const folderName = getFolderNameForCase(cas.caseId, {
+        ...cas,
+        billablePerson: defaultPerson,
+      });
+      zip.file(`${folderName}/${fileName}.pdf`, blob);
 
       await ensureMinDuration(stepStarted, MIN_STEP_MS);
       MIN_STEP_MS -= 150;

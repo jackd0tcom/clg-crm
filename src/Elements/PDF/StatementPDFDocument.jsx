@@ -21,15 +21,15 @@ const StatementPDFDocument = ({ caseData }) => {
   const today = formatDateNoTimeWithYear(now);
 
   const invoices =
-    caseData.invoices.length > 0
+    caseData.invoices?.length > 0
       ? getInvoiceStatementItemFromInvoice(caseData.invoices)
       : [];
 
-  const statements = [...invoices, ...caseData.payments].sort(
+  const statements = [...invoices, ...(caseData.payments ?? [])].sort(
     (a, b) => new Date(a.paidDate).getTime() - new Date(b.paidDate).getTime(),
   );
 
-  const firstClient = caseData.people[0] ?? null;
+  const firstClient = caseData.billablePerson ?? caseData.people?.[0] ?? null;
 
   const clientName = `${firstClient?.firstName ?? null} ${firstClient?.lastName ?? null}`;
 

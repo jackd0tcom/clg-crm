@@ -12,6 +12,7 @@ import {
   Payment,
 } from "../model.js";
 import { Op } from "sequelize";
+import { serializeCaseBilling } from "../helpers/billingHelper.js";
 
 const now = () => {
   return Date.now();
@@ -253,6 +254,7 @@ export default {
               },
             ],
           },
+          { model: Person, as: "billablePerson", required: false },
           { model: Person, as: "people" },
         ],
       });
@@ -261,7 +263,9 @@ export default {
         return res.status(200).send([]);
       }
 
-      return res.status(200).send(billableCases);
+      return res.status(200).send(
+        billableCases.map((cas) => serializeCaseBilling(cas.toJSON())),
+      );
     } catch (error) {
       console.log(error);
       res.status(500).send(error);
