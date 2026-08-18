@@ -12,6 +12,10 @@ import TaskView from "./Elements/Task/TaskView.jsx";
 import { useAuth0 } from "@auth0/auth0-react";
 import Loader from "./Elements/UI/Loader.jsx";
 import Auth0Sync from "./Elements/Auth/Auth0Sync.jsx";
+import {
+  E2EAuthSync,
+  getE2EUser,
+} from "./Elements/Auth/E2EAuthProvider.jsx";
 import Calendar from "./Pages/Calendar.jsx";
 import CalendarCallback from "./Pages/CalendarCallback.jsx";
 import Settings from "./Pages/Settings.jsx";
@@ -65,9 +69,9 @@ function App() {
     }
   }, [location.pathname]);
 
-  const handleSyncComplete = () => {
+  const handleSyncComplete = useCallback(() => {
     setUserSynced(true);
-  };
+  }, []);
 
   const openTaskView = (taskOrId) => {
     // Handle both task object and task ID
@@ -102,7 +106,11 @@ function App() {
     <Denied />
   ) : (
     <>
-      <Auth0Sync onSyncComplete={handleSyncComplete} />
+      {getE2EUser() ? (
+        <E2EAuthSync onSyncComplete={handleSyncComplete} />
+      ) : (
+        <Auth0Sync onSyncComplete={handleSyncComplete} />
+      )}
       <div className={className}>
         {isAuthenticated && (
           <Nav

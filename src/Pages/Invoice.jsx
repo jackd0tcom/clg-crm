@@ -94,9 +94,15 @@ const Invoice = () => {
         setCaseId(data.caseId ?? data.case?.caseId ?? 0);
         setRates(data.rates ?? []);
         setPayments(data.payments ?? []);
-        setClientList(data.case?.people ?? []);
+        setClientList(
+          data.case?.people?.length
+            ? data.case.people
+            : data.case?.billablePerson
+              ? [data.case.billablePerson]
+              : [],
+        );
         setEntryServices(res.data.entryServices);
-        setDefaultRate(data.settings.defaultRate);
+        setDefaultRate(data.settings?.defaultRate);
         setPayTo(data.payTo ?? data.settings.payTo ?? "");
         const defaultClient = data.case?.billablePerson ?? null;
         const defaultBillTo = defaultClient
@@ -265,12 +271,13 @@ const Invoice = () => {
   const handlePay = async (payment) => {
     try {
       setSavingStatus("Saving...");
+      const objects = [{ type: "invoice", id: invoiceId }];
+      if (caseId) {
+        objects.push({ type: "case", id: caseId });
+      }
       await axios
         .post("/api/addPayment", {
-          objects: [
-            { type: "invoice", id: invoiceId },
-            { type: "case", id: caseId },
-          ],
+          objects,
           payment,
           personId: payment.personId,
         })

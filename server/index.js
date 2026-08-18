@@ -17,6 +17,7 @@ import commentCtrl from "./controllers/commentCtrl.js";
 import timeCtrl from "./controllers/timeCtrl.js";
 import invoiceCtrl from "./controllers/invoiceCtrl.js";
 import statementCtrl from "./controllers/statementCtrl.js";
+import e2eCtrl, { requireE2eSecret } from "./controllers/e2eCtrl.js";
 
 import { requireAccess, requireAdmin } from "./middleware/authMiddleware.js";
 import {
@@ -214,6 +215,11 @@ app.get("/api/checkUser", checkUser);
 app.delete("/api/logout", logout);
 // app.put("/api/updateUser", updateUser);
 app.post("/api/sync-auth0-user", syncAuth0User);
+
+if (process.env.NODE_ENV !== "production") {
+  app.post("/api/e2e/session", requireE2eSecret, e2eCtrl.createSession);
+  app.post("/api/e2e/link-invoice", requireE2eSecret, e2eCtrl.linkInvoice);
+}
 
 // user endpoints
 app.get("/api/getUser/:userId", getUser);

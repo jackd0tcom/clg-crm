@@ -37,7 +37,12 @@ const PayModal = ({
     paidDate: existingPayment?.paidDate ?? new Date(),
     paidAmount: existingPayment?.paidAmount ?? 0,
     paidDescription: existingPayment?.paidDescription ?? "",
-    personId: project?.billableContact ?? existingPayment?.personId ?? 0,
+    personId:
+      project?.billableContact ??
+      project?.case?.billableContact ??
+      project?.case?.billablePerson?.personId ??
+      existingPayment?.personId ??
+      0,
   });
   const descriptions = ["Retainer Payment", "Invoice Payment"];
 

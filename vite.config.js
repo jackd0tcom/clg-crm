@@ -10,4 +10,8 @@ export default defineConfig({
       'Content-Security-Policy': '',
     },
   },
+  test: {
+    environment: 'node',
+    include: ['src/**/*.test.{js,jsx,ts,tsx}', 'server/**/*.test.js'],
+  },
 })

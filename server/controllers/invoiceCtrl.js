@@ -17,7 +17,7 @@ const now = () => {
   return Date.now();
 };
 
-const resolveCaseIdFromEntries = async (entryIds) => {
+export const resolveCaseIdFromEntries = async (entryIds) => {
   if (!entryIds?.length) return null;
 
   const entries = await TimeEntry.findAll({
@@ -39,7 +39,7 @@ const resolveCaseIdFromEntries = async (entryIds) => {
   return null;
 };
 
-const backfillInvoiceCaseId = async (invoice, entries = [], charges = []) => {
+export const backfillInvoiceCaseId = async (invoice, entries = [], charges = []) => {
   if (invoice.caseId) return invoice.caseId;
 
   const caseId =
@@ -60,7 +60,7 @@ const invoiceDetailInclude = [
     model: Case,
     as: "case",
     required: false,
-    include: [{ model: Person, as: "billablePerson" }],
+    include: [{ model: Person, as: "billablePerson" }, { model: Person, as: "people" }],
   },
   {
     model: CustomCharge,

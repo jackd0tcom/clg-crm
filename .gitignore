@@ -14,6 +14,11 @@ dist-ssr
 .env
 dev-notes
 
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
