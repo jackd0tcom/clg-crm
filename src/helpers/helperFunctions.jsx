@@ -521,13 +521,13 @@ export const getInvoiceStatementItemFromInvoice = (invoices) => {
     const entriesTotal =
       invoice.timeEntries?.length > 0
         ? invoice.timeEntries?.reduce((acc, entry) => {
-            return acc + getAmountOfEntry(entry.rate?.rate, entry);
+            return acc + getAmountOfEntry(entry.rate?.rate ?? 0, entry);
           }, 0)
         : 0;
-    const person = invoice.case?.billablePerson;
-    const firstName = person?.firstName ?? "";
-    const lastName = person?.lastName ?? "";
-    const clientName = `${firstName} ${lastName}`;
+    const person = invoice.case?.billablePerson ?? {
+      firstName: "No billable client",
+    };
+    console.log(chargesTotal, entriesTotal);
     const grandTotal = chargesTotal + entriesTotal;
     return {
       createdAt: invoice.createdAt,

@@ -86,7 +86,7 @@ async function createAndDownloadMonthlyDocuments({
       ).toBlob();
 
       const caseId = data.caseId ?? data.case?.caseId ?? inv.caseId;
-      const folderName = getFolderNameForCase(caseId, data.case?.people);
+      const folderName = getFolderNameForCase(caseId, data.case);
       zip.file(`${folderName}/${data.invoiceTitle || inv.invoiceId}.pdf`, blob);
 
       await ensureMinDuration(stepStarted, MIN_STEP_MS);
@@ -129,7 +129,7 @@ async function createAndDownloadMonthlyDocuments({
         <StatementPDFDocument caseData={{ ...cas, people }} />,
       ).toBlob();
 
-      const folderName = getFolderNameForCase(cas.caseId, people);
+      const folderName = getFolderNameForCase(cas.caseId, cas.data);
       zip.file(`${folderName}/${fileName}`, blob);
 
       await ensureMinDuration(stepStarted, MIN_STEP_MS);
