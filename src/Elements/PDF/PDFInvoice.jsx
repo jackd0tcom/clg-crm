@@ -57,7 +57,7 @@ const PDFInvoice = ({
       );
     }, 0);
 
-  const combined = [...invoiceData.entries, ...invoiceData.customCharges];
+  const combined = [...invoiceData?.entries, ...invoiceData?.customCharges];
 
   const sorted = combined.sort((a, b) => {
     const aStart = a.chargeId ? a.createdAt : a.endTime;

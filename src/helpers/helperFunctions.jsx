@@ -513,7 +513,7 @@ export const getInvoiceStatementItems = (entries, charges) => {
 export const getInvoiceStatementItemFromInvoice = (invoices) => {
   return invoices.map((invoice) => {
     const chargesTotal =
-      invoice.customCharges.length > 0
+      invoice.customCharges?.length > 0
         ? invoice.customCharges?.reduce((acc, charge) => {
             return acc + charge.amount;
           }, 0)
