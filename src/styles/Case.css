@@ -917,13 +917,14 @@ div.case-task-container
   background-color: var(--bright-dark-green);
   cursor: pointer;
 }
-
+.billed-client-switch {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 .person-input-label {
   font-size: 0.9rem;
   color: var(--grey);
-}
-.remove-person-button {
-  grid-column: span 2;
 }
 .remove-person-button a {
   cursor: pointer;
