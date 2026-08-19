@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import ProfilePic from "../Elements/UI/ProfilePic";
 import { formatDateNoTime } from "../helpers/helperFunctions";
+import { useSelector } from "react-redux";
 import {
   getDurationNumber,
   getDurationFromNumber,
@@ -14,6 +15,7 @@ const InvoiceList = () => {
   const [invoiceList, setInvoiceList] = useState([{}]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const userStore = useSelector((state) => state.user);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
@@ -31,10 +33,8 @@ const InvoiceList = () => {
   };
 
   useEffect(() => {
-    setTimeout(() => {
-      fetchInvoices();
-    }, 100);
-  }, []);
+    fetchInvoices();
+  }, [userStore]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {

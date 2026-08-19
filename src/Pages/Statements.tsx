@@ -1,12 +1,16 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router";
+import { getInvoiceStatementItemFromInvoice } from "../helpers/helperFunctions";
 import Loader from "../Elements/UI/Loader";
 import FilterDropdown from "../Elements/UI/FilterDropdown";
 import { usePersistedFilter } from "../Hooks/usePersistedFilter";
 import { useSelector } from "react-redux";
 import PaymentList from "../Elements/Statements/PaymentList";
-import { buildFilters } from "../helpers/helperFunctions";
+import { buildFilters, formatDateNoTime } from "../helpers/helperFunctions";
+import FilterDateRangeSelector from "../Elements/TimeKeeper/FilterDateRangeSelector";
+import PDFStatement from "../Elements/PDF/PDFStatement";
+import createAndDownloadMonthlyStatementZip from "../Elements/PDF/createAndDownloadMonthlyStatementZip";
+import createAndDownloadMonthlyDocuments from "../Elements/PDF/createAndDownloadMonthlyDocuments";
 
 const Statements = () => {
   const [paymentList, setPaymentList] = useState([]);
@@ -15,6 +19,14 @@ const Statements = () => {
   const [dates, setDates] = useState<any>([]);
   const [clients, setClients] = useState<any>([]);
   const [description, setDescription] = useState<any>([]);
+  const [showPDF, setShowPDF] = useState(false);
+  const now = new Date();
+  const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+  const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  const [zipStatus, setZipStatus] = useState("");
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [combinedItems, setCombinedItems] = useState<any>([]);
+  const dropdownRef = useRef<HTMLInputElement>(null);
   const [filter, setFilter] = usePersistedFilter(
     "statements",
     userStore.userId,
@@ -24,6 +36,10 @@ const Statements = () => {
       client: [],
       description: [],
       direction: "up",
+      dateRange: {
+        startDate: firstDay,
+        endDate: lastDay,
+      },
     },
   );
 
@@ -31,11 +47,15 @@ const Statements = () => {
     try {
       await axios.get("/api/getPayments").then((res: any) => {
         if (res.status === 200) {
-          setPaymentList(res.data);
-          console.log(res.data);
+          const payments = res.data.payments;
+          const invoices = res.data.invoices;
+          const invoiceItems = getInvoiceStatementItemFromInvoice(invoices);
+          setPaymentList(payments);
+          const combined = [...payments, ...invoiceItems];
+          setCombinedItems(combined);
           setDates(
             buildFilters(
-              res.data,
+              payments,
               (item: any) => item.paidDate?.slice(0, 7), // unique key: "2024-03"
               (item: any) => {
                 const [year, month] = item.paidDate.split("-");
@@ -44,11 +64,11 @@ const Statements = () => {
             ),
           );
           setClients(
-            buildFilters(res.data, "personId", (p: any) =>
+            buildFilters(combined, "person.personId", (p: any) =>
               `${p.person?.firstName ?? ""} ${p.person?.lastName ?? ""}`.trim(),
             ),
           );
-          setDescription(buildFilters(res.data, "description", "description"));
+          setDescription(buildFilters(combined, "description", "description"));
           setIsLoading(false);
         }
       });
@@ -58,15 +78,49 @@ const Statements = () => {
   };
 
   useEffect(() => {
-    setTimeout(() => {
-      fetchPayments();
-    }, 100);
-  }, []);
+    fetchPayments();
+  }, [userStore]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: any) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    };
+
+    if (showDropdown) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showDropdown]);
 
   const filteredPayments = useMemo(() => {
-    let data = paymentList;
+    let data = combinedItems;
 
     data = data.filter((payment: any) => {
+      const rangeStart = filter.dateRange.startDate
+        ? new Date(filter.dateRange.startDate)
+        : null;
+      const rangeEnd = filter.dateRange.endDate
+        ? new Date(filter.dateRange.endDate)
+        : null;
+      if (
+        rangeStart &&
+        payment.paidDate &&
+        payment.paidDate < rangeStart.toISOString()
+      ) {
+        return false;
+      }
+      if (
+        rangeEnd &&
+        payment.paidDate &&
+        payment.paidDate > rangeEnd.toISOString()
+      ) {
+        return false;
+      }
       if (filter.date.length > 0) {
         if (
           !filter.date.some(
@@ -87,12 +141,24 @@ const Statements = () => {
       }
       if (filter.description.length > 0) {
         if (
-          !filter.description.some(
-            (filter: any) => filter.id === payment.description,
-          )
+          !filter.description.some((filter: any) => {
+            if (
+              filter.id === "invoice" &&
+              payment.description !== "Retainer Payment" &&
+              payment.description !== "Invoice Payment"
+            ) {
+              return true;
+            } else return filter.id === payment.description;
+          })
         )
           return false;
       }
+
+      // Sort by date
+      data = data.sort(
+        (a: any, b: any) =>
+          new Date(a.paidDate).getTime() - new Date(b.paidDate).getTime(),
+      );
 
       return payment;
     });
@@ -100,24 +166,98 @@ const Statements = () => {
     return data;
   }, [filter, paymentList]);
 
+  const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
+  const handleZip = async () => {
+    setShowDropdown(false);
+    setZipStatus("Creating statements");
+    try {
+      await createAndDownloadMonthlyStatementZip({
+        startDate: filter.dateRange.startDate,
+        endDate: filter.dateRange.endDate,
+        setZipStatus,
+      });
+      await delay(3000);
+      setZipStatus("");
+    } catch (err) {
+      console.error(err);
+      setZipStatus("Error — try again");
+    }
+  };
+
+  const handleZipInvoicesAndStatements = async () => {
+    setShowDropdown(false);
+    setZipStatus("Creating invoices…");
+    try {
+      await createAndDownloadMonthlyDocuments({
+        startDate: filter.dateRange.startDate,
+        endDate: filter.dateRange.endDate,
+        setZipStatus,
+      });
+      await delay(3000);
+      setZipStatus("");
+    } catch (err) {
+      console.error(err);
+      setZipStatus("Error — try again");
+    }
+  };
+
   return (
     <div className="statements-page-wrapper">
       <div className="page-header">
         <h2 className="section-heading">Statements</h2>
+        <div className="relative">
+          <div className=""></div>
+          <button
+            className="new-invoice-button"
+            onClick={() => {
+              showPDF ? setShowPDF(false) : setShowDropdown(!showDropdown);
+            }}
+          >
+            {zipStatus !== ""
+              ? zipStatus
+              : showPDF
+                ? "View Statements"
+                : "Create PDF"}
+          </button>
+          {showDropdown && (
+            <div className="dropdown right" ref={dropdownRef}>
+              <div className="dropdown-item dropdown-header">
+                {formatDateNoTime(filter.dateRange.startDate)} -{" "}
+                {formatDateNoTime(filter.dateRange.endDate)}
+              </div>
+              <div
+                onClick={() => handleZipInvoicesAndStatements()}
+                className="dropdown-item"
+              >
+                Download Monthly Documents
+              </div>
+              <div onClick={() => handleZip()} className="dropdown-item">
+                Download Statements
+              </div>
+              <div
+                onClick={() => {
+                  setShowPDF(!showPDF);
+                  setShowDropdown(false);
+                }}
+                className="dropdown-item"
+              >
+                View PDF
+              </div>
+            </div>
+          )}
+        </div>
       </div>
       <div className="statements-page-body">
         {isLoading ? (
           <Loader />
+        ) : showPDF ? (
+          <div className="statement-pdf-wrapper">
+            <PDFStatement statementData={null} statements={filteredPayments} />
+          </div>
         ) : (
           <div className="statements-list">
             <div className="payment-item statement-list-head">
-              <FilterDropdown
-                filter={filter}
-                setFilter={setFilter}
-                options={dates}
-                array={true}
-                heading="Date"
-              />
+              <FilterDateRangeSelector filter={filter} setFilter={setFilter} />
               <FilterDropdown
                 filter={filter}
                 setFilter={setFilter}

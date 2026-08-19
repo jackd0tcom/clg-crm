@@ -1,11 +1,10 @@
 import React from "react";
-import {
-  formatDateNoTimeWithYear,
-  formatNumericalDate,
-} from "../../helpers/helperFunctions";
+import { formatDateNoTimeWithYear } from "../../helpers/helperFunctions";
+import { getInvoiceStatementItemFromInvoice } from "../../helpers/helperFunctions";
 import {
   getRoundedDuration,
   getRoundedAmountOfEntry,
+  formatNumericalDate,
 } from "../../helpers/helperFunctions";
 import {
   Page,
@@ -17,50 +16,31 @@ import {
   Image,
 } from "@react-pdf/renderer";
 
-const PDFDocument = ({
-  invoiceData,
-  billTo,
-  payTo,
-  defaultRate,
-  entryServices,
-  rates,
-}) => {
+const StatementPDFDocument = ({ caseData }) => {
   const now = new Date();
   const today = formatDateNoTimeWithYear(now);
 
-  const getRate = (item) => {
-    return rates.find((rate) => rate.rateId === item.rateId)?.rate ?? 0;
-  };
+  const invoices =
+    caseData.invoices?.length > 0
+      ? getInvoiceStatementItemFromInvoice(caseData.invoices)
+      : [];
 
-  const getServiceTitle = (id) => {
-    return (
-      entryServices?.find((service) => service.entryServiceId === id)
-        ?.serviceTitle ?? ""
-    );
-  };
+  const statements = [...invoices, ...(caseData.payments ?? [])].sort(
+    (a, b) => new Date(a.paidDate).getTime() - new Date(b.paidDate).getTime(),
+  );
 
-  const customChargeTotal =
-    invoiceData?.customCharges?.length > 0
-      ? invoiceData?.customCharges?.reduce((acc, charge) => {
-          return acc + Number(charge.amount);
-        }, 0)
-      : 0;
+  const firstClient = caseData.billablePerson ?? caseData.people?.[0] ?? null;
 
-  const totalAmount =
-    Number(customChargeTotal) +
-    invoiceData.entries?.reduce((acc, entry) => {
-      return (
-        acc +
-        getRoundedAmountOfEntry(
-          getRate(entry),
-          entry,
-          invoiceData.roundingAmount,
-        )
-      );
-    }, 0);
+  const clientName = `${firstClient?.firstName ?? null} ${firstClient?.lastName ?? null}`;
+
+  const totalAmount = statements.reduce((acc, statement) => {
+    if (statement.paymentId) {
+      return acc + statement.amount;
+    } else return acc - statement.amount;
+  }, 0);
 
   return (
-    <Document>
+    <Document title={`${formatNumericalDate(today)}-${clientName}-Statements`}>
       <Page style={styles.body}>
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           <View
@@ -70,47 +50,15 @@ const PDFDocument = ({
               alignItems: "flex-start",
             }}
           >
-            <Text style={styles.title}>Invoice</Text>
+            <Text style={styles.title}>Statement</Text>
             <Text style={styles.subtitle}>
-              <Text style={styles.bold}>INVOICE ID:</Text>{" "}
-              {invoiceData.invoiceTitle}
+              <Text style={styles.bold}>Statement Date:</Text> {today}
             </Text>
             <Text style={styles.subtitle}>
-              <Text style={styles.bold}>INVOICE DATE:</Text> {today}
+              <Text style={styles.bold}>Client Name:</Text> {clientName}
             </Text>
           </View>
           <Image style={styles.image} src="/Clause-Law-Group-Logo-Green.png" />
-        </View>
-
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            gap: 80,
-            marginRight: "20%",
-            marginTop: "15",
-          }}
-        >
-          <View
-            style={{
-              flexDirection: "column",
-              alignItems: "flex-start",
-              gap: 8,
-            }}
-          >
-            <Text style={[styles.subtitle, styles.bold]}>Billed To:</Text>
-            <Text style={styles.subtitle}>{billTo}</Text>
-          </View>
-          <View
-            style={{
-              flexDirection: "column",
-              alignItems: "flex-start",
-              gap: 8,
-            }}
-          >
-            <Text style={[styles.subtitle, styles.bold]}>Pay To:</Text>
-            <Text style={styles.subtitle}>{payTo}</Text>
-          </View>
         </View>
         <View style={{ marginTop: 20 }}>
           <View style={styles.topRow}>
@@ -118,7 +66,6 @@ const PDFDocument = ({
             <Text style={[styles.tableHeader, { flexBasis: 250 }]}>
               DESCRIPTION
             </Text>
-            <Text style={[styles.tableHeader, { flexBasis: 80 }]}>TIME</Text>
             <Text
               style={[
                 styles.tableHeader,
@@ -128,44 +75,46 @@ const PDFDocument = ({
               TOTAL
             </Text>
           </View>
-          {invoiceData.entries.map((entry) => (
+          {statements?.map((statement) => (
             <View style={styles.row}>
               <Text style={[styles.text, { flexBasis: 100 }]}>
-                {formatNumericalDate(entry.endTime) ?? ""}
+                {formatNumericalDate(statement.paidDate) ?? ""}
               </Text>
               <Text style={[styles.text, { flexBasis: 250 }]}>
-                {getServiceTitle(entry.entryServiceId) ?? entry.notes}
-              </Text>
-              <Text style={[styles.text, { flexBasis: 80 }]}>
-                {getRoundedDuration(entry, invoiceData.roundingAmount)}
+                {statement.paymentId
+                  ? (statement.description ?? "")
+                  : `Invoice - ${statement.description}`}
               </Text>
               <Text
-                style={[styles.text, { flexBasis: 80, textAlign: "right" }]}
+                style={
+                  !statement.paymentId
+                    ? [
+                        styles.text,
+                        {
+                          flexBasis: 80,
+                          textAlign: "right",
+                          color: "darkred",
+                        },
+                      ]
+                    : [styles.text, { flexBasis: 80, textAlign: "right" }]
+                }
               >
-                $
-                {getRoundedAmountOfEntry(
-                  getRate(entry),
-                  entry,
-                  invoiceData.roundingAmount,
-                )}
+                {statement.paymentId
+                  ? `$${statement.amount}`
+                  : `($${statement.amount})`}
               </Text>
             </View>
           ))}
-          {invoiceData.customCharges?.map((charge) => (
-            <View style={styles.row}>
-              <Text style={styles.text}>{charge.description}</Text>
-              <Text style={styles.text}></Text>
-              <Text style={styles.text}>${charge.amount}</Text>
-            </View>
-          ))}
-          <View style={styles.row}>
-            <Text style={styles.text}>SUBTOTAL</Text>
-            <Text style={styles.text}>${totalAmount}</Text>
-          </View>
         </View>
         <View style={styles.footer}>
-          <Text style={styles.text}>TOTAL</Text>
-          <Text style={styles.total}>${totalAmount}</Text>
+          <Text style={styles.text}>
+            {totalAmount > 0 ? "BALANCE" : "BALANCE OWED"}
+          </Text>
+          <View style={styles.total}>
+            <Text>
+              ${totalAmount > 0 ? totalAmount : Math.abs(totalAmount)}
+            </Text>
+          </View>
         </View>
         <View style={{ marginTop: 25 }}>
           <Text style={styles.subText}>
@@ -201,13 +150,12 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 40,
   },
+  bold: {
+    fontWeight: 5600,
+    textTransform: "uppercase",
+  },
   subtitle: {
     fontSize: 12,
-  },
-  bold: {
-    fontWeight: 600,
-    fontSize: 12,
-    textTransform: "uppercase",
   },
   tableHeader: {
     fontSize: 12,
@@ -271,4 +219,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PDFDocument;
+export default StatementPDFDocument;

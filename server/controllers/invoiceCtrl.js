@@ -17,6 +17,88 @@ const now = () => {
   return Date.now();
 };
 
+export const resolveCaseIdFromEntries = async (entryIds) => {
+  if (!entryIds?.length) return null;
+
+  const entries = await TimeEntry.findAll({
+    where: { timeEntryId: { [Op.in]: entryIds } },
+    include: [
+      {
+        model: Task,
+        as: "task",
+        attributes: ["caseId"],
+        required: false,
+      },
+    ],
+  });
+
+  for (const entry of entries) {
+    if (entry.caseId) return entry.caseId;
+    if (entry.task?.caseId) return entry.task.caseId;
+  }
+  return null;
+};
+
+export const backfillInvoiceCaseId = async (invoice, entries = [], charges = []) => {
+  if (invoice.caseId) return invoice.caseId;
+
+  const caseId =
+    entries.find((e) => e.caseId)?.caseId ??
+    entries.find((e) => e.case?.caseId)?.case?.caseId ??
+    entries.find((e) => e.task?.caseId)?.task?.caseId ??
+    charges.find((c) => c.caseId)?.caseId ??
+    null;
+
+  if (caseId) {
+    await invoice.update({ caseId });
+  }
+  return caseId;
+};
+
+const invoiceDetailInclude = [
+  {
+    model: Case,
+    as: "case",
+    required: false,
+    include: [{ model: Person, as: "billablePerson" }, { model: Person, as: "people" }],
+  },
+  {
+    model: CustomCharge,
+    as: "customCharges",
+  },
+  {
+    model: TimeEntry,
+    as: "timeEntries",
+    include: [
+      { model: Rate, as: "rate", attributes: ["rate"] },
+      {
+        model: Invoice,
+        as: "invoice",
+        required: false,
+      },
+      {
+        model: Case,
+        as: "case",
+        required: false,
+        include: [{ model: Person, as: "people" }],
+      },
+      { model: Task, as: "task", required: false },
+    ],
+  },
+  {
+    model: Payment,
+    as: "payments",
+    include: [
+      { model: Person, as: "person", required: false },
+      {
+        model: Case,
+        as: "case",
+        required: false,
+      },
+    ],
+  },
+];
+
 export default {
   getInvoice: async (req, res) => {
     try {
@@ -27,28 +109,17 @@ export default {
         return res.status(401).send("User not authenticated");
       }
 
-      const entryServices = await EntryService.findAll();
+      const [entryServices, userSettings, rates] = await Promise.all([
+        EntryService.findAll(),
+        UserSettings.findOne({
+          where: { userId: req.session.user.userId },
+        }),
+        Rate.findAll(),
+      ]);
 
-      const invoice = await Invoice.findOne({
+      let invoice = await Invoice.findOne({
         where: { invoiceId },
-        include: [
-          {
-            model: CustomCharge,
-            as: "customCharges",
-          },
-          {
-            model: Payment,
-            as: "payments",
-            include: [
-              { model: Person, as: "person", required: false },
-              {
-                model: Case,
-                as: "case",
-                required: false,
-              },
-            ],
-          },
-        ],
+        include: invoiceDetailInclude,
       });
 
       if (!invoice) {
@@ -56,68 +127,38 @@ export default {
         return;
       }
 
-      const invoiceItems = await TimeEntry.findAll({
-        where: { invoiceId: invoice.invoiceId },
-        include: [
-          {
-            model: Case,
-            as: "case",
-            required: false,
-            include: [{ model: Person, as: "people" }],
-          },
-          { model: Task, as: "task", required: false },
-        ],
-      });
+      const entries = invoice.timeEntries ?? [];
+      const charges = invoice.customCharges ?? [];
+      const caseId = await backfillInvoiceCaseId(invoice, entries, charges);
 
-      const userSettings = await UserSettings.findOne({
-        where: { userId: req.session.user.userId },
-      });
-
-      let payments;
-      let caseEntries;
-      let charges;
-      if (invoiceItems && invoiceItems.length > 0 && invoiceItems[0].case) {
-        payments = await Payment.findAll({
-          where: {
-            caseId: invoiceItems[0].caseId,
-          },
-          include: [{ model: Person, as: "person" }],
+      if (caseId && !invoice.case) {
+        invoice = await Invoice.findOne({
+          where: { invoiceId },
+          include: invoiceDetailInclude,
         });
       }
 
-      caseEntries = await TimeEntry.findAll({
-        where: {
-          caseId: invoiceItems[0]?.caseId,
-          invoiceId: { [Op.ne]: null },
-        },
-        include: [
-          { model: Rate, as: "rate", attributes: ["rate"] },
-          {
-            model: Invoice,
-            as: "invoice",
-            required: false,
-          },
-        ],
-      });
-      charges = await CustomCharge.findAll({
-        where: {
-          caseId: invoiceItems[0].caseId,
-        },
-      });
-
-      const rates = await Rate.findAll();
+      const payments = caseId
+        ? await Payment.findAll({
+            where: { caseId },
+            include: [{ model: Person, as: "person" }],
+          })
+        : [];
 
       const invoiceData = invoice.toJSON();
+      const invoiceEntries = invoiceData.timeEntries ?? [];
+      const invoiceCharges = invoiceData.customCharges ?? [];
 
       const invoiceWithItems = {
         ...invoiceData,
-        entries: invoiceItems,
+        caseId: invoiceData.caseId ?? caseId ?? null,
+        entries: invoiceEntries,
         settings: userSettings,
-        entryServices: entryServices,
-        rates: rates,
-        payments: payments,
-        caseEntries: caseEntries,
-        charges: charges,
+        entryServices,
+        rates,
+        payments,
+        caseEntries: invoiceEntries,
+        charges: invoiceCharges,
       };
 
       res.status(200).send(invoiceWithItems);
@@ -136,6 +177,14 @@ export default {
 
       const invoices = await Invoice.findAll({
         where: { userId: req.session.user.userId },
+        include: [
+          {
+            model: Case,
+            as: "case",
+            required: false,
+            attributes: ["caseId", "title"],
+          },
+        ],
         order: [["updatedAt", "DESC"]],
       });
 
@@ -158,6 +207,10 @@ export default {
               { model: Task, as: "task", required: false },
             ],
           });
+
+          if (!invoice.caseId) {
+            await backfillInvoiceCaseId(invoice, entries, []);
+          }
 
           const invoiceData = invoice.toJSON();
 
@@ -198,12 +251,18 @@ export default {
   newInvoice: async (req, res) => {
     try {
       console.log("newInvoice");
-      const { entries } = req.body;
+      const { entries, caseId: bodyCaseId } = req.body;
       if (!req.session.user) {
         return res.status(401).send("User not authenticated");
       }
+
+      const caseId =
+        bodyCaseId ??
+        (entries?.length ? await resolveCaseIdFromEntries(entries) : null);
+
       const newInvoice = await Invoice.create({
         userId: req.session.user.userId,
+        caseId: caseId ?? null,
       });
 
       let payload;
@@ -245,10 +304,7 @@ export default {
         },
       });
 
-      let payload;
-
       const now = new Date();
-      const date = now.toISOString();
       const firstDay = startDate
         ? new Date(startDate)
         : new Date(now.getFullYear(), now.getMonth(), 1);
@@ -274,14 +330,21 @@ export default {
                 startTime: {
                   [Op.between]: [firstDay, lastDay],
                 },
+                paidStatus: { [Op.not]: "paid" },
                 [Op.or]: [
                   { caseId: c.caseId },
                   ...(taskIds.length ? [{ taskId: { [Op.in]: taskIds } }] : []),
                 ],
               },
             });
-            if (!entries.length) return null;
-            return { ...c.toJSON(), entries };
+            const charges = await CustomCharge.findAll({
+              where: {
+                invoiceId: null,
+                caseId: c.caseId,
+              },
+            });
+            if (!entries.length && !charges.length) return null;
+            return { ...c.toJSON(), entries, charges };
           }),
         )
       ).filter(Boolean);
@@ -295,6 +358,7 @@ export default {
             where: {
               userId: req.session.user.userId,
               invoiceTitle,
+              caseId: c.caseId,
             },
           });
 
@@ -303,6 +367,7 @@ export default {
               where: {
                 userId: req.session.user.userId,
                 invoiceTitle: `${invoiceTitle} (1)`,
+                caseId: c.caseId,
               },
             });
           }
@@ -311,29 +376,28 @@ export default {
               where: {
                 userId: req.session.user.userId,
                 invoiceTitle: `${invoiceTitle} (2)`,
+                caseId: c.caseId,
               },
             });
           }
 
-          const charges = await CustomCharge.findAll({
-            where: {
-              caseId: c.caseId,
-              invoiceId: null,
-            },
-          });
+          if (invoice.caseId !== c.caseId) {
+            await invoice.update({ caseId: c.caseId });
+          }
 
           const updatedCharges = await Promise.all(
-            charges.map(async (charge) => {
-              await charge.update({
+            c.charges?.map(async (charge) => {
+              return await charge.update({
                 invoiceId: invoice.invoiceId,
+                caseId: charge.caseId ?? c.caseId,
               });
             }),
           );
 
           const entries = await Promise.all(
-            c.entries.map((entry) => {
+            c.entries?.map(async (entry) => {
               if (entry.paidStatus !== "paid")
-                return entry.update({ invoiceId: invoice.invoiceId });
+                return await entry.update({ invoiceId: invoice.invoiceId });
             }),
           );
 
@@ -360,9 +424,13 @@ export default {
 
       if (!currentInvoice) {
         res.status(404).send("Invoice does not exist");
+        return;
       }
 
-      const newCharge = CustomCharge.create({ invoiceId });
+      const newCharge = await CustomCharge.create({
+        invoiceId,
+        caseId: currentInvoice.caseId ?? null,
+      });
 
       res.status(200).send(newCharge);
     } catch (error) {
@@ -391,7 +459,11 @@ export default {
       });
 
       if (charges.length > 0) {
-        charges.forEach(async (charge) => await charge.destroy());
+        await Promise.all(
+          charges.map(
+            async (charge) => await charge.update({ invoiceId: null }),
+          ),
+        );
       }
 
       const entries = await TimeEntry.findAll({
@@ -401,12 +473,14 @@ export default {
       });
 
       if (entries.length > 0) {
-        entries.forEach(async (entry) => {
-          await entry.update({
-            invoiceId: null,
-            paidStatus: "draft",
-          });
-        });
+        await Promise.all(
+          entries.map(async (entry) => {
+            await entry.update({
+              invoiceId: null,
+              paidStatus: "draft",
+            });
+          }),
+        );
       }
 
       await currentInvoice.destroy();
@@ -449,6 +523,10 @@ export default {
         isPaid: invoiceData.isPaid,
         billTo: invoiceData.billTo,
         payTo: invoiceData.payTo,
+        caseId:
+          invoiceData.caseId !== undefined
+            ? invoiceData.caseId
+            : invoice.caseId,
       });
 
       const entries = invoiceData.entries ?? [];
@@ -487,10 +565,12 @@ export default {
             return await foundCharge.update({
               description: charge.description,
               amount: charge.amount,
+              caseId: foundCharge.caseId ?? updatedInvoice.caseId ?? null,
             });
           }
           return await CustomCharge.create({
             invoiceId: invoice.invoiceId,
+            caseId: updatedInvoice.caseId ?? null,
             description: charge.description ?? null,
             amount: charge.amount ?? null,
           });

@@ -374,14 +374,37 @@ export default {
       if (!req.session.user) {
         return res.status(401).send("User not authenticated");
       }
-      const entries = await TimeEntry.findAll({
-        where: { userId: req.session.user.userId, endTime: { [Op.not]: null } },
-        limit: 32,
-        order: [
-          ["endTime", "DESC"],
-          ["timeEntryId", "DESC"],
-        ],
-      });
+      const { caseId } = req.body;
+
+      let entries;
+
+      console.log(caseId);
+
+      if (caseId) {
+        entries = await TimeEntry.findAll({
+          where: {
+            userId: req.session.user.userId,
+            endTime: { [Op.not]: null },
+            caseId,
+          },
+          limit: 32,
+          order: [
+            ["endTime", "DESC"],
+            ["timeEntryId", "DESC"],
+          ],
+        });
+      } else
+        entries = await TimeEntry.findAll({
+          where: {
+            userId: req.session.user.userId,
+            endTime: { [Op.not]: null },
+          },
+          limit: 32,
+          order: [
+            ["endTime", "DESC"],
+            ["timeEntryId", "DESC"],
+          ],
+        });
 
       const notNullEntries = entries.filter((entry) => entry !== null);
 
@@ -412,16 +435,31 @@ export default {
         }),
       );
 
-      const charges = await CustomCharge.findAll({
-        limit: 24,
-        include: [
-          {
-            model: Case,
-            as: "case",
-            required: false,
-          },
-        ],
-      });
+      let charges;
+
+      if (caseId) {
+        charges = await CustomCharge.findAll({
+          where: { caseId },
+          limit: 24,
+          include: [
+            {
+              model: Case,
+              as: "case",
+              required: false,
+            },
+          ],
+        });
+      } else
+        charges = await CustomCharge.findAll({
+          limit: 24,
+          include: [
+            {
+              model: Case,
+              as: "case",
+              required: false,
+            },
+          ],
+        });
 
       const payload = {
         entries: [...entriesWithProjects],
@@ -445,10 +483,10 @@ export default {
         return res.status(401).send("User not authenticated");
       }
       const newCharge = await CustomCharge.create({
-        caseId,
-        invoiceId,
-        description,
-        amount,
+        caseId: caseId ?? null,
+        invoiceId: invoiceId ?? null,
+        description: description ?? null,
+        amount: amount ?? null,
       });
 
       res.status(200).send(newCharge);
@@ -473,9 +511,9 @@ export default {
           description,
           amount,
         });
+        res.status(200).send(updatedCharge);
+        return;
       } else res.status(400).send("error updating charge");
-
-      res.status(200).send(updatedCharge);
     } catch (error) {
       console.log(error);
       res.status(500).send(error);

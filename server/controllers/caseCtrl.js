@@ -457,6 +457,13 @@ export default {
         } else message = "changed this case to be not billable";
       }
 
+      if (fieldName === "billableContact") {
+        const newClient = await Person.findByPk(value);
+        if (value) {
+          message = `changed the billable client to ${newClient?.firstName ?? ""} ${newClient?.lastName ?? ""}`;
+        } else message = "removed the billable contact";
+      }
+
       if (fieldName === "sol") {
         if (!value) {
           message = `removed the SOL`;

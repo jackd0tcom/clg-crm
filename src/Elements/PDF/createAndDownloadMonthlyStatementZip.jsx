@@ -2,7 +2,9 @@ import { pdf } from "@react-pdf/renderer";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import PDFDocument from "./PDFDocument";
+import StatementPDFDocument from "./StatementPDFDocument";
 import axios from "axios";
+import { formatNumericalDate } from "../../helpers/helperFunctions";
 
 const delay = (ms) => new Promise((r) => setTimeout(r, ms));
 let MIN_STEP_MS = 600;
@@ -12,7 +14,7 @@ const ensureMinDuration = async (startedAt, ms) => {
   if (elapsed < ms) await delay(ms - elapsed);
 };
 
-async function createAndDownloadMonthlyZip({
+async function createAndDownloadMonthlyStatementZip({
   startDate,
   endDate,
   setZipStatus,
@@ -20,40 +22,37 @@ async function createAndDownloadMonthlyZip({
   setZipStatus?.("Creating invoices…");
   const createStarted = Date.now();
 
-  const { data: invoices } = await axios.post("/api/createMonthlyInvoices", {
+  const { data: cases } = await axios.post("/api/createMonthlyStatements", {
     startDate,
     endDate,
   });
   await ensureMinDuration(createStarted, MIN_STEP_MS);
 
-  if (!invoices.length) {
-    setZipStatus?.("No invoices to download");
+  if (!cases.length) {
+    setZipStatus?.("No statements to download");
     return { ok: false, count: 0 };
   }
 
-  const zip = new JSZip();
-  const total = invoices.length;
+  const uniqueCases = [];
+  const seenCaseIds = new Set();
+  for (const cas of cases) {
+    if (seenCaseIds.has(cas.caseId)) continue;
+    seenCaseIds.add(cas.caseId);
+    uniqueCases.push(cas);
+  }
 
-  for (const [index, inv] of invoices.entries()) {
+  const zip = new JSZip();
+  const total = uniqueCases.length;
+
+  for (const [index, cas] of uniqueCases.entries()) {
     setZipStatus?.(`Generating PDF ${index + 1} of ${total}…`);
     const stepStarted = Date.now();
 
-    const { data } = await axios.get(`/api/getInvoice/${inv.invoiceId}`);
-    const defaultClient = data.case?.people?.[0] ?? null;
-    const defaultBillTo = defaultClient
-      ? `${defaultClient.firstName ?? ""} ${defaultClient.lastName ?? ""}\n${defaultClient.address ?? ""} ${defaultClient.city ?? ""}, ${defaultClient.state ?? ""} ${defaultClient.zip ?? ""}\n${defaultClient.phoneNumber ?? ""}  `
-      : "";
-    const blob = await pdf(
-      <PDFDocument
-        invoiceData={data}
-        billTo={data.billTo ?? defaultBillTo ?? ""}
-        payTo={data.payTo ?? data.settings.payTo ?? ""}
-        entryServices={data.entryServices}
-        rates={data.rates}
-      />,
-    ).toBlob();
+    const fileName = `${new Date(startDate).toISOString().slice(0, 7)}-${cas.title}-statements.pdf`;
 
-    zip.file(`${data.invoiceTitle || inv.invoiceId}.pdf`, blob);
+    const blob = await pdf(<StatementPDFDocument caseData={cas} />).toBlob();
+
+    zip.file(fileName, blob);
 
     await ensureMinDuration(stepStarted, MIN_STEP_MS);
     MIN_STEP_MS -= 150;
@@ -68,9 +67,9 @@ async function createAndDownloadMonthlyZip({
 
   saveAs(
     zipBlob,
-    `invoices-${new Date(startDate).toISOString().slice(0, 7)}.zip`,
+    `statements-${new Date(startDate).toISOString().slice(0, 7)}.zip`,
   );
   setZipStatus?.(`Done — ${total} invoices downloaded`);
   return { ok: true, count: total };
 }
-export default createAndDownloadMonthlyZip;
+export default createAndDownloadMonthlyStatementZip;

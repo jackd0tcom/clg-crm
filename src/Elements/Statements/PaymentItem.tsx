@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router";
 import {
-  formatNumericalDate,
   formatDollarNoCents,
+  formatDateNoTimeWithYear,
 } from "../../helpers/helperFunctions";
 
 interface props {
@@ -11,29 +11,32 @@ interface props {
 const PaymentItem = ({ payment }: props) => {
   const nav = useNavigate();
   const clientName = payment.person
-    ? `${payment.person?.firstName} ${payment.person?.lastName}`
-    : payment.title;
+    ? `${payment.person?.firstName ?? ""} ${payment.person?.lastName ?? ""}`
+    : (payment.title ?? "");
   return (
     <div className="payment-item">
       <div>
-        {formatNumericalDate(payment?.paidDate ?? payment?.createdAt ?? null)}
+        {formatDateNoTimeWithYear(
+          payment?.paidDate ?? payment?.createdAt ?? null,
+        )}
       </div>
+      <div>{clientName}</div>
       <div
         className={payment.title && "invoice-link"}
         onClick={() => payment.title && nav(`/invoice/${payment.invoiceId}`)}
       >
-        {clientName}
+        {payment.description}
       </div>
-      <div>{payment.description}</div>
       <div
         className={
-          payment.description === "Invoice"
+          !payment.paymentId
             ? "payment-item-total subtract-payment"
             : "payment-item-total add-payment"
         }
       >
-        {payment.description === "Invoice" && "-"}
-        {formatDollarNoCents(payment.amount)}
+        {payment.paymentId
+          ? formatDollarNoCents(payment.amount)
+          : `(${formatDollarNoCents(payment.amount)})`}
       </div>
     </div>
   );

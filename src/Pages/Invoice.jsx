@@ -41,7 +41,7 @@ const Invoice = () => {
   const [clientList, setClientList] = useState([]);
   const [caseId, setCaseId] = useState(0);
   const [invoices, setInvoices] = useState([]);
-  const paymentTotal = payments.reduce((acc, payment) => {
+  const paymentTotal = payments?.reduce((acc, payment) => {
     return acc + payment.amount;
   }, 0);
 
@@ -90,20 +90,30 @@ const Invoice = () => {
       if (res.status === 200) {
         const data = res.data;
         setInvoiceData(data);
-        setCaseId(data.entries[0]?.case?.caseId ?? 0);
-        setRates(data.rates);
-        setPayments(data.payments);
-        setClientList(data.entries[0]?.case?.people ?? []);
+        console.log(data);
+        setCaseId(data.caseId ?? data.case?.caseId ?? 0);
+        setRates(data.rates ?? []);
+        setPayments(data.payments ?? []);
+        setClientList(
+          data.case?.people?.length
+            ? data.case.people
+            : data.case?.billablePerson
+              ? [data.case.billablePerson]
+              : [],
+        );
         setEntryServices(res.data.entryServices);
-        setDefaultRate(data.settings.defaultRate);
+        setDefaultRate(data.settings?.defaultRate);
         setPayTo(data.payTo ?? data.settings.payTo ?? "");
-        const defaultClient = data.entries[0]?.case
-          ? data.entries[0].case?.people[0]
-          : null;
+        const defaultClient = data.case?.billablePerson ?? null;
         const defaultBillTo = defaultClient
           ? `${defaultClient.firstName ?? ""} ${defaultClient.lastName ?? ""}\n${defaultClient.address ?? ""} ${defaultClient.city ?? ""} ${defaultClient.state ?? ""} ${defaultClient.zip ?? ""}\n${defaultClient.phoneNumber ?? ""}  `
           : (data.billTo ?? "");
-        setInvoices(getInvoiceStatementItems(data.caseEntries, data.charges));
+        setInvoices(
+          getInvoiceStatementItems(
+            data.caseEntries ?? data.entries,
+            data.charges ?? data.customCharges,
+          ),
+        );
         setBilledTo(data.billTo ?? defaultBillTo);
         setStatus(data.invoiceStatus);
 
@@ -261,12 +271,13 @@ const Invoice = () => {
   const handlePay = async (payment) => {
     try {
       setSavingStatus("Saving...");
+      const objects = [{ type: "invoice", id: invoiceId }];
+      if (caseId) {
+        objects.push({ type: "case", id: caseId });
+      }
       await axios
         .post("/api/addPayment", {
-          objects: [
-            { type: "invoice", id: invoiceId },
-            { type: "case", id: caseId },
-          ],
+          objects,
           payment,
           personId: payment.personId,
         })

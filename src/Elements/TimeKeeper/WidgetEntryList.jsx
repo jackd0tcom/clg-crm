@@ -13,6 +13,7 @@ const WidgetEntryList = ({
   entryServices,
   setShowChargeView,
   setCharge,
+  caseId,
 }) => {
   const [recentEntries, setRecentEntries] = useState([]);
   const [recentCharges, setRecentCharges] = useState([]);
@@ -26,18 +27,21 @@ const WidgetEntryList = ({
 
   useEffect(() => {
     const fetch = async () => {
+      console.log("fetching");
       try {
-        await axios.get("/api/time-entry/getRecentUserEntries").then((res) => {
-          if (res.status === 200) {
-            setRecentEntries(
-              res.data.entries.filter((entry) => entry !== null),
-            );
-            setRecentCharges(res.data.charges);
-          } else {
-            console.log(res);
-            setRecentEntries([{}]);
-          }
-        });
+        await axios
+          .post("/api/time-entry/getRecentUserEntries", { caseId })
+          .then((res) => {
+            if (res.status === 200) {
+              setRecentEntries(
+                res.data.entries.filter((entry) => entry !== null),
+              );
+              setRecentCharges(res.data.charges);
+            } else {
+              console.log(res);
+              setRecentEntries([{}]);
+            }
+          });
       } catch (error) {
         console.log(error);
       }
@@ -60,7 +64,7 @@ const WidgetEntryList = ({
       const day = charge.createdAt
         ? new Date(charge.createdAt).toISOString().split("T")[0]
         : null;
-      charge.projectTitle = charge.case.title ?? "";
+      charge.projectTitle = charge?.case?.title ?? "";
       if (day) {
         if (!groups[day]) groups[day] = [];
         groups[day].push(charge);

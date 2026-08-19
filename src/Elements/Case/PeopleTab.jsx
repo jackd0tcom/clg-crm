@@ -12,6 +12,8 @@ const PeopleTab = ({
   caseId,
   type,
   peopleList,
+  caseData,
+  updateCase,
 }) => {
   const [currentTab, setCurrentTab] = useState(
     people.length > 0 ? people[0].personId : 0,
@@ -91,7 +93,6 @@ const PeopleTab = ({
     if (isNewPerson) {
       return [...people, emptyPersonObject];
     }
-    console.log("tabs");
     return people;
   }, [people, isNewPerson]);
 
@@ -151,6 +152,7 @@ const PeopleTab = ({
             setPeople((prev) => [res.data, ...prev]);
             setShowAddPersonPage(false);
             setCurrentTab(personId);
+            refreshCaseData();
           }
         });
     } catch (error) {
@@ -215,6 +217,8 @@ const PeopleTab = ({
         </div>
       ) : (
         <PersonView
+          caseData={caseData}
+          updateCase={updateCase}
           data={currentPerson}
           refreshActivityData={refreshActivityData}
           refreshCaseData={refreshCaseData}

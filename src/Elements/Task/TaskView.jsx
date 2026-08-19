@@ -105,7 +105,7 @@ const TaskView = ({ taskId, setTaskId, isOpen, onClose, onTaskUpdate }) => {
             setIsLoading(true);
             await axios.get(`/api/getTask/${taskId}`).then((res) => {
               setTaskData(res.data);
-              setTitle(res.data.title);
+              setTitle(res.data.case?.title);
               setIsLoading(false);
               setStatus(res.data.status);
               setPriority(res.data.priority);
@@ -179,8 +179,7 @@ const TaskView = ({ taskId, setTaskId, isOpen, onClose, onTaskUpdate }) => {
       }
     };
     window.addEventListener("beforeunload", handleBeforeUnload);
-    return () =>
-      window.removeEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [isOpen, taskId]);
 
   if (!isOpen) return null;
@@ -338,7 +337,7 @@ const TaskView = ({ taskId, setTaskId, isOpen, onClose, onTaskUpdate }) => {
               <div className="task-view-header">
                 <h3>Task</h3>
                 <div className="task-view-header-container">
-                  <TimeKeeperWidget taskId={taskId} title={title} />
+                  <TimeKeeperWidget caseId={taskData.caseId} title={title} />
                   <ExtraSettings
                     taskId={taskData?.taskId}
                     handleRefresh={refreshTaskData}

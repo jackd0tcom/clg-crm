@@ -455,16 +455,23 @@ export function buildFilters(items, idPath, titlePath) {
   const array = [];
 
   items.forEach((item) => {
-    const id = getByPath(item, idPath);
+    let id = getByPath(item, idPath);
+    let title = getByPath(item, titlePath);
+    if (
+      idPath === "description" &&
+      id !== "Retainer Payment" &&
+      id !== "Invoice Payment"
+    ) {
+      id = "invoice";
+      title = "Invoice";
+    }
     if (id == null || array.some((it) => it.id === id)) return;
 
     array.push({
       id,
-      title: getByPath(item, titlePath),
+      title,
     });
   });
-
-  console.log(array);
 
   return array;
 }
@@ -502,4 +509,34 @@ export const getInvoiceStatementItems = (entries, charges) => {
   });
 
   return Object.values(invoices);
+};
+export const getInvoiceStatementItemFromInvoice = (invoices) => {
+  return invoices.map((invoice) => {
+    const chargesTotal =
+      invoice.customCharges?.length > 0
+        ? invoice.customCharges?.reduce((acc, charge) => {
+            return acc + charge.amount;
+          }, 0)
+        : 0;
+    const entriesTotal =
+      invoice.timeEntries?.length > 0
+        ? invoice.timeEntries?.reduce((acc, entry) => {
+            return acc + getAmountOfEntry(entry.rate?.rate ?? 0, entry);
+          }, 0)
+        : 0;
+    const person = invoice.case?.billablePerson ?? {
+      firstName: "No billable client",
+    };
+    console.log(chargesTotal, entriesTotal);
+    const grandTotal = chargesTotal + entriesTotal;
+    return {
+      createdAt: invoice.createdAt,
+      title: invoice.invoiceTitle,
+      invoiceId: invoice.invoiceId,
+      description: invoice.invoiceTitle,
+      person: person,
+      amount: grandTotal,
+      paidDate: invoice.createdAt,
+    };
+  });
 };

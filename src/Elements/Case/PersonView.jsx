@@ -12,8 +12,11 @@ const PersonView = ({
   caseId,
   type,
   objectTemplate,
+  caseData,
+  updateCase,
 }) => {
   const [personId, setPersonId] = useState(data.personId);
+  const isBillable = data.personId === caseData?.billableContact;
   const [confirm, setConfirm] = useState(false);
 
   useEffect(() => {
@@ -51,6 +54,16 @@ const PersonView = ({
     delete objectTemplate.zip;
     delete objectTemplate.SSN;
   }
+
+  const handleToggle = async () => {
+    try {
+      if (isBillable) {
+        await updateCase("billableContact", null);
+      } else await updateCase("billableContact", personId);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div className="person-view-wrapper">
@@ -95,7 +108,20 @@ const PersonView = ({
             />
           );
         })}
-
+        {type === "client" && (
+          <div className="billed-client-switch">
+            <h4>Billed Client</h4>
+            <label className="switch">
+              <input
+                type="checkbox"
+                onChange={() => handleToggle(!caseData.isBillable)}
+                checked={isBillable}
+                // disabled={isLoading}
+              />
+              <span className="slider round"></span>
+            </label>
+          </div>
+        )}
         <div className="remove-person-button">
           {confirm ? (
             <div className="confirm-modal-overlay">

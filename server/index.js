@@ -17,6 +17,7 @@ import commentCtrl from "./controllers/commentCtrl.js";
 import timeCtrl from "./controllers/timeCtrl.js";
 import invoiceCtrl from "./controllers/invoiceCtrl.js";
 import statementCtrl from "./controllers/statementCtrl.js";
+import e2eCtrl, { requireE2eSecret } from "./controllers/e2eCtrl.js";
 
 import { requireAccess, requireAdmin } from "./middleware/authMiddleware.js";
 import {
@@ -138,7 +139,8 @@ const {
   deleteEntryFromInvoice,
 } = invoiceCtrl;
 
-const { updatePayment, addPayment, getPayments } = statementCtrl;
+const { updatePayment, addPayment, getPayments, createMonthlyStatements } =
+  statementCtrl;
 
 // Express setup
 const app = express();
@@ -213,6 +215,12 @@ app.get("/api/checkUser", checkUser);
 app.delete("/api/logout", logout);
 // app.put("/api/updateUser", updateUser);
 app.post("/api/sync-auth0-user", syncAuth0User);
+
+if (process.env.NODE_ENV !== "production") {
+  app.post("/api/e2e/session", requireE2eSecret, e2eCtrl.createSession);
+  app.post("/api/e2e/link-invoice", requireE2eSecret, e2eCtrl.linkInvoice);
+  app.post("/api/e2e/cleanup", requireE2eSecret, e2eCtrl.cleanup);
+}
 
 // user endpoints
 app.get("/api/getUser/:userId", getUser);
@@ -309,7 +317,7 @@ app.post("/api/time-entry/delete", deleteEntry);
 app.get("/api/time-entry/running-timer", runningTimer);
 app.get("/api/time-entry/getUserEntries", getUserEntries);
 app.get("/api/time-entry/getAllEntries", getAllEntries);
-app.get("/api/time-entry/getRecentUserEntries", getRecentUserEntries);
+app.post("/api/time-entry/getRecentUserEntries", getRecentUserEntries);
 app.get("/api/time-entry/getEntryServices", getEntryServices);
 app.post("/api/newCharge", newCharge);
 app.post("/api/updateCharge", updateCharge);
@@ -329,6 +337,7 @@ app.post("/api/deleteEntryFromInvoice", deleteEntryFromInvoice);
 // Statement endpoints
 app.post("/api/updatePayment", updatePayment);
 app.post("/api/addPayment", addPayment);
+app.post("/api/createMonthlyStatements", createMonthlyStatements);
 app.get("/api/getPayments", getPayments);
 
 // user access check endpoint

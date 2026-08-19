@@ -330,6 +330,7 @@ const TimeKeeperWidget = ({ caseId, title, taskId, isNav }) => {
                 setShowEntryView={setShowEntryView}
                 entriesRefreshKey={entriesRefreshKey}
                 setCharge={setCharge}
+                caseId={caseId}
               />
             </>
           )}

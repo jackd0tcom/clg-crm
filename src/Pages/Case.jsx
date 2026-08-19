@@ -297,6 +297,11 @@ const Case = ({ openTaskView, refreshKey }) => {
                 ...caseData,
                 isBillable: value,
               });
+            } else if (fieldName === "billableContact") {
+              setCaseData({
+                ...caseData,
+                billableContact: value,
+              });
             }
           }
         });
@@ -520,6 +525,8 @@ const Case = ({ openTaskView, refreshKey }) => {
             )}
             {currentTab === "client" && (
               <PeopleTab
+                caseData={caseData}
+                updateCase={updateCase}
                 people={clients}
                 setPeople={setClients}
                 refreshActivityData={refreshActivityData}

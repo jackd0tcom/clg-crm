@@ -39,17 +39,21 @@ const ClientPicker = ({
       </button>
       {showDropdown && (
         <div className="dropdown" ref={dropdownRef}>
-          {clientList?.map((client: any) => (
-            <div
-              className="dropdown-item"
-              onClick={() => {
-                setPayment({ ...payment, personId: client.personId });
-                setShowDropdown(false);
-              }}
-            >
-              {client.firstName ?? ""} {client.lastName ?? ""}
-            </div>
-          ))}
+          {clientList?.length > 0 ? (
+            clientList?.map((client: any) => (
+              <div
+                className="dropdown-item"
+                onClick={() => {
+                  setPayment({ ...payment, personId: client.personId });
+                  setShowDropdown(false);
+                }}
+              >
+                {client.firstName ?? ""} {client.lastName ?? ""}
+              </div>
+            ))
+          ) : (
+            <div className="dropdown-item">No Clients Found</div>
+          )}
         </div>
       )}
     </div>

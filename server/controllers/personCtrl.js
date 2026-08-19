@@ -54,6 +54,9 @@ export default {
     try {
       console.log("newPerson");
       const { caseId, fieldName, value, type } = req.body;
+      const existingPersons = await CasePerson.count({
+        where: { caseId, type: "client" },
+      });
       const newPerson = await Person.create({ [fieldName]: value });
       await CasePerson.create({
         caseId,
@@ -61,7 +64,14 @@ export default {
         type: type || "client",
       });
 
-      console.log(newPerson);
+      if (type === "client") {
+        if (existingPersons <= 0) {
+          const currentCase = await Case.findByPk(caseId);
+          await currentCase.update({
+            billableContact: newPerson.personId,
+          });
+        }
+      }
 
       await createActivityLog({
         authorId: req.session.user.userId,
@@ -140,6 +150,9 @@ export default {
 
       const { personId, caseId, type } = req.body;
       const person = await Person.findByPk(personId);
+      const existingPersons = await CasePerson.count({
+        where: { caseId, type: "client" },
+      });
 
       if (!person) {
         return res.status(404).send("Person not found");
@@ -158,6 +171,15 @@ export default {
         personId,
         type: type || "client",
       });
+
+      if (type === "client") {
+        if (existingPersons <= 0) {
+          const currentCase = await Case.findByPk(caseId);
+          await currentCase.update({
+            billableContact: person.personId,
+          });
+        }
+      }
 
       await createActivityLog({
         authorId: req.session.user.userId,
