@@ -78,10 +78,8 @@ const Statements = () => {
   };
 
   useEffect(() => {
-    setTimeout(() => {
-      fetchPayments();
-    }, 100);
-  }, []);
+    fetchPayments();
+  }, [userStore]);
 
   useEffect(() => {
     const handleClickOutside = (event: any) => {
