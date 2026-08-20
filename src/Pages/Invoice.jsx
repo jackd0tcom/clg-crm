@@ -15,7 +15,7 @@ import StatusIcon from "../Elements/Task/StatusIcon";
 import PayModal from "../Elements/Invoice/PayModal";
 import { useSelector } from "react-redux";
 import PaymentList from "../Elements/Statements/PaymentList";
-import { formatDollarNoCents } from "../helpers/helperFunctions";
+import { formatDollar } from "../helpers/helperFunctions";
 import { getInvoiceStatementItems } from "../helpers/helperFunctions";
 
 const Invoice = () => {
@@ -112,6 +112,7 @@ const Invoice = () => {
           getInvoiceStatementItems(
             data.caseEntries ?? data.entries,
             data.charges ?? data.customCharges,
+            defaultClient,
           ),
         );
         setBilledTo(data.billTo ?? defaultBillTo);
@@ -629,14 +630,6 @@ const Invoice = () => {
               <h3>Payments</h3>
             </div>
             <PaymentList payments={payments} invoices={invoices} />
-            {/* <div className="invoice-payment-footer payment-item">
-              <div>Total</div>
-              <div></div>
-              <div></div>
-              <div className="payment-item-total">
-                {formatDollarNoCents(paymentTotal)}
-              </div>
-            </div> */}
           </div>
         </div>
       )}

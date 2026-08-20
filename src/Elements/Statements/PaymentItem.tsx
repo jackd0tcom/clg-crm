@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router";
 import {
-  formatDollarNoCents,
+  formatDollar,
   formatDateNoTimeWithYear,
 } from "../../helpers/helperFunctions";
 
@@ -35,8 +35,8 @@ const PaymentItem = ({ payment }: props) => {
         }
       >
         {payment.paymentId
-          ? formatDollarNoCents(payment.amount)
-          : `(${formatDollarNoCents(payment.amount)})`}
+          ? formatDollar(payment.amount)
+          : `(${formatDollar(payment.amount)})`}
       </div>
     </div>
   );

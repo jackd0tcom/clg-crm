@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import StatusIcon from "../Task/StatusIcon";
 import { getDuration, formatDay } from "../../helpers/helperFunctions";
-import { formatDollarNoCents } from "../../helpers/helperFunctions";
+import { formatDollar } from "../../helpers/helperFunctions";
 
 const WidgetEntryList = ({
   entry,
@@ -111,7 +111,7 @@ const WidgetEntryList = ({
 
   return (
     <div className="widget-entry-list-wrapper">
-      {recentEntries?.length > 0 &&
+      {groupedEntries?.length > 0 &&
         groupedEntries.map(({ day, entries }) => {
           const dailySeconds = entries?.reduce((acc, entry) => {
             let duration = 0;
@@ -164,7 +164,7 @@ const WidgetEntryList = ({
                       </p>
                       <p>
                         {entry.chargeId
-                          ? formatDollarNoCents(entry.amount)
+                          ? formatDollar(entry.amount)
                           : getDuration(entry)}
                       </p>
                     </div>

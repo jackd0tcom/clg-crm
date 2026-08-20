@@ -151,10 +151,16 @@ const Case = ({ openTaskView, refreshKey }) => {
         );
         fetchPeople();
         setTimeEntries(caseResponse.data.timeEntries ?? []);
+        const people = caseResponse.data.people ?? [];
+        const billableContact = caseResponse.data.billableContact ?? null;
+        const billablePerson = people.find(
+          (person) => person.personId === billableContact,
+        );
         setInvoices(
           getInvoiceStatementItems(
             caseResponse.data.timeEntries,
             caseResponse.data.charge,
+            billablePerson,
           ) ?? [],
         );
         setCaseData(caseResponse.data);

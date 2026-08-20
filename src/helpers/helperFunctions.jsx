@@ -435,6 +435,13 @@ export function formatDollarNoCents(number) {
     maximumFractionDigits: 0,
   }).format(number);
 }
+export function formatDollar(number) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 2,
+  }).format(number);
+}
 
 /** Resolve a dotted path ("person.firstName") or run a getter fn on an item. */
 function getByPath(item, path) {
@@ -475,7 +482,7 @@ export function buildFilters(items, idPath, titlePath) {
 
   return array;
 }
-export const getInvoiceStatementItems = (entries, charges) => {
+export const getInvoiceStatementItems = (entries, charges, person) => {
   const invoices = (entries ?? []).reduce((acc, entry) => {
     if (!entry.invoiceId) return acc;
     const invoiceId = entry.invoiceId;
@@ -485,6 +492,7 @@ export const getInvoiceStatementItems = (entries, charges) => {
         invoiceId,
         title: entry.invoice?.invoiceTitle,
         amount: 0,
+        person,
         createdAt: entry.invoice?.createdAt,
         description: "Invoice",
       };
@@ -496,13 +504,14 @@ export const getInvoiceStatementItems = (entries, charges) => {
   (charges ?? []).forEach((charge) => {
     if (!charge.invoiceId) return;
     if (invoices[charge.invoiceId]) {
-      invoices[charge.invoiceId].amount += charge.amount ?? 0;
+      invoices[charge.invoiceId].amount += Number(charge.amount) ?? 0;
       return;
     }
     invoices[charge.invoiceId] = {
       invoiceId: charge.invoiceId,
       title: charge.invoice?.invoiceTitle,
       amount: charge.amount ?? 0,
+      person,
       createdAt: charge.invoice?.createdAt ?? charge.createdAt,
       description: "Invoice",
     };
@@ -515,7 +524,7 @@ export const getInvoiceStatementItemFromInvoice = (invoices) => {
     const chargesTotal =
       invoice.customCharges?.length > 0
         ? invoice.customCharges?.reduce((acc, charge) => {
-            return acc + charge.amount;
+            return acc + Number(charge.amount);
           }, 0)
         : 0;
     const entriesTotal =

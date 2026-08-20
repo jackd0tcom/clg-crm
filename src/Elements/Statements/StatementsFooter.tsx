@@ -1,4 +1,4 @@
-import { formatDollarNoCents } from "../../helpers/helperFunctions";
+import { formatDollar } from "../../helpers/helperFunctions";
 
 interface props {
   payments: any;
@@ -28,7 +28,7 @@ const StatementsFooter = ({ payments, total }: props) => {
               : "payment-item-total subtract-payment"
           }
         >
-          Total: {formatDollarNoCents(paymentsTotal)}
+          Total: {formatDollar(paymentsTotal)}
         </div>
       </div>
     </div>
