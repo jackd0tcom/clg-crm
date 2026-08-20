@@ -9,7 +9,7 @@ const StatementsFooter = ({ payments, total }: props) => {
   let paymentsTotal = payments.reduce((acc: number, payment: any) => {
     if (payment.title) {
       return acc - (payment.amount ?? 0);
-    } else return (acc += payment.amount ?? 0);
+    } else return (acc += Number(payment.amount) ?? 0);
   }, 0);
 
   if (total) {

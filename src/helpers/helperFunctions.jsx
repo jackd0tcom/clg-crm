@@ -510,7 +510,7 @@ export const getInvoiceStatementItems = (entries, charges, person) => {
     invoices[charge.invoiceId] = {
       invoiceId: charge.invoiceId,
       title: charge.invoice?.invoiceTitle,
-      amount: charge.amount ?? 0,
+      amount: Number(charge.amount) ?? 0,
       person,
       createdAt: charge.invoice?.createdAt ?? charge.createdAt,
       description: "Invoice",
