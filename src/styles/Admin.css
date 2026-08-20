@@ -386,3 +386,4 @@ input:checked + .slider:before {
   color: var(--button-active-font);
   border: 1px solid var(--button-active-border);
 }
+/*  */
