@@ -203,8 +203,12 @@
 }
 .entry-service-notes {
   border: none;
+  width: 100%;
+  overflow: auto;
 }
-
+.entry-service-notes:focus-visible {
+  outline: none;
+}
 .duration-input {
   background-color: white;
 }
@@ -222,6 +226,7 @@
   padding: 6px 12px;
   border: 1px solid var(--light-border);
   transition: 150ms;
+  white-space: nowrap;
 }
 .entry-service-picker-button:hover {
   background-color: var(--light-border);
