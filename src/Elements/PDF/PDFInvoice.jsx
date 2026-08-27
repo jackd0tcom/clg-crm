@@ -163,7 +163,8 @@ const PDFInvoice = ({
                     {formatNumericalDate(entry.endTime) ?? ""}
                   </Text>
                   <Text style={[styles.text, { flexBasis: 250 }]}>
-                    {getServiceTitle(entry.entryServiceId) ?? entry.notes}
+                    {getServiceTitle(entry.entryServiceId) ?? ""}
+                    {entry.notes && `- ${entry.notes}`}
                   </Text>
                   <Text style={[styles.text, { flexBasis: 80 }]}>
                     {getRoundedDuration(entry, invoiceData.roundingAmount)}
@@ -290,6 +291,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     borderBottom: "1px solid lightgrey",
     padding: 10,
+    gap: 10,
   },
   text: {
     fontSize: 12,

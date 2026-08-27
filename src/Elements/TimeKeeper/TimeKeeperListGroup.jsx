@@ -115,7 +115,10 @@ const TimeKeeperListGroup = ({
 
                 {entry.projectTitle}
               </div>
-              <p>{getServiceTitle(entry.entryServiceId) ?? entry.notes}</p>
+              <p>
+                {getServiceTitle(entry.entryServiceId) ?? ""}
+                {entry.notes && <span> - {entry.notes}</span>}
+              </p>
               <p>{getDuration(entry)}</p>
               <p>{formatDateNoTime(entry.startTime)}</p>
               <TimeEntryStatusBadge status={entry.paidStatus} />

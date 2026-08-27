@@ -48,6 +48,22 @@ describe("getDuration", () => {
       ),
     ).toBe("0:00:00");
   });
+
+  it("formats overnight spans across midnight", () => {
+    expect(
+      getDuration(
+        timedEntry("2026-08-24T19:21:00.000Z", "2026-08-25T04:36:00.000Z"),
+      ),
+    ).toBe("9:15:00");
+  });
+
+  it("clamps inverted start/end to 0:00:00 instead of a negative string", () => {
+    expect(
+      getDuration(
+        timedEntry("2026-08-24T19:21:00.000Z", "2026-08-24T04:36:00.000Z"),
+      ),
+    ).toBe("0:00:00");
+  });
 });
 
 describe("getRoundedDuration", () => {
@@ -88,9 +104,21 @@ describe("getDurationNumber / getDurationFromNumber", () => {
     expect(getDurationNumber(sixtyMinutes)).toBe(3600);
   });
 
+  it("clamps inverted start/end to 0 seconds", () => {
+    expect(
+      getDurationNumber(
+        timedEntry("2026-08-24T19:21:00.000Z", "2026-08-24T04:36:00.000Z"),
+      ),
+    ).toBe(0);
+  });
+
   it("formats seconds back into H:MM:SS", () => {
     expect(getDurationFromNumber(420)).toBe("0:07:00");
     expect(getDurationFromNumber(3903)).toBe("1:05:03");
+  });
+
+  it("clamps negative second totals to 0:00:00", () => {
+    expect(getDurationFromNumber(-53100)).toBe("0:00:00");
   });
 });
 

@@ -75,7 +75,10 @@ const InvoiceItem = ({
       onMouseEnter={() => setShowTrash(true)}
       onMouseLeave={() => setShowTrash(false)}
     >
-      <p>{getServiceTitle(item.entryServiceId) ?? item.notes}</p>
+      <p>
+        {getServiceTitle(item.entryServiceId) ?? ""}
+        {item.notes && <span> - {item.notes}</span>}
+      </p>
       <TimeEntryStatusBadge status={item.paidStatus} />
       <p>${rate}</p>
       <p>{getRoundedDuration(item, rounding)}</p>

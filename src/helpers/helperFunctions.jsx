@@ -241,10 +241,8 @@ export const truncateTitleLonger = (title) => {
   return title;
 };
 
-export const getDuration = (entry) => {
-  const timeDifference =
-    Math.floor(new Date(entry.endTime).getTime() / 1000) -
-    Math.floor(new Date(entry.startTime).getTime() / 1000);
+const formatDurationSeconds = (rawSeconds) => {
+  const timeDifference = Math.max(0, rawSeconds);
   const hours = Math.floor(timeDifference / 3600);
   const minutes = Math.floor((timeDifference % 3600) / 60);
   const seconds = Math.floor((timeDifference % 3600) % 60);
@@ -252,35 +250,33 @@ export const getDuration = (entry) => {
   return `${hours > 0 ? hours : "0"}:${minutes < 10 ? "0" : ""}${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
 };
 
-export const getRoundedDuration = (entry, rounding) => {
+export const getDuration = (entry) => {
   const timeDifference =
     Math.floor(new Date(entry.endTime).getTime() / 1000) -
     Math.floor(new Date(entry.startTime).getTime() / 1000);
+  return formatDurationSeconds(timeDifference);
+};
+
+export const getRoundedDuration = (entry, rounding) => {
+  const timeDifference = Math.max(
+    0,
+    Math.floor(new Date(entry.endTime).getTime() / 1000) -
+      Math.floor(new Date(entry.startTime).getTime() / 1000),
+  );
 
   if (rounding === 0) {
-    const hours = Math.floor(timeDifference / 3600);
-    const minutes = Math.floor((timeDifference % 3600) / 60);
-    const seconds = Math.floor((timeDifference % 3600) % 60);
-    return `${hours > 0 ? hours : "0"}:${minutes < 10 ? "0" : ""}${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+    return formatDurationSeconds(timeDifference);
   }
 
   const totalMinutes = timeDifference / 60;
   const roundedMinutes = Math.ceil(totalMinutes / rounding) * rounding;
   const roundedSeconds = roundedMinutes * 60;
 
-  const hours = Math.floor(roundedSeconds / 3600);
-  const minutes = Math.floor((roundedSeconds % 3600) / 60);
-  const seconds = Math.floor((roundedSeconds % 3600) % 60);
-
-  return `${hours > 0 ? hours : "0"}:${minutes < 10 ? "0" : ""}${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+  return formatDurationSeconds(roundedSeconds);
 };
 
 export const getDurationFromNumber = (number) => {
-  const hours = Math.floor(number / 3600);
-  const minutes = Math.floor((number % 3600) / 60);
-  const seconds = Math.floor((number % 3600) % 60);
-
-  return `${hours > 0 ? hours : "0"}:${minutes < 10 ? "0" : ""}${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+  return formatDurationSeconds(number);
 };
 
 export function getDurationNumber(entry) {
@@ -288,7 +284,7 @@ export function getDurationNumber(entry) {
     Math.floor(new Date(entry.endTime).getTime() / 1000) -
     Math.floor(new Date(entry.startTime).getTime() / 1000);
 
-  return timeDifference;
+  return Math.max(0, timeDifference);
 }
 
 export function getAmountOfEntry(rate, entry) {

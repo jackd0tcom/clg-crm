@@ -22,7 +22,7 @@ const WidgetEntryView = ({
   rates,
 }) => {
   const userStore = useSelector((state) => state.user);
-  const [notes, setNotes] = useState(entry?.notes);
+  const notes = entry?.notes ?? "";
   const [status, setStatus] = useState("");
   const [showCaseTaskPicker, setShowCaseTaskPicker] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);

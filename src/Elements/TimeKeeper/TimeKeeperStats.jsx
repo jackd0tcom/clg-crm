@@ -1,10 +1,5 @@
-const getDurationNumber = (entry) => {
-  const timeDifference =
-    Math.floor(new Date(entry.endTime).getTime() / 1000) -
-    Math.floor(new Date(entry.startTime).getTime() / 1000);
+import { getDurationNumber } from "../../helpers/helperFunctions";
 
-  return timeDifference;
-};
 const TimeKeeperStats = ({ entries }) => {
   const totalSeconds = entries.reduce(
     (acc, entry) => acc + getDurationNumber(entry),

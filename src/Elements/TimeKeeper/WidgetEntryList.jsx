@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import StatusIcon from "../Task/StatusIcon";
-import { getDuration, formatDay } from "../../helpers/helperFunctions";
-import { formatDollar } from "../../helpers/helperFunctions";
+import { getDuration, formatDay, getDurationNumber, formatDollar } from "../../helpers/helperFunctions";
 
 const WidgetEntryList = ({
   entry,
@@ -82,14 +81,6 @@ const WidgetEntryList = ({
       });
   };
 
-  const getDurationNumber = (entry) => {
-    const timeDifference =
-      Math.floor(new Date(entry.endTime).getTime() / 1000) -
-      Math.floor(new Date(entry.startTime).getTime() / 1000);
-
-    return timeDifference;
-  };
-
   const formatDailyDuration = (dailySeconds) => {
     const hours = Math.floor(dailySeconds / 3600);
     const minutes = Math.floor((dailySeconds % 3600) / 60);
@@ -152,7 +143,7 @@ const WidgetEntryList = ({
                     <div className="widget-entry-item-top">
                       <p
                         className={
-                          entry.notes
+                          entry.description
                             ? "widget-entry-item-notes"
                             : "widget-entry-item-notes no-notes"
                         }
@@ -161,6 +152,7 @@ const WidgetEntryList = ({
                           ? entry.description
                           : (getServiceTitle(entry.entryServiceId) ??
                             "Add a Description")}
+                        <span>{entry.notes && `- ${entry.notes}`}</span>
                       </p>
                       <p>
                         {entry.chargeId

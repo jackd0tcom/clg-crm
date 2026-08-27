@@ -51,6 +51,7 @@ const EntryServicePicker = ({ entryServices, entry, setEntry }) => {
         <input
           type="text"
           className="entry-service-notes"
+          value={entry.notes}
           placeholder="Description"
           onChange={(e) => setEntry({ ...entry, notes: e.target.value })}
         />

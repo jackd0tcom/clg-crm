@@ -1,6 +1,14 @@
 import { useState, useRef, useEffect } from "react";
 import DatePicker from "react-datepicker";
-import { getDuration } from "../../helpers/helperFunctions";
+
+/** If stop clock time is before start on the same calendar day, treat as overnight. */
+const resolveEndDate = (year, month, day, hour, minute, start) => {
+  let end = new Date(year, month, day, hour, minute);
+  if (end < start) {
+    end = new Date(year, month, day + 1, hour, minute);
+  }
+  return end;
+};
 
 const TimePicker = ({
   entry,
@@ -16,6 +24,24 @@ const TimePicker = ({
   const [startTime, setStartTime] = useState(new Date(entry.startTime));
   const [endDay, setEndDay] = useState(new Date(entry.endTime));
   const dropdownRef = useRef(null);
+
+  // Heal overnight entries that were stored with end before start on the same day
+  useEffect(() => {
+    const start = new Date(entry.startTime);
+    const end = new Date(entry.endTime);
+    if (end >= start) return;
+    const fixed = resolveEndDate(
+      start.getFullYear(),
+      start.getMonth(),
+      start.getDate(),
+      end.getHours(),
+      end.getMinutes(),
+      start,
+    );
+    setEndDay(fixed);
+    setEntry({ ...entry, endTime: fixed.toISOString() });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only heal once on open
+  }, []);
 
   //   Handles blur
   useEffect(() => {
@@ -53,16 +79,12 @@ const TimePicker = ({
       setEndDay(newStart);
     } else newEntry = { ...entry, startTime: newStart.toISOString() };
     setEntry(newEntry);
-    console.log(newEntry);
   };
 
   const endChange = (date) => {
-    if (date <= startTime) {
-      return;
-    }
     const hour = date.getHours();
     const minute = date.getMinutes();
-    const newEnd = new Date(year, month, day, hour, minute);
+    const newEnd = resolveEndDate(year, month, day, hour, minute, startTime);
     setEndDay(newEnd);
     const newEntry = { ...entry, endTime: newEnd.toISOString() };
     setEntry(newEntry);
@@ -77,7 +99,14 @@ const TimePicker = ({
     const endHour = new Date(endDay).getHours();
     const endMinute = new Date(endDay).getMinutes();
     const newStart = new Date(year, month, day, startHour, startMinute);
-    const newEnd = new Date(year, month, day, endHour, endMinute);
+    const newEnd = resolveEndDate(
+      year,
+      month,
+      day,
+      endHour,
+      endMinute,
+      newStart,
+    );
     setStartTime(newStart);
     setEndDay(newEnd);
     const newEntry = {
