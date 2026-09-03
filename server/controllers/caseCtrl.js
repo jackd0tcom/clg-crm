@@ -288,7 +288,9 @@ export default {
       console.log("getCase");
       if (req.session.user) {
         const { caseId } = req.params;
-        let foundCase = await Case.findOne({
+
+        // Lightweight core query — only small join-tables (owner, assignees, practiceAreas, tribunal)
+        const casePromise = Case.findOne({
           where: { caseId },
           include: [
             {
@@ -326,52 +328,31 @@ export default {
               through: { attributes: [] },
               attributes: ["tribunalId", "name"],
             },
-            {
-              model: Payment,
-              as: "payments",
-              where: {
-                caseId: caseId,
-              },
-              include: [{ model: Person, as: "person" }],
-              required: false,
-            },
-            {
-              model: TimeEntry,
-              as: "timeEntries",
-              include: [
-                { model: Rate, as: "rate", attributes: ["rate"] },
-                {
-                  model: Invoice,
-                  as: "invoice",
-                  required: false,
-                },
-              ],
-            },
-            {
-              model: CustomCharge,
-              as: "charge",
-              include: [
-                {
-                  model: Invoice,
-                  as: "invoice",
-                  required: false,
-                },
-              ],
-            },
-            {
-              model: Person,
-              as: "people",
-            },
           ],
         });
 
-        if (!foundCase) {
-          res.status(404).send("no case found with that id!");
-          return;
-        }
+        // Heavy relations fetched separately in parallel
+        const paymentsPromise = Payment.findAll({
+          where: { caseId },
+          include: [{ model: Person, as: "person" }],
+        });
 
-        // Get tasks with their assignees
-        const tasks = await Task.findAll({
+        const timeEntriesPromise = TimeEntry.findAll({
+          where: { caseId },
+          include: [
+            { model: Rate, as: "rate", attributes: ["rate"] },
+            { model: Invoice, as: "invoice", required: false },
+          ],
+        });
+
+        const chargesPromise = CustomCharge.findAll({
+          where: { caseId },
+          include: [
+            { model: Invoice, as: "invoice", required: false },
+          ],
+        });
+
+        const tasksPromise = Task.findAll({
           where: { caseId },
           include: [
             {
@@ -400,11 +381,26 @@ export default {
           ],
         });
 
-        const casePeople = await CasePerson.findAll({
+        const casePeoplePromise = CasePerson.findAll({
           where: { caseId },
           include: [{ model: Person }],
           order: [[Person, "personId", "ASC"]],
         });
+
+        const [foundCase, payments, timeEntries, charges, tasks, casePeople] =
+          await Promise.all([
+            casePromise,
+            paymentsPromise,
+            timeEntriesPromise,
+            chargesPromise,
+            tasksPromise,
+            casePeoplePromise,
+          ]);
+
+        if (!foundCase) {
+          res.status(404).send("no case found with that id!");
+          return;
+        }
 
         const people = casePeople.map((cp) => ({
           ...cp.person.toJSON(),
@@ -412,7 +408,7 @@ export default {
         }));
 
         // Transform tribunal array to single object (or null)
-        const caseData = foundCase?.toJSON();
+        const caseData = foundCase.toJSON();
         const tribunal =
           Array.isArray(caseData.tribunal) && caseData.tribunal.length > 0
             ? caseData.tribunal[0]
@@ -420,9 +416,12 @@ export default {
 
         const data = {
           ...caseData,
-          tribunal, // Single object instead of array
+          tribunal,
+          payments,
+          timeEntries,
+          charge: charges,
           tasks: tasks.map((task) => task.toJSON()),
-          people: people,
+          people,
         };
 
         res.send(data);
