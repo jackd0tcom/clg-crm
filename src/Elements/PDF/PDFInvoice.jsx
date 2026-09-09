@@ -82,10 +82,6 @@ const PDFInvoice = ({
             >
               <Text style={styles.title}>Invoice</Text>
               <Text style={styles.subtitle}>
-                <Text style={styles.bold}>INVOICE ID:</Text>{" "}
-                {invoiceData.invoiceTitle}
-              </Text>
-              <Text style={styles.subtitle}>
                 <Text style={styles.bold}>INVOICE DATE:</Text> {today}
               </Text>
             </View>

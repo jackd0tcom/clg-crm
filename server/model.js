@@ -1149,7 +1149,7 @@ Invoice.hasMany(CustomCharge, {
 
 if (process.argv[1] === url.fileURLToPath(import.meta.url)) {
   console.log("Syncing database...");
-  await db.sync({ alter: true });
+  await db.sync();
   await db.close();
   console.log("Finished syncing database!");
 }
