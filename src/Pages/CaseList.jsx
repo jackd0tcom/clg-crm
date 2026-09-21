@@ -166,7 +166,7 @@ const CaseList = ({ openTaskView, refreshKey }) => {
           setFilter={setFilter}
           options={[
             {
-              heading: "Last Updated",
+              heading: "Date Updated",
               sortHeading: "sort",
               sortValue: "dateUpdated",
             },
