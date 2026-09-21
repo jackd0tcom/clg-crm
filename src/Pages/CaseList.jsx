@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router";
 import axios from "axios";
 import CaseCard from "../Elements/CaseList/CaseCard";
@@ -6,6 +6,9 @@ import CaseFilter from "../Elements/CaseList/CaseFilter";
 import CaseListSearch from "../Elements/CaseList/CaseListSearch";
 import Loader from "../Elements/UI/Loader";
 import { useSelector } from "react-redux";
+import { usePersistedFilter } from "../Hooks/usePersistedFilter";
+import Sorter from "../Elements/UI/Sorter";
+import ToggleSwitch from "../Elements/UI/ToggleSwitch";
 
 const CaseList = ({ openTaskView, refreshKey }) => {
   const navigate = useNavigate();
@@ -19,18 +22,20 @@ const CaseList = ({ openTaskView, refreshKey }) => {
   const [nonArchivedCases, setNonArchivedCases] = useState([]);
   const [oldestFirst, setOldestFirst] = useState([]);
   const [openCases, setOpenCases] = useState(0);
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = usePersistedFilter("cases", userStore.userId, {
+    sort: "",
+    direction: "up",
+    showAll: false,
+  });
 
   const fetchCases = async () => {
     try {
       const res = await axios.get("/api/getCasesWithTasks");
       setOpenCases(res.data.count);
-      // Filter out archived cases before setting initial state
-      const nonArchivedCases = res.data.cases.filter((a) => !a.isArchived);
-      const archivedCases = res.data.cases.filter((a) => a.isArchived);
-      // initial load should be last updated non archived cases assigned to user
-      setCases(nonArchivedCases);
-      // allCases for seeing cases that the user might not be assigned to.
-      setAllCases(nonArchivedCases);
+      const allCases = res.data.cases?.length > 0 ? res.data.cases : [];
+      setCases(allCases);
+
       // nonArchived cases === last updated cases that user is assigned to
       setNonArchivedCases(
         nonArchivedCases.filter((ca) =>
@@ -71,6 +76,71 @@ const CaseList = ({ openTaskView, refreshKey }) => {
     }
   }, [refreshKey]);
 
+  const filteredCases = useMemo(() => {
+    let data = cases;
+    const archivedCases = data.filter((a) => a.isArchived);
+    const nonArchivedCases = data.filter((a) => !a.isArchived);
+
+    if (filter.sort === "archived") {
+      data = archivedCases;
+    } else data = nonArchivedCases;
+
+    const myCases = data.filter((ca) =>
+      ca.assignees?.some((nee) => nee.userId === userStore.userId),
+    );
+
+    if (!filter.showAll) {
+      data = myCases;
+    }
+
+    const searchQuery = search.toLowerCase();
+
+    // Search filtering
+    if (searchQuery.trim() !== "") {
+      data = data.filter((cas) => {
+        if (cas.title.toLowerCase().includes(searchQuery)) return true;
+        if (cas.phase.toLowerCase().includes(searchQuery)) return true;
+        if (
+          cas.practiceAreas.find((area) =>
+            area.name.toLowerCase().includes(searchQuery),
+          )
+        )
+          return true;
+        else return false;
+      });
+    }
+
+    if (filter.sort !== "") {
+      data = data.sort((a, b) => {
+        switch (filter.sort) {
+          case "dateUpdated":
+            return filter.direction !== "up"
+              ? new Date(a.updatedAt).getTime() -
+                  new Date(b.updatedAt).getTime()
+              : new Date(b.updatedAt).getTime() -
+                  new Date(a.updatedAt).getTime();
+
+          case "dateCreated":
+            return filter.direction !== "up"
+              ? new Date(a.createdAt).getTime() -
+                  new Date(b.createdAt).getTime()
+              : new Date(b.createdAt).getTime() -
+                  new Date(a.createdAt).getTime();
+
+          default:
+            break;
+        }
+      });
+    } else
+      data = data.sort((a, b) => {
+        return filter.direction !== "up"
+          ? new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime()
+          : new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+      });
+
+    return data;
+  }, [filter, cases, search]);
+
   return !isFetched ? (
     <Loader />
   ) : (
@@ -82,23 +152,39 @@ const CaseList = ({ openTaskView, refreshKey }) => {
             <p className="case-count">{openCases} Open Cases</p>
           </div>
         </div>
-        <CaseFilter
-          setCases={setCases}
-          originalCases={originalCases}
-          showArchived={showArchived}
-          allCases={allCases}
-          archivedCases={archivedCases}
-          nonArchivedCases={nonArchivedCases}
-          oldestFirst={oldestFirst}
+        <ToggleSwitch
+          options={["Show Mine", "Show All"]}
+          checked={filter.showAll}
+          onClick={() =>
+            filter.showAll
+              ? setFilter({ ...filter, showAll: false })
+              : setFilter({ ...filter, showAll: true })
+          }
         />
-        <CaseListSearch
-          cases={allCases}
-          setCases={setCases}
-          originalCases={originalCases}
-          setOriginalCases={setOriginalCases}
-          allCases={allCases}
-          showArchived={showArchived}
+        <Sorter
+          filter={filter}
+          setFilter={setFilter}
+          options={[
+            {
+              heading: "Last Updated",
+              sortHeading: "sort",
+              sortValue: "dateUpdated",
+            },
+            {
+              heading: "Date Opened",
+              sortHeading: "sort",
+              sortValue: "dateCreated",
+            },
+            {
+              heading: "Archived",
+              sortHeading: "sort",
+              sortValue: "archived",
+            },
+          ]}
+          direction="direction"
+          position="left"
         />
+        <CaseListSearch search={search} setSearch={setSearch} />
         <a
           className="button button-primary add-case-button"
           onClick={() => navigate("/case/0")}
@@ -107,8 +193,8 @@ const CaseList = ({ openTaskView, refreshKey }) => {
         </a>
       </div>
       <div className="case-list">
-        {cases.length > 0 ? (
-          cases.map((data) => {
+        {filteredCases.length > 0 ? (
+          filteredCases.map((data) => {
             return (
               <CaseCard
                 key={data.caseId}
