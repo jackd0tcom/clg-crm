@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef, useLayoutEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router";
+import { useSelector } from "react-redux";
 import axios from "axios";
 import ActivityLog from "../Elements/UI/ActivityLog";
 import TaskList from "../Elements/TaskList/TaskList";
@@ -19,6 +20,7 @@ import { getInvoiceStatementItems } from "../helpers/helperFunctions";
 
 const Case = ({ openTaskView, refreshKey }) => {
   const { caseId } = useParams();
+  const user = useSelector((state) => state.user);
   const navigate = useNavigate();
   const [caseData, setCaseData] = useState();
   const [payments, setPayments] = useState([]);
@@ -431,13 +433,15 @@ const Case = ({ openTaskView, refreshKey }) => {
                 clientList={clientList}
                 icon={true}
               />
-              <ExtraSettings
-                Id={caseId}
-                handleRefresh={refreshCaseData}
-                refreshActivityData={refreshActivityData}
-                isArchived={isArchived}
-                setIsArchived={setIsArchived}
-              />
+              {user.isAdmin && (
+                <ExtraSettings
+                  Id={caseId}
+                  handleRefresh={refreshCaseData}
+                  refreshActivityData={refreshActivityData}
+                  isArchived={isArchived}
+                  setIsArchived={setIsArchived}
+                />
+              )}
             </div>
           </div>
           <div className="case-card">

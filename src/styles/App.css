@@ -968,3 +968,80 @@ div.date-picker-wrapper > div > div > input[type="text"] {
 .right {
   right: 0;
 }
+/* Sorter */
+.order-sort-wrapper {
+  position: relative;
+  display: flex;
+  gap: 5px;
+}
+.order-sort-filter-button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.8rem;
+  background-color: var(--white);
+  padding: 6px 12px;
+  border-radius: 50px;
+  border: 1px solid var(--light-border);
+  color: var(--dark-grey);
+  transition: 150ms;
+}
+.order-sort-filter-button i {
+  font-size: 0.7rem;
+}
+.order-sort-filter-button:hover {
+  background-color: var(--root-bg-color-light);
+  color: black;
+}
+
+.order-sort-filtered {
+  background-color: var(--light-teal);
+  color: var(--dark-teal);
+  border-color: var(--light-teal);
+}
+.order-sort-filtered:hover {
+  background-color: var(--hover-light-teal);
+}
+
+.order-sort-filter-x-wrapper {
+  display: flex;
+  margin-left: 5px;
+  transition: 150ms;
+}
+.order-sort-filter-x-wrapper:hover {
+  background-color: var(--dark-teal);
+  color: white;
+  padding: 2px 2px;
+  border-radius: 3px;
+}
+
+.order-sort-filter-x {
+  font-size: 0.85em;
+  /* padding: 3px; */
+}
+.order-sort-direction {
+  border-radius: 50px;
+  padding: 0 7px;
+  background-color: var(--light-teal);
+  color: var(--dark-teal);
+  border-color: var(--light-teal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.order-sort-direction:hover {
+  background-color: var(--hover-light-teal);
+  border-color: var(--hover-light-teal);
+}
+.order-sort-direction i {
+  font-size: 0.9rem;
+  margin-top: 2px;
+}
+.sorter-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.sorter-item i {
+  color: var(--dark-teal);
+}
