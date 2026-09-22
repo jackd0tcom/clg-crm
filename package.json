@@ -8,7 +8,7 @@
     "initdb": "dropdb --if-exists clg-db && createdb clg-db && node server/model.js && node server/seed.js",
     "seedAdmin": "node server/seedAdmin.js",
     "seed": "node server/model.js && node server/seed.js",
-    "start": "npm run build && node server/model.js && npm run seedAdmin && node server/prodSeed.js && node server/index.js",
+    "start": "npm run build && node server/index.js",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
@@ -82,6 +82,7 @@
     "globals": "^15.14.0",
     "happy-dom": "^20.11.2",
     "husky": "^9.1.7",
+    "sequelize-cli": "^6.6.5",
     "vite": "^6.0.5",
     "vitest": "^4.1.11"
   }
