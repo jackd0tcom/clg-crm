@@ -42,14 +42,16 @@ const PersonView = ({
     }
   };
 
-  const smallFields = ["state", "zip", "SSN"];
+  const smallFields = ["city", "state", "zip", "SSN"];
 
   let smallFieldsObject = {};
 
   if (type === "client") {
+    smallFieldsObject.city = data.city;
     smallFieldsObject.state = data.state;
     smallFieldsObject.zip = data.zip;
     smallFieldsObject.SSN = data.SSN;
+    delete objectTemplate.city;
     delete objectTemplate.state;
     delete objectTemplate.zip;
     delete objectTemplate.SSN;

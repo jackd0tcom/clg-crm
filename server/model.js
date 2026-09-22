@@ -91,6 +91,10 @@ Person.init(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    businessName: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     lastName: {
       type: DataTypes.STRING,
       allowNull: true,

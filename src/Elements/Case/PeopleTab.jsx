@@ -28,6 +28,7 @@ const PeopleTab = ({
   const clientObject = {
     firstName: "",
     lastName: "",
+    businessName: "",
     address: "",
     city: "",
     state: "",
